@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PARSER_H
+#define PARSER_H
 
 #include "Node.h"
 #include "ByteCode.h"
@@ -20,3 +21,5 @@ Node* ParsePrimaryExpr(Parser* p);
 Node* ParseSecondaryExpr(Parser* p);
 Node* ParseParenExpr(Parser* p);
 Node* ParseBinExpr(Parser* p, int prec, Node* left);
+
+#endif

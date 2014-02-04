@@ -1,4 +1,5 @@
-#include "../Include/NomInterpreter.h"
+#include "NomInterpreter.h"
+
 #include "Parser.h"
 #include "CodeGen.h"
 
@@ -8,7 +9,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-NomInterpreter* NomCreateInterpreter()
+NomInterpreter* NomInterpreter_Create()
 {
     NomInterpreter* interpreter;
     interpreter = (NomInterpreter*)malloc(sizeof(NomInterpreter));
@@ -18,7 +19,7 @@ NomInterpreter* NomCreateInterpreter()
     return interpreter;
 }
 
-void NomFreeInterpreter(NomInterpreter* interpreter)
+void NomInterpreter_Free(NomInterpreter* interpreter)
 {
     free(interpreter);
 }
@@ -37,36 +38,36 @@ void SetInterpreterError(NomInterpreter* interpreter, const char* fmt, ...)
 #define READAS(t)   res = *(t*)&interpreter->bc[interpreter->pc]; interpreter->pc += sizeof(t)
 
 #define ARITH(l, r, op, name)\
-    if (!NomValueIsNumber(l) || !NomValueIsNumber(r))\
+    if (!NomValue_IsNumber(l) || !NomValue_IsNumber(r))\
     {\
         SetInterpreterError(interpreter, "Cannot %s non-numeric values", name);\
         break;\
     }\
-    else if (l.type == NOM_FLOAT || r.type == NOM_FLOAT)\
+    else if (l.type == NOM_TYPE_REAL || r.type == NOM_TYPE_REAL)\
     {\
-        res = NomFloat(NomValueAsFloat(l) op NomValueAsFloat(r));\
+        res = NomReal_FromFloat(NomValue_AsFloat(l) op NomValue_AsFloat(r));\
     }\
     else\
     {\
-        res = NomInteger(NomValueAsInt(l) op NomValueAsInt(r));\
+        res = NomInteger_FromInt(NomValue_AsInt(l) op NomValue_AsInt(r));\
     }
 
 #define NEG(v)\
-    if (!NomValueIsNumber(v))\
+    if (!NomValue_IsNumber(v))\
     {\
         SetInterpreterError(interpreter, "Cannot negate a non-numeric value");\
         break;\
     }\
-    else if (v.type == NOM_FLOAT)\
+    else if (v.type == NOM_TYPE_REAL)\
     {\
-        res = NomFloat(-NomValueAsFloat(v));\
+        res = NomReal_FromFloat(-NomValue_AsFloat(v));\
     }\
     else\
     {\
-        res = NomInteger(-NomValueAsInt(v));\
+        res = NomInteger_FromInt(-NomValue_AsInt(v));\
     }
 
-int NomExecute(NomInterpreter* interpreter, const char* source)
+int NomInterpreter_Execute(NomInterpreter* interpreter, const char* source)
 {
     Parser* p;
     Node*   node;
@@ -134,11 +135,11 @@ int NomExecute(NomInterpreter* interpreter, const char* source)
     return !interpreter->errorFlag;
 }
 
-NomValue NomPop(NomInterpreter* interpreter)
+NomValue NomInterpreter_Pop(NomInterpreter* interpreter)
 {
     if (interpreter->sp == 0)
     {
-        return NomNil();
+        return NOM_NIL;
     }
     else
     {
@@ -146,24 +147,24 @@ NomValue NomPop(NomInterpreter* interpreter)
     }
 }
 
-const char* NomError(NomInterpreter* interpreter)
+const char* NomInterpreter_Error(NomInterpreter* interpreter)
 {
     return interpreter->error;
 }
 
-void NomValueToString(NomInterpreter* interpreter, char* dest, NomValue value)
+void NomValue_AsString(NomInterpreter* interpreter, char* dest, NomValue value)
 {
     interpreter;
 
     switch (value.type)
     {
-    case NOM_INTEGER:
-        sprintf(dest, "%d", NomValueAsInt(value));
+    case NOM_TYPE_INTEGER:
+        sprintf(dest, "%d", NomValue_AsInt(value));
         break;
-    case NOM_FLOAT:
-        sprintf(dest, "%f", NomValueAsFloat(value));
+    case NOM_TYPE_REAL:
+        sprintf(dest, "%f", NomValue_AsDouble(value));
         break;
-    case NOM_NIL:
+    case NOM_TYPE_NIL:
         sprintf(dest, "nil");
         break;
     default:

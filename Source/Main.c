@@ -1,11 +1,11 @@
-#include "../Include/Nominal.h"
+#include "Nominal.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 
 int main()
 {
-    NomInterpreter* interpreter = NomCreateInterpreter();
+    NomInterpreter* interpreter = NomInterpreter_Create();
     
     for (;;)
     {
@@ -13,16 +13,16 @@ int main()
         fgets(line, 512, stdin);
         if (line[0] != '\n')
         {
-            if (NomExecute(interpreter, line))
+            if (NomInterpreter_Execute(interpreter, line))
             {
-                NomValue result = NomPop(interpreter);
+                NomValue result = NomInterpreter_Pop(interpreter);
                 char resultString[256];
-                NomValueToString(interpreter, resultString, result);
+                NomValue_AsString(interpreter, resultString, result);
                 printf("Result is %s\n", resultString);
             }
             else
             {
-                printf("Error: %s\n", NomError(interpreter));
+                printf("Error: %s\n", NomInterpreter_Error(interpreter));
             }
         }
         else
@@ -31,7 +31,7 @@ int main()
         }
     }
 
-    NomFreeInterpreter(interpreter);
+    NomInterpreter_Free(interpreter);
     
     return 0;
 }

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef BYTECODE_H
+#define BYTECODE_H
 
 typedef enum
 {
@@ -26,3 +27,5 @@ typedef enum
 
 extern const int OP_PREC[];
 extern const char* const OP_STR[];
+
+#endif

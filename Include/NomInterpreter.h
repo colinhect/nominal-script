@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NOMINTERPRETER_H
+#define NOMINTERPRETER_H
 
 #include "NomValue.h"
 
@@ -12,14 +13,14 @@ typedef struct
     int errorFlag;
 } NomInterpreter;
 
-NomInterpreter* NomCreateInterpreter();
-void NomFreeInterpreter(NomInterpreter* interpreter);
+NomInterpreter* NomInterpreter_Create();
+void NomInterpreter_Free(NomInterpreter* interpreter);
 
-int NomExecute(NomInterpreter* interpreter, const char* source);
+int NomInterpreter_Execute(NomInterpreter* interpreter, const char* source);
 
-NomValue NomPop(NomInterpreter* interpreter);
-const char* NomError(NomInterpreter* interpreter);
+NomValue NomInterpreter_Pop(NomInterpreter* interpreter);
+const char* NomInterpreter_Error(NomInterpreter* interpreter);
 
-NomValue NomGet(NomInterpreter* interpreter, const char* identifier);
+void NomValue_AsString(NomInterpreter* interpreter, char* dest, NomValue value);
 
-void NomValueToString(NomInterpreter* interpreter, char* dest, NomValue value);
+#endif

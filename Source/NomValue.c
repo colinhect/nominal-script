@@ -1,4 +1,4 @@
-#include "../Include/NomValue.h"
+#include "NomValue.h"
 
 #include <float.h>
 #include <math.h>
@@ -9,63 +9,78 @@
 #define NAN (INFINITY-INFINITY)
 #endif
 
-NomValue NomNil()
+NomValue NOM_NIL = { NOM_TYPE_NIL, 0 };
+
+NomValue NomInteger_FromInt(int value)
 {
     NomValue v;
-    v.type = NOM_NIL;
-    v.data.intValue = 0;
+    v.type = NOM_TYPE_INTEGER;
+    v.data.integerValue = value;
     return v;
 }
 
-NomValue NomInteger(int value)
+NomValue NomReal_FromFloat(float value)
 {
     NomValue v;
-    v.type = NOM_INTEGER;
-    v.data.intValue = value;
+    v.type = NOM_TYPE_REAL;
+    v.data.realValue = value;
     return v;
 }
 
-NomValue NomFloat(float value)
+NomValue NomReal_FromDouble(double value)
 {
     NomValue v;
-    v.type = NOM_FLOAT;
-    v.data.floatValue = value;
+    v.type = NOM_TYPE_REAL;
+    v.data.realValue = (float)value;
     return v;
 }
 
-int NomValueIsNumber(NomValue value)
+int NomValue_IsNumber(NomValue value)
 {
     switch (value.type)
     {
-    case NOM_INTEGER:
-    case NOM_FLOAT:
+    case NOM_TYPE_INTEGER:
+    case NOM_TYPE_REAL:
         return 1;
     default:
         return 0;
     }
 }
 
-int NomValueAsInt(NomValue value)
+int NomValue_AsInt(NomValue value)
 {
     switch (value.type)
     {
-    case NOM_INTEGER:
-        return value.data.intValue;
-    case NOM_FLOAT:
-        return (int)value.data.floatValue;
+    case NOM_TYPE_INTEGER:
+        return value.data.integerValue;
+    case NOM_TYPE_REAL:
+        return (int)value.data.realValue;
     default:
         return -1;
     }
 }
 
-float NomValueAsFloat(NomValue value)
+float NomValue_AsFloat(NomValue value)
 {
     switch (value.type)
     {
-    case NOM_INTEGER:
-        return (float)value.data.intValue;
-    case NOM_FLOAT:
-        return value.data.floatValue;
+    case NOM_TYPE_INTEGER:
+        return (float)value.data.integerValue;
+    case NOM_TYPE_REAL:
+        return value.data.realValue;
+    default:
+        return NAN;
+    }
+}
+
+double NomValue_AsDouble(NomValue value)
+{
+    switch (value.type)
+    {
+    case NOM_TYPE_INTEGER:
+        return (double)value.data.integerValue;
+    case NOM_TYPE_REAL:
+        return (double)value.data.realValue;
     default:
         return NAN;
     }

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LEXER_H
+#define LEXER_H
 
 typedef enum
 {
@@ -56,3 +57,5 @@ void CopyTokenValue(Lexer* l, char* dest);
 
 long GetTokenAsInt(Lexer* l);
 double GetTokenAsFloat(Lexer* l);
+
+#endif

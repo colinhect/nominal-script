@@ -54,7 +54,7 @@ Node* ParsePrimaryExpr(Parser* p)
             return NULL;
         }
 
-        data.intValue = op;
+        data.integerValue = op;
         MoveNext(p->l);
 
         n = ParsePrimaryExpr(p);
@@ -90,13 +90,13 @@ Node* ParseSecondaryExpr(Parser* p)
             break;
         }
     case TOK_INTEGER:
-        data.intValue = GetTokenAsInt(p->l);
+        data.integerValue = GetTokenAsInt(p->l);
         n = CreateNode(NODE_INTEGER, NULL, NULL, data);
         MoveNext(p->l);
         break;
     case TOK_FLOAT:
-        data.floatValue = GetTokenAsFloat(p->l);
-        n = CreateNode(NODE_FLOAT, NULL, NULL, data);
+        data.realValue = GetTokenAsFloat(p->l);
+        n = CreateNode(NODE_REAL, NULL, NULL, data);
         MoveNext(p->l);
         break;
     case TOK_KEYWORD:
@@ -163,7 +163,7 @@ Node* ParseBinExpr(Parser* p, int prec, Node* left)
         int op_prec;
         int next_op_prec;
 
-        data.intValue = GetTokenId(p->l);
+        data.integerValue = GetTokenId(p->l);
 
         op_prec = IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[GetTokenId(p->l)] : -1;
         if (op_prec < prec)

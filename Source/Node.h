@@ -5,15 +5,15 @@ typedef enum
 {
     NODE_NIL,
     NODE_INTEGER,
-    NODE_FLOAT,
+    NODE_REAL,
     NODE_BINARY_OP,
     NODE_UNARY_OP,
 } NodeType;
 
 typedef union
 {
-    long intValue;
-    double floatValue;
+    long integerValue;
+    double realValue;
 } NodeData;
 
 typedef struct Node
