@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{293d7e1d-78aa-4a61-a739-50e461f90667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{91ae4792-920f-46b8-b0bd-5d2b5d1d3b59}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\HashTable.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\StringPool.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Node.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Parser.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Lexer.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ByteCode.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CodeGen.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Nominal.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\NomInterpreter.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\NomValue.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\HashTable.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\StringPool.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Node.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Parser.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Lexer.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ByteCode.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Main.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CodeGen.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NomValue.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NomInterpreter.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
