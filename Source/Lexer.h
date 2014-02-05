@@ -23,39 +23,26 @@ typedef enum
     TOK_EOI
 } TokenType;
 
-typedef struct
-{
-    unsigned index;
-    unsigned line;
-    TokenType type;
-    unsigned startIndex;
-    unsigned length;
-    unsigned id;
-    unsigned skippedWhitespace;
-} LexerState;
+typedef struct _LexerState LexerState;
 
-typedef struct
-{
-    const char* source;
-    LexerState state;
-} Lexer;
+typedef struct _Lexer Lexer;
 
-Lexer* CreateLexer(const char* source);
+Lexer* Lexer_Create(const char* source);
 
-int MoveNext(Lexer* l);
+int Lexer_Next(Lexer* l);
 
-int IsTokenType(Lexer* l, TokenType type);
-int IsTokenId(Lexer* l, unsigned id);
-int IsTokenTypeAndId(Lexer* l, TokenType type, unsigned id);
+int Lexer_IsTokenType(Lexer* l, TokenType type);
+int Lexer_IsTokenId(Lexer* l, unsigned id);
+int Lexer_IsTokenTypeAndId(Lexer* l, TokenType type, unsigned id);
 
-TokenType GetTokenType(Lexer* l);
-unsigned GetTokenId(Lexer* l);
+TokenType Lexer_GetTokenType(Lexer* l);
+unsigned Lexer_GetTokenId(Lexer* l);
 
-int SkippedWhitespace(Lexer* l);
+int Lexer_SkippedWhitespace(Lexer* l);
 
-void CopyTokenValue(Lexer* l, char* dest);
+void Lexer_CopyTokenValue(Lexer* l, char* dest);
 
-long GetTokenAsInt(Lexer* l);
-double GetTokenAsFloat(Lexer* l);
+long Lexer_GetTokenAsInt(Lexer* l);
+double Lexer_GetTokenAsFloat(Lexer* l);
 
 #endif

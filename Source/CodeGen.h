@@ -3,8 +3,8 @@
 
 #include <string.h>
 
-typedef struct Node Node;
+typedef struct _Node Node;
 
-size_t GenerateCode(Node* node, unsigned char* bc, size_t i);
+size_t GenerateCode(Node* node, unsigned char* byteCode, size_t index);
 
 #endif

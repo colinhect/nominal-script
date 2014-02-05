@@ -3,22 +3,14 @@
 
 #include <string.h>
 
-#include "HashTable.h"
-
 typedef size_t StringId;
 
-typedef struct
-{
-    HashTable* hashTable;
-    char** strings;
-    size_t stringCount;
-    StringId nextStringId;
-} StringPool;
+typedef struct _StringPool StringPool;
 
-StringPool* CreateStringPool(size_t stringCount);
-void FreeStringPool(StringPool* stringPool);
+StringPool* StringPool_Create(size_t stringCount);
+void StringPool_Free(StringPool* stringPool);
 
-StringId AddOrGetString(StringPool* stringPool, const char* string);
-const char* GetString(StringPool* stringPool, StringId id);
+StringId StringPool_AddOrGet(StringPool* stringPool, const char* string);
+const char* StringPool_Get(StringPool* stringPool, StringId id);
 
 #endif

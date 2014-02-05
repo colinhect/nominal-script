@@ -1,5 +1,7 @@
-#include "NomInterpreter.h"
+#include "NomState.h"
+#include "NomString.h"
 
+#include "State.h"
 #include "Parser.h"
 #include "CodeGen.h"
 
@@ -9,38 +11,40 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-NomInterpreter* NomInterpreter_Create()
+NomState* NomState_Create()
 {
-    NomInterpreter* interpreter;
-    interpreter = (NomInterpreter*)malloc(sizeof(NomInterpreter));
-    interpreter->sp = 0;
-    interpreter->pc = 0;
-    interpreter->errorFlag = 0;
-    return interpreter;
+    NomState* s;
+    s = (NomState*)malloc(sizeof(NomState));
+    s->sp = 0;
+    s->ip = 0;
+    s->errorFlag = 0;
+    s->heap = Heap_Create();
+    return s;
 }
 
-void NomInterpreter_Free(NomInterpreter* interpreter)
+void NomState_Free(NomState* s)
 {
-    free(interpreter);
+    Heap_Free(s->heap);
+    free(s);
 }
 
-void SetInterpreterError(NomInterpreter* interpreter, const char* fmt, ...)
+void NomState_SetError(NomState* s, const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
-    vsprintf(interpreter->error, fmt, args);
+    vsprintf(s->error, fmt, args);
     va_end(args);
-    interpreter->errorFlag = 1;
+    s->errorFlag = 1;
 }
 
-#define POP()       interpreter->st[--interpreter->sp]
-#define PUSH(v)     interpreter->st[interpreter->sp++] = v
-#define READAS(t)   res = *(t*)&interpreter->bc[interpreter->pc]; interpreter->pc += sizeof(t)
+#define POP()       s->stack[--s->sp]
+#define PUSH(v)     s->stack[s->sp++] = v
+#define READAS(t)   res = *(t*)&s->byteCode[s->ip]; s->ip += sizeof(t)
 
 #define ARITH(l, r, op, name)\
     if (!NomValue_IsNumber(l) || !NomValue_IsNumber(r))\
     {\
-        SetInterpreterError(interpreter, "Cannot %s non-numeric values", name);\
+        NomState_SetError(s, "Cannot %s non-numeric values", name);\
         break;\
     }\
     else if (NomReal_Check(l) || NomReal_Check(r))\
@@ -55,7 +59,7 @@ void SetInterpreterError(NomInterpreter* interpreter, const char* fmt, ...)
 #define NEG(v)\
     if (!NomValue_IsNumber(v))\
     {\
-        SetInterpreterError(interpreter, "Cannot negate a non-numeric value");\
+        NomState_SetError(s, "Cannot negate a non-numeric value");\
         break;\
     }\
     else if (NomReal_Check(v))\
@@ -67,32 +71,32 @@ void SetInterpreterError(NomInterpreter* interpreter, const char* fmt, ...)
         res = NomInteger_FromInt(-NomValue_AsInt(v));\
     }
 
-int NomInterpreter_Execute(NomInterpreter* interpreter, const char* source)
+int NomState_Execute(NomState* s, const char* source)
 {
     Parser* p;
     Node*   node;
 
-    interpreter->errorFlag = 0;
+    s->errorFlag = 0;
 
-    p = CreateParser(source);
-    node = ParseExpr(p);
+    p = Parser_Create(source);
+    node = Parser_Expr(p);
 
     if (!node)
     {
-        SetInterpreterError(interpreter, p->error);
+        NomState_SetError(s, Parser_GetError(p));
     }
     else
     {
-        size_t end = GenerateCode(node, interpreter->bc, interpreter->pc);
-        FreeNode(node);
+        size_t end = GenerateCode(node, s->byteCode, s->ip);
+        Node_Free(node);
 
-        while (interpreter->pc < end && !interpreter->errorFlag)
+        while (s->ip < end && !s->errorFlag)
         {
             NomValue l;
             NomValue r;
             NomValue res;
 
-            op_code op = (op_code)interpreter->bc[interpreter->pc++];
+            op_code op = (op_code)s->byteCode[s->ip++];
             switch (op)
             {
             case OP_PUSH:
@@ -132,12 +136,12 @@ int NomInterpreter_Execute(NomInterpreter* interpreter, const char* source)
         }
     }
 
-    return !interpreter->errorFlag;
+    return !s->errorFlag;
 }
 
-NomValue NomInterpreter_Pop(NomInterpreter* interpreter)
+NomValue NomState_Pop(NomState* s)
 {
-    if (interpreter->sp == 0)
+    if (s->sp == 0)
     {
         return NOM_NIL;
     }
@@ -147,15 +151,13 @@ NomValue NomInterpreter_Pop(NomInterpreter* interpreter)
     }
 }
 
-const char* NomInterpreter_Error(NomInterpreter* interpreter)
+const char* NomState_Error(NomState* s)
 {
-    return interpreter->error;
+    return s->error;
 }
 
-void NomValue_AsString(NomInterpreter* interpreter, char* dest, NomValue value)
+void NomValue_AsString(NomState* s, char* dest, NomValue value)
 {
-    interpreter;
-
     switch (value.type)
     {
     case NOM_TYPE_INTEGER:
@@ -163,6 +165,9 @@ void NomValue_AsString(NomInterpreter* interpreter, char* dest, NomValue value)
         break;
     case NOM_TYPE_REAL:
         sprintf(dest, "%f", NomValue_AsDouble(value));
+        break;
+    case NOM_TYPE_STRING:
+        sprintf(dest, "%s", NomString_AsString(s, value));
         break;
     case NOM_TYPE_NIL:
         sprintf(dest, "nil");

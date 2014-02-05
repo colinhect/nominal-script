@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-Node* CreateNode(NodeType type, Node* first, Node* second, NodeData data)
+Node* Node_Create(NodeType type, Node* first, Node* second, NodeData data)
 {
     Node* node;
     node = (Node*)malloc(sizeof(Node));
@@ -13,16 +13,16 @@ Node* CreateNode(NodeType type, Node* first, Node* second, NodeData data)
     return node;
 }
 
-void FreeNode(Node* node)
+void Node_Free(Node* node)
 {
     if (node->first)
     {
-        FreeNode(node->first);
+        Node_Free(node->first);
     }
 
     if (node->second)
     {
-        FreeNode(node->second);
+        Node_Free(node->second);
     }
 
     free(node);

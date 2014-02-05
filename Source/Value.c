@@ -24,6 +24,14 @@ NomValue NomInteger_FromInt(int value)
     return v;
 }
 
+NomValue NomInteger_FromUnsignedLongLong(unsigned long long value)
+{
+    NomValue v;
+    v.type = NOM_TYPE_INTEGER;
+    v.data.integerValue = (int)value;
+    return v;
+}
+
 int NomReal_Check(NomValue value)
 {
     return value.type == NOM_TYPE_REAL;

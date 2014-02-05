@@ -1,8 +1,6 @@
 #ifndef NOMVALUE_H
 #define NOMVALUE_H
 
-#include <stdint.h>
-
 ///
 /// \brief Enumeration of each type a Nominal value can be.
 typedef enum
@@ -20,12 +18,12 @@ typedef enum
 /// \brief A Nominal value.
 typedef struct
 {
-    uint8_t type;
+    char type;
     union
     {
         int integerValue;
         float realValue;
-        uint32_t unsignedValue;
+        unsigned handle;
     } data;
 } NomValue;
 
@@ -50,6 +48,15 @@ int NomInteger_Check(NomValue value);
 ///
 /// \returns The Nominal integer value.
 NomValue NomInteger_FromInt(int value);
+
+///
+/// \brief Constructs a Nominal integer value from an unsigned long long.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal integer value.
+NomValue NomInteger_FromUnsignedLongLong(unsigned long long value);
 
 ///
 /// \brief Checks if a Nominal value is a real.

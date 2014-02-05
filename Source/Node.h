@@ -1,6 +1,8 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include <stdint.h>
+
 typedef enum
 {
     NODE_NIL,
@@ -12,19 +14,19 @@ typedef enum
 
 typedef union
 {
-    long integerValue;
+    uint64_t integerValue;
     double realValue;
 } NodeData;
 
-typedef struct Node
+typedef struct _Node
 {
     NodeType type;
-    struct Node* first;
-    struct Node* second;
-    NodeData data;
+    struct _Node* first;
+    struct _Node* second;
+    NodeData data;    
 } Node;
 
-Node* CreateNode(NodeType type, Node* first, Node* second, NodeData data);
-void FreeNode(Node* node);
+Node* Node_Create(NodeType type, Node* first, Node* second, NodeData data);
+void Node_Free(Node* node);
 
 #endif

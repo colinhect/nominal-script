@@ -6,6 +6,23 @@
 #include <string.h>
 #include <ctype.h>
 
+typedef struct _LexerState
+{
+    unsigned index;
+    unsigned line;
+    TokenType type;
+    unsigned startIndex;
+    unsigned length;
+    unsigned id;
+    unsigned skippedWhitespace;
+} LexerState;
+
+typedef struct _Lexer
+{
+    const char* source;
+    LexerState state;
+} Lexer;
+
 char ReadNext(Lexer* l)
 {
     char c;
@@ -43,7 +60,7 @@ int StartsWith(const char* str, const char* pre)
     return lenstr < lenpre ? 0 : strncmp(pre, str, lenpre) == 0;
 }
 
-Lexer* CreateLexer(const char* source)
+Lexer* Lexer_Create(const char* source)
 {
     LexerState state = { 0, 1, TOK_SYMBOL, 0, 0, 0, 0 };
     Lexer* l = (Lexer*)malloc(sizeof(Lexer));
@@ -52,7 +69,7 @@ Lexer* CreateLexer(const char* source)
     return l;
 }
 
-int MoveNext(Lexer* l)
+int Lexer_Next(Lexer* l)
 {
     LexerState state;
     char       c;
@@ -296,52 +313,52 @@ int MoveNext(Lexer* l)
     return 1;
 }
 
-int IsTokenType(Lexer* l, TokenType type)
+int Lexer_IsTokenType(Lexer* l, TokenType type)
 {
     return l->state.type == type;
 }
 
-int IsTokenId(Lexer* l, unsigned id)
+int Lexer_IsTokenId(Lexer* l, unsigned id)
 {
     return l->state.id == id;
 }
 
-int IsTokenTypeAndId(Lexer* l, TokenType type, unsigned id)
+int Lexer_IsTokenTypeAndId(Lexer* l, TokenType type, unsigned id)
 {
-    return IsTokenType(l, type) && IsTokenId(l, id);
+    return Lexer_IsTokenType(l, type) && Lexer_IsTokenId(l, id);
 }
 
-TokenType GetTokenType(Lexer* l)
+TokenType Lexer_GetTokenType(Lexer* l)
 {
     return l->state.type;
 }
 
-unsigned GetTokenId(Lexer* l)
+unsigned Lexer_GetTokenId(Lexer* l)
 {
     return l->state.id;
 }
 
-int SkippedWhitespace(Lexer* l)
+int Lexer_SkippedWhitespace(Lexer* l)
 {
     return l->state.skippedWhitespace;
 }
 
-void CopyTokenValue(Lexer* l, char* dest)
+void Lexer_CopyTokenValue(Lexer* l, char* dest)
 {
     strncpy(dest, &l->source[l->state.startIndex], l->state.length);
     dest[l->state.length] = '\0';
 }
 
-long GetTokenAsInt(Lexer* l)
+long Lexer_GetTokenAsInt(Lexer* l)
 {
     char buffer[32];
-    CopyTokenValue(l, buffer);
+    Lexer_CopyTokenValue(l, buffer);
     return atol(buffer);
 }
 
-double GetTokenAsFloat(Lexer* l)
+double Lexer_GetTokenAsFloat(Lexer* l)
 {
     char buffer[32];
-    CopyTokenValue(l, buffer);
+    Lexer_CopyTokenValue(l, buffer);
     return atof(buffer);
 }

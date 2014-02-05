@@ -139,25 +139,30 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\Nominal.h" />
-    <ClInclude Include="Include\NomInterpreter.h" />
+    <ClInclude Include="Include\NomState.h" />
+    <ClInclude Include="Include\NomString.h" />
     <ClInclude Include="Include\NomValue.h" />
     <ClInclude Include="Source\ByteCode.h" />
     <ClInclude Include="Source\CodeGen.h" />
     <ClInclude Include="Source\HashTable.h" />
+    <ClInclude Include="Source\Heap.h" />
     <ClInclude Include="Source\Lexer.h" />
     <ClInclude Include="Source\Node.h" />
     <ClInclude Include="Source\Parser.h" />
+    <ClInclude Include="Source\State.h" />
     <ClInclude Include="Source\StringPool.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ByteCode.c" />
     <ClCompile Include="Source\CodeGen.c" />
     <ClCompile Include="Source\HashTable.c" />
+    <ClCompile Include="Source\Heap.c" />
     <ClCompile Include="Source\Lexer.c" />
     <ClCompile Include="Source\Main.c" />
     <ClCompile Include="Source\Node.c" />
-    <ClCompile Include="Source\NomInterpreter.c" />
-    <ClCompile Include="Source\NomValue.c" />
+    <ClCompile Include="Source\State.c" />
+    <ClCompile Include="Source\String.c" />
+    <ClCompile Include="Source\Value.c" />
     <ClCompile Include="Source\Parser.c" />
     <ClCompile Include="Source\StringPool.c" />
   </ItemGroup>

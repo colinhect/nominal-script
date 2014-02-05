@@ -1,6 +1,8 @@
 #ifndef NOMINAL_H
 #define NOMINAL_H
 
-#include "NomInterpreter.h"
+#include "NomState.h"
+#include "NomValue.h"
+#include "NomString.h"
 
 #endif

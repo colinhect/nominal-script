@@ -6,21 +6,27 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-Parser* CreateParser(const char* source)
+typedef struct _Parser
+{
+    Lexer* l;
+    char error[256];
+} Parser;
+
+Parser* Parser_Create(const char* source)
 {
     Parser* p = (Parser*)malloc(sizeof(Parser));
-    p->l = CreateLexer(source);
-    MoveNext(p->l);
+    p->l = Lexer_Create(source);
+    Lexer_Next(p->l);
     return p;
 }
 
-void FreeParser(Parser* p)
+void Parser_Free(Parser* p)
 {
     free(p->l);
     free(p);
 }
 
-void SetParseError(Parser* p, const char* fmt, ...)
+void Parser_SetError(Parser* p, const char* fmt, ...)
 {
     va_list args;
     va_start(args, fmt);
@@ -28,21 +34,26 @@ void SetParseError(Parser* p, const char* fmt, ...)
     va_end(args);
 }
 
-Node* ParseExpr(Parser* p)
+const char* Parser_GetError(Parser* p)
 {
-    return ParseBinExpr(p, 0, ParsePrimaryExpr(p));
+    return p->error;
 }
 
-Node* ParsePrimaryExpr(Parser* p)
+Node* Parser_Expr(Parser* p)
+{
+    return Parser_BinExpr(p, 0, Parser_PrimaryExpr(p));
+}
+
+Node* Parser_PrimaryExpr(Parser* p)
 {
     // Unary operator
-    if (IsTokenType(p->l, TOK_OPERATOR))
+    if (Lexer_IsTokenType(p->l, TOK_OPERATOR))
     {
         NodeData    data = { 0 };
         op_code     op;
         Node*       n;
         
-        op = (op_code)GetTokenId(p->l);
+        op = (op_code)Lexer_GetTokenId(p->l);
         if (op == OP_SUB)
         {
             op = OP_NEG;
@@ -50,67 +61,67 @@ Node* ParsePrimaryExpr(Parser* p)
 
         if (op != OP_NOT && op != OP_NEG)
         {
-            SetParseError(p, "Operator '%s' is not unary", OP_STR[op]);
+            Parser_SetError(p, "Operator '%s' is not unary", OP_STR[op]);
             return NULL;
         }
 
         data.integerValue = op;
-        MoveNext(p->l);
+        Lexer_Next(p->l);
 
-        n = ParsePrimaryExpr(p);
+        n = Parser_PrimaryExpr(p);
         if (!n)
         {
             return NULL;
         }
 
-        return CreateNode(NODE_UNARY_OP, n, NULL, data);
+        return Node_Create(NODE_UNARY_OP, n, NULL, data);
     }
     else
     {
-        return ParseSecondaryExpr(p);
+        return Parser_SecondaryExpr(p);
     }
 }
 
-Node* ParseSecondaryExpr(Parser* p)
+Node* Parser_SecondaryExpr(Parser* p)
 {
     Node*       n;
-    NodeData   data = { 0 };
-    TokenType  type;
+    NodeData    data = { 0 };
+    TokenType   type;
     unsigned    id;
 
-    type = GetTokenType(p->l);
-    id = GetTokenId(p->l);
+    type = Lexer_GetTokenType(p->l);
+    id = Lexer_GetTokenId(p->l);
 
     switch (type)
     {
     case TOK_SYMBOL:
         if (id == '(')
         {
-            n = ParseParenExpr(p);
+            n = Parser_ParenExpr(p);
             break;
         }
     case TOK_INTEGER:
-        data.integerValue = GetTokenAsInt(p->l);
-        n = CreateNode(NODE_INTEGER, NULL, NULL, data);
-        MoveNext(p->l);
+        data.integerValue = Lexer_GetTokenAsInt(p->l);
+        n = Node_Create(NODE_INTEGER, NULL, NULL, data);
+        Lexer_Next(p->l);
         break;
     case TOK_FLOAT:
-        data.realValue = GetTokenAsFloat(p->l);
-        n = CreateNode(NODE_REAL, NULL, NULL, data);
-        MoveNext(p->l);
+        data.realValue = Lexer_GetTokenAsFloat(p->l);
+        n = Node_Create(NODE_REAL, NULL, NULL, data);
+        Lexer_Next(p->l);
         break;
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
-            n = CreateNode(NODE_NIL, NULL, NULL, data);
-            MoveNext(p->l);
+            n = Node_Create(NODE_NIL, NULL, NULL, data);
+            Lexer_Next(p->l);
             break;
         }
     default:
         {
             char buffer[64];
-            CopyTokenValue(p->l, buffer);
-            SetParseError(p, "Unexpected token '%s'", buffer);
+            Lexer_CopyTokenValue(p->l, buffer);
+            Parser_SetError(p, "Unexpected token '%s'", buffer);
             return NULL;
         }
     }
@@ -118,37 +129,37 @@ Node* ParseSecondaryExpr(Parser* p)
     return n;
 }
 
-Node* ParseParenExpr(Parser* p)
+Node* Parser_ParenExpr(Parser* p)
 {
     Node* n;
 
-    if (!IsTokenTypeAndId(p->l, TOK_SYMBOL, '('))
+    if (!Lexer_IsTokenTypeAndId(p->l, TOK_SYMBOL, '('))
     {
-        SetParseError(p, "Expected opening '('");
+        Parser_SetError(p, "Expected opening '('");
         return NULL;
     }
 
-    MoveNext(p->l);
+    Lexer_Next(p->l);
 
-    n = ParseExpr(p);
+    n = Parser_Expr(p);
     if (!n)
     {
         return NULL;
     }
 
-    if (!IsTokenTypeAndId(p->l, TOK_SYMBOL, ')'))
+    if (!Lexer_IsTokenTypeAndId(p->l, TOK_SYMBOL, ')'))
     {
-        FreeNode(n);
-        SetParseError(p, "Expected closing ')'");
+        Node_Free(n);
+        Parser_SetError(p, "Expected closing ')'");
         return NULL;
     }
 
-    MoveNext(p->l);
+    Lexer_Next(p->l);
 
     return n;
 }
 
-Node* ParseBinExpr(Parser* p, int prec, Node* left)
+Node* Parser_BinExpr(Parser* p, int prec, Node* left)
 {
     if (!left)
     {
@@ -163,34 +174,34 @@ Node* ParseBinExpr(Parser* p, int prec, Node* left)
         int op_prec;
         int next_op_prec;
 
-        data.integerValue = GetTokenId(p->l);
+        data.integerValue = Lexer_GetTokenId(p->l);
 
-        op_prec = IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[GetTokenId(p->l)] : -1;
+        op_prec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
         if (op_prec < prec)
         {
             return left;
         }
 
-        op = (op_code)GetTokenId(p->l);
-        MoveNext(p->l);
-        right = ParsePrimaryExpr(p);
+        op = (op_code)Lexer_GetTokenId(p->l);
+        Lexer_Next(p->l);
+        right = Parser_PrimaryExpr(p);
         if (!right)
         {
-            FreeNode(left);
+            Node_Free(left);
             return NULL;
         }
 
-        next_op_prec = IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[GetTokenId(p->l)] : -1;
+        next_op_prec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
         if (op_prec < next_op_prec)
         {
-            right = ParseBinExpr(p, op_prec + 1, right);
+            right = Parser_BinExpr(p, op_prec + 1, right);
             if (!right)
             {
-                FreeNode(left);
+                Node_Free(left);
                 return NULL;
             }
         }
 
-        left = CreateNode(NODE_BINARY_OP, left, right, data);
+        left = Node_Create(NODE_BINARY_OP, left, right, data);
     }
 }

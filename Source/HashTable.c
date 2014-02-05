@@ -3,7 +3,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-HashTable* CreateHashTable(HashFunction hash, CompareFunction compare, size_t bucketCount)
+typedef struct _BucketNode
+{
+    void* key;
+    void* value;
+    struct _BucketNode* next;
+} BucketNode;
+
+typedef struct _HashTable
+{
+    HashFunction hash;
+    CompareFunction compare;
+    BucketNode** nodes;
+    size_t bucketCount;
+} HashTable;
+
+HashTable* HashTable_Create(HashFunction hash, CompareFunction compare, size_t bucketCount)
 {
     HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
     hashTable->hash = hash;
@@ -14,7 +29,7 @@ HashTable* CreateHashTable(HashFunction hash, CompareFunction compare, size_t bu
     return hashTable;
 }
 
-void FreeHashTable(HashTable* hashTable)
+void HashTable_Free(HashTable* hashTable)
 {
     size_t i;
     for (i = 0; i < hashTable->bucketCount; ++i)
@@ -29,7 +44,7 @@ void FreeHashTable(HashTable* hashTable)
     }
 }
 
-void Insert(HashTable* hashTable, void* key, void* value)
+void HashTable_Insert(HashTable* hashTable, void* key, void* value)
 {
     BucketNode* prev = NULL;
     BucketNode* curr = NULL;
@@ -65,7 +80,7 @@ void Insert(HashTable* hashTable, void* key, void* value)
     }
 }
 
-int Find(HashTable* hashTable, void* key, void** value)
+int HashTable_Find(HashTable* hashTable, void* key, void** value)
 {
     BucketNode* n = NULL;
     unsigned long h = hashTable->hash(key);
@@ -84,7 +99,7 @@ int Find(HashTable* hashTable, void* key, void** value)
     return 0;
 }
 
-int InsertOrFind(HashTable* hashTable, void* key, void* value, void** existingValue)
+int HashTable_InsertOrFind(HashTable* hashTable, void* key, void* value, void** existingValue)
 {
     BucketNode* prev = NULL;
     BucketNode* curr = NULL;

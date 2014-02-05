@@ -1,12 +1,21 @@
 #include "StringPool.h"
+#include "HashTable.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-StringPool* CreateStringPool(size_t stringCount)
+typedef struct _StringPool
+{
+    HashTable* hashTable;
+    char** strings;
+    size_t stringCount;
+    StringId nextStringId;
+} StringPool;
+
+StringPool* StringPool_Create(size_t stringCount)
 {
     StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
-    stringPool->hashTable = CreateHashTable(HashString, CompareString, stringCount);
+    stringPool->hashTable = HashTable_Create(HashString, CompareString, stringCount);
     stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
     stringPool->stringCount = stringCount;
     stringPool->nextStringId = 0;
@@ -14,7 +23,7 @@ StringPool* CreateStringPool(size_t stringCount)
     return stringPool;
 }
 
-void FreeStringPool(StringPool* stringPool)
+void StringPool_Free(StringPool* stringPool)
 {
     StringId i;
     for (i = 0; i < stringPool->stringCount; ++i)
@@ -25,17 +34,17 @@ void FreeStringPool(StringPool* stringPool)
         }
     }
 
-    FreeHashTable(stringPool->hashTable);
+    HashTable_Free(stringPool->hashTable);
     free(stringPool);
 }
 
-StringId AddOrGetString(StringPool* stringPool, const char* string)
+StringId StringPool_AddOrGet(StringPool* stringPool, const char* string)
 {
     StringId id;
     char* newString = (char*)malloc(sizeof(char) * (strlen(string) + 1));
     strcpy(newString, string);
 
-    if (!InsertOrFind(stringPool->hashTable, (void*)string, (void*)stringPool->nextStringId, (void**)&id))
+    if (!HashTable_InsertOrFind(stringPool->hashTable, (void*)string, (void*)stringPool->nextStringId, (void**)&id))
     {
         id = stringPool->nextStringId;
         stringPool->strings[id] = newString;
@@ -48,7 +57,7 @@ StringId AddOrGetString(StringPool* stringPool, const char* string)
     return id;
 }
 
-const char* GetString(StringPool* stringPool, StringId id)
+const char* StringPool_Get(StringPool* stringPool, StringId id)
 {
     return stringPool->strings[id];
 }

@@ -5,21 +5,18 @@
 #include "ByteCode.h"
 #include "Lexer.h"
 
-typedef struct
-{
-    Lexer* l;
-    char error[256];
-} Parser;
+typedef struct _Parser Parser;
 
-Parser* CreateParser(const char* source);
-void FreeParser(Parser* p);
+Parser* Parser_Create(const char* source);
+void Parser_Free(Parser* p);
 
-void SetParseError(Parser* p, const char* fmt, ...);
+void Parser_SetError(Parser* p, const char* fmt, ...);
+const char* Parser_GetError(Parser* p);
 
-Node* ParseExpr(Parser* p);
-Node* ParsePrimaryExpr(Parser* p);
-Node* ParseSecondaryExpr(Parser* p);
-Node* ParseParenExpr(Parser* p);
-Node* ParseBinExpr(Parser* p, int prec, Node* left);
+Node* Parser_Expr(Parser* p);
+Node* Parser_PrimaryExpr(Parser* p);
+Node* Parser_SecondaryExpr(Parser* p);
+Node* Parser_ParenExpr(Parser* p);
+Node* Parser_BinExpr(Parser* p, int prec, Node* left);
 
 #endif

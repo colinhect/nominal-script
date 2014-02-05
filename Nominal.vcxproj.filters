@@ -33,11 +33,20 @@
     <ClInclude Include="Include\Nominal.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\NomInterpreter.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="Include\NomValue.h">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\NomState.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Heap.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\NomString.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\State.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -65,10 +74,16 @@
     <ClCompile Include="Source\CodeGen.c">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\NomValue.c">
+    <ClCompile Include="Source\Heap.c">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\NomInterpreter.c">
+    <ClCompile Include="Source\Value.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\String.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\State.c">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
