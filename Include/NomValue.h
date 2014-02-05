@@ -20,7 +20,7 @@ typedef enum
 /// \brief A Nominal value.
 typedef struct
 {
-    NomType type;
+    uint8_t type;
     union
     {
         int integerValue;
@@ -34,6 +34,15 @@ typedef struct
 NomValue NOM_NIL;
 
 ///
+/// \brief Checks if a Nominal value is an integer.
+///
+/// \param value
+///     The value in question.
+///
+/// \returns 1 if the value is an integer; 0 otherwise.
+int NomInteger_Check(NomValue value);
+
+///
 /// \brief Constructs a Nominal integer value from an int.
 ///
 /// \param value
@@ -41,6 +50,15 @@ NomValue NOM_NIL;
 ///
 /// \returns The Nominal integer value.
 NomValue NomInteger_FromInt(int value);
+
+///
+/// \brief Checks if a Nominal value is a real.
+///
+/// \param value
+///     The value in question.
+///
+/// \returns 1 if the value is a real; 0 otherwise.
+int NomReal_Check(NomValue value);
 
 ///
 /// \brief Constructs a Nominal real value from a float.

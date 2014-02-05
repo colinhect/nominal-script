@@ -11,12 +11,22 @@
 
 NomValue NOM_NIL = { NOM_TYPE_NIL, 0 };
 
+int NomInteger_Check(NomValue value)
+{
+    return value.type == NOM_TYPE_INTEGER;
+}
+
 NomValue NomInteger_FromInt(int value)
 {
     NomValue v;
     v.type = NOM_TYPE_INTEGER;
     v.data.integerValue = value;
     return v;
+}
+
+int NomReal_Check(NomValue value)
+{
+    return value.type == NOM_TYPE_REAL;
 }
 
 NomValue NomReal_FromFloat(float value)

@@ -43,7 +43,7 @@ void SetInterpreterError(NomInterpreter* interpreter, const char* fmt, ...)
         SetInterpreterError(interpreter, "Cannot %s non-numeric values", name);\
         break;\
     }\
-    else if (l.type == NOM_TYPE_REAL || r.type == NOM_TYPE_REAL)\
+    else if (NomReal_Check(l) || NomReal_Check(r))\
     {\
         res = NomReal_FromFloat(NomValue_AsFloat(l) op NomValue_AsFloat(r));\
     }\
@@ -58,7 +58,7 @@ void SetInterpreterError(NomInterpreter* interpreter, const char* fmt, ...)
         SetInterpreterError(interpreter, "Cannot negate a non-numeric value");\
         break;\
     }\
-    else if (v.type == NOM_TYPE_REAL)\
+    else if (NomReal_Check(v))\
     {\
         res = NomReal_FromFloat(-NomValue_AsFloat(v));\
     }\

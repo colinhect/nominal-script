@@ -3,6 +3,8 @@
 
 #include "NomValue.h"
 
+///
+/// \brief A Nominal interpreter.
 typedef struct
 {
     NomValue st[1024];
@@ -13,7 +15,17 @@ typedef struct
     int errorFlag;
 } NomInterpreter;
 
+///
+/// \brief Creates a new Nominal interpreter.
+///
+/// \returns The new Nominal interpreter.
 NomInterpreter* NomInterpreter_Create();
+
+///
+/// \brief Frees a Nominal interpreter.
+///
+/// \param interpreter
+///     The interpreter to free.
 void NomInterpreter_Free(NomInterpreter* interpreter);
 
 int NomInterpreter_Execute(NomInterpreter* interpreter, const char* source);
