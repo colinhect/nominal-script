@@ -4,7 +4,8 @@
 #include <string.h>
 
 typedef struct _Node Node;
+typedef struct _StringPool StringPool;
 
-size_t GenerateCode(Node* node, unsigned char* byteCode, size_t index);
+size_t GenerateCode(Node* node, StringPool* stringPool, unsigned char* byteCode, size_t index);
 
 #endif

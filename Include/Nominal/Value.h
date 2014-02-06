@@ -1,5 +1,5 @@
-#ifndef NOMVALUE_H
-#define NOMVALUE_H
+#ifndef NOMINAL_VALUE_H
+#define NOMINAL_VALUE_H
 
 ///
 /// \brief Enumeration of each type a Nominal value can be.
@@ -10,6 +10,7 @@ typedef enum
     NOM_TYPE_REAL,
     NOM_TYPE_BOOLEAN,
     NOM_TYPE_STRING,
+    NOM_TYPE_STATIC_STRING,
     NOM_TYPE_MAP,
     NOM_TYPE_FUNCTION
 } NomType;

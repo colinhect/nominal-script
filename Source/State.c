@@ -1,5 +1,5 @@
-#include "NomState.h"
-#include "NomString.h"
+#include "Nominal/State.h"
+#include "Nominal/String.h"
 
 #include "State.h"
 #include "Parser.h"
@@ -19,11 +19,13 @@ NomState* NomState_Create()
     s->ip = 0;
     s->errorFlag = 0;
     s->heap = Heap_Create();
+    s->stringPool = StringPool_Create(128);
     return s;
 }
 
 void NomState_Free(NomState* s)
 {
+    StringPool_Free(s->stringPool);
     Heap_Free(s->heap);
     free(s);
 }
@@ -87,7 +89,7 @@ int NomState_Execute(NomState* s, const char* source)
     }
     else
     {
-        size_t end = GenerateCode(node, s->byteCode, s->ip);
+        size_t end = GenerateCode(node, s->stringPool, s->byteCode, s->ip);
         Node_Free(node);
 
         while (s->ip < end && !s->errorFlag)
@@ -167,7 +169,8 @@ void NomValue_AsString(NomState* s, char* dest, NomValue value)
         sprintf(dest, "%f", NomValue_AsDouble(value));
         break;
     case NOM_TYPE_STRING:
-        sprintf(dest, "%s", NomString_AsString(s, value));
+    case NOM_TYPE_STATIC_STRING:
+        sprintf(dest, "\"%s\"", NomString_AsString(s, value));
         break;
     case NOM_TYPE_NIL:
         sprintf(dest, "nil");

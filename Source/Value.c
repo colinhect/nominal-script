@@ -1,4 +1,4 @@
-#include "NomValue.h"
+#include "Nominal/Value.h"
 
 #include <float.h>
 #include <math.h>

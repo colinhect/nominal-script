@@ -1,6 +1,8 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <string.h>
+
 typedef enum
 {
     KW_TRUE,
@@ -41,6 +43,7 @@ unsigned Lexer_GetTokenId(Lexer* l);
 int Lexer_SkippedWhitespace(Lexer* l);
 
 void Lexer_CopyTokenValue(Lexer* l, char* dest);
+size_t Lexer_GetTokenLength(Lexer* l);
 
 long Lexer_GetTokenAsInt(Lexer* l);
 double Lexer_GetTokenAsFloat(Lexer* l);

@@ -20,42 +20,55 @@ typedef struct _HashTable
 
 HashTable* HashTable_Create(HashFunction hash, CompareFunction compare, size_t bucketCount)
 {
-    HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
-    hashTable->hash = hash;
-    hashTable->compare = compare;
-    hashTable->nodes = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
-    hashTable->bucketCount = bucketCount;
-    memset(hashTable->nodes, 0, sizeof(BucketNode*) * bucketCount);
-    return hashTable;
+    HashTable* h = (HashTable*)malloc(sizeof(HashTable));
+    h->hash = hash;
+    h->compare = compare;
+    h->nodes = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
+    memset(h->nodes, 0, sizeof(BucketNode*) * bucketCount);
+    h->bucketCount = bucketCount;
+    return h;
 }
 
-void HashTable_Free(HashTable* hashTable)
+void HashTable_Free(HashTable* h, void (*freeKey)(void*), void (*freeValue)(void*))
 {
     size_t i;
-    for (i = 0; i < hashTable->bucketCount; ++i)
+    for (i = 0; i < h->bucketCount; ++i)
     {
-        BucketNode* n = hashTable->nodes[i];
+        BucketNode* n = h->nodes[i];
         while (n)
         {
             BucketNode* t = n;
             n = n->next;
+
+            // Free the key if needed
+            if (freeKey && t->key)
+            {
+                freeKey(t->key);
+            }
+
+            // Free the value if needed
+            if (freeValue && t->value)
+            {
+                freeValue(t->value);
+            }
+
             free(t);
         }
     }
 }
 
-void HashTable_Insert(HashTable* hashTable, void* key, void* value)
+void HashTable_Insert(HashTable* h, void* key, void* value)
 {
     BucketNode* prev = NULL;
     BucketNode* curr = NULL;
-    unsigned long h = hashTable->hash(key);
-    h = h % hashTable->bucketCount;
+    unsigned long hash = h->hash(key);
+    hash = hash % h->bucketCount;
 
-    curr = hashTable->nodes[h];
+    curr = h->nodes[hash];
 
     while (curr)
     {
-        if (hashTable->compare(curr->key, key) == 0)
+        if (h->compare(curr->key, key) == 0)
         {
             curr->value = value;
             return;
@@ -76,19 +89,19 @@ void HashTable_Insert(HashTable* hashTable, void* key, void* value)
     }
     else
     {
-        hashTable->nodes[h] = curr;
+        h->nodes[hash] = curr;
     }
 }
 
-int HashTable_Find(HashTable* hashTable, void* key, void** value)
+int HashTable_Find(HashTable* h, void* key, void** value)
 {
     BucketNode* n = NULL;
-    unsigned long h = hashTable->hash(key);
-    h = h % hashTable->bucketCount;
-    n = hashTable->nodes[h];
+    unsigned long hash = h->hash(key);
+    hash = hash % h->bucketCount;
+    n = h->nodes[hash];
     while (n)
     {
-        if (hashTable->compare(n->key, key) == 0)
+        if (h->compare(n->key, key) == 0)
         {
             *value = n->value;
             return 1;
@@ -99,18 +112,18 @@ int HashTable_Find(HashTable* hashTable, void* key, void** value)
     return 0;
 }
 
-int HashTable_InsertOrFind(HashTable* hashTable, void* key, void* value, void** existingValue)
+int HashTable_InsertOrFind(HashTable* h, void* key, void* value, void** existingValue)
 {
     BucketNode* prev = NULL;
     BucketNode* curr = NULL;
-    unsigned long h = hashTable->hash(key);
-    h = h % hashTable->bucketCount;
+    unsigned long hash = h->hash(key);
+    hash = hash % h->bucketCount;
 
-    curr = hashTable->nodes[h];
+    curr = h->nodes[hash];
 
     while (curr)
     {
-        if (hashTable->compare(curr->key, key) == 0)
+        if (h->compare(curr->key, key) == 0)
         {
             *existingValue = curr->value;
             return 1;
@@ -131,7 +144,7 @@ int HashTable_InsertOrFind(HashTable* hashTable, void* key, void* value, void** 
     }
     else
     {
-        hashTable->nodes[h] = curr;
+        h->nodes[hash] = curr;
     }
 
     return 0;

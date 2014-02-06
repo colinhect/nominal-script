@@ -2,6 +2,7 @@
 #define STATE_H
 
 #include "Heap.h"
+#include "StringPool.h"
 
 typedef struct _NomState
 {
@@ -12,6 +13,7 @@ typedef struct _NomState
     char error[1024];
     int errorFlag;
     Heap* heap;
+    StringPool* stringPool;
 } NomState;
 
 void NomState_SetError(NomState* s, const char* fmt, ...);

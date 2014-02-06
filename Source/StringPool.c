@@ -14,41 +14,41 @@ typedef struct _StringPool
 
 StringPool* StringPool_Create(size_t stringCount)
 {
-    StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
-    stringPool->hashTable = HashTable_Create(HashString, CompareString, stringCount);
-    stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
-    stringPool->stringCount = stringCount;
-    stringPool->nextStringId = 0;
-    memset(stringPool->strings, 0, sizeof(char*) * stringCount);
-    return stringPool;
+    StringPool* s = (StringPool*)malloc(sizeof(StringPool));
+    s->hashTable = HashTable_Create(HashString, CompareString, stringCount);
+    s->strings = (char**)malloc(sizeof(char*) * stringCount);
+    memset(s->strings, 0, sizeof(char*) * stringCount);
+    s->stringCount = stringCount;
+    s->nextStringId = 0;
+    return s;
 }
 
-void StringPool_Free(StringPool* stringPool)
+void StringPool_Free(StringPool* s)
 {
     StringId i;
-    for (i = 0; i < stringPool->stringCount; ++i)
+    for (i = 0; i < s->stringCount; ++i)
     {
-        if (stringPool->strings[i])
+        if (s->strings[i])
         {
-            free(stringPool->strings[i]);
+            free(s->strings[i]);
         }
     }
 
-    HashTable_Free(stringPool->hashTable);
-    free(stringPool);
+    HashTable_Free(s->hashTable, NULL, NULL);
+    free(s);
 }
 
-StringId StringPool_AddOrGet(StringPool* stringPool, const char* string)
+StringId StringPool_InsertOrFind(StringPool* s, const char* string)
 {
     StringId id;
     char* newString = (char*)malloc(sizeof(char) * (strlen(string) + 1));
     strcpy(newString, string);
 
-    if (!HashTable_InsertOrFind(stringPool->hashTable, (void*)string, (void*)stringPool->nextStringId, (void**)&id))
+    if (!HashTable_InsertOrFind(s->hashTable, (void*)string, (void*)s->nextStringId, (void**)&id))
     {
-        id = stringPool->nextStringId;
-        stringPool->strings[id] = newString;
-        ++stringPool->nextStringId;
+        id = s->nextStringId;
+        s->strings[id] = newString;
+        ++s->nextStringId;
     }
     else
     {
@@ -57,7 +57,7 @@ StringId StringPool_AddOrGet(StringPool* stringPool, const char* string)
     return id;
 }
 
-const char* StringPool_Get(StringPool* stringPool, StringId id)
+const char* StringPool_Find(StringPool* s, StringId id)
 {
-    return stringPool->strings[id];
+    return s->strings[id];
 }

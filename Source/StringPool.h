@@ -8,9 +8,9 @@ typedef size_t StringId;
 typedef struct _StringPool StringPool;
 
 StringPool* StringPool_Create(size_t stringCount);
-void StringPool_Free(StringPool* stringPool);
+void StringPool_Free(StringPool* s);
 
-StringId StringPool_AddOrGet(StringPool* stringPool, const char* string);
-const char* StringPool_Get(StringPool* stringPool, StringId id);
+StringId StringPool_InsertOrFind(StringPool* s, const char* string);
+const char* StringPool_Find(StringPool* s, StringId id);
 
 #endif

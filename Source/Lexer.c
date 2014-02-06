@@ -349,6 +349,11 @@ void Lexer_CopyTokenValue(Lexer* l, char* dest)
     dest[l->state.length] = '\0';
 }
 
+size_t Lexer_GetTokenLength(Lexer* l)
+{
+    return l->state.length;
+}
+
 long Lexer_GetTokenAsInt(Lexer* l)
 {
     char buffer[32];

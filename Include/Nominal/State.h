@@ -1,7 +1,7 @@
-#ifndef NOMINTERPRETER_H
-#define NOMINTERPRETER_H
+#ifndef NOMINAL_STATE_H
+#define NOMINAL_STATE_H
 
-#include "NomValue.h"
+#include "Nominal/Value.h"
 
 ///
 /// \brief A Nominal state.

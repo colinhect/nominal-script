@@ -110,6 +110,14 @@ Node* Parser_SecondaryExpr(Parser* p)
         n = Node_Create(NODE_REAL, NULL, NULL, data);
         Lexer_Next(p->l);
         break;
+    case TOK_STRING:
+        {
+            size_t length = Lexer_GetTokenLength(p->l);
+            data.stringValue = (char*)malloc(sizeof(char*) * (length + 1));
+            Lexer_CopyTokenValue(p->l, data.stringValue);
+            n = Node_Create(NODE_STRING, NULL, NULL, data);
+            Lexer_Next(p->l);
+        } break;
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {

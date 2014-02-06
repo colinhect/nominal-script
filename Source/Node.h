@@ -8,6 +8,7 @@ typedef enum
     NODE_NIL,
     NODE_INTEGER,
     NODE_REAL,
+    NODE_STRING,
     NODE_BINARY_OP,
     NODE_UNARY_OP,
 } NodeType;
@@ -16,6 +17,7 @@ typedef union
 {
     uint64_t integerValue;
     double realValue;
+    char* stringValue;
 } NodeData;
 
 typedef struct _Node
@@ -27,6 +29,6 @@ typedef struct _Node
 } Node;
 
 Node* Node_Create(NodeType type, Node* first, Node* second, NodeData data);
-void Node_Free(Node* node);
+void Node_Free(Node* n);
 
 #endif

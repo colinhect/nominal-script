@@ -7,6 +7,9 @@
     <Filter Include="Include">
       <UniqueIdentifier>{91ae4792-920f-46b8-b0bd-5d2b5d1d3b59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Include\Nominal">
+      <UniqueIdentifier>{f4d2595e-5ebd-4101-bf3a-5eb7eec26f10}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\HashTable.h">
@@ -33,19 +36,22 @@
     <ClInclude Include="Include\Nominal.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Include\NomValue.h">
-      <Filter>Include</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\NomState.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Heap.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Include\NomString.h">
-      <Filter>Include</Filter>
-    </ClInclude>
     <ClInclude Include="Source\State.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Nominal\State.h">
+      <Filter>Include\Nominal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Nominal\String.h">
+      <Filter>Include\Nominal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Nominal\Value.h">
+      <Filter>Include\Nominal</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\String.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,4 @@
-#include "NomString.h"
-
+#include "String.h"
 #include "State.h"
 #include "Heap.h"
 
@@ -8,7 +7,7 @@
 
 NomValue NomString_FromString(NomState* s, const char* string)
 {
-    NomValue value = NOM_NIL;
+    NomValue value = { 0 };
     value.type = NOM_TYPE_STRING;
     value.data.handle = Heap_Alloc(s->heap, strlen(string) + 1, free);
     strcpy((char*)Heap_GetData(s->heap, value.data.handle), string);
@@ -17,11 +16,24 @@ NomValue NomString_FromString(NomState* s, const char* string)
 
 const char* NomString_AsString(NomState* s, NomValue value)
 {
-    if (value.type != NOM_TYPE_STRING)
+    switch (value.type)
     {
+    case NOM_TYPE_STRING:
+        return (const char*)Heap_GetData(s->heap, value.data.handle);
+        break;
+    case NOM_TYPE_STATIC_STRING:
+        return StringPool_Find(s->stringPool, value.data.handle);
+        break;
+    default:
         NomState_SetError(s, "Value is not a string");
-        return NULL;
     }
+    return NULL;
+}
 
-    return (const char*)Heap_GetData(s->heap, value.data.handle);
+NomValue NomString_FromId(StringId id)
+{
+    NomValue value = { 0 };
+    value.type = NOM_TYPE_STATIC_STRING;
+    value.data.handle = id;
+    return value;
 }

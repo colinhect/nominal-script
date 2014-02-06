@@ -1,8 +1,8 @@
-#ifndef NOMSTRING_H
-#define NOMSTRING_H
+#ifndef NOMINAL_STRING_H
+#define NOMINAL_STRING_H
 
-#include "NomState.h"
-#include "NomValue.h"
+#include "Nominal/State.h"
+#include "Nominal/Value.h"
 
 NomValue NomString_FromString(NomState* s, const char* string);
 const char* NomString_AsString(NomState* s, NomValue value);

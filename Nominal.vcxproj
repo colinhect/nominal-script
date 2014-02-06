@@ -139,9 +139,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\Nominal.h" />
-    <ClInclude Include="Include\NomState.h" />
-    <ClInclude Include="Include\NomString.h" />
-    <ClInclude Include="Include\NomValue.h" />
+    <ClInclude Include="Include\Nominal\State.h" />
+    <ClInclude Include="Include\Nominal\String.h" />
+    <ClInclude Include="Include\Nominal\Value.h" />
     <ClInclude Include="Source\ByteCode.h" />
     <ClInclude Include="Source\CodeGen.h" />
     <ClInclude Include="Source\HashTable.h" />
@@ -150,6 +150,7 @@
     <ClInclude Include="Source\Node.h" />
     <ClInclude Include="Source\Parser.h" />
     <ClInclude Include="Source\State.h" />
+    <ClInclude Include="Source\String.h" />
     <ClInclude Include="Source\StringPool.h" />
   </ItemGroup>
   <ItemGroup>

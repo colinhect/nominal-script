@@ -4,26 +4,30 @@
 
 Node* Node_Create(NodeType type, Node* first, Node* second, NodeData data)
 {
-    Node* node;
-    node = (Node*)malloc(sizeof(Node));
-    node->type = type;
-    node->first = first;
-    node->second = second;
-    node->data = data;
-    return node;
+    Node* n = (Node*)malloc(sizeof(Node));
+    n->type = type;
+    n->first = first;
+    n->second = second;
+    n->data = data;
+    return n;
 }
 
-void Node_Free(Node* node)
+void Node_Free(Node* n)
 {
-    if (node->first)
+    if (n->first)
     {
-        Node_Free(node->first);
+        Node_Free(n->first);
     }
 
-    if (node->second)
+    if (n->second)
     {
-        Node_Free(node->second);
+        Node_Free(n->second);
     }
 
-    free(node);
+    if (n->type == NODE_STRING)
+    {
+        free(n->data.stringValue);
+    }
+
+    free(n);
 }

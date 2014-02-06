@@ -1,8 +1,8 @@
 #ifndef NOMINAL_H
 #define NOMINAL_H
 
-#include "NomState.h"
-#include "NomValue.h"
-#include "NomString.h"
+#include "Nominal/State.h"
+#include "Nominal/Value.h"
+#include "Nominal/String.h"
 
 #endif
