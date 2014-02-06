@@ -1,3 +1,26 @@
+///////////////////////////////////////////////////////////////////////////////
+// This source file is part of Nominal.
+//
+// Copyright (c) 2014 Colin Hill
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+///////////////////////////////////////////////////////////////////////////////
 #include "Parser.h"
 
 #include <stdlib.h>
@@ -9,13 +32,15 @@
 typedef struct _Parser
 {
     Lexer* l;
+    StringPool* s;
     char error[256];
 } Parser;
 
-Parser* Parser_Create(const char* source)
+Parser* Parser_Create(const char* source, StringPool* stringPool)
 {
     Parser* p = (Parser*)malloc(sizeof(Parser));
     p->l = Lexer_Create(source);
+    p->s = stringPool;
     Lexer_Next(p->l);
     return p;
 }
@@ -49,11 +74,10 @@ Node* Parser_PrimaryExpr(Parser* p)
     // Unary operator
     if (Lexer_IsTokenType(p->l, TOK_OPERATOR))
     {
-        NodeData    data = { 0 };
-        op_code     op;
-        Node*       n;
+        OpCode  op;
+        Node*   n;
         
-        op = (op_code)Lexer_GetTokenId(p->l);
+        op = (OpCode)Lexer_GetTokenId(p->l);
         if (op == OP_SUB)
         {
             op = OP_NEG;
@@ -65,7 +89,6 @@ Node* Parser_PrimaryExpr(Parser* p)
             return NULL;
         }
 
-        data.integerValue = op;
         Lexer_Next(p->l);
 
         n = Parser_PrimaryExpr(p);
@@ -74,7 +97,7 @@ Node* Parser_PrimaryExpr(Parser* p)
             return NULL;
         }
 
-        return Node_Create(NODE_UNARY_OP, n, NULL, data);
+        return Node_WithInteger(NODE_UNARY_OP, op, n, NULL);
     }
     else
     {
@@ -85,7 +108,6 @@ Node* Parser_PrimaryExpr(Parser* p)
 Node* Parser_SecondaryExpr(Parser* p)
 {
     Node*       n;
-    NodeData    data = { 0 };
     TokenType   type;
     unsigned    id;
 
@@ -101,34 +123,43 @@ Node* Parser_SecondaryExpr(Parser* p)
             break;
         }
     case TOK_INTEGER:
-        data.integerValue = Lexer_GetTokenAsInt(p->l);
-        n = Node_Create(NODE_INTEGER, NULL, NULL, data);
+        n = Node_WithInteger(NODE_INTEGER, Lexer_GetTokenAsInt(p->l), NULL, NULL);
         Lexer_Next(p->l);
         break;
-    case TOK_FLOAT:
-        data.realValue = Lexer_GetTokenAsFloat(p->l);
-        n = Node_Create(NODE_REAL, NULL, NULL, data);
+    case TOK_REAL:
+        n = Node_WithReal(NODE_REAL, Lexer_GetTokenAsFloat(p->l), NULL, NULL);
         Lexer_Next(p->l);
         break;
     case TOK_STRING:
         {
             size_t length = Lexer_GetTokenLength(p->l);
-            data.stringValue = (char*)malloc(sizeof(char*) * (length + 1));
-            Lexer_CopyTokenValue(p->l, data.stringValue);
-            n = Node_Create(NODE_STRING, NULL, NULL, data);
+            const char* string = Lexer_GetTokenString(p->l);
+            StringId id = StringPool_InsertOrFindSubString(p->s, string, length);
+            n = Node_WithHandle(NODE_STRING, (unsigned)id, NULL, NULL);
+            Lexer_Next(p->l);
+        } break;
+    case TOK_IDENT:
+        {
+            size_t length = Lexer_GetTokenLength(p->l);
+            const char* string = Lexer_GetTokenString(p->l);
+            StringId id = StringPool_InsertOrFindSubString(p->s, string, length);
+            n = Node_WithHandle(NODE_IDENT, (unsigned)id, NULL, NULL);
             Lexer_Next(p->l);
         } break;
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
-            n = Node_Create(NODE_NIL, NULL, NULL, data);
+            n = Node_WithoutData(NODE_NIL, NULL, NULL);
             Lexer_Next(p->l);
             break;
         }
     default:
         {
             char buffer[64];
-            Lexer_CopyTokenValue(p->l, buffer);
+            size_t length = Lexer_GetTokenLength(p->l);
+            const char* string = Lexer_GetTokenString(p->l);
+            memcpy(buffer, string, length);
+            buffer[length] = '\0';
             Parser_SetError(p, "Unexpected token '%s'", buffer);
             return NULL;
         }
@@ -176,21 +207,19 @@ Node* Parser_BinExpr(Parser* p, int prec, Node* left)
 
     for (;;)
     {
-        op_code op;
-        Node* right;
-        NodeData data;
-        int op_prec;
-        int next_op_prec;
+        OpCode  op;
+        Node*   right;
+        int     opPrec;
+        int     nextOpPrec;
+        OpCode  nodeOp = (OpCode)Lexer_GetTokenId(p->l);
 
-        data.integerValue = Lexer_GetTokenId(p->l);
-
-        op_prec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
-        if (op_prec < prec)
+        opPrec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
+        if (opPrec < prec)
         {
             return left;
         }
 
-        op = (op_code)Lexer_GetTokenId(p->l);
+        op = (OpCode)Lexer_GetTokenId(p->l);
         Lexer_Next(p->l);
         right = Parser_PrimaryExpr(p);
         if (!right)
@@ -199,10 +228,10 @@ Node* Parser_BinExpr(Parser* p, int prec, Node* left)
             return NULL;
         }
 
-        next_op_prec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
-        if (op_prec < next_op_prec)
+        nextOpPrec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
+        if (opPrec < nextOpPrec)
         {
-            right = Parser_BinExpr(p, op_prec + 1, right);
+            right = Parser_BinExpr(p, opPrec + 1, right);
             if (!right)
             {
                 Node_Free(left);
@@ -210,6 +239,6 @@ Node* Parser_BinExpr(Parser* p, int prec, Node* left)
             }
         }
 
-        left = Node_Create(NODE_BINARY_OP, left, right, data);
+        left = Node_WithInteger(NODE_BINARY_OP, nodeOp, left, right);
     }
 }

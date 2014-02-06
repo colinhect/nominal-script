@@ -1,5 +1,27 @@
-#include "Nominal/State.h"
-#include "Nominal/String.h"
+///////////////////////////////////////////////////////////////////////////////
+// This source file is part of Nominal.
+//
+// Copyright (c) 2014 Colin Hill
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+///////////////////////////////////////////////////////////////////////////////
+#include "Nominal.h"
 
 #include "State.h"
 #include "Parser.h"
@@ -11,42 +33,54 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-NomState* NomState_Create()
+NomState* NomState_Create(
+    )
 {
-    NomState* s;
-    s = (NomState*)malloc(sizeof(NomState));
-    s->sp = 0;
-    s->ip = 0;
-    s->errorFlag = 0;
-    s->heap = Heap_Create();
-    s->stringPool = StringPool_Create(128);
-    return s;
+    NomState* state;
+    
+    state = (NomState*)malloc(sizeof(NomState));
+    state->sp = 0;
+    state->ip = 0;
+    state->heap = Heap_Create();
+    state->stringPool = StringPool_Create(128);
+    state->scope = Scope_Create();
+    state->errorFlag = 0;
+
+    return state;
 }
 
-void NomState_Free(NomState* s)
+void NomState_Free(
+    NomState*   state
+    )
 {
-    StringPool_Free(s->stringPool);
-    Heap_Free(s->heap);
-    free(s);
+    Scope_Free(state->scope);
+    StringPool_Free(state->stringPool);
+    Heap_Free(state->heap);
+    free(state);
 }
 
-void NomState_SetError(NomState* s, const char* fmt, ...)
+void NomState_SetError(
+    NomState*   state,
+    const char* fmt,
+    ...
+    )
 {
     va_list args;
     va_start(args, fmt);
-    vsprintf(s->error, fmt, args);
+    vsprintf(state->error, fmt, args);
     va_end(args);
-    s->errorFlag = 1;
+    state->errorFlag = 1;
 }
 
-#define POP()       s->stack[--s->sp]
-#define PUSH(v)     s->stack[s->sp++] = v
-#define READAS(t)   res = *(t*)&s->byteCode[s->ip]; s->ip += sizeof(t)
+#define TOP()           state->stack[state->sp - 1]
+#define POP()           state->stack[--state->sp]
+#define PUSH(v)         state->stack[state->sp++] = v
+#define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
 #define ARITH(l, r, op, name)\
     if (!NomValue_IsNumber(l) || !NomValue_IsNumber(r))\
     {\
-        NomState_SetError(s, "Cannot %s non-numeric values", name);\
+        NomState_SetError(state, "Cannot %s non-numeric values", name);\
         break;\
     }\
     else if (NomReal_Check(l) || NomReal_Check(r))\
@@ -61,7 +95,7 @@ void NomState_SetError(NomState* s, const char* fmt, ...)
 #define NEG(v)\
     if (!NomValue_IsNumber(v))\
     {\
-        NomState_SetError(s, "Cannot negate a non-numeric value");\
+        NomState_SetError(state, "Cannot negate a non-numeric value");\
         break;\
     }\
     else if (NomReal_Check(v))\
@@ -73,77 +107,100 @@ void NomState_SetError(NomState* s, const char* fmt, ...)
         res = NomInteger_FromInt(-NomValue_AsInt(v));\
     }
 
-int NomState_Execute(NomState* s, const char* source)
+void NomState_Execute(
+    NomState*   state,
+    const char* source
+    )
 {
     Parser* p;
     Node*   node;
+    size_t  end;
 
-    s->errorFlag = 0;
+    state->errorFlag = 0;
 
-    p = Parser_Create(source);
+    p = Parser_Create(source, state->stringPool);
     node = Parser_Expr(p);
 
     if (!node)
     {
-        NomState_SetError(s, Parser_GetError(p));
+        NomState_SetError(state, Parser_GetError(p));
+        return;
     }
-    else
+
+    end = GenerateCode(node, state->byteCode, state->ip);
+    Node_Free(node);
+
+    while (state->ip < end && !state->errorFlag)
     {
-        size_t end = GenerateCode(node, s->stringPool, s->byteCode, s->ip);
-        Node_Free(node);
+        StringId id;
+        NomValue l;
+        NomValue r;
+        NomValue res;
 
-        while (s->ip < end && !s->errorFlag)
+        OpCode op = (OpCode)state->byteCode[state->ip++];
+        switch (op)
         {
-            NomValue l;
-            NomValue r;
-            NomValue res;
-
-            op_code op = (op_code)s->byteCode[s->ip++];
-            switch (op)
+        case OP_PUSH:
+            res = READAS(NomValue);
+            PUSH(res);
+            break;
+        case OP_GET:
+            id = READAS(StringId);
+            res = Scope_Get(state->scope, id);
+            PUSH(res);
+            break;
+        case OP_SET:
+            id = READAS(StringId);
+            if (!Scope_Set(state->scope, id, TOP()))
             {
-            case OP_PUSH:
-                READAS(NomValue);
-                PUSH(res);                
-                break;
-            case OP_ADD:
-                l = POP();
-                r = POP();
-                ARITH(l, r, +, "add");
-                PUSH(res);
-                break;
-            case OP_SUB:
-                l = POP();
-                r = POP();
-                ARITH(l, r, -, "subtract");
-                PUSH(res);
-                break;
-            case OP_MUL:
-                l = POP();
-                r = POP();
-                ARITH(l, r, *, "multiply");
-                PUSH(res);
-                break;
-            case OP_DIV:
-                l = POP();
-                r = POP();
-                ARITH(l, r, /, "divide");
-                PUSH(res);
-                break;
-            case OP_NEG:
-                l = POP();
-                NEG(l);
-                PUSH(res);
-                break;
+                NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
+            break;
+        case OP_LET:
+            id = READAS(StringId);
+            if (!Scope_Let(state->scope, id, TOP()))
+            {
+                NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
+            }
+            break;
+        case OP_ADD:
+            l = POP();
+            r = POP();
+            ARITH(l, r, +, "add");
+            PUSH(res);
+            break;
+        case OP_SUB:
+            l = POP();
+            r = POP();
+            ARITH(l, r, -, "subtract");
+            PUSH(res);
+            break;
+        case OP_MUL:
+            l = POP();
+            r = POP();
+            ARITH(l, r, *, "multiply");
+            PUSH(res);
+            break;
+        case OP_DIV:
+            l = POP();
+            r = POP();
+            ARITH(l, r, /, "divide");
+            PUSH(res);
+            break;
+        case OP_NEG:
+            l = POP();
+            NEG(l);
+            PUSH(res);
+            break;
         }
     }
-
-    return !s->errorFlag;
 }
 
-NomValue NomState_Pop(NomState* s)
+NomValue NomState_Pop(
+    NomState*   state
+    )
 {
-    if (s->sp == 0)
+    if (state->sp == 0)
     {
         return NOM_NIL;
     }
@@ -153,30 +210,16 @@ NomValue NomState_Pop(NomState* s)
     }
 }
 
-const char* NomState_Error(NomState* s)
+int NomState_ErrorOccurred(
+    NomState*   state
+    )
 {
-    return s->error;
+    return state->errorFlag;
 }
 
-void NomValue_AsString(NomState* s, char* dest, NomValue value)
+const char* NomState_GetError(
+    NomState*   state
+    )
 {
-    switch (value.type)
-    {
-    case NOM_TYPE_INTEGER:
-        sprintf(dest, "%d", NomValue_AsInt(value));
-        break;
-    case NOM_TYPE_REAL:
-        sprintf(dest, "%f", NomValue_AsDouble(value));
-        break;
-    case NOM_TYPE_STRING:
-    case NOM_TYPE_STATIC_STRING:
-        sprintf(dest, "\"%s\"", NomString_AsString(s, value));
-        break;
-    case NOM_TYPE_NIL:
-        sprintf(dest, "nil");
-        break;
-    default:
-        sprintf(dest, "<unknown>");
-        break;
-    }
+    return state->error;
 }

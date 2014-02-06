@@ -54,6 +54,15 @@
     <ClInclude Include="Source\String.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Nominal\Integer.h">
+      <Filter>Include\Nominal</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Nominal\Real.h">
+      <Filter>Include\Nominal</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scope.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HashTable.c">
@@ -90,6 +99,15 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\State.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Real.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Integer.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scope.c">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

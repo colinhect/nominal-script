@@ -21,20 +21,42 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#ifndef NOMINAL_REAL_H
+#define NOMINAL_REAL_H
 
-#include "Nominal/State.h"
 #include "Nominal/Value.h"
 
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string
+///
+/// \brief Checks if a Nominal value is a real.
+///
+/// \param value
+///     The value in question.
+///
+/// \returns 1 if the value is a real; 0 otherwise.
+int NomReal_Check(
+    NomValue value
     );
 
-const char* NomString_AsString(
-    NomState*   state,
-    NomValue    value
+///
+/// \brief Constructs a Nominal real value from a float.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal real value.
+NomValue NomReal_FromFloat(
+    float value
+    );
+
+///
+/// \brief Constructs a Nominal real value from a double.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal real value.
+NomValue NomReal_FromDouble(
+    double value
     );
 
 #endif

@@ -21,20 +21,25 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#include "Nominal/Real.h"
 
-#include "Nominal/State.h"
-#include "Nominal/Value.h"
+int NomReal_Check(NomValue value)
+{
+    return value.fields.type == NOM_TYPE_REAL;
+}
 
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string
-    );
+NomValue NomReal_FromFloat(float value)
+{
+    NomValue v;
+    v.fields.type = NOM_TYPE_REAL;
+    v.fields.data.realValue = value;
+    return v;
+}
 
-const char* NomString_AsString(
-    NomState*   state,
-    NomValue    value
-    );
-
-#endif
+NomValue NomReal_FromDouble(double value)
+{
+    NomValue v;
+    v.fields.type = NOM_TYPE_REAL;
+    v.fields.data.realValue = (float)value;
+    return v;
+}

@@ -1,3 +1,26 @@
+///////////////////////////////////////////////////////////////////////////////
+// This source file is part of Nominal.
+//
+// Copyright (c) 2014 Colin Hill
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+///////////////////////////////////////////////////////////////////////////////
 #include "String.h"
 #include "State.h"
 #include "Heap.h"
@@ -8,21 +31,21 @@
 NomValue NomString_FromString(NomState* s, const char* string)
 {
     NomValue value = { 0 };
-    value.type = NOM_TYPE_STRING;
-    value.data.handle = Heap_Alloc(s->heap, strlen(string) + 1, free);
-    strcpy((char*)Heap_GetData(s->heap, value.data.handle), string);
+    value.fields.type = NOM_TYPE_STRING;
+    value.fields.data.handle = Heap_Alloc(s->heap, strlen(string) + 1, free);
+    strcpy((char*)Heap_GetData(s->heap, value.fields.data.handle), string);
     return value;
 }
 
 const char* NomString_AsString(NomState* s, NomValue value)
 {
-    switch (value.type)
+    switch (value.fields.type)
     {
     case NOM_TYPE_STRING:
-        return (const char*)Heap_GetData(s->heap, value.data.handle);
+        return (const char*)Heap_GetData(s->heap, value.fields.data.handle);
         break;
     case NOM_TYPE_STATIC_STRING:
-        return StringPool_Find(s->stringPool, value.data.handle);
+        return StringPool_Find(s->stringPool, value.fields.data.handle);
         break;
     default:
         NomState_SetError(s, "Value is not a string");
@@ -33,7 +56,7 @@ const char* NomString_AsString(NomState* s, NomValue value)
 NomValue NomString_FromId(StringId id)
 {
     NomValue value = { 0 };
-    value.type = NOM_TYPE_STATIC_STRING;
-    value.data.handle = id;
+    value.fields.type = NOM_TYPE_STATIC_STRING;
+    value.fields.data.handle = (unsigned)id;
     return value;
 }

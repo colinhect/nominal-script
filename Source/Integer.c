@@ -21,20 +21,31 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#include "Nominal/Integer.h"
 
-#include "Nominal/State.h"
-#include "Nominal/Value.h"
-
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string
-    );
-
-const char* NomString_AsString(
-    NomState*   state,
+int NomInteger_Check(
     NomValue    value
-    );
+    )
+{
+    return value.fields.type == NOM_TYPE_INTEGER;
+}
 
-#endif
+NomValue NomInteger_FromInt(
+    int value
+    )
+{
+    NomValue newValue = { 0 };
+    newValue.fields.type = NOM_TYPE_INTEGER;
+    newValue.fields.data.integerValue = value;
+    return newValue;
+}
+
+NomValue NomInteger_FromUnsignedLongLong(
+    unsigned long long  value
+    )
+{
+    NomValue newValue = { 0 };
+    newValue.fields.type = NOM_TYPE_INTEGER;
+    newValue.fields.data.integerValue = (int)value;
+    return newValue;
+}

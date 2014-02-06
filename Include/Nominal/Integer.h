@@ -21,20 +21,42 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#ifndef NOMINAL_INTEGER_H
+#define NOMINAL_INTEGER_H
 
-#include "Nominal/State.h"
 #include "Nominal/Value.h"
 
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string
+///
+/// \brief Checks if a Nominal value is an integer.
+///
+/// \param value
+///     The value in question.
+///
+/// \returns 1 if the value is an integer; 0 otherwise.
+int NomInteger_Check(
+    NomValue value
     );
 
-const char* NomString_AsString(
-    NomState*   state,
-    NomValue    value
+///
+/// \brief Constructs a Nominal integer value from an int.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal integer value.
+NomValue NomInteger_FromInt(
+    int value
+    );
+
+///
+/// \brief Constructs a Nominal integer value from an unsigned long long.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal integer value.
+NomValue NomInteger_FromUnsignedLongLong(
+    unsigned long long value
     );
 
 #endif

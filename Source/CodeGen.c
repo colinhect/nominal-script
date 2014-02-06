@@ -1,4 +1,27 @@
-#include "Nominal/Value.h"
+///////////////////////////////////////////////////////////////////////////////
+// This source file is part of Nominal.
+//
+// Copyright (c) 2014 Colin Hill
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+// IN THE SOFTWARE.
+///////////////////////////////////////////////////////////////////////////////
+#include "Nominal.h"
 
 #include "CodeGen.h"
 #include "ByteCode.h"
@@ -7,9 +30,14 @@
 #include "StringPool.h"
 
 #define OPCODE(op)  byteCode[index++] = (unsigned char)op
+#define STRING(s)   *(StringId*)&byteCode[index] = s; index += sizeof(StringId)
 #define VALUE(v)    *(NomValue*)&byteCode[index] = v; index += sizeof(NomValue)
 
-size_t GenerateCode(Node* node, StringPool* stringPool, unsigned char* byteCode, size_t index)
+size_t GenerateCode(
+    Node*           node,
+    unsigned char*  byteCode,
+    size_t          index
+    )
 {
     switch (node->type)
     {
@@ -27,18 +55,37 @@ size_t GenerateCode(Node* node, StringPool* stringPool, unsigned char* byteCode,
         break;
     case NODE_STRING:
         {
-            StringId id = StringPool_InsertOrFind(stringPool, node->data.stringValue); 
             OPCODE(OP_PUSH);
-            VALUE(NomString_FromId(id));
+            VALUE(NomString_FromId(node->data.handle));
         } break;
+    case NODE_IDENT:
+        OPCODE(OP_GET);
+        STRING(node->data.handle);
+        break;
     case NODE_UNARY_OP:
-        index = GenerateCode(node->first, stringPool, byteCode, index);
+        index = GenerateCode(node->first, byteCode, index);
         OPCODE(node->data.integerValue);
         break;
     case NODE_BINARY_OP:
-        index = GenerateCode(node->second, stringPool, byteCode, index);
-        index = GenerateCode(node->first, stringPool, byteCode, index);
-        OPCODE(node->data.integerValue);
+        {
+            OpCode op = (OpCode)node->data.integerValue;
+
+            if (op == OP_LET || op == OP_SET)
+            {
+                // Push RHS on stack
+                index = GenerateCode(node->second, byteCode, index);
+
+                // Perform set
+                OPCODE(op);
+                STRING(node->first->data.handle);
+            }
+            else
+            {
+                index = GenerateCode(node->second, byteCode, index);
+                index = GenerateCode(node->first, byteCode, index);
+                OPCODE(op);
+            }
+        }
         break;
     }
     return index;

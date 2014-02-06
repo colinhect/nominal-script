@@ -21,20 +21,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#ifndef SCOPE_H
+#define SCOPE_H
 
-#include "Nominal/State.h"
 #include "Nominal/Value.h"
+#include "StringPool.h"
 
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string
-    );
+typedef struct _Scope Scope;
 
-const char* NomString_AsString(
-    NomState*   state,
-    NomValue    value
-    );
+Scope* Scope_Create();
+void Scope_Free(Scope* s);
+
+int Scope_Let(Scope* s, StringId id, NomValue value);
+int Scope_Set(Scope* s, StringId id, NomValue value);
+NomValue Scope_Get(Scope* s, StringId id);
+
+void Scope_Begin(Scope* s, StringId id);
+void Scope_End(Scope* s, StringId id);
 
 #endif
