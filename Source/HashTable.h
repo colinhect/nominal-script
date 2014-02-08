@@ -26,6 +26,7 @@
 
 #include <string.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 ///
 /// \brief The data type used for keys/values in a hash table.
@@ -144,7 +145,7 @@ int HashTable_Set(
 ///
 /// \returns 1 if a value was found for the given key; 0 if no value was found
 /// for the given key.
-int HashTable_Find(
+bool HashTable_Find(
     HashTable*  hashTable,
     UserData    key,
     UserData*   value

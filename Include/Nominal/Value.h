@@ -98,6 +98,11 @@ double NomValue_AsDouble(
     NomValue    value
     );
 
+int NomValue_Equals(
+    NomValue    value,
+    NomValue    other
+    );
+
 void NomValue_AsString(
     NomState*   state,
     char*       dest,

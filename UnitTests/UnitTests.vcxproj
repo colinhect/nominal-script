@@ -19,31 +19,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{85380091-7164-4C4E-8CE5-FF081F5EA7E4}</ProjectGuid>
-    <RootNamespace>Nominal</RootNamespace>
+    <ProjectGuid>{54A20856-D192-428B-B906-A46602D1528B}</ProjectGuid>
+    <RootNamespace>UnitTests</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -65,32 +65,34 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)Include\;$(ProjectDir)Source\;$(ProjectDir)Source\CUnit\Headers\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Nominal.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -98,11 +100,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)Include\;$(ProjectDir)Source\;$(ProjectDir)Source\CUnit\Headers\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Nominal.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -112,13 +116,15 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)Include\;$(ProjectDir)Source\;$(ProjectDir)Source\CUnit\Headers\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Nominal.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -128,50 +134,45 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)Source\;$(SolutionDir)Include\;$(ProjectDir)Source\;$(ProjectDir)Source\CUnit\Headers\</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>Nominal.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Nominal.h" />
-    <ClInclude Include="Include\Nominal\Integer.h" />
-    <ClInclude Include="Include\Nominal\Real.h" />
-    <ClInclude Include="Include\Nominal\State.h" />
-    <ClInclude Include="Include\Nominal\String.h" />
-    <ClInclude Include="Include\Nominal\Value.h" />
-    <ClInclude Include="Source\ByteCode.h" />
-    <ClInclude Include="Source\CodeGen.h" />
-    <ClInclude Include="Source\HashTable.h" />
-    <ClInclude Include="Source\Heap.h" />
-    <ClInclude Include="Source\Lexer.h" />
-    <ClInclude Include="Source\Node.h" />
-    <ClInclude Include="Source\Parser.h" />
-    <ClInclude Include="Source\Scope.h" />
-    <ClInclude Include="Source\State.h" />
-    <ClInclude Include="Source\String.h" />
-    <ClInclude Include="Source\StringPool.h" />
+    <ClCompile Include="Source\CUnit\Sources\Automated\Automated.c" />
+    <ClCompile Include="Source\CUnit\Sources\Basic\Basic.c" />
+    <ClCompile Include="Source\CUnit\Sources\Console\Console.c" />
+    <ClCompile Include="Source\CUnit\Sources\Framework\CUError.c" />
+    <ClCompile Include="Source\CUnit\Sources\Framework\MyMem.c" />
+    <ClCompile Include="Source\CUnit\Sources\Framework\TestDB.c" />
+    <ClCompile Include="Source\CUnit\Sources\Framework\TestRun.c" />
+    <ClCompile Include="Source\CUnit\Sources\Framework\Util.c" />
+    <ClCompile Include="Source\CUnit\Sources\Win\Win.c" />
+    <ClCompile Include="Source\Main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\ByteCode.c" />
-    <ClCompile Include="Source\CodeGen.c" />
-    <ClCompile Include="Source\HashTable.c" />
-    <ClCompile Include="Source\Heap.c" />
-    <ClCompile Include="Source\Integer.c" />
-    <ClCompile Include="Source\Lexer.c" />
-    <ClCompile Include="Source\Main.c" />
-    <ClCompile Include="Source\Node.c" />
-    <ClCompile Include="Source\Real.c" />
-    <ClCompile Include="Source\Scope.c" />
-    <ClCompile Include="Source\State.c" />
-    <ClCompile Include="Source\String.c" />
-    <ClCompile Include="Source\Value.c" />
-    <ClCompile Include="Source\Parser.c" />
-    <ClCompile Include="Source\StringPool.c" />
+    <ClInclude Include="Source\CUnit\Headers\Automated.h" />
+    <ClInclude Include="Source\CUnit\Headers\Basic.h" />
+    <ClInclude Include="Source\CUnit\Headers\Console.h" />
+    <ClInclude Include="Source\CUnit\Headers\CUCurses.h" />
+    <ClInclude Include="Source\CUnit\Headers\CUError.h" />
+    <ClInclude Include="Source\CUnit\Headers\CUnit.h" />
+    <ClInclude Include="Source\CUnit\Headers\CUnit_intl.h" />
+    <ClInclude Include="Source\CUnit\Headers\MyMem.h" />
+    <ClInclude Include="Source\CUnit\Headers\TestDB.h" />
+    <ClInclude Include="Source\CUnit\Headers\TestRun.h" />
+    <ClInclude Include="Source\CUnit\Headers\Util.h" />
+    <ClInclude Include="Source\CUnit\Sources\Win\resource.h" />
+    <ClInclude Include="Source\CUnit\Sources\Win\Win.h" />
+    <ClInclude Include="Source\HashTableTests.h" />
+    <ClInclude Include="Source\StateTests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

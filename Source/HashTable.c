@@ -73,14 +73,14 @@ int HashTable_FindNode(
             // If we were supposed to create a new node then this is a failure
             if (createNew)
             {
-                return 0; // Failure
+                return 0;
             }
 
             // If we were supposed to set an existing value then this is a
             // success
             else
             {
-                return 1; // Success
+                return 1;
             }
         }
 
@@ -112,12 +112,12 @@ int HashTable_FindNode(
         // Return the value
         *node = curr;
 
-        return 1; // Success
+        return 1;
     }
 
     // We were not support to create a new node and we never found one, so this
     // is a falure
-    return 0; // Failure
+    return 0;
 }
 
 HashTable* HashTable_Create(
@@ -210,7 +210,7 @@ int HashTable_Set(
     return 0;
 }
 
-int HashTable_Find(
+bool HashTable_Find(
     HashTable*  hashTable,
     UserData    key,
     UserData*   value
@@ -221,10 +221,10 @@ int HashTable_Find(
     if (HashTable_FindNode(hashTable, key, 0, &node))
     {
         *value = node->value;
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 int HashTable_InsertOrFind(

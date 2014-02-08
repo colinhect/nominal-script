@@ -89,6 +89,17 @@ double NomValue_AsDouble(NomValue value)
     }
 }
 
+int NomValue_Equals(
+    NomValue    value,
+    NomValue    other
+    )
+{
+    // Incomplete implementation
+    return
+        value.fields.type == other.fields.type &&
+        value.fields.data.integerValue == other.fields.data.integerValue;
+}
+
 void NomValue_AsString(NomState* s, char* dest, NomValue value)
 {
     switch (value.fields.type)

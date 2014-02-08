@@ -21,47 +21,44 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-/*
-#include "Nominal.h"
+#include "Basic.h"
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "HashTableTests.h"
+#include "StateTests.h"
+
+#define BEGIN_TEST_SUITE(name)  suite = CU_add_suite("HashTable", NULL, NULL)
+#define ADD_TEST(test)          CU_add_test(suite, #test, test)
 
 int main()
 {
-    NomState* s = NomState_Create();
+    CU_pSuite suite = NULL;
 
-    NomValue value = NomString_FromString(s, "Testing testing...");
-    const char* test = NomString_AsString(s, value);
-
-    for (;;)
+    // Initialize CUnit
+    if (CUE_SUCCESS != CU_initialize_registry())
     {
-        char line[512];
-        fgets(line, 512, stdin);
-        if (line[0] != '\n')
-        {
-            NomState_Execute(s, line);
-
-            if (NomState_ErrorOccurred(s))
-            {
-                printf("Error: %s\n", NomState_GetError(s));
-            }
-            else
-            {
-                NomValue result = NomState_Pop(s);
-                char resultString[256];
-                NomValue_AsString(s, resultString, result);
-                printf("Result is %s\n", resultString);
-            }
-        }
-        else
-        {
-            break;
-        }
+        return CU_get_error();
     }
-
-    NomState_Free(s);
     
-    return 0;
+    // HashTable test suite
+    BEGIN_TEST_SUITE("HashTable");
+    ADD_TEST(Test_HashTable_InsertAndFind);
+    ADD_TEST(Test_HashTable_InsertExisting);
+    ADD_TEST(Test_HashTable_FindNonExisting);
+    ADD_TEST(Test_HashTable_Set);
+    ADD_TEST(Test_HashTable_SetNonExisting);
+    ADD_TEST(Test_HashTable_InsertOrFindExisting);
+    ADD_TEST(Test_HashTable_InsertOrFindNonExisting);
+
+    // State test suite
+    BEGIN_TEST_SUITE("State");
+    ADD_TEST(Test_State_IntegerArithmetic);
+    ADD_TEST(Test_State_RealArithmetic);
+    
+    // Run the tests
+    CU_basic_set_mode(CU_BRM_VERBOSE);
+    CU_basic_run_tests();
+
+    // Clean up and exit
+    CU_cleanup_registry();
+    return CU_get_error();
 }
-*/
