@@ -25,48 +25,68 @@
 
 #include <stdlib.h>
 
-Node* Node_WithoutData(NodeType type, Node* first, Node* second)
+Node* Node_WithoutData(
+    NodeType    type,
+    Node*       first,
+    Node*       second
+    )
 {
-    Node* n = (Node*)malloc(sizeof(Node));
-    n->type = type;
-    n->data.integerValue = 0;
-    n->first = first;
-    n->second = second;
-    return n;
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->type = type;
+    node->data.integerValue = 0;
+    node->first = first;
+    node->second = second;
+    return node;
 }
 
-Node* Node_WithHandle(NodeType type, uint32_t value, Node* first, Node* second)
+Node* Node_WithHandle(
+    NodeType    type,
+    uint32_t    value,
+    Node*       first,
+    Node*       second
+    )
 {
-    Node* n = Node_WithoutData(type, first, second);
-    n->data.handle = value;
-    return n;
+    Node* node = Node_WithoutData(type, first, second);
+    node->data.handle = value;
+    return node;
 }
 
-Node* Node_WithInteger(NodeType type, uint64_t value, Node* first, Node* second)
+Node* Node_WithInteger(
+    NodeType    type,
+    int64_t     value,
+    Node*       first,
+    Node*       second
+    )
 {
-    Node* n = Node_WithoutData(type, first, second);
-    n->data.integerValue = value;
-    return n;
+    Node* node = Node_WithoutData(type, first, second);
+    node->data.integerValue = value;
+    return node;
 }
 
-Node* Node_WithReal(NodeType type, double value, Node* first, Node* second)
+Node* Node_WithReal(
+    NodeType    type,
+    double      value,
+    Node*       first,
+    Node*       second)
 {
-    Node* n = Node_WithoutData(type, first, second);
-    n->data.realValue = value;
-    return n;
+    Node* node = Node_WithoutData(type, first, second);
+    node->data.realValue = value;
+    return node;
 }
 
-void Node_Free(Node* n)
+void Node_Free(
+    Node*   node
+    )
 {
-    if (n->first)
+    if (node->first)
     {
-        Node_Free(n->first);
+        Node_Free(node->first);
     }
 
-    if (n->second)
+    if (node->second)
     {
-        Node_Free(n->second);
+        Node_Free(node->second);
     }
 
-    free(n);
+    free(node);
 }

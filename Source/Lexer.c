@@ -31,357 +31,370 @@
 
 typedef struct _LexerState
 {
-    unsigned index;
-    unsigned line;
-    TokenType type;
-    unsigned startIndex;
-    unsigned length;
-    unsigned id;
-    unsigned skippedWhitespace;
+    unsigned    index;
+    unsigned    line;
+    TokenType   type;
+    unsigned    startIndex;
+    unsigned    length;
+    unsigned    id;
+    bool        skippedWhitespace;
 } LexerState;
 
 typedef struct _Lexer
 {
     const char* source;
-    LexerState state;
+    LexerState  state;
 } Lexer;
 
-char ReadNext(Lexer* l)
+char ReadNext(
+    Lexer*  lexer
+    )
 {
-    char c;
-
-    if (l->state.type == TOK_EOI)
+    if (lexer->state.type == TOK_EOI)
     {
         return '\0';
     }
 
-    c = l->source[l->state.index++];
+    char c = lexer->source[lexer->state.index++];
     if (c == '\n')
     {
-        ++l->state.line;
+        ++lexer->state.line;
     }
     else if (c == '\0')
     {
-        l->state.type = TOK_EOI;
+        lexer->state.type = TOK_EOI;
     }
 
     return c;
 }
 
-char PeekNext(Lexer* l)
+char PeekNext(
+    Lexer*  lexer
+    )
 {
-    if (l->state.type == TOK_EOI)
+    if (lexer->state.type == TOK_EOI)
     {
         return '\0';
     }
-    return l->source[l->state.index];
+    return lexer->source[lexer->state.index];
 }
 
-int StartsWith(const char* str, const char* pre)
+bool StartsWith(
+    const char* str,
+    const char* pre
+    )
 {
-    size_t lenpre = strlen(pre), lenstr = strlen(str);
-    return lenstr < lenpre ? 0 : strncmp(pre, str, lenpre) == 0;
+    size_t preLength = strlen(pre);
+    size_t strLength = strlen(str);
+    return strLength < preLength ? false : strncmp(pre, str, preLength) == 0;
 }
 
-Lexer* Lexer_Create(const char* source)
+Lexer* Lexer_Create(
+    const char* source
+    )
 {
     LexerState state = { 0, 1, TOK_SYMBOL, 0, 0, 0, 0 };
-    Lexer* l = (Lexer*)malloc(sizeof(Lexer));
-    l->state = state;
-    l->source = source;
-    return l;
+    Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
+    lexer->state = state;
+    lexer->source = source;
+    return lexer;
 }
 
-int Lexer_Next(Lexer* l)
+bool Lexer_Next(
+    Lexer*  lexer
+    )
 {
-    LexerState state;
-    char       c;
-
-    l->state.skippedWhitespace = 0;
+    lexer->state.skippedWhitespace = false;
 
     // Skip whitespace
+    char c;
     do
     {
-        c = ReadNext(l);
+        c = ReadNext(lexer);
         if (c == '\0')
         {
-            return 0;
+            return false;
         }
         if (isspace(c))
         {
-            l->state.skippedWhitespace = 1;
+            lexer->state.skippedWhitespace = true;
         }
     } while (isspace(c));
 
     // Keep the token's start index and assume it is at least length 1
-    l->state.startIndex = l->state.index - 1;
-    l->state.length = 1;
+    lexer->state.startIndex = lexer->state.index - 1;
+    lexer->state.length = 1;
 
     // Operator
-    state = l->state;
-    l->state.type = TOK_OPERATOR;
+    LexerState state = lexer->state;
+    lexer->state.type = TOK_OPERATOR;
     switch (c)
     {
     case ':':
+        if (PeekNext(lexer) == '=')
         {
-            if (PeekNext(l) == '=')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_LET;
-                return 1;
-            }
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_LET;
+            return true;
+        }
+        break;
     case '=':
+        if (PeekNext(lexer) == '=')
         {
-            if (PeekNext(l) == '=')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_EQ;
-            }
-            else
-            {
-                l->state.id = OP_SET;
-            }
-            return 1;
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_EQ;
+        }
+        else
+        {
+            lexer->state.id = OP_SET;
+        }
+        return true;
     case '+':
+        lexer->state.id = OP_ADD;
+        return true;
+    case '-':
+        if (PeekNext(lexer) == '>')
         {
-            l->state.id = OP_ADD;
-            return 1;
-        } break;
-    case '-': {
-            if (PeekNext(l) == '>')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_ASSOC;
-            }
-            else
-            {
-                l->state.id = OP_SUB;
-            }
-            return 1;
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_ASSOC;
+        }
+        else
+        {
+            lexer->state.id = OP_SUB;
+        }
+        return true;
     case '*':
-        {
-            l->state.id = OP_MUL;
-            return 1;
-        } break;
+        lexer->state.id = OP_MUL;
+        return true;
     case '/':
+        lexer->state.id = OP_DIV;
+        return true;
+    case '!':
+        if (PeekNext(lexer) == '=')
         {
-            l->state.id = OP_DIV;
-            return 1;
-        } break;
-    case '!': {
-            if (PeekNext(l) == '=')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_NE;
-            }
-            else
-            {
-                l->state.id = OP_NOT;
-            }
-            return 1;
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_NE;
+        }
+        else
+        {
+            lexer->state.id = OP_NOT;
+        }
+        return true;
     case '>':
+        if (PeekNext(lexer) == '=')
         {
-            if (PeekNext(l) == '=')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_GTE;
-            }
-            else
-            {
-                l->state.id = OP_GT;
-            }
-            return 1;
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_GTE;
+        }
+        else
+        {
+            lexer->state.id = OP_GT;
+        }
+        return true;
     case '<':
+        if (PeekNext(lexer) == '=')
         {
-            if (PeekNext(l) == '=')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_LT;
-            }
-            else if (PeekNext(l) == '-')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_RET;
-            }
-            else
-            {
-                l->state.id = OP_LTE;
-            }
-            return 1;
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_LT;
+        }
+        else if (PeekNext(lexer) == '-')
+        {
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_RET;
+        }
+        else
+        {
+            lexer->state.id = OP_LTE;
+        }
+        return true;
     case '|':
+        if (PeekNext(lexer) == '|')
         {
-            if (PeekNext(l) == '|')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_OR;
-                return 1;
-            }
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_OR;
+            return true;
+        }
+        break;
     case '&':
+        if (PeekNext(lexer) == '&')
         {
-            if (PeekNext(l) == '&')
-            {
-                ReadNext(l);
-                l->state.length = 2;
-                l->state.id = OP_AND;
-                return 1;
-            }
-        } break;
+            ReadNext(lexer);
+            lexer->state.length = 2;
+            lexer->state.id = OP_AND;
+            return true;
+        }
+        break;
     }
 
     // The attempt to parse an operator accomplished nothing
-    l->state = state;
+    lexer->state = state;
 
     // Identifier or Keyword
     if (isalpha(c))
     {
-        const char* current;
-
-        while (isalnum(PeekNext(l)))
+        while (isalnum(PeekNext(lexer)))
         {
-            ReadNext(l);
-            ++l->state.length;
+            ReadNext(lexer);
+            ++lexer->state.length;
         }
 
-        current = &l->source[l->state.startIndex];
+        const char* current = &lexer->source[lexer->state.startIndex];
 
         if (StartsWith(current, "true"))
         {
-            l->state.type = TOK_KEYWORD;
-            l->state.id = KW_TRUE;
+            lexer->state.type = TOK_KEYWORD;
+            lexer->state.id = KW_TRUE;
         }
         else if (StartsWith(current, "false"))
         {
-            l->state.type = TOK_KEYWORD;
-            l->state.id = KW_FALSE;
+            lexer->state.type = TOK_KEYWORD;
+            lexer->state.id = KW_FALSE;
         }
         else if (StartsWith(current, "nil"))
         {
-            l->state.type = TOK_KEYWORD;
-            l->state.id = KW_NIL;
+            lexer->state.type = TOK_KEYWORD;
+            lexer->state.id = KW_NIL;
         }
         else
         {
-            l->state.type = TOK_IDENT;
+            lexer->state.type = TOK_IDENT;
         }
 
-        return 1;
+        return true;
     }
 
     // Integer or float
     if (isdigit(c))
     {
-        while (isdigit(PeekNext(l)))
+        while (isdigit(PeekNext(lexer)))
         {
-            ReadNext(l);
-            ++l->state.length;
+            ReadNext(lexer);
+            ++lexer->state.length;
         }
 
-        if (PeekNext(l) == '.')
+        if (PeekNext(lexer) == '.')
         {
-            ReadNext(l);
-            ++l->state.length;
+            ReadNext(lexer);
+            ++lexer->state.length;
 
-            while (isdigit(PeekNext(l)))
+            while (isdigit(PeekNext(lexer)))
             {
-                ReadNext(l);
-                ++l->state.length;
+                ReadNext(lexer);
+                ++lexer->state.length;
             }
 
-            l->state.type = TOK_REAL;
+            lexer->state.type = TOK_REAL;
         }
         else
         {
-            l->state.type = TOK_INTEGER;
+            lexer->state.type = TOK_INTEGER;
         }
 
-        return 1;
+        return true;
     }
 
     // String
     if (c == '\"')
     {
-        while (PeekNext(l) != '\"')
+        while (PeekNext(lexer) != '\"')
         {
-            ReadNext(l);
-            ++l->state.length;
+            ReadNext(lexer);
+            ++lexer->state.length;
         }
-        ReadNext(l);
+        ReadNext(lexer);
 
-        --l->state.length;
-        ++l->state.startIndex;
+        --lexer->state.length;
+        ++lexer->state.startIndex;
 
-        l->state.type = TOK_STRING;
-        return 1;
+        lexer->state.type = TOK_STRING;
+        return true;
     }
 
     // Anything else is a symbol
-    l->state.type = TOK_SYMBOL;
-    l->state.id = c;
+    lexer->state.type = TOK_SYMBOL;
+    lexer->state.id = c;
 
-    return 1;
+    return true;
 }
 
-int Lexer_IsTokenType(Lexer* l, TokenType type)
+bool Lexer_IsTokenType(
+    Lexer*      lexer,
+    TokenType   type
+    )
 {
-    return l->state.type == type;
+    return lexer->state.type == type;
 }
 
-int Lexer_IsTokenId(Lexer* l, unsigned id)
+bool Lexer_IsTokenId(
+    Lexer*      lexer,
+    unsigned    id
+    )
 {
-    return l->state.id == id;
+    return lexer->state.id == id;
 }
 
-int Lexer_IsTokenTypeAndId(Lexer* l, TokenType type, unsigned id)
+bool Lexer_IsTokenTypeAndId(
+    Lexer*      lexer,
+    TokenType   type,
+    unsigned    id
+    )
 {
-    return Lexer_IsTokenType(l, type) && Lexer_IsTokenId(l, id);
+    return Lexer_IsTokenType(lexer, type) && Lexer_IsTokenId(lexer, id);
 }
 
-TokenType Lexer_GetTokenType(Lexer* l)
+TokenType Lexer_GetTokenType(
+    Lexer*  lexer
+    )
 {
-    return l->state.type;
+    return lexer->state.type;
 }
 
-unsigned Lexer_GetTokenId(Lexer* l)
+unsigned Lexer_GetTokenId(
+    Lexer*  lexer
+    )
 {
-    return l->state.id;
+    return lexer->state.id;
 }
 
-int Lexer_SkippedWhitespace(Lexer* l)
+bool Lexer_SkippedWhitespace(
+    Lexer*  lexer
+    )
 {
-    return l->state.skippedWhitespace;
+    return lexer->state.skippedWhitespace;
 }
 
-size_t Lexer_GetTokenLength(Lexer* l)
+size_t Lexer_GetTokenLength(
+    Lexer*  lexer
+    )
 {
-    return l->state.length;
+    return lexer->state.length;
 }
 
-const char* Lexer_GetTokenString(Lexer* l)
+const char* Lexer_GetTokenString(
+    Lexer*  lexer
+    )
 {
-    return &l->source[l->state.startIndex];
+    return &lexer->source[lexer->state.startIndex];
 }
 
-long Lexer_GetTokenAsInt(Lexer* l)
+int64_t Lexer_GetTokenAsInteger(
+    Lexer*  lexer
+    )
 {
-    return atol(Lexer_GetTokenString(l));
+    return atoll(Lexer_GetTokenString(lexer));
 }
 
-double Lexer_GetTokenAsFloat(Lexer* l)
+double Lexer_GetTokenAsReal(
+    Lexer*  lexer
+    )
 {
-    return atof(Lexer_GetTokenString(l));
+    return atof(Lexer_GetTokenString(lexer));
 }

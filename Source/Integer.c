@@ -41,7 +41,7 @@ NomValue NomInteger_FromInt(
 }
 
 NomValue NomInteger_FromUnsignedLongLong(
-    unsigned long long  value
+    unsigned long long    value
     )
 {
     NomValue newValue = { 0 };

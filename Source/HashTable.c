@@ -43,23 +43,20 @@ typedef struct _HashTable
 
 // Gets a node for a specific key with the option of creating a new node if it
 // is not found
-int HashTable_FindNode(
+bool HashTable_FindNode(
     HashTable*      hashTable,
     UserData        key,
-    int             createNew,
+    bool            createNew,
     BucketNode**    node
     )
 {
-    BucketNode* prev = NULL;
-    BucketNode* curr = NULL;
-    Hash        hash;
-
     // Hash the key
-    hash = hashTable->hash(key);
+    Hash hash = hashTable->hash(key);
     hash = hash % hashTable->bucketCount;
 
     // Find the first node of the bucket for the hash
-    curr = hashTable->buckets[hash];
+    BucketNode* curr = hashTable->buckets[hash];
+    BucketNode* prev = NULL;
 
     // Iterate through each node in the bucket
     while (curr)
@@ -71,17 +68,9 @@ int HashTable_FindNode(
             *node = curr;
 
             // If we were supposed to create a new node then this is a failure
-            if (createNew)
-            {
-                return 0;
-            }
-
-            // If we were supposed to set an existing value then this is a
+            // and if we were supposed to set an existing value then this is a
             // success
-            else
-            {
-                return 1;
-            }
+            return !createNew;
         }
 
         // Move to the next node
@@ -112,12 +101,12 @@ int HashTable_FindNode(
         // Return the value
         *node = curr;
 
-        return 1;
+        return true;
     }
 
     // We were not support to create a new node and we never found one, so this
     // is a falure
-    return 0;
+    return false;
 }
 
 HashTable* HashTable_Create(
@@ -126,9 +115,7 @@ HashTable* HashTable_Create(
     size_t          bucketCount
     )
 {
-    HashTable* hashTable;
-
-    hashTable = (HashTable*)malloc(sizeof(HashTable));
+    HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
     hashTable->hash = hash;
     hashTable->compare = compare;
     hashTable->buckets = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
@@ -144,19 +131,14 @@ void HashTable_Free(
     void        (*freeValue)(void*)
     )
 {
-    size_t i;
-
     // For each bucket
-    for (i = 0; i < hashTable->bucketCount; ++i)
+    for (size_t i = 0; i < hashTable->bucketCount; ++i)
     {
-        BucketNode* n;
-
         // For each node in the bucket
-        n = hashTable->buckets[i];
+        BucketNode* n = hashTable->buckets[i];
         while (n)
         {
-            BucketNode* t;
-            t = n;
+            BucketNode* t = n;
             n = n->next;
 
             // Free the key if needed
@@ -176,38 +158,36 @@ void HashTable_Free(
     }
 }
 
-int HashTable_Insert(
+bool HashTable_Insert(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
     )
 {
     BucketNode* node = NULL;
-
-    if (HashTable_FindNode(hashTable, key, 1, &node))
+    if (HashTable_FindNode(hashTable, key, true, &node))
     {
         node->value = value;
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
-int HashTable_Set(
+bool HashTable_Set(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
     )
 {
     BucketNode* node = NULL;
-
-    if (HashTable_FindNode(hashTable, key, 0, &node))
+    if (HashTable_FindNode(hashTable, key, false, &node))
     {
         node->value = value;
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 bool HashTable_Find(
@@ -217,8 +197,7 @@ bool HashTable_Find(
     )
 {
     BucketNode* node = NULL;
-
-    if (HashTable_FindNode(hashTable, key, 0, &node))
+    if (HashTable_FindNode(hashTable, key, false, &node))
     {
         *value = node->value;
         return true;
@@ -227,7 +206,7 @@ bool HashTable_Find(
     return false;
 }
 
-int HashTable_InsertOrFind(
+bool HashTable_InsertOrFind(
     HashTable*  hashTable,
     UserData    key,
     UserData    value,
@@ -235,14 +214,13 @@ int HashTable_InsertOrFind(
     )
 {
     BucketNode* node = NULL;
-
-    if (!HashTable_FindNode(hashTable, key, 1, &node))
+    if (!HashTable_FindNode(hashTable, key, true, &node))
     {
         *existingValue = node->value;
-        return 1;
+        return true;
     }
     node->value = value;
-    return 0;
+    return false;
 }
 
 Hash HashString(
@@ -251,8 +229,8 @@ Hash HashString(
 {
     char* s = (char*)key;
     Hash hash = 5381;
-    int c;
 
+    int c;
     while (c = *s++)
     {
         hash = ((hash << 5) + hash) + c;

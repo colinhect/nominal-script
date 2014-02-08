@@ -658,8 +658,8 @@ unsigned int CU_get_test_pos_by_name(CU_pSuite pSuite, const char *strName);
  *  parameters that can be then be referred to in a CU_suite_info_t variable.
  */
 typedef struct CU_TestInfo {
-	char       *pName;      /**< Test name. */
-	CU_TestFunc pTestFunc;  /**< Test function. */
+    char       *pName;      /**< Test name. */
+    CU_TestFunc pTestFunc;  /**< Test function. */
 } CU_TestInfo;
 typedef CU_TestInfo* CU_pTestInfo;  /**< Pointer to CU_TestInfo type. */
 
@@ -671,10 +671,10 @@ typedef CU_TestInfo* CU_pTestInfo;  /**< Pointer to CU_TestInfo type. */
  *  CU_register_suite() or CU_register_suites().
  */
 typedef struct CU_SuiteInfo {
-	char             *pName;         /**< Suite name. */
-	CU_InitializeFunc pInitFunc;     /**< Suite initialization function. */
-	CU_CleanupFunc    pCleanupFunc;  /**< Suite cleanup function */
-	CU_TestInfo      *pTests;        /**< Test case array - must be NULL terminated. */
+    char             *pName;         /**< Suite name. */
+    CU_InitializeFunc pInitFunc;     /**< Suite initialization function. */
+    CU_CleanupFunc    pCleanupFunc;  /**< Suite cleanup function */
+    CU_TestInfo      *pTests;        /**< Test case array - must be NULL terminated. */
 } CU_SuiteInfo;
 typedef CU_SuiteInfo* CU_pSuiteInfo;  /**< Pointer to CU_SuiteInfo type. */
 
@@ -689,7 +689,7 @@ CU_EXPORT CU_ErrorCode CU_register_suites(CU_SuiteInfo suite_info[]);
  *  Registers the suites in a single CU_SuiteInfo array.
  *  Multiple arrays can be registered using CU_register_nsuites().
  *
- *  @param	suite_info NULL-terminated array of CU_SuiteInfo items to register.
+ *  @param    suite_info NULL-terminated array of CU_SuiteInfo items to register.
  *  @return A CU_ErrorCode indicating the error status.
  *  @see CU_register_suites()
  */
@@ -701,7 +701,7 @@ CU_EXPORT CU_ErrorCode CU_register_nsuites(int suite_count, ...);
  *  suite_count.  Each suite in each array is registered with the CUnit test 
  *  registry, along with all of the associated tests.
  *
- *  @param	suite_count The number of CU_SuiteInfo* arguments to follow.
+ *  @param    suite_count The number of CU_SuiteInfo* arguments to follow.
  *  @param ...          suite_count number of CU_SuiteInfo* arguments.  NULLs are ignored.
  *  @return A CU_ErrorCode indicating the error status.
  *  @see CU_register_suites()
@@ -713,8 +713,8 @@ typedef CU_SuiteInfo test_group_t;  /**< Deprecated (version 1). @deprecated Use
 
 /** Deprecated (version 1). @deprecated Use CU_SuiteInfo and CU_TestInfo. */
 typedef struct test_suite {
-	char *name;            /**< Suite name.  Currently not used. */
-	test_group_t *groups;  /**< Test groups.  This must be a NULL terminated array. */
+    char *name;            /**< Suite name.  Currently not used. */
+    test_group_t *groups;  /**< Test groups.  This must be a NULL terminated array. */
 } test_suite_t;
 
 /** Deprecated (version 1). @deprecated Use CU_TEST_INFO_NULL. */
@@ -728,14 +728,14 @@ typedef struct test_suite {
 /** Deprecated (version 1). @deprecated Use CU_SuiteInfo and CU_register_suites(). */
 CU_EXPORT int test_suite_register(test_suite_t *ts)
 {
-	test_group_t *tg;
-	int error;
+    test_group_t *tg;
+    int error;
 
-	for (tg = ts->groups; tg->pName; tg++)
-		if ((error = CU_register_suites(tg)) != CUE_SUCCESS)
-			return error;
+    for (tg = ts->groups; tg->pName; tg++)
+        if ((error = CU_register_suites(tg)) != CUE_SUCCESS)
+            return error;
 
-	return CUE_SUCCESS;
+    return CUE_SUCCESS;
 }
 #endif    /* USE_DEPRECATED_CUNIT_NAMES */
 /*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*/

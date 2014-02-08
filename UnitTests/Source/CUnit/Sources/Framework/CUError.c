@@ -79,13 +79,13 @@ void CU_set_error(CU_ErrorCode error)
 /*------------------------------------------------------------------------*/
 CU_ErrorCode CU_get_error(void)
 {
-	return g_error_number;
+    return g_error_number;
 }
 
 /*------------------------------------------------------------------------*/
 const char* CU_get_error_msg(void)
 {
-	return get_error_desc(g_error_number);
+    return get_error_desc(g_error_number);
 }
 
 /*------------------------------------------------------------------------*/

@@ -26,6 +26,8 @@
 
 #include <stdint.h>
 
+///
+/// \brief A type of AST node.
 typedef enum
 {
     NODE_NIL,
@@ -37,26 +39,107 @@ typedef enum
     NODE_UNARY_OP,
 } NodeType;
 
+///
+/// \brief An AST node.
 typedef struct _Node
 {
-    NodeType type;
+    NodeType    type;
 
     union
     {
-        uint32_t handle;
-        uint64_t integerValue;
-        double realValue;
+        uint32_t    handle;
+        int64_t     integerValue;
+        double      realValue;
     } data;
 
-    struct _Node* first;
-    struct _Node* second;
+    struct _Node*   first;
+    struct _Node*   second;
 } Node;
 
-Node* Node_WithoutData(NodeType type, Node* first, Node* second);
-Node* Node_WithHandle(NodeType type, uint32_t value, Node* first, Node* second);
-Node* Node_WithInteger(NodeType type, uint64_t value, Node* first, Node* second);
-Node* Node_WithReal(NodeType type, double value, Node* first, Node* second);
+///
+/// \brief Creates a new AST node without data.
+///
+/// \param type
+///     The type of node.
+/// \param first
+///     The first child node.
+/// \param second
+///     The second child node.
+///
+/// \returns The new node.
+Node* Node_WithoutData(
+    NodeType    type,
+    Node*       first,
+    Node*       second
+    );
 
-void Node_Free(Node* n);
+///
+/// \brief Creates a new AST node with a handle value.
+///
+/// \param type
+///     The type of node.
+/// \param value
+///     The value.
+/// \param first
+///     The first child node.
+/// \param second
+///     The second child node.
+///
+/// \returns The new node.
+Node* Node_WithHandle(
+    NodeType    type,
+    uint32_t    value,
+    Node*       first,
+    Node*       second
+    );
+
+///
+/// \brief Creates a new AST node with an integer value.
+///
+/// \param type
+///     The type of node.
+/// \param value
+///     The value.
+/// \param first
+///     The first child node.
+/// \param second
+///     The second child node.
+///
+/// \returns The new node.
+Node* Node_WithInteger(
+    NodeType    type,
+    int64_t     value,
+    Node*       first,
+    Node*       second
+    );
+
+///
+/// \brief Creates a new AST node with a real value.
+///
+/// \param type
+///     The type of node.
+/// \param value
+///     The value.
+/// \param first
+///     The first child node.
+/// \param second
+///     The second child node.
+///
+/// \returns The new node.
+Node* Node_WithReal(
+    NodeType    type,
+    double      value,
+    Node*       first,
+    Node*       second
+    );
+
+///
+/// \brief Frees a node.
+///
+/// \param node
+///     The node to free.
+void Node_Free(
+    Node*   node
+    );
 
 #endif

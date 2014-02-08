@@ -21,9 +21,9 @@
 /*
  *  >>>  UNDER CONSTRUCTION  <<<
  *
- *	Contains implementation of windows interface.
+ *    Contains implementation of windows interface.
  *
- *	2001          Initial implementation. (AK)
+ *    2001          Initial implementation. (AK)
  *
  *  18-Jul-2004   New interface. (JDS)
  */
@@ -41,15 +41,15 @@ static LRESULT CALLBACK DialogMessageHandler(HWND hDlg, UINT message, WPARAM wPa
   CU_UNREFERENCED_PARAMETER(message);
   CU_UNREFERENCED_PARAMETER(lParam);
 
-	switch((int)wParam) {
-		default: break;
-	}
-	return 0;
+    switch((int)wParam) {
+        default: break;
+    }
+    return 0;
 }
 
 void CU_win_run_tests(void)
 {
-	HWND hWndDlg = CreateDialog(NULL, (LPCTSTR)IDD_MAIN, NULL, (DLGPROC)DialogMessageHandler);
-	(void) hWndDlg;
+    HWND hWndDlg = CreateDialog(NULL, (LPCTSTR)IDD_MAIN, NULL, (DLGPROC)DialogMessageHandler);
+    (void) hWndDlg;
 }
 

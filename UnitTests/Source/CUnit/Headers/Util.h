@@ -138,7 +138,7 @@ void test_cunit_Util(void);
 #endif
 
 #ifdef USE_DEPRECATED_CUNIT_NAMES
-#define CUNIT_MAX_STRING_LENGTH	1024
+#define CUNIT_MAX_STRING_LENGTH    1024
 /**< Maximum string length. */
 #define translate_special_characters(src, dest, len) CU_translate_special_characters(src, dest, len)
 /**< Deprecated (version 1). @deprecated Use CU_translate_special_characters(). */

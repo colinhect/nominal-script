@@ -107,9 +107,9 @@ void HashTable_Free(
 /// \param value
 ///     The value.
 ///
-/// \returns 1 if the insertion was successful; 0 if a value already exists
-/// for the given key.
-int HashTable_Insert(
+/// \returns True if the insertion was successful; false if a value already
+/// exists for the given key.
+bool HashTable_Insert(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
@@ -125,9 +125,9 @@ int HashTable_Insert(
 /// \param value
 ///     The value.
 ///
-/// \returns 1 if the insertion was successful; 0 if a value already exists
-/// for the given key.
-int HashTable_Set(
+/// \returns True if the insertion was successful; false if a value already
+/// exists for the given key.
+bool HashTable_Set(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
@@ -143,8 +143,8 @@ int HashTable_Set(
 /// \param value
 ///     A pointer to where to store the found value.
 ///
-/// \returns 1 if a value was found for the given key; 0 if no value was found
-/// for the given key.
+/// \returns True if a value was found for the given key; false if no value
+/// was found for the given key.
 bool HashTable_Find(
     HashTable*  hashTable,
     UserData    key,
@@ -164,9 +164,9 @@ bool HashTable_Find(
 ///     A pointer to where to store the found value (if an existing value is
 ///     found).
 ///
-/// \returns 1 if a value was found for the given key; 0 if no value was found
-/// for the given and a new value was inserted.
-int HashTable_InsertOrFind(
+/// \returns True if a value was found for the given key; false if no value
+/// was found for the given and a new value was inserted.
+bool HashTable_InsertOrFind(
     HashTable*  hashTable,
     UserData    key,
     UserData    value,

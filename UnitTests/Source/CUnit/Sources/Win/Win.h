@@ -20,12 +20,12 @@
 /*
  *  >>>  UNDER CONSTRUCTION  <<<
  *
- *	Contains function definitions for windows programs.
+ *    Contains function definitions for windows programs.
  *
- *	Created By     : Jerry St.Clair on 5-Jul-2004
- *	Last Modified  : 18-Jul-2004
- *	Comment        : This file was missing from the 1-1.1 distribtion, new interface
- *	EMail          : jds2@users.sourceforge.net
+ *    Created By     : Jerry St.Clair on 5-Jul-2004
+ *    Last Modified  : 18-Jul-2004
+ *    Comment        : This file was missing from the 1-1.1 distribtion, new interface
+ *    EMail          : jds2@users.sourceforge.net
  *
  */
 

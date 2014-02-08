@@ -62,8 +62,8 @@
  *  or modify existing ones to change the behavior upon translation.
  */
 static const struct bindings {
-	const char special_char;    /**< Special character. */
-	const char *replacement;    /**< Entity code for special character. */
+    const char special_char;    /**< Special character. */
+    const char *replacement;    /**< Entity code for special character. */
 } CU_bindings [] = {
     {'&', "&amp;"},
     {'>', "&gt;"},
@@ -82,45 +82,45 @@ static const struct bindings {
  */
 static int get_index(const char ch)
 {
-	int length = sizeof(CU_bindings)/sizeof(CU_bindings[0]);
-	int counter;
+    int length = sizeof(CU_bindings)/sizeof(CU_bindings[0]);
+    int counter;
 
-	for (counter = 0; counter < length && CU_bindings[counter].special_char != ch; ++counter) {
-		;
-	}
+    for (counter = 0; counter < length && CU_bindings[counter].special_char != ch; ++counter) {
+        ;
+    }
 
-	return (counter < length ? counter : -1);
+    return (counter < length ? counter : -1);
 }
 
 size_t CU_translate_special_characters(const char *szSrc, char *szDest, size_t maxlen)
 {
 /* old implementation
   size_t count = 0;
-	size_t src = 0;
-	size_t dest = 0;
-	size_t length = 0;
-	int conv_index;
+    size_t src = 0;
+    size_t dest = 0;
+    size_t length = 0;
+    int conv_index;
 
   assert(NULL != szSrc);
   assert(NULL != szDest);
 
-	length = strlen(szSrc);
-	memset(szDest, 0, maxlen);
-	while ((dest < maxlen) && (src < length)) {
+    length = strlen(szSrc);
+    memset(szDest, 0, maxlen);
+    while ((dest < maxlen) && (src < length)) {
 
-		if ((-1 != (conv_index = get_index(szSrc[src]))) &&
+        if ((-1 != (conv_index = get_index(szSrc[src]))) &&
         ((dest + strlen(CU_bindings[conv_index].replacement)) < maxlen)) {
-			strcat(szDest, CU_bindings[conv_index].replacement);
-			dest += strlen(CU_bindings[conv_index].replacement);
-			++count;
-		} else {
-			szDest[dest++] = szSrc[src];
-		}
+            strcat(szDest, CU_bindings[conv_index].replacement);
+            dest += strlen(CU_bindings[conv_index].replacement);
+            ++count;
+        } else {
+            szDest[dest++] = szSrc[src];
+        }
 
-		++src;
-	}
+        ++src;
+    }
 
-	return count;
+    return count;
 */
   size_t count = 0;
   size_t repl_len;
@@ -137,20 +137,20 @@ size_t CU_translate_special_characters(const char *szSrc, char *szDest, size_t m
       conv_index = get_index(*szSrc);
       if (-1 != conv_index) {
         if (maxlen > (repl_len = strlen(CU_bindings[conv_index].replacement))) {
-			    memcpy(szDest, CU_bindings[conv_index].replacement, repl_len);
-			    szDest += repl_len;
+                memcpy(szDest, CU_bindings[conv_index].replacement, repl_len);
+                szDest += repl_len;
           maxlen -= repl_len;
-			    ++count;
+                ++count;
         } else {
           maxlen = 0;   /* ran out of room - abort conversion */
           break;
         }
-		  } else {
-			  *szDest++ = *szSrc;
+          } else {
+              *szDest++ = *szSrc;
         --maxlen;
-		  }
-		  ++szSrc;
-	  }
+          }
+          ++szSrc;
+      }
 
     if (0 == maxlen) {
       *dest_start = '\0';   /* ran out of room - return empty string in szDest */
@@ -159,18 +159,18 @@ size_t CU_translate_special_characters(const char *szSrc, char *szDest, size_t m
       *szDest = '\0';       /* had room - make sure szDest has a terminating \0 */
     }
   }
-	return count;
+    return count;
 }
 
 /*------------------------------------------------------------------------*/
 size_t CU_translated_strlen(const char* szSrc)
 {
-	size_t count = 0;
+    size_t count = 0;
   int conv_index;
 
   assert(NULL != szSrc);
 
-	while (*szSrc != '\0') {
+    while (*szSrc != '\0') {
     if (-1 != (conv_index = get_index(*szSrc))) {
       count += strlen(CU_bindings[conv_index].replacement);
     } else {
@@ -178,7 +178,7 @@ size_t CU_translated_strlen(const char* szSrc)
     }
     ++szSrc;
   }
-	return count;
+    return count;
 }
 
 /*------------------------------------------------------------------------*/
@@ -187,68 +187,68 @@ int CU_compare_strings(const char* szSrc, const char* szDest)
   assert(NULL != szSrc);
   assert(NULL != szDest);
 
-	while (('\0' != *szSrc) && ('\0' != *szDest) && (toupper(*szSrc) == toupper(*szDest))) {
-		szSrc++;
-		szDest++;
-	}
+    while (('\0' != *szSrc) && ('\0' != *szDest) && (toupper(*szSrc) == toupper(*szDest))) {
+        szSrc++;
+        szDest++;
+    }
 
-	return (int)(*szSrc - *szDest);
+    return (int)(*szSrc - *szDest);
 }
 
 /*------------------------------------------------------------------------*/
 void CU_trim(char* szString)
 {
-	CU_trim_left(szString);
-	CU_trim_right(szString);
+    CU_trim_left(szString);
+    CU_trim_right(szString);
 }
 
 /*------------------------------------------------------------------------*/
 void CU_trim_left(char* szString)
 {
-	int nOffset = 0;
-	char* szSrc = szString;
-	char* szDest = szString;
+    int nOffset = 0;
+    char* szSrc = szString;
+    char* szDest = szString;
 
-	assert(NULL != szString);
+    assert(NULL != szString);
 
-	/* Scan for the spaces in the starting of string. */
-	for (; '\0' != *szSrc; szSrc++, nOffset++) {
-		if (!isspace(*szSrc)) {
-			break;
-		}
-	}
+    /* Scan for the spaces in the starting of string. */
+    for (; '\0' != *szSrc; szSrc++, nOffset++) {
+        if (!isspace(*szSrc)) {
+            break;
+        }
+    }
 
-	for(; (0 != nOffset) && ('\0' != (*szDest = *szSrc)); szSrc++, szDest++) {
-		;
-	}
+    for(; (0 != nOffset) && ('\0' != (*szDest = *szSrc)); szSrc++, szDest++) {
+        ;
+    }
 }
 
 /*------------------------------------------------------------------------*/
 void CU_trim_right(char* szString)
 {
-	size_t nLength;
-	char* szSrc = szString;
+    size_t nLength;
+    char* szSrc = szString;
 
-	assert(NULL != szString);
-	nLength = strlen(szString);
-	/*
-	 * Scan for specs in the end of string.
-	 */
-	for (; (0 != nLength) && isspace(*(szSrc + nLength - 1)); nLength--) {
-		;
-	}
+    assert(NULL != szString);
+    nLength = strlen(szString);
+    /*
+     * Scan for specs in the end of string.
+     */
+    for (; (0 != nLength) && isspace(*(szSrc + nLength - 1)); nLength--) {
+        ;
+    }
 
-	*(szSrc + nLength) = '\0';
+    *(szSrc + nLength) = '\0';
 }
 
 /*------------------------------------------------------------------------*/
 size_t CU_number_width(int number)
 {
-	char buf[33];
+    char buf[33];
 
-	snprintf(buf, 33, "%d", number);
-	buf[32] = '\0';
-	return (strlen(buf));
+    snprintf(buf, 33, "%d", number);
+    buf[32] = '\0';
+    return (strlen(buf));
 }
 
 /** @} */

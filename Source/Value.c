@@ -30,12 +30,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef _MSC_VER
-#pragma warning (disable : 4056)
-#define INFINITY (FLT_MAX+FLT_MAX)
-#define NAN (INFINITY-INFINITY)
-#endif
-
 NomValue NOM_NIL = { NOM_TYPE_NIL, 0 };
 
 int NomValue_IsNumber(NomValue value)

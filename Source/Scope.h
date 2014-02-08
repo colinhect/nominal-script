@@ -27,16 +27,56 @@
 #include "Nominal/Value.h"
 #include "StringPool.h"
 
+#include <stdbool.h>
+
+///
+/// \brief A scope.
 typedef struct _Scope Scope;
 
-Scope* Scope_Create();
-void Scope_Free(Scope* s);
+///
+/// \brief Creates a new scope.
+///
+/// \returns The new scope.
+Scope* Scope_Create(
+    void
+    );
 
-int Scope_Let(Scope* s, StringId id, NomValue value);
-int Scope_Set(Scope* s, StringId id, NomValue value);
-NomValue Scope_Get(Scope* s, StringId id);
+///
+/// \brief Frees a scope.
+///
+/// \param scope
+///     The scope to free.
+void Scope_Free(
+    Scope*  scope
+    );
 
-void Scope_Begin(Scope* s, StringId id);
-void Scope_End(Scope* s, StringId id);
+///
+/// \brief Sets a new value
+bool Scope_Let(
+    Scope*      scope,
+    StringId    id,
+    NomValue    value
+    );
+
+bool Scope_Set(
+    Scope*      scope,
+    StringId    id,
+    NomValue    value
+    );
+
+NomValue Scope_Get(
+    Scope*      scope,
+    StringId    id
+    );
+
+void Scope_Begin(
+    Scope*      scope,
+    StringId    id
+    );
+
+void Scope_End(
+    Scope*      scope,
+    StringId    id
+    );
 
 #endif

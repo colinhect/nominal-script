@@ -62,7 +62,7 @@
 #include "Automated.h"
 #include "CUnit_intl.h"
 
-#define MAX_FILENAME_LENGTH		1025
+#define MAX_FILENAME_LENGTH        1025
 
 /*=================================================================
  *  Global / Static data definitions

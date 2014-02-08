@@ -31,53 +31,65 @@
 
 typedef struct _Parser
 {
-    Lexer* l;
-    StringPool* s;
-    char error[256];
+    Lexer*      lexer;
+    StringPool* stringPool;
+    char        error[256];
 } Parser;
 
-Parser* Parser_Create(const char* source, StringPool* stringPool)
+Parser* Parser_Create(
+    const char* source,
+    StringPool* stringPool
+    )
 {
-    Parser* p = (Parser*)malloc(sizeof(Parser));
-    p->l = Lexer_Create(source);
-    p->s = stringPool;
-    Lexer_Next(p->l);
-    return p;
+    Parser* parser = (Parser*)malloc(sizeof(Parser));
+    parser->lexer = Lexer_Create(source);
+    parser->stringPool = stringPool;
+    Lexer_Next(parser->lexer);
+    return parser;
 }
 
-void Parser_Free(Parser* p)
+void Parser_Free(
+    Parser* parser
+    )
 {
-    free(p->l);
-    free(p);
+    free(parser->lexer);
+    free(parser);
 }
 
-void Parser_SetError(Parser* p, const char* fmt, ...)
+void Parser_SetError(
+    Parser*     parser,
+    const char* fmt,
+    ...
+    )
 {
     va_list args;
     va_start(args, fmt);
-    vsprintf(p->error, fmt, args);
+    vsprintf(parser->error, fmt, args);
     va_end(args);
 }
 
-const char* Parser_GetError(Parser* p)
+const char* Parser_GetError(
+    Parser* parser
+    )
 {
-    return p->error;
+    return parser->error;
 }
 
-Node* Parser_Expr(Parser* p)
+Node* Parser_Expr(
+    Parser* parser
+    )
 {
-    return Parser_BinExpr(p, 0, Parser_PrimaryExpr(p));
+    return Parser_BinExpr(parser, 0, Parser_PrimaryExpr(parser));
 }
 
-Node* Parser_PrimaryExpr(Parser* p)
+Node* Parser_PrimaryExpr(
+    Parser* parser
+    )
 {
     // Unary operator
-    if (Lexer_IsTokenType(p->l, TOK_OPERATOR))
+    if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
     {
-        OpCode  op;
-        Node*   n;
-        
-        op = (OpCode)Lexer_GetTokenId(p->l);
+        OpCode op = (OpCode)Lexer_GetTokenId(parser->lexer);
         if (op == OP_SUB)
         {
             op = OP_NEG;
@@ -85,13 +97,13 @@ Node* Parser_PrimaryExpr(Parser* p)
 
         if (op != OP_NOT && op != OP_NEG)
         {
-            Parser_SetError(p, "Operator '%s' is not unary", OP_STR[op]);
+            Parser_SetError(parser, "Operator '%s' is not unary", OP_STR[op]);
             return NULL;
         }
 
-        Lexer_Next(p->l);
+        Lexer_Next(parser->lexer);
 
-        n = Parser_PrimaryExpr(p);
+        Node* n = Parser_PrimaryExpr(parser);
         if (!n)
         {
             return NULL;
@@ -101,66 +113,65 @@ Node* Parser_PrimaryExpr(Parser* p)
     }
     else
     {
-        return Parser_SecondaryExpr(p);
+        return Parser_SecondaryExpr(parser);
     }
 }
 
-Node* Parser_SecondaryExpr(Parser* p)
+Node* Parser_SecondaryExpr(
+    Parser* parser
+    )
 {
-    Node*       n;
-    TokenType   type;
-    unsigned    id;
+    TokenType type = Lexer_GetTokenType(parser->lexer);
+    unsigned id = Lexer_GetTokenId(parser->lexer);
 
-    type = Lexer_GetTokenType(p->l);
-    id = Lexer_GetTokenId(p->l);
-
+    Node* n;
     switch (type)
     {
     case TOK_SYMBOL:
         if (id == '(')
         {
-            n = Parser_ParenExpr(p);
+            n = Parser_ParenExpr(parser);
             break;
         }
     case TOK_INTEGER:
-        n = Node_WithInteger(NODE_INTEGER, Lexer_GetTokenAsInt(p->l), NULL, NULL);
-        Lexer_Next(p->l);
+        n = Node_WithInteger(NODE_INTEGER, Lexer_GetTokenAsInteger(parser->lexer), NULL, NULL);
+        Lexer_Next(parser->lexer);
         break;
     case TOK_REAL:
-        n = Node_WithReal(NODE_REAL, Lexer_GetTokenAsFloat(p->l), NULL, NULL);
-        Lexer_Next(p->l);
+        n = Node_WithReal(NODE_REAL, Lexer_GetTokenAsReal(parser->lexer), NULL, NULL);
+        Lexer_Next(parser->lexer);
         break;
     case TOK_STRING:
         {
-            size_t length = Lexer_GetTokenLength(p->l);
-            const char* string = Lexer_GetTokenString(p->l);
-            StringId id = StringPool_InsertOrFindSubString(p->s, string, length);
+            size_t length = Lexer_GetTokenLength(parser->lexer);
+            const char* string = Lexer_GetTokenString(parser->lexer);
+            StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
             n = Node_WithHandle(NODE_STRING, (unsigned)id, NULL, NULL);
-            Lexer_Next(p->l);
+            Lexer_Next(parser->lexer);
         } break;
     case TOK_IDENT:
         {
-            size_t length = Lexer_GetTokenLength(p->l);
-            const char* string = Lexer_GetTokenString(p->l);
-            StringId id = StringPool_InsertOrFindSubString(p->s, string, length);
+            size_t length = Lexer_GetTokenLength(parser->lexer);
+            const char* string = Lexer_GetTokenString(parser->lexer);
+            StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
             n = Node_WithHandle(NODE_IDENT, (unsigned)id, NULL, NULL);
-            Lexer_Next(p->l);
+            Lexer_Next(parser->lexer);
         } break;
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
             n = Node_WithoutData(NODE_NIL, NULL, NULL);
-            Lexer_Next(p->l);
+            Lexer_Next(parser->lexer);
             break;
         }
     default:
         {
             char buffer[64];
-            size_t length = Lexer_GetTokenLength(p->l);
-            const char* string = Lexer_GetTokenString(p->l);
+            size_t length = Lexer_GetTokenLength(parser->lexer);
+            const char* string = Lexer_GetTokenString(parser->lexer);
             memcpy(buffer, string, length);
             buffer[length] = '\0';
-            Parser_SetError(p, "Unexpected token '%s'", buffer);
+            Parser_SetError(parser, "Unexpected token '%s'", buffer);
             return NULL;
         }
     }
@@ -168,37 +179,41 @@ Node* Parser_SecondaryExpr(Parser* p)
     return n;
 }
 
-Node* Parser_ParenExpr(Parser* p)
+Node* Parser_ParenExpr(
+    Parser* parser
+    )
 {
-    Node* n;
-
-    if (!Lexer_IsTokenTypeAndId(p->l, TOK_SYMBOL, '('))
+    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '('))
     {
-        Parser_SetError(p, "Expected opening '('");
+        Parser_SetError(parser, "Expected opening '('");
         return NULL;
     }
 
-    Lexer_Next(p->l);
+    Lexer_Next(parser->lexer);
 
-    n = Parser_Expr(p);
+    Node* n = Parser_Expr(parser);
     if (!n)
     {
         return NULL;
     }
 
-    if (!Lexer_IsTokenTypeAndId(p->l, TOK_SYMBOL, ')'))
+    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ')'))
     {
         Node_Free(n);
-        Parser_SetError(p, "Expected closing ')'");
+        Parser_SetError(parser, "Expected closing ')'");
         return NULL;
     }
 
-    Lexer_Next(p->l);
+    Lexer_Next(parser->lexer);
 
     return n;
 }
 
-Node* Parser_BinExpr(Parser* p, int prec, Node* left)
+Node* Parser_BinExpr(
+    Parser* parser,
+    int     prec,
+    Node*   left
+    )
 {
     if (!left)
     {
@@ -207,31 +222,32 @@ Node* Parser_BinExpr(Parser* p, int prec, Node* left)
 
     for (;;)
     {
-        OpCode  op;
-        Node*   right;
-        int     opPrec;
-        int     nextOpPrec;
-        OpCode  nodeOp = (OpCode)Lexer_GetTokenId(p->l);
+        OpCode nodeOp = (OpCode)Lexer_GetTokenId(parser->lexer);
+        int opPrec = Lexer_IsTokenType(parser->lexer, TOK_OPERATOR)
+            ? OP_PREC[Lexer_GetTokenId(parser->lexer)]
+            : -1;
 
-        opPrec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
         if (opPrec < prec)
         {
             return left;
         }
 
-        op = (OpCode)Lexer_GetTokenId(p->l);
-        Lexer_Next(p->l);
-        right = Parser_PrimaryExpr(p);
+        OpCode op = (OpCode)Lexer_GetTokenId(parser->lexer);
+        Lexer_Next(parser->lexer);
+        Node* right = Parser_PrimaryExpr(parser);
         if (!right)
         {
             Node_Free(left);
             return NULL;
         }
 
-        nextOpPrec = Lexer_IsTokenType(p->l, TOK_OPERATOR) ? OP_PREC[Lexer_GetTokenId(p->l)] : -1;
+        int nextOpPrec = Lexer_IsTokenType(parser->lexer, TOK_OPERATOR)
+            ? OP_PREC[Lexer_GetTokenId(parser->lexer)]
+            : -1;
+
         if (opPrec < nextOpPrec)
         {
-            right = Parser_BinExpr(p, opPrec + 1, right);
+            right = Parser_BinExpr(parser, opPrec + 1, right);
             if (!right)
             {
                 Node_Free(left);

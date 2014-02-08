@@ -70,18 +70,17 @@ size_t GenerateCode(
         {
             OpCode op = (OpCode)node->data.integerValue;
 
+            // Push right hand side on stack
+            index = GenerateCode(node->second, byteCode, index);
+
             if (op == OP_LET || op == OP_SET)
             {
-                // Push RHS on stack
-                index = GenerateCode(node->second, byteCode, index);
-
                 // Perform set
                 OPCODE(op);
                 STRING(node->first->data.handle);
             }
             else
             {
-                index = GenerateCode(node->second, byteCode, index);
                 index = GenerateCode(node->first, byteCode, index);
                 OPCODE(op);
             }

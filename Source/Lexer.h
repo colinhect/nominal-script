@@ -25,7 +25,11 @@
 #define LEXER_H
 
 #include <string.h>
+#include <stdbool.h>
+#include <stdint.h>
 
+///
+/// \brief A syntactic keyword.
 typedef enum
 {
     KW_TRUE,
@@ -33,6 +37,8 @@ typedef enum
     KW_NIL
 } Keyword;
 
+///
+/// \brief A token type.
 typedef enum
 {
     TOK_SYMBOL,
@@ -48,27 +54,146 @@ typedef enum
     TOK_EOI
 } TokenType;
 
+///
+/// \brief Contains the position and state of a lexer.
 typedef struct _LexerState LexerState;
 
+///
+/// \brief A lexer.
 typedef struct _Lexer Lexer;
 
-Lexer* Lexer_Create(const char* source);
+///
+/// \brief Creates a new lexer.
+///
+/// \param source
+///        The Nominal source code to lex.
+///
+/// \returns The new lexer.
+Lexer* Lexer_Create(
+    const char* source
+    );
 
-int Lexer_Next(Lexer* l);
+///
+/// \brief Moves to the next token.
+///
+/// \param lexer
+///     The lexer.
+///
+/// \returns True if there are more tokens to lex; false otherwise.
+bool Lexer_Next(
+    Lexer*  lexer
+    );
 
-int Lexer_IsTokenType(Lexer* l, TokenType type);
-int Lexer_IsTokenId(Lexer* l, unsigned id);
-int Lexer_IsTokenTypeAndId(Lexer* l, TokenType type, unsigned id);
+///
+/// \brief Returns whether the current token is of a given type.
+///
+/// \param lexer
+///     The lexer.
+/// \param type
+///     The token type to compare.
+///
+/// \returns True if the token is of the type; false otherwise.
+bool Lexer_IsTokenType(
+    Lexer*      lexer,
+    TokenType   type
+    );
 
-TokenType Lexer_GetTokenType(Lexer* l);
-unsigned Lexer_GetTokenId(Lexer* l);
+///
+/// \brief Returns whether the current token has a given ID.
+///
+/// \param lexer
+///     The lexer.
+/// \param id
+///     The token ID to compare.
+///
+/// \returns True if the token has the ID; false otherwise.
+bool Lexer_IsTokenId(
+    Lexer*      lexer,
+    unsigned    id
+    );
 
-int Lexer_SkippedWhitespace(Lexer* l);
+///
+/// \brief Returns whether the current token is of a given type and has a
+/// given ID.
+///
+/// \param lexer
+///     The lexer.
+/// \param type
+///     The token type to compare.
+/// \param id
+///     The token ID to compare.
+///
+/// \returns True if the token is of the type and has the ID; false otherwise.
+bool Lexer_IsTokenTypeAndId(
+    Lexer*      lexer,
+    TokenType   type,
+    unsigned    id
+    );
 
-size_t Lexer_GetTokenLength(Lexer* l);
-const char* Lexer_GetTokenString(Lexer* l);
+///
+/// \brief Returns the type of the current token.
+///
+/// \param lexer
+///     The lexer.
+TokenType Lexer_GetTokenType(
+    Lexer*  lexer
+    );
 
-long Lexer_GetTokenAsInt(Lexer* l);
-double Lexer_GetTokenAsFloat(Lexer* l);
+///
+/// \brief Returns the ID of the current token.
+///
+/// \param lexer
+///     The lexer.
+unsigned Lexer_GetTokenId(
+    Lexer*  lexer
+    );
+
+///
+/// \brief Returns whether the lexer skipped whitespace when it moved to the
+/// current token.
+///
+/// \param lexer
+///     The lexer.
+bool Lexer_SkippedWhitespace(
+    Lexer*  lexer
+    );
+
+///
+/// \brief Returns the length of the current token.
+///
+/// \param lexer
+///     The lexer.
+size_t Lexer_GetTokenLength(
+    Lexer*  lexer
+    );
+
+///
+/// \brief Returns a pointer to where the current token starts in the source
+///
+/// \remarks Not null terminated.
+///
+/// \param lexer
+///     The lexer.
+const char* Lexer_GetTokenString(
+    Lexer*  lexer
+    );
+
+///
+/// \brief Returns the value of the token as an integer.
+///
+/// \param lexer
+///     The lexer.
+int64_t Lexer_GetTokenAsInteger(
+    Lexer*  lexer
+    );
+
+///
+/// \brief Returns the value of the token as an real.
+///
+/// \param lexer
+///     The lexer.
+double Lexer_GetTokenAsReal(
+    Lexer*  lexer
+    );
 
 #endif

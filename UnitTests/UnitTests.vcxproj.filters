@@ -10,7 +10,7 @@
     <Filter Include="Source\CUnit\Headers">
       <UniqueIdentifier>{fb4efec6-a250-4364-aa53-ceffe324d7fc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\CUnit\Source">
+    <Filter Include="Source\CUnit\Sources">
       <UniqueIdentifier>{d6ba3a58-efaa-490b-aa16-1f577c5dc1f7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -19,31 +19,31 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Automated\Automated.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Basic\Basic.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Console\Console.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Framework\CUError.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Framework\MyMem.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Framework\TestDB.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Framework\TestRun.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Framework\Util.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
     <ClCompile Include="Source\CUnit\Sources\Win\Win.c">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,10 +84,10 @@
       <Filter>Source\CUnit\Headers</Filter>
     </ClInclude>
     <ClInclude Include="Source\CUnit\Sources\Win\resource.h">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClInclude>
     <ClInclude Include="Source\CUnit\Sources\Win\Win.h">
-      <Filter>Source\CUnit\Source</Filter>
+      <Filter>Source\CUnit\Sources</Filter>
     </ClInclude>
     <ClInclude Include="Source\StateTests.h">
       <Filter>Source</Filter>

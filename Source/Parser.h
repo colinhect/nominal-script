@@ -29,18 +29,112 @@
 #include "StringPool.h"
 #include "Lexer.h"
 
+///
+/// \brief A parser.
 typedef struct _Parser Parser;
 
-Parser* Parser_Create(const char* source, StringPool* stringPool);
-void Parser_Free(Parser* p);
+///
+/// \brief Creates a new parser.
+///
+/// \param source
+///     The Nominal source code to parse.
+/// \param stringPool
+///     The string pool to use.
+///
+/// \returns The parser.
+Parser* Parser_Create(
+    const char* source,
+    StringPool* stringPool
+    );
 
-void Parser_SetError(Parser* p, const char* fmt, ...);
-const char* Parser_GetError(Parser* p);
+///
+/// \brief Frees a parser.
+///
+/// \param parser
+///     The parser to free.
+void Parser_Free(
+    Parser* parser
+    );
 
-Node* Parser_Expr(Parser* p);
-Node* Parser_PrimaryExpr(Parser* p);
-Node* Parser_SecondaryExpr(Parser* p);
-Node* Parser_ParenExpr(Parser* p);
-Node* Parser_BinExpr(Parser* p, int prec, Node* left);
+///
+/// \brief Sets the error message of a parser.
+///
+/// \param parser
+///     The parser.
+/// \param fmt
+///     The error message format.
+void Parser_SetError(
+    Parser*     parser,
+    const char* fmt,
+    ...
+    );
+
+///
+/// \brief Returns the error message of a parser.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The error message.
+const char* Parser_GetError(
+    Parser* parser
+    );
+
+///
+/// \brief Parses an expression.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_Expr(
+    Parser* parser
+    );
+
+///
+/// \brief Parses a primary expression.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_PrimaryExpr(
+    Parser* parser
+    );
+
+///
+/// \brief Parses a secondary expression.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_SecondaryExpr(
+    Parser* parser
+    );
+
+///
+/// \brief Parses an expression in parenthesis.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_ParenExpr(
+    Parser* parser
+    );
+
+///
+/// \brief Parses a binary expression.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_BinExpr(
+    Parser* parser,
+    int     prec,
+    Node*   left
+    );
 
 #endif

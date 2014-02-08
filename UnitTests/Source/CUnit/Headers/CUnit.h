@@ -338,13 +338,13 @@
 
 #ifndef FALSE
   /** Deprecated (version 2.0-2). @deprecated Use CU_FALSE. */
-  #define FALSE	0
+  #define FALSE    0
 #endif
 
 /** Deprecated (version 2.0-2). @deprecated Use CU_MAX_TEST_NAME_LENGTH. */
-#define MAX_TEST_NAME_LENGTH	256
+#define MAX_TEST_NAME_LENGTH    256
 /** Deprecated (version 2.0-2). @deprecated Use CU_MAX_SUITE_NAME_LENGTH. */
-#define MAX_SUITE_NAME_LENGTH	256
+#define MAX_SUITE_NAME_LENGTH    256
 
 /** Deprecated (version 1). @deprecated Use CU_ASSERT_FATAL. */
 #define ASSERT(value) { if (FALSE == (int)(value)) { CU_assertImplementation((BOOL)value, __LINE__, #value, __FILE__, "", FALSE); return; }}

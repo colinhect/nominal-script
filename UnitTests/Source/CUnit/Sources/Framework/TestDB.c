@@ -587,7 +587,7 @@ CU_ErrorCode CU_register_nsuites(int suite_count, ...)
       }
     }
   }
-	return CU_get_error();
+    return CU_get_error();
 }
 
 /*------------------------------------------------------------------------*/
@@ -2622,62 +2622,62 @@ static void test_cleanup_test(void)
 /*--------------------------------------------------*/
 static void group_A_case_1(void)
 {
-	CU_ASSERT_TRUE(1);
+    CU_ASSERT_TRUE(1);
 }
 
 static void group_A_case_2(void)
 {
-	CU_ASSERT_TRUE(2);
+    CU_ASSERT_TRUE(2);
 }
 
 static void group_B_case_1(void)
 {
-	CU_ASSERT_FALSE(1);
+    CU_ASSERT_FALSE(1);
 }
 
 static void group_B_case_2(void)
 {
-	CU_ASSERT_FALSE(2);
+    CU_ASSERT_FALSE(2);
 }
 
 static CU_TestInfo group_A_test_cases[] = {
-	{ "1", group_A_case_1 },
-	{ "2", group_A_case_2 },
-	CU_TEST_INFO_NULL,
+    { "1", group_A_case_1 },
+    { "2", group_A_case_2 },
+    CU_TEST_INFO_NULL,
 };
 
 static CU_TestInfo group_B_test_cases[] = {
-	{ "1", group_B_case_1 },
-	{ "2", group_B_case_2 },
-	CU_TEST_INFO_NULL,
+    { "1", group_B_case_1 },
+    { "2", group_B_case_2 },
+    CU_TEST_INFO_NULL,
 };
 
 static CU_TestInfo group_C_test_cases[] = {
-	{ "1", group_B_case_1 },
-	{ "1", group_B_case_2 },  /* duplicate test name */
-	CU_TEST_INFO_NULL,
+    { "1", group_B_case_1 },
+    { "1", group_B_case_2 },  /* duplicate test name */
+    CU_TEST_INFO_NULL,
 };
 
 static CU_SuiteInfo suites0[] = {
-	CU_SUITE_INFO_NULL,
+    CU_SUITE_INFO_NULL,
 };
 
 static CU_SuiteInfo suites1[] = {
-	{ "A1", NULL, NULL, group_A_test_cases },
-	{ "B1", NULL, NULL, group_B_test_cases },
-	CU_SUITE_INFO_NULL,
+    { "A1", NULL, NULL, group_A_test_cases },
+    { "B1", NULL, NULL, group_B_test_cases },
+    CU_SUITE_INFO_NULL,
 };
 
 static CU_SuiteInfo suites2[] = {
-	{ "A2", NULL, NULL, group_A_test_cases },
-	{ "B2", NULL, NULL, group_B_test_cases },
-	CU_SUITE_INFO_NULL,
+    { "A2", NULL, NULL, group_A_test_cases },
+    { "B2", NULL, NULL, group_B_test_cases },
+    CU_SUITE_INFO_NULL,
 };
 
 static CU_SuiteInfo suites3[] = {
-	{ "A3", NULL, NULL, group_A_test_cases },
-	{ "A3", NULL, NULL, group_C_test_cases },   /* duplicate suite name */
-	CU_SUITE_INFO_NULL,
+    { "A3", NULL, NULL, group_A_test_cases },
+    { "A3", NULL, NULL, group_C_test_cases },   /* duplicate suite name */
+    CU_SUITE_INFO_NULL,
 };
 
 static void test_register_suite(void)

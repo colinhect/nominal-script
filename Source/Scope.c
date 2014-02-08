@@ -26,12 +26,17 @@
 
 #include <stdlib.h>
 
-Hash HashStringId(UserData key)
+Hash HashStringId(
+    UserData    key
+    )
 {
     return (Hash)key;
 }
 
-int CompareStringId(UserData left, UserData right)
+int CompareStringId(
+    UserData    left,
+    UserData    right
+    )
 {
     if (left == right)
     {
@@ -45,84 +50,109 @@ int CompareStringId(UserData left, UserData right)
 
 typedef struct _ScopeNode
 {
-    HashTable* hashTable;
-    struct _ScopeNode* next;
+    HashTable*          hashTable;
+    struct _ScopeNode*  next;
 } ScopeNode;
 
 typedef struct _Scope
 {
-    ScopeNode* top;
+    ScopeNode*  top;
 } Scope;
 
-ScopeNode* ScopeNode_Create()
+ScopeNode* ScopeNode_Create(
+    void
+    )
 {
-    ScopeNode* n = (ScopeNode*)malloc(sizeof(ScopeNode));
-    n->hashTable = HashTable_Create(HashStringId, CompareStringId, 10);
-    n->next = NULL;
-    return n;
+    ScopeNode* node = (ScopeNode*)malloc(sizeof(ScopeNode));
+    node->hashTable = HashTable_Create(HashStringId, CompareStringId, 10);
+    node->next = NULL;
+    return node;
 }
 
-void ScopeNode_Free(ScopeNode* n)
+void ScopeNode_Free(
+    ScopeNode* node
+    )
 {
-    HashTable_Free(n->hashTable, NULL, NULL);
-    free(n);
+    HashTable_Free(node->hashTable, NULL, NULL);
+    free(node);
 }
 
-Scope* Scope_Create()
+Scope* Scope_Create(
+    void
+    )
 {
-    Scope* s = (Scope*)malloc(sizeof(Scope));
-    s->top = ScopeNode_Create();
-    return s;
+    Scope* scope = (Scope*)malloc(sizeof(Scope));
+    scope->top = ScopeNode_Create();
+    return scope;
 }
 
-void Scope_Free(Scope* s)
+void Scope_Free(
+    Scope*  scope
+    )
 {
-    ScopeNode* n = s->top;
-    while (n)
+    ScopeNode* node = scope->top;
+    while (node)
     {
-        ScopeNode* t = n->next;
-        ScopeNode_Free(n);
-        n = t;
+        ScopeNode* t = node->next;
+        ScopeNode_Free(node);
+        node = t;
     }
-    free(s);
+    free(scope);
 }
 
-int Scope_Let(Scope* s, StringId id, NomValue value)
+bool Scope_Let(
+    Scope*      scope,
+    StringId    id,
+    NomValue    value
+    )
 {
-    return HashTable_Insert(s->top->hashTable, (UserData)id, (UserData)value.raw);
+    return HashTable_Insert(scope->top->hashTable, (UserData)id, (UserData)value.raw);
 }
 
-int Scope_Set(Scope* s, StringId id, NomValue value)
+bool Scope_Set(
+    Scope*      scope,
+    StringId    id,
+    NomValue    value
+    )
 {
-    return HashTable_Set(s->top->hashTable, (UserData)id, (UserData)value.raw);
+    return HashTable_Set(scope->top->hashTable, (UserData)id, (UserData)value.raw);
 }
 
-NomValue Scope_Get(Scope* s, StringId id)
+NomValue Scope_Get(
+    Scope*      scope,
+    StringId    id
+    )
 {
-    NomValue    value = { 0 };
-    ScopeNode*  n = s->top;
-    while (n)
+    NomValue value = { 0 };
+    ScopeNode* node = scope->top;
+    while (node)
     {
-        if (HashTable_Find(n->hashTable, (UserData)id, (UserData*)&value.raw))
+        if (HashTable_Find(node->hashTable, (UserData)id, (UserData*)&value.raw))
         {
             return value;
         }
-        n = n->next;
+        node = node->next;
     }
 
     return NOM_NIL;
 }
 
-void Scope_Begin(Scope* s, StringId id)
+void Scope_Begin(
+    Scope*      scope,
+    StringId    id
+    )
 {
-    ScopeNode* n = ScopeNode_Create();
-    n->next = s->top;
-    s->top = n;
+    ScopeNode* node = ScopeNode_Create();
+    node->next = scope->top;
+    scope->top = node;
 }
 
-void Scope_End(Scope* s, StringId id)
+void Scope_End(
+    Scope*      scope,
+    StringId    id
+    )
 {
-    ScopeNode* n = s->top;
-    s->top = n->next;
-    ScopeNode_Free(n);
+    ScopeNode* node = scope->top;
+    scope->top = node->next;
+    ScopeNode_Free(node);
 }
