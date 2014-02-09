@@ -26,63 +26,19 @@
 
 #include <stdlib.h>
 
-Hash HashStringId(
-    UserData    key
-    )
-{
-    return (Hash)key;
-}
-
-int CompareStringId(
-    UserData    left,
-    UserData    right
-    )
-{
-    if (left == right)
-    {
-        return 0;
-    }
-    else
-    {
-        return left < right ? -1 : 1;
-    }
-}
-
-typedef struct _ScopeNode
-{
-    HashTable*          hashTable;
-    struct _ScopeNode*  next;
-} ScopeNode;
+#define SCOPE_BUCKET_COUNT  (10)
 
 typedef struct _Scope
 {
-    ScopeNode*  top;
+    HashTable*  hashTable;
 } Scope;
-
-ScopeNode* ScopeNode_Create(
-    void
-    )
-{
-    ScopeNode* node = (ScopeNode*)malloc(sizeof(ScopeNode));
-    node->hashTable = HashTable_Create(HashStringId, CompareStringId, 10);
-    node->next = NULL;
-    return node;
-}
-
-void ScopeNode_Free(
-    ScopeNode* node
-    )
-{
-    HashTable_Free(node->hashTable, NULL, NULL);
-    free(node);
-}
 
 Scope* Scope_Create(
     void
     )
 {
     Scope* scope = (Scope*)malloc(sizeof(Scope));
-    scope->top = ScopeNode_Create();
+    scope->hashTable = HashTable_Create(HashIdentity, CompareIdentity, SCOPE_BUCKET_COUNT);
     return scope;
 }
 
@@ -90,13 +46,7 @@ void Scope_Free(
     Scope*  scope
     )
 {
-    ScopeNode* node = scope->top;
-    while (node)
-    {
-        ScopeNode* t = node->next;
-        ScopeNode_Free(node);
-        node = t;
-    }
+    HashTable_Free(scope->hashTable, NULL, NULL);
     free(scope);
 }
 
@@ -106,7 +56,7 @@ bool Scope_Let(
     NomValue    value
     )
 {
-    return HashTable_Insert(scope->top->hashTable, (UserData)id, (UserData)value.raw);
+    return HashTable_Insert(scope->hashTable, (UserData)id, (UserData)value.raw);
 }
 
 bool Scope_Set(
@@ -115,44 +65,24 @@ bool Scope_Set(
     NomValue    value
     )
 {
-    return HashTable_Set(scope->top->hashTable, (UserData)id, (UserData)value.raw);
+    return HashTable_Set(scope->hashTable, (UserData)id, (UserData)value.raw);
 }
 
-NomValue Scope_Get(
+bool Scope_Get(
     Scope*      scope,
-    StringId    id
+    StringId    id,
+    NomValue*   result
     )
 {
     NomValue value = { 0 };
-    ScopeNode* node = scope->top;
-    while (node)
+    if (HashTable_Find(scope->hashTable, (UserData)id, (UserData*)&value.raw))
     {
-        if (HashTable_Find(node->hashTable, (UserData)id, (UserData*)&value.raw))
-        {
-            return value;
-        }
-        node = node->next;
+        *result = value;
+        return true;
     }
-
-    return NOM_NIL;
-}
-
-void Scope_Begin(
-    Scope*      scope,
-    StringId    id
-    )
-{
-    ScopeNode* node = ScopeNode_Create();
-    node->next = scope->top;
-    scope->top = node;
-}
-
-void Scope_End(
-    Scope*      scope,
-    StringId    id
-    )
-{
-    ScopeNode* node = scope->top;
-    scope->top = node->next;
-    ScopeNode_Free(node);
+    else
+    {
+        *result = NOM_NIL;
+        return false;
+    }
 }

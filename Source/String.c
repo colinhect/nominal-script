@@ -28,32 +28,48 @@
 #include <stdlib.h>
 #include <string.h>
 
-NomValue NomString_FromString(NomState* s, const char* string)
+bool NomString_Check(
+    NomValue    value
+    )
+{
+    return value.fields.type == NOM_TYPE_STRING
+        || value.fields.type == NOM_TYPE_STATIC_STRING;
+}
+
+NomValue NomString_FromString(
+    NomState*   state,
+    const char* string
+    )
 {
     NomValue value = { 0 };
     value.fields.type = NOM_TYPE_STRING;
-    value.fields.data.handle = Heap_Alloc(s->heap, strlen(string) + 1, free);
-    strcpy((char*)Heap_GetData(s->heap, value.fields.data.handle), string);
+    value.fields.data.handle = Heap_Alloc(state->heap, strlen(string) + 1, free);
+    strcpy((char*)Heap_GetData(state->heap, value.fields.data.handle), string);
     return value;
 }
 
-const char* NomString_AsString(NomState* s, NomValue value)
+const char* NomString_AsString(
+    NomState*   state,
+    NomValue    value
+    )
 {
     switch (value.fields.type)
     {
     case NOM_TYPE_STRING:
-        return (const char*)Heap_GetData(s->heap, value.fields.data.handle);
+        return (const char*)Heap_GetData(state->heap, value.fields.data.handle);
         break;
     case NOM_TYPE_STATIC_STRING:
-        return StringPool_Find(s->stringPool, value.fields.data.handle);
+        return StringPool_Find(state->stringPool, value.fields.data.handle);
         break;
     default:
-        NomState_SetError(s, "Value is not a string");
+        NomState_SetError(state, "Value is not a string");
     }
     return NULL;
 }
 
-NomValue NomString_FromId(StringId id)
+NomValue NomString_FromId(
+    StringId    id
+    )
 {
     NomValue value = { 0 };
     value.fields.type = NOM_TYPE_STATIC_STRING;

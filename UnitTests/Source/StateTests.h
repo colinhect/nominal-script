@@ -30,13 +30,10 @@
 
 #define TEST_EXPR(expr, expected)\
     {\
-        NomState*   state;\
-        NomValue    value;\
-        state = NomState_Create();\
+        NomState* state = NomState_Create(); \
         CU_ASSERT(state != NULL);\
-        NomState_Execute(state, expr);\
+        NomValue value = NomState_Execute(state, expr);\
         CU_ASSERT(!NomState_ErrorOccurred(state));\
-        value = NomState_Pop(state);\
         CU_ASSERT(NomValue_Equals(value, expected));\
         NomState_Free(state);\
     }

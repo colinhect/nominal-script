@@ -23,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Real.h"
 
-int NomReal_Check(
+bool NomReal_Check(
     NomValue    value
     )
 {

@@ -28,22 +28,32 @@
 #include "StringPool.h"
 #include "Scope.h"
 
+#define STATE_MAX_STACK_SIZE    (1024)
+#define STATE_MAX_BYTE_CODE     (8096)
+
 typedef struct _NomState
 {
-    NomValue        stack[1024];
+    NomValue        stack[STATE_MAX_STACK_SIZE];
     size_t          sp;
 
-    unsigned char   byteCode[8096];
+    unsigned char   byteCode[STATE_MAX_BYTE_CODE];
     size_t          ip;
 
     Heap*           heap;
     StringPool*     stringPool;
-    Scope*          scope;
+    Scope*          globalScope;
 
     char            error[2048];
-    int             errorFlag;
+    bool            errorFlag;
 } NomState;
 
+///
+/// \brief Sets the error message of the state.
+///
+/// \param state
+///     The state.
+/// \param fmt
+///     The error message format.
 void NomState_SetError(
     NomState*   state,
     const char* fmt,

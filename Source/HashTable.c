@@ -43,7 +43,7 @@ typedef struct _HashTable
 
 // Gets a node for a specific key with the option of creating a new node if it
 // is not found
-bool HashTable_FindNode(
+bool FindNode(
     HashTable*      hashTable,
     UserData        key,
     bool            createNew,
@@ -165,7 +165,7 @@ bool HashTable_Insert(
     )
 {
     BucketNode* node = NULL;
-    if (HashTable_FindNode(hashTable, key, true, &node))
+    if (FindNode(hashTable, key, true, &node))
     {
         node->value = value;
         return true;
@@ -181,7 +181,7 @@ bool HashTable_Set(
     )
 {
     BucketNode* node = NULL;
-    if (HashTable_FindNode(hashTable, key, false, &node))
+    if (FindNode(hashTable, key, false, &node))
     {
         node->value = value;
         return true;
@@ -197,7 +197,7 @@ bool HashTable_Find(
     )
 {
     BucketNode* node = NULL;
-    if (HashTable_FindNode(hashTable, key, false, &node))
+    if (FindNode(hashTable, key, false, &node))
     {
         *value = node->value;
         return true;
@@ -214,7 +214,7 @@ bool HashTable_InsertOrFind(
     )
 {
     BucketNode* node = NULL;
-    if (!HashTable_FindNode(hashTable, key, true, &node))
+    if (!FindNode(hashTable, key, true, &node))
     {
         *existingValue = node->value;
         return true;
@@ -245,4 +245,26 @@ int CompareString(
     )
 {
     return strcmp((const char*)left, (const char*)right);
+}
+
+Hash HashIdentity(
+    UserData    key
+    )
+{
+    return (Hash)key;
+}
+
+int CompareIdentity(
+    UserData    left,
+    UserData    right
+    )
+{
+    if (left == right)
+    {
+        return 0;
+    }
+    else
+    {
+        return left < right ? -1 : 1;
+    }
 }

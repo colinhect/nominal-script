@@ -25,6 +25,7 @@
 #define NOMINAL_VALUE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct _NomState NomState;
 
@@ -69,8 +70,8 @@ NomValue NOM_NIL;
 /// \param value
 ///     The value in question.
 ///
-/// \returns 1 if the value is a real or integer; 0 otherwise.
-int NomValue_IsNumber(
+/// \returns True if the value is a real or integer; false otherwise.
+bool NomValue_IsNumber(
     NomValue    value
     );
 
@@ -98,14 +99,33 @@ double NomValue_AsDouble(
     NomValue    value
     );
 
-int NomValue_Equals(
+///
+/// \brief Returns whether a Nominal value is equal to another.
+///
+/// \param value
+///     The value to compare.
+/// \param other
+///     The other value to compare.
+///
+/// \returns True if they are equal; false otherwise.
+bool NomValue_Equals(
     NomValue    value,
     NomValue    other
     );
 
+///
+/// \brief Gets a representation of a Nominal value as a string.
+///
+/// \param state
+///     The state.
+/// \param dest
+///     The destination string to copy to.
+/// \param value
+///     The value.
 void NomValue_AsString(
     NomState*   state,
     char*       dest,
-    NomValue    value);
+    NomValue    value
+    );
 
 #endif

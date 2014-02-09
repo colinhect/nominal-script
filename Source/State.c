@@ -33,17 +33,18 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+#define STRING_POOL_STRING_COUNT    (128)
+
 NomState* NomState_Create(
+    void
     )
 {
-    NomState* state;
-    
-    state = (NomState*)malloc(sizeof(NomState));
+    NomState* state = (NomState*)malloc(sizeof(NomState));
     state->sp = 0;
     state->ip = 0;
     state->heap = Heap_Create();
-    state->stringPool = StringPool_Create(128);
-    state->scope = Scope_Create();
+    state->stringPool = StringPool_Create(STRING_POOL_STRING_COUNT);
+    state->globalScope = Scope_Create();
     state->errorFlag = 0;
 
     return state;
@@ -53,7 +54,7 @@ void NomState_Free(
     NomState*   state
     )
 {
-    Scope_Free(state->scope);
+    Scope_Free(state->globalScope);
     StringPool_Free(state->stringPool);
     Heap_Free(state->heap);
     free(state);
@@ -69,7 +70,7 @@ void NomState_SetError(
     va_start(args, fmt);
     vsprintf(state->error, fmt, args);
     va_end(args);
-    state->errorFlag = 1;
+    state->errorFlag = true;
 }
 
 #define TOP()           state->stack[state->sp - 1]
@@ -85,11 +86,11 @@ void NomState_SetError(
     }\
     else if (NomReal_Check(l) || NomReal_Check(r))\
     {\
-        res = NomReal_FromFloat(NomValue_AsFloat(l) op NomValue_AsFloat(r));\
+        result = NomReal_FromFloat(NomValue_AsFloat(l) op NomValue_AsFloat(r));\
     }\
     else\
     {\
-        res = NomInteger_FromInt(NomValue_AsInt(l) op NomValue_AsInt(r));\
+        result = NomInteger_FromInt(NomValue_AsInt(l) op NomValue_AsInt(r));\
     }
 
 #define NEG(v)\
@@ -100,65 +101,63 @@ void NomState_SetError(
     }\
     else if (NomReal_Check(v))\
     {\
-        res = NomReal_FromFloat(-NomValue_AsFloat(v));\
+        result = NomReal_FromFloat(-NomValue_AsFloat(v));\
     }\
     else\
     {\
-        res = NomInteger_FromInt(-NomValue_AsInt(v));\
+        result = NomInteger_FromInt(-NomValue_AsInt(v));\
     }
 
-void NomState_Execute(
+NomValue NomState_Execute(
     NomState*   state,
     const char* source
     )
 {
-    Parser* p;
-    Node*   node;
-    size_t  end;
+    state->errorFlag = false;
 
-    state->errorFlag = 0;
-
-    p = Parser_Create(source, state->stringPool);
-    node = Parser_Expr(p);
+    Parser* p = Parser_Create(source, state->stringPool);
+    Node* node = Parser_Expr(p);
 
     if (!node)
     {
         NomState_SetError(state, Parser_GetError(p));
-        return;
+        return NOM_NIL;
     }
 
-    end = GenerateCode(node, state->byteCode, state->ip);
+    size_t end = GenerateCode(node, state->byteCode, state->ip);
     Node_Free(node);
+
+    Scope* scope = state->globalScope;
 
     while (state->ip < end && !state->errorFlag)
     {
         StringId id;
         NomValue l;
         NomValue r;
-        NomValue res;
+        NomValue result;
 
         OpCode op = (OpCode)state->byteCode[state->ip++];
         switch (op)
         {
         case OP_PUSH:
-            res = READAS(NomValue);
-            PUSH(res);
+            result = READAS(NomValue);
+            PUSH(result);
             break;
         case OP_GET:
             id = READAS(StringId);
-            res = Scope_Get(state->scope, id);
-            PUSH(res);
+            Scope_Get(scope, id, &result);
+            PUSH(result);
             break;
         case OP_SET:
             id = READAS(StringId);
-            if (!Scope_Set(state->scope, id, TOP()))
+            if (!Scope_Set(scope, id, TOP()))
             {
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
             break;
         case OP_LET:
             id = READAS(StringId);
-            if (!Scope_Let(state->scope, id, TOP()))
+            if (!Scope_Let(scope, id, TOP()))
             {
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
             }
@@ -167,50 +166,48 @@ void NomState_Execute(
             l = POP();
             r = POP();
             ARITH(l, r, +, "add");
-            PUSH(res);
+            PUSH(result);
             break;
         case OP_SUB:
             l = POP();
             r = POP();
             ARITH(l, r, -, "subtract");
-            PUSH(res);
+            PUSH(result);
             break;
         case OP_MUL:
             l = POP();
             r = POP();
             ARITH(l, r, *, "multiply");
-            PUSH(res);
+            PUSH(result);
             break;
         case OP_DIV:
             l = POP();
             r = POP();
             ARITH(l, r, /, "divide");
-            PUSH(res);
+            PUSH(result);
             break;
         case OP_NEG:
             l = POP();
             NEG(l);
-            PUSH(res);
+            PUSH(result);
             break;
         }
     }
-}
 
-NomValue NomState_Pop(
-    NomState*   state
-    )
-{
+    // Return the result
     if (state->sp == 0)
     {
         return NOM_NIL;
     }
     else
     {
-        return POP();
+        NomValue result = POP();
+        state->sp = 0;
+        return result;
     }
 }
 
-int NomState_ErrorOccurred(
+bool NomState_ErrorOccurred(
     NomState*   state
     )
 {

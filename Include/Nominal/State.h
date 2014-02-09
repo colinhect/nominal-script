@@ -26,6 +26,8 @@
 
 #include "Nominal/Value.h"
 
+#include <stdbool.h>
+
 ///
 /// \brief A Nominal state.
 typedef struct _NomState NomState;
@@ -35,6 +37,7 @@ typedef struct _NomState NomState;
 ///
 /// \returns The new Nominal state.
 NomState* NomState_Create(
+    void
     );
 
 ///
@@ -46,19 +49,37 @@ void NomState_Free(
     NomState*   state
     );
 
-void NomState_Execute(
+///
+/// \brief Executes a snippet of Nominal source code and returns the value.
+///
+/// \remarks The execution could have encountered an error.  Check
+/// NomState_ErrorOccurred directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param source
+///     The Nominal source code.
+///
+/// \returns The result of the executed code.
+NomValue NomState_Execute(
     NomState*   state,
     const char* source
     );
 
-NomValue NomState_Pop(
+///
+/// \brief Returns whether an error has occurred.
+///
+/// \param state
+///     The state.
+bool NomState_ErrorOccurred(
     NomState*   state
     );
 
-int NomState_ErrorOccurred(
-    NomState*   state
-    );
-
+///
+/// \brief Returns the error message of the last error.
+///
+/// \param state
+///     The state.
 const char* NomState_GetError(
     NomState*   state
     );

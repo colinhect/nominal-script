@@ -51,32 +51,58 @@ void Scope_Free(
     );
 
 ///
-/// \brief Sets a new value
+/// \brief Creates a new variable in the scope.
+///
+/// \param scope
+///     The scope.
+/// \param id
+///     The string ID of the variable name.
+/// \param value
+///     The variable value.
+///
+/// \returns True if the new variable is created; false if the a varaible
+/// of the same name already exists.
 bool Scope_Let(
     Scope*      scope,
     StringId    id,
     NomValue    value
     );
 
+///
+/// \param Sets the value of an existing variable.
+///
+/// \param scope
+///     The scope.
+/// \param id
+///     The string ID of the variable name.
+/// \param value
+///     The new value for the variable.
+///
+/// \returns True if the variable was set; false if no variable of that name
+/// exists.
 bool Scope_Set(
     Scope*      scope,
     StringId    id,
     NomValue    value
     );
 
-NomValue Scope_Get(
+///
+/// \param Gets the value of of an existing variable.
+///
+/// \param scope
+///     The scope.
+/// \param id
+///     The string ID of the variable name.
+/// \param result
+///     A pointer to the value to set to the result of the existing variable
+///     on success.
+///
+/// \returns True if the variable was retrieved; false if no variable of that
+/// name exists.
+bool Scope_Get(
     Scope*      scope,
-    StringId    id
-    );
-
-void Scope_Begin(
-    Scope*      scope,
-    StringId    id
-    );
-
-void Scope_End(
-    Scope*      scope,
-    StringId    id
+    StringId    id,
+    NomValue*   result
     );
 
 #endif

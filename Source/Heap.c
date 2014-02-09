@@ -41,7 +41,9 @@ typedef struct _Heap
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
 
-Heap* Heap_Create()
+Heap* Heap_Create(
+    void
+    )
 {
     Heap* heap = (Heap*)malloc(sizeof(Heap));
 

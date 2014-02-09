@@ -198,4 +198,30 @@ int CompareString(
     UserData    right
     );
 
+///
+/// \brief Returns the literal value of the key as the hash.
+///
+/// \param key
+///     The key to hash.
+///
+/// \returns The hash value.
+Hash HashIdentity(
+    UserData    key
+    );
+
+///
+/// \brief Compares the literal value of the keys
+///
+/// \param left
+///     The left key.
+/// \param right
+///     The right key.
+///
+/// \returns 0 if the keys are equal; 1 if the left value is greater than the
+/// right; -1 if the left value is greater than the left.
+int CompareIdentity(
+    UserData    left,
+    UserData    right
+    );
+
 #endif

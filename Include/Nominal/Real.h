@@ -32,8 +32,8 @@
 /// \param value
 ///     The value in question.
 ///
-/// \returns 1 if the value is a real; 0 otherwise.
-int NomReal_Check(
+/// \returns True if the value is a real; false otherwise.
+bool NomReal_Check(
     NomValue value
     );
 

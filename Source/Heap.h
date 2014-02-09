@@ -40,7 +40,9 @@ typedef uint32_t ObjectHandle;
 /// \brief Creates a new heap.
 ///
 /// \returns The new heap.
-Heap* Heap_Create();
+Heap* Heap_Create(
+    void
+    );
 
 ///
 /// \brief Frees a heap.

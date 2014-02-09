@@ -32,8 +32,8 @@
 /// \param value
 ///     The value in question.
 ///
-/// \returns 1 if the value is an integer; 0 otherwise.
-int NomInteger_Check(
+/// \returns True if the value is an integer; false otherwise.
+bool NomInteger_Check(
     NomValue value
     );
 

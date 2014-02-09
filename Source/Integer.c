@@ -23,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Integer.h"
 
-int NomInteger_Check(
+bool NomInteger_Check(
     NomValue    value
     )
 {

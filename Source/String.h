@@ -28,6 +28,15 @@
 
 #include "StringPool.h"
 
-NomValue NomString_FromId(StringId id);
+///
+/// \brief Constructs a static string from a string ID.
+///
+/// \param id
+///     The string ID.
+///
+/// \returns The new string.
+NomValue NomString_FromId(
+    StringId    id
+    );
 
 #endif

@@ -32,15 +32,15 @@
 
 NomValue NOM_NIL = { NOM_TYPE_NIL, 0 };
 
-int NomValue_IsNumber(NomValue value)
+bool NomValue_IsNumber(NomValue value)
 {
     switch (value.fields.type)
     {
     case NOM_TYPE_INTEGER:
     case NOM_TYPE_REAL:
-        return 1;
+        return true;
     default:
-        return 0;
+        return false;
     }
 }
 
@@ -83,7 +83,7 @@ double NomValue_AsDouble(NomValue value)
     }
 }
 
-int NomValue_Equals(
+bool NomValue_Equals(
     NomValue    value,
     NomValue    other
     )
