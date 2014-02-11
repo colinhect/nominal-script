@@ -30,12 +30,69 @@ typedef size_t StringId;
 
 typedef struct _StringPool StringPool;
 
-StringPool* StringPool_Create(size_t stringCount);
-void StringPool_Free(StringPool* s);
+///
+/// \brief Creates a new string pool.
+///
+/// \param stringCount
+///     The maximum number of string the pool can contain.
+/// 
+/// \returns The new string pool.
+StringPool* StringPool_Create(
+    size_t  stringCount
+    );
 
-StringId StringPool_InsertOrFind(StringPool* s, const char* string);
-StringId StringPool_InsertOrFindSubString(StringPool* s, const char* string, size_t length);
+///
+/// \brief Frees a string pool.
+///
+/// \param stringPool
+///     The string pool to free.
+void StringPool_Free(
+    StringPool* stringPool
+    );
 
-const char* StringPool_Find(StringPool* s, StringId id);
+///
+/// \brief Inserts a new string or gets the ID of an existing string.
+///
+/// \param stringPool
+///     The string pool.
+/// \param string
+///     The string.
+///
+/// \returns The string ID associated with the given string.
+StringId StringPool_InsertOrFind(
+    StringPool* stringPool,
+    const char* string
+    );
+
+///
+/// \brief Inserts a new string or gets the ID of an existing string.
+///
+/// \param stringPool
+///     The string pool.
+/// \param string
+///     The string
+/// \param length
+///     The number of characters to include from the string.
+///
+/// \returns The string ID associated with the given string.
+StringId StringPool_InsertOrFindSubString(
+    StringPool* stringPool,
+    const char* string,
+    size_t      length
+    );
+
+///
+/// \brief Gets the string value from a string ID.
+///
+/// \param stringPool
+///     The string pool.
+/// \param id
+///     The ID of the string to get the value for.
+///
+/// \returns The string value; NULL if no string exists of the given ID.
+const char* StringPool_Find(
+    StringPool* stringPool,
+    StringId    id
+    );
 
 #endif

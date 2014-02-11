@@ -74,7 +74,7 @@ bool Scope_Get(
     NomValue*   result
     )
 {
-    NomValue value = { 0 };
+    NomValue value = NomValue_Nil();
     if (HashTable_Find(scope->hashTable, (UserData)id, (UserData*)&value.raw))
     {
         *result = value;
@@ -82,7 +82,6 @@ bool Scope_Get(
     }
     else
     {
-        *result = NOM_NIL;
         return false;
     }
 }

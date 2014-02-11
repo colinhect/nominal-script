@@ -121,7 +121,7 @@ NomValue NomState_Execute(
     if (!node)
     {
         NomState_SetError(state, Parser_GetError(p));
-        return NOM_NIL;
+        return NomValue_Nil();
     }
 
     size_t end = GenerateCode(node, state->byteCode, state->ip);
@@ -197,7 +197,7 @@ NomValue NomState_Execute(
     // Return the result
     if (state->sp == 0)
     {
-        return NOM_NIL;
+        return NomValue_Nil();
     }
     else
     {

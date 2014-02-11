@@ -35,50 +35,60 @@ typedef struct _StringPool
     StringId nextStringId;
 } StringPool;
 
-StringPool* StringPool_Create(size_t stringCount)
+StringPool* StringPool_Create(
+    size_t  stringCount
+    )
 {
-    StringPool* s = (StringPool*)malloc(sizeof(StringPool));
-    s->hashTable = HashTable_Create(HashString, CompareString, stringCount);
-    s->strings = (char**)malloc(sizeof(char*) * stringCount);
-    memset(s->strings, 0, sizeof(char*) * stringCount);
-    s->stringCount = stringCount;
-    s->nextStringId = 0;
-    return s;
+    StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
+    stringPool->hashTable = HashTable_Create(HashString, CompareString, stringCount);
+    stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
+    memset(stringPool->strings, 0, sizeof(char*) * stringCount);
+    stringPool->stringCount = stringCount;
+    stringPool->nextStringId = 0;
+    return stringPool;
 }
 
-void StringPool_Free(StringPool* s)
+void StringPool_Free(
+    StringPool* stringPool
+    )
 {
     StringId i;
-    for (i = 0; i < s->stringCount; ++i)
+    for (i = 0; i < stringPool->stringCount; ++i)
     {
-        if (s->strings[i])
+        if (stringPool->strings[i])
         {
-            free(s->strings[i]);
+            free(stringPool->strings[i]);
         }
     }
 
-    HashTable_Free(s->hashTable, NULL, NULL);
-    free(s);
+    HashTable_Free(stringPool->hashTable, NULL, NULL);
+    free(stringPool);
 }
 
-StringId StringPool_InsertOrFind(StringPool* s, const char* string)
+StringId StringPool_InsertOrFind(
+    StringPool* stringPool,
+    const char* string
+    )
 {
-    return StringPool_InsertOrFindSubString(s, string, strlen(string));
+    return StringPool_InsertOrFindSubString(stringPool, string, strlen(string));
 }
 
-StringId StringPool_InsertOrFindSubString(StringPool* s, const char* string, size_t length)
+StringId StringPool_InsertOrFindSubString(
+    StringPool* stringPool,
+    const char* string,
+    size_t      length)
 {
-    UserData outputId;
-    StringId id;
     char* newString = (char*)malloc(sizeof(char) * (length + 1));
     memcpy(newString, string, length);
     newString[length] = '\0';
 
-    if (!HashTable_InsertOrFind(s->hashTable, (UserData)newString, (UserData)s->nextStringId, &outputId))
+    StringId id;
+    UserData outputId = 0;
+    if (!HashTable_InsertOrFind(stringPool->hashTable, (UserData)newString, (UserData)stringPool->nextStringId, &outputId))
     {
-        id = s->nextStringId;
-        s->strings[id] = newString;
-        ++s->nextStringId;
+        id = stringPool->nextStringId;
+        stringPool->strings[id] = newString;
+        ++stringPool->nextStringId;
     }
     else
     {
@@ -88,7 +98,10 @@ StringId StringPool_InsertOrFindSubString(StringPool* s, const char* string, siz
     return id;
 }
 
-const char* StringPool_Find(StringPool* s, StringId id)
+const char* StringPool_Find(
+    StringPool* stringPool,
+    StringId    id
+    )
 {
-    return s->strings[id];
+    return stringPool->strings[id];
 }

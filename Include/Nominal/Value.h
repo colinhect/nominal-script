@@ -61,8 +61,10 @@ typedef union
 } NomValue;
 
 ///
-/// \brief The constant value for nil.
-NomValue NOM_NIL;
+/// \brief Creates a new Nominal nil value.
+NomValue NomValue_Nil(
+    void
+    );
 
 ///
 /// \brief Checks whether a Nominal value is a real or integer.

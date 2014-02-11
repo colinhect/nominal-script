@@ -30,7 +30,15 @@
 #include <stdio.h>
 #include <string.h>
 
-NomValue NOM_NIL = { NOM_TYPE_NIL, 0 };
+NomValue NomValue_Nil(
+    void
+    )
+{
+    NomValue value;
+    value.raw = 0;
+    value.fields.type = NOM_TYPE_NIL;
+    return value;
+}
 
 bool NomValue_IsNumber(NomValue value)
 {

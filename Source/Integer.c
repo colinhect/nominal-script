@@ -34,7 +34,7 @@ NomValue NomInteger_FromInt(
     int value
     )
 {
-    NomValue newValue = { 0 };
+    NomValue newValue;
     newValue.fields.type = NOM_TYPE_INTEGER;
     newValue.fields.data.integerValue = value;
     return newValue;
@@ -44,7 +44,7 @@ NomValue NomInteger_FromUnsignedLongLong(
     unsigned long long    value
     )
 {
-    NomValue newValue = { 0 };
+    NomValue newValue;
     newValue.fields.type = NOM_TYPE_INTEGER;
     newValue.fields.data.integerValue = (int)value;
     return newValue;

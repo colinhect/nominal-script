@@ -97,6 +97,6 @@ void* Heap_GetData(
     ObjectHandle    handle
     )
 {
-    HeapObject*    object = &heap->objects[handle];
+    HeapObject* object = &heap->objects[handle];
     return object->data;
 }

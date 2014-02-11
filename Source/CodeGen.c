@@ -43,7 +43,7 @@ size_t GenerateCode(
     {
     case NODE_NIL:
         OPCODE(OP_PUSH);
-        VALUE(NOM_NIL);
+        VALUE(NomValue_Nil());
         break;
     case NODE_INTEGER:
         OPCODE(OP_PUSH);
