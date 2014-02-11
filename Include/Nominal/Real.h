@@ -38,7 +38,7 @@ bool NomReal_Check(
     );
 
 ///
-/// \brief Constructs a Nominal real value from a float.
+/// \brief Creates a Nominal real value from a float.
 ///
 /// \param value
 ///     The value.
@@ -49,7 +49,7 @@ NomValue NomReal_FromFloat(
     );
 
 ///
-/// \brief Constructs a Nominal real value from a double.
+/// \brief Creates a Nominal real value from a double.
 ///
 /// \param value
 ///     The value.

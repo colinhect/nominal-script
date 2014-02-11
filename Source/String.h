@@ -29,12 +29,12 @@
 #include "StringPool.h"
 
 ///
-/// \brief Constructs a static string from a string ID.
+/// \brief Creates a static string from a string ID.
 ///
 /// \param id
 ///     The string ID.
 ///
-/// \returns The new string.
+/// \returns The new Nominal string.
 NomValue NomString_FromId(
     StringId    id
     );

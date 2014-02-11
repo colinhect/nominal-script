@@ -38,7 +38,7 @@ bool NomInteger_Check(
     );
 
 ///
-/// \brief Constructs a Nominal integer value from an int.
+/// \brief Creates a Nominal integer value from an int.
 ///
 /// \param value
 ///     The value.
@@ -49,7 +49,7 @@ NomValue NomInteger_FromInt(
     );
 
 ///
-/// \brief Constructs a Nominal integer value from an unsigned long long.
+/// \brief Creates a Nominal integer value from an unsigned long long.
 ///
 /// \param value
 ///     The value.

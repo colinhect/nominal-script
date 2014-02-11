@@ -29,7 +29,7 @@
 #include <stdbool.h>
 
 ///
-/// \brief The data type used for keys/values in a hash table.
+/// \brief The data type used for keys/values/contexts in a hash table.
 typedef uint64_t UserData;
 
 ///
@@ -41,10 +41,13 @@ typedef uint64_t Hash;
 ///
 /// \param key
 ///     The key to hash.
+/// \param context
+///     The context.
 ///
 /// \returns The hash value.
 typedef Hash (*HashFunction)(
-    UserData    key
+    UserData    key,
+    UserData    context
     );
 
 ///
@@ -54,11 +57,14 @@ typedef Hash (*HashFunction)(
 ///     The left operand.
 /// \param right
 ///     The right operand.
+/// \param context
+///     The context.
 ///
 /// \returns 0 if the values are equal; non-zero otherwise.
 typedef int (*CompareFunction)(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     );
 
 ///
@@ -72,6 +78,8 @@ typedef struct _HashTable HashTable;
 ///     The hash function to use.
 /// \param compare
 ///     The compare function to use.
+/// \param context
+///        The context passed to the hash/compare functions.
 /// \param bucketCount
 ///     The number of buckets to use.
 ///
@@ -79,6 +87,7 @@ typedef struct _HashTable HashTable;
 HashTable* HashTable_Create(
     HashFunction    hash,
     CompareFunction compare,
+    UserData        context,
     size_t          bucketCount
     );
 
@@ -178,10 +187,13 @@ bool HashTable_InsertOrFind(
 ///
 /// \param key
 ///     The string to hash (casted to const char*).
+/// \param context
+///     The context (ignored).
 ///
 /// \returns The hash value.
 Hash HashString(
-    UserData    key
+    UserData    key,
+    UserData    context
     );
 
 ///
@@ -191,11 +203,14 @@ Hash HashString(
 ///     The left string (casted to const char*).
 /// \param right
 ///     The right string (casted to const char*).
+/// \param context
+///     The context (ignored).
 ///
 /// \returns 0 if the string are equal; non-zero otherwise.
 int CompareString(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     );
 
 ///
@@ -203,10 +218,13 @@ int CompareString(
 ///
 /// \param key
 ///     The key to hash.
-///
+/// \param context
+///     The context (ignored).
+/// 
 /// \returns The hash value.
 Hash HashIdentity(
-    UserData    key
+    UserData    key,
+    UserData    context
     );
 
 ///
@@ -216,12 +234,15 @@ Hash HashIdentity(
 ///     The left key.
 /// \param right
 ///     The right key.
+/// \param context
+///     The context (ignored).
 ///
 /// \returns 0 if the keys are equal; 1 if the left value is greater than the
 /// right; -1 if the left value is greater than the left.
 int CompareIdentity(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     );
 
 #endif

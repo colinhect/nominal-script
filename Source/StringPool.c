@@ -40,7 +40,7 @@ StringPool* StringPool_Create(
     )
 {
     StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
-    stringPool->hashTable = HashTable_Create(HashString, CompareString, stringCount);
+    stringPool->hashTable = HashTable_Create(HashString, CompareString, 0, stringCount);
     stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
     memset(stringPool->strings, 0, sizeof(char*) * stringCount);
     stringPool->stringCount = stringCount;

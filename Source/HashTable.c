@@ -37,6 +37,7 @@ typedef struct _HashTable
 {
     HashFunction    hash;
     CompareFunction compare;
+    UserData        context;
     BucketNode**    buckets;
     size_t          bucketCount;
 } HashTable;
@@ -51,7 +52,7 @@ bool FindNode(
     )
 {
     // Hash the key
-    Hash hash = hashTable->hash(key);
+    Hash hash = hashTable->hash(key, hashTable->context);
     hash = hash % hashTable->bucketCount;
 
     // Find the first node of the bucket for the hash
@@ -62,7 +63,7 @@ bool FindNode(
     while (curr)
     {
         // Check if this is the right node
-        if (hashTable->compare(curr->key, key) == 0)
+        if (hashTable->compare(curr->key, key, hashTable->context) == 0)
         {
             // Found the node
             *node = curr;
@@ -112,12 +113,14 @@ bool FindNode(
 HashTable* HashTable_Create(
     HashFunction    hash,
     CompareFunction compare,
+    UserData        context,
     size_t          bucketCount
     )
 {
     HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
     hashTable->hash = hash;
     hashTable->compare = compare;
+    hashTable->context = context;
     hashTable->buckets = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
     memset(hashTable->buckets, 0, sizeof(BucketNode*) * bucketCount);
     hashTable->bucketCount = bucketCount;
@@ -224,9 +227,11 @@ bool HashTable_InsertOrFind(
 }
 
 Hash HashString(
-    UserData    key
+    UserData    key,
+    UserData    context
     )
 {
+    context;
     char* s = (char*)key;
     Hash hash = 5381;
 
@@ -241,24 +246,30 @@ Hash HashString(
 
 int CompareString(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     )
 {
+    context;
     return strcmp((const char*)left, (const char*)right);
 }
 
 Hash HashIdentity(
-    UserData    key
+    UserData    key,
+    UserData    context
     )
 {
+    context;
     return (Hash)key;
 }
 
 int CompareIdentity(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     )
 {
+    context;
     if (left == right)
     {
         return 0;

@@ -38,7 +38,7 @@ Scope* Scope_Create(
     )
 {
     Scope* scope = (Scope*)malloc(sizeof(Scope));
-    scope->hashTable = HashTable_Create(HashIdentity, CompareIdentity, SCOPE_BUCKET_COUNT);
+    scope->hashTable = HashTable_Create(HashIdentity, CompareIdentity, 0, SCOPE_BUCKET_COUNT);
     return scope;
 }
 
