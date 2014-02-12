@@ -158,6 +158,7 @@
     <ClInclude Include="Source\String.h" />
     <ClInclude Include="Source\StringPool.h" />
     <ClInclude Include="Source\Type.h" />
+    <ClInclude Include="Source\Value.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\ByteCode.c" />

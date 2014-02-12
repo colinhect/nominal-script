@@ -95,5 +95,8 @@
     <ClInclude Include="Source\MapTests.h">
       <Filter>Source</Filter>
     </ClInclude>
+    <ClInclude Include="Source\RealTests.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

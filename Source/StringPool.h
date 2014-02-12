@@ -24,6 +24,8 @@
 #ifndef STRINGPOOL_H
 #define STRINGPOOL_H
 
+#include "HashTable.h"
+
 #include <string.h>
 
 typedef size_t StringId;
@@ -91,6 +93,20 @@ StringId StringPool_InsertOrFindSubString(
 ///
 /// \returns The string value; NULL if no string exists of the given ID.
 const char* StringPool_Find(
+    StringPool* stringPool,
+    StringId    id
+    );
+
+///
+/// \brief Returns the hash from a string ID.
+///
+/// \param stringPool
+///     The string pool.
+/// \param id
+///     The ID of the string to get the hash for.
+///
+/// \returns The hash.
+Hash StringPool_Hash(
     StringPool* stringPool,
     StringId    id
     );

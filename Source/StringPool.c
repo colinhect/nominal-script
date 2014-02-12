@@ -22,17 +22,17 @@
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
 #include "StringPool.h"
-#include "HashTable.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 typedef struct _StringPool
 {
-    HashTable* hashTable;
-    char** strings;
-    size_t stringCount;
-    StringId nextStringId;
+    HashTable*  hashTable;
+    char**      strings;
+    Hash*       hashes;
+    size_t      stringCount;
+    StringId    nextStringId;
 } StringPool;
 
 StringPool* StringPool_Create(
@@ -40,9 +40,14 @@ StringPool* StringPool_Create(
     )
 {
     StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
-    stringPool->hashTable = HashTable_Create(HashString, CompareString, 0, stringCount);
+    stringPool->hashTable = HashTable_Create(HashString, CompareString, 0, stringCount * 2);
+
     stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
     memset(stringPool->strings, 0, sizeof(char*) * stringCount);
+
+    stringPool->hashes = (Hash*)malloc(sizeof(Hash) * stringCount);
+    memset(stringPool->hashes, 0, sizeof(Hash)* stringCount);
+
     stringPool->stringCount = stringCount;
     stringPool->nextStringId = 0;
     return stringPool;
@@ -88,6 +93,7 @@ StringId StringPool_InsertOrFindSubString(
     {
         id = stringPool->nextStringId;
         stringPool->strings[id] = newString;
+        stringPool->hashes[id] = HashString((UserData)newString, 0);
         ++stringPool->nextStringId;
     }
     else
@@ -104,4 +110,12 @@ const char* StringPool_Find(
     )
 {
     return stringPool->strings[id];
+}
+
+Hash StringPool_Hash(
+    StringPool* stringPool,
+    StringId    id
+    )
+{
+    return stringPool->hashes[id];
 }

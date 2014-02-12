@@ -21,67 +21,18 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Scope.h"
-#include "HashTable.h"
+#ifndef REALTESTS_H
+#define REALTESTS_H
 
-#include <stdlib.h>
+#include "Basic.h"
 
-#define SCOPE_BUCKET_COUNT  (10)
+#include <Nominal.h>
 
-typedef struct _Scope
+void Test_Real_ToAndFromDouble(void)
 {
-    HashTable*  hashTable;
-} Scope;
-
-Scope* Scope_Create(
-    void
-    )
-{
-    Scope* scope = (Scope*)malloc(sizeof(Scope));
-    scope->hashTable = HashTable_Create(HashIdentity, CompareIdentity, 0, SCOPE_BUCKET_COUNT);
-    return scope;
+    NomValue value = NomReal_FromDouble(1.234);
+    double doubleValue = NomNumber_AsDouble(value);
+    CU_ASSERT_DOUBLE_EQUAL(doubleValue, 1.234, 0.0001);
 }
 
-void Scope_Free(
-    Scope*  scope
-    )
-{
-    HashTable_Free(scope->hashTable, NULL, NULL);
-    free(scope);
-}
-
-bool Scope_Let(
-    Scope*      scope,
-    StringId    id,
-    NomValue    value
-    )
-{
-    return HashTable_Insert(scope->hashTable, (UserData)id, (UserData)value.data);
-}
-
-bool Scope_Set(
-    Scope*      scope,
-    StringId    id,
-    NomValue    value
-    )
-{
-    return HashTable_Set(scope->hashTable, (UserData)id, (UserData)value.data);
-}
-
-bool Scope_Get(
-    Scope*      scope,
-    StringId    id,
-    NomValue*   result
-    )
-{
-    NomValue value = NomValue_Nil();
-    if (HashTable_Find(scope->hashTable, (UserData)id, (UserData*)&value.data))
-    {
-        *result = value;
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
+#endif

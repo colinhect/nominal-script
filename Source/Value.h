@@ -21,67 +21,28 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Scope.h"
-#include "HashTable.h"
+#ifndef VALUE_H
+#define VALUE_H
 
-#include <stdlib.h>
-
-#define SCOPE_BUCKET_COUNT  (10)
-
-typedef struct _Scope
-{
-    HashTable*  hashTable;
-} Scope;
-
-Scope* Scope_Create(
-    void
-    )
-{
-    Scope* scope = (Scope*)malloc(sizeof(Scope));
-    scope->hashTable = HashTable_Create(HashIdentity, CompareIdentity, 0, SCOPE_BUCKET_COUNT);
-    return scope;
-}
-
-void Scope_Free(
-    Scope*  scope
-    )
-{
-    HashTable_Free(scope->hashTable, NULL, NULL);
-    free(scope);
-}
-
-bool Scope_Let(
-    Scope*      scope,
-    StringId    id,
-    NomValue    value
-    )
-{
-    return HashTable_Insert(scope->hashTable, (UserData)id, (UserData)value.data);
-}
-
-bool Scope_Set(
-    Scope*      scope,
-    StringId    id,
-    NomValue    value
-    )
-{
-    return HashTable_Set(scope->hashTable, (UserData)id, (UserData)value.data);
-}
-
-bool Scope_Get(
-    Scope*      scope,
-    StringId    id,
-    NomValue*   result
-    )
-{
-    NomValue value = NomValue_Nil();
-    if (HashTable_Find(scope->hashTable, (UserData)id, (UserData*)&value.data))
-    {
-        *result = value;
-        return true;
+#define SET_VALUE_BITS(offset, count, value, bits) \
+    { \
+    uint64_t mask = ((((uint64_t)1 << count) - 1) << offset); \
+    value.data = (((uint64_t)bits << offset) & mask) | (value.data & ~mask); \
     }
-    else
-    {
-        return false;
-    }
-}
+
+#define GET_VALUE_BITS(offset, count, value) \
+    ((value.data & ((((uint64_t)1 << count) - 1) << offset)) >> offset)
+
+#define SET_TYPE_BITS(value, bits)      SET_VALUE_BITS(61, 3, value, bits)
+#define GET_TYPE_BITS(value)            GET_VALUE_BITS(61, 3, value)
+
+#define SET_INTEGER_BITS(value, bits)   SET_VALUE_BITS(0, 61, value, bits)
+#define GET_INTEGER_BITS(value)         ((int64_t)GET_VALUE_BITS(0, 61, value))
+
+#define SET_REAL_BITS(value, bits)      SET_VALUE_BITS(0, 32, value, bits)
+#define GET_REAL_BITS(value)            ((uint64_t)GET_VALUE_BITS(0, 32, value))
+
+#define SET_ID_BITS(value, bits)        SET_VALUE_BITS(0, 48, value, bits)
+#define GET_ID_BITS(value)              ((uint64_t)GET_VALUE_BITS(0, 48, value))
+
+#endif

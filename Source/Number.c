@@ -26,6 +26,7 @@
 #include "Nominal/Real.h"
 
 #include "Type.h"
+#include "Value.h"
 
 #include <float.h>
 #include <math.h>
@@ -34,7 +35,7 @@
 
 bool NomNumber_Check(NomValue value)
 {
-    switch (value.fields.type)
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_INTEGER:
     case TYPE_REAL:
@@ -46,12 +47,15 @@ bool NomNumber_Check(NomValue value)
 
 int NomNumber_AsInt(NomValue value)
 {
-    switch (value.fields.type)
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_INTEGER:
-        return value.fields.data.integerValue;
+        return GET_INTEGER_BITS(value);
     case TYPE_REAL:
-        return (int)value.fields.data.realValue;
+        {
+            uint64_t v = GET_REAL_BITS(value);
+            return (int)*((float*)&v);
+        }
     default:
         return -1;
     }
@@ -59,12 +63,15 @@ int NomNumber_AsInt(NomValue value)
 
 float NomNumber_AsFloat(NomValue value)
 {
-    switch (value.fields.type)
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_INTEGER:
-        return (float)value.fields.data.integerValue;
+        return (float)GET_INTEGER_BITS(value);
     case TYPE_REAL:
-        return value.fields.data.realValue;
+        {
+            uint64_t v = GET_REAL_BITS(value);
+            return *((float*)&v);
+        }
     default:
         return NAN;
     }
@@ -72,12 +79,15 @@ float NomNumber_AsFloat(NomValue value)
 
 double NomNumber_AsDouble(NomValue value)
 {
-    switch (value.fields.type)
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_INTEGER:
-        return (double)value.fields.data.integerValue;
+        return (double)GET_INTEGER_BITS(value);
     case TYPE_REAL:
-        return (double)value.fields.data.realValue;
+        {
+            uint64_t v = GET_REAL_BITS(value);
+            return (double)*((float*)&v);
+        }
     default:
         return NAN;
     }

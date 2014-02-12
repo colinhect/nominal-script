@@ -107,7 +107,10 @@ Node* Parser_Exprs(
         exprs = Parser_Exprs(parser);
     }
 
-    return Node_WithoutData(NODE_EXPRS, expr, exprs);
+    Node* n = Node_Create(NODE_SEQUENCE);
+    n->data.sequence.node = expr;
+    n->data.sequence.next = exprs;
+    return n;
 }
 
 Node* Parser_Expr(
@@ -138,13 +141,16 @@ Node* Parser_PrimaryExpr(
 
         Lexer_Next(parser->lexer);
 
-        Node* n = Parser_PrimaryExpr(parser);
-        if (!n)
+        Node* expr = Parser_PrimaryExpr(parser);
+        if (!expr)
         {
             return NULL;
         }
 
-        return Node_WithInteger(NODE_UNARY_OP, op, n, NULL);
+        Node* unary = Node_Create(NODE_UNARY);
+        unary->data.unary.op = op;
+        unary->data.unary.node = expr;
+        return unary;
     }
     else
     {
@@ -191,18 +197,25 @@ Node* Parser_SecondaryExpr(
             Node* map = n;
             while (map)
             {
-                Node* item = map->first;
+                Node* item = map->data.sequence.node;
 
                 // Infer the key if it is not a association operation
-                if (item->type != NODE_BINARY_OP && item->data.integerValue != OP_ASSOC)
+                if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
                 {
-                    Node* key = Node_WithInteger(NODE_INTEGER, i, NULL, NULL);
-                    item = Node_WithInteger(NODE_BINARY_OP, OP_ASSOC, key, item);
-                    map->first = item;
+                    Node* key = Node_Create(NODE_INTEGER);
+                    key->data.integer.value = i;
+
+                    // Create an association operation
+                    Node* assoc = Node_Create(NODE_BINARY);
+                    assoc->data.binary.op = OP_ASSOC;
+                    assoc->data.binary.left = key;
+                    assoc->data.binary.right = item;
+
+                    map->data.sequence.node = assoc;
                 }
 
                 map->type = NODE_MAP;
-                map = map->second;
+                map = map->data.sequence.next;
                 ++i;
             }
             break;
@@ -210,13 +223,15 @@ Node* Parser_SecondaryExpr(
 
     // Integer literal
     case TOK_INTEGER:
-        n = Node_WithInteger(NODE_INTEGER, Lexer_GetTokenAsInteger(parser->lexer), NULL, NULL);
+        n = Node_Create(NODE_INTEGER);
+        n->data.integer.value = Lexer_GetTokenAsInteger(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
 
     // Real literal
     case TOK_REAL:
-        n = Node_WithReal(NODE_REAL, Lexer_GetTokenAsReal(parser->lexer), NULL, NULL);
+        n = Node_Create(NODE_REAL);
+        n->data.real.value = Lexer_GetTokenAsReal(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
 
@@ -226,7 +241,10 @@ Node* Parser_SecondaryExpr(
             size_t length = Lexer_GetTokenLength(parser->lexer);
             const char* string = Lexer_GetTokenString(parser->lexer);
             StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
-            n = Node_WithHandle(NODE_STRING, (unsigned)id, NULL, NULL);
+
+            n = Node_Create(NODE_STRING);
+            n->data.string.id = id;
+
             Lexer_Next(parser->lexer);
         } break;
 
@@ -236,7 +254,10 @@ Node* Parser_SecondaryExpr(
             size_t length = Lexer_GetTokenLength(parser->lexer);
             const char* string = Lexer_GetTokenString(parser->lexer);
             StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
-            n = Node_WithHandle(NODE_IDENT, (unsigned)id, NULL, NULL);
+
+            n = Node_Create(NODE_IDENT);
+            n->data.string.id = id;
+
             Lexer_Next(parser->lexer);
         } break;
 
@@ -244,7 +265,7 @@ Node* Parser_SecondaryExpr(
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
-            n = Node_WithoutData(NODE_NIL, NULL, NULL);
+            n = Node_Create(NODE_NIL);
             Lexer_Next(parser->lexer);
             break;
         }
@@ -343,6 +364,10 @@ Node* Parser_BinExpr(
             return NULL;
         }
 
-        left = Node_WithInteger(NODE_BINARY_OP, nodeOp, left, right);
+        Node* newLeft = Node_Create(NODE_BINARY);
+        newLeft->data.binary.op = nodeOp;
+        newLeft->data.binary.left = left;
+        newLeft->data.binary.right = right;
+        left = newLeft;
     }
 }

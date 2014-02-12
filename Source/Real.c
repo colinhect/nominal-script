@@ -26,12 +26,13 @@
 #include "Nominal/Integer.h"
 
 #include "Type.h"
+#include "Value.h"
 
 bool NomReal_Check(
     NomValue    value
     )
 {
-    return value.fields.type == TYPE_REAL;
+    return GET_TYPE_BITS(value) == TYPE_REAL;
 }
 
 NomValue NomReal_FromFloat(
@@ -39,8 +40,8 @@ NomValue NomReal_FromFloat(
     )
 {
     NomValue real = NomValue_Nil();
-    real.fields.type = TYPE_REAL;
-    real.fields.data.realValue = value;
+    SET_TYPE_BITS(real, TYPE_REAL);
+    SET_REAL_BITS(real, *(uint32_t*)&value);
     return real;
 }
 
@@ -48,8 +49,10 @@ NomValue NomReal_FromDouble(
     double  value
     )
 {
+    float floatValue = (float)value;
+
     NomValue real = NomValue_Nil();
-    real.fields.type = TYPE_REAL;
-    real.fields.data.realValue = (float)value;
+    SET_TYPE_BITS(real, TYPE_REAL);
+    SET_REAL_BITS(real, *(uint32_t*)&floatValue);
     return real;
 }

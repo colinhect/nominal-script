@@ -25,12 +25,13 @@
 #include "Nominal/Real.h"
 
 #include "Type.h"
+#include "Value.h"
 
 bool NomInteger_Check(
     NomValue    value
     )
 {
-    return value.fields.type == TYPE_INTEGER;
+    return GET_TYPE_BITS(value) == TYPE_INTEGER;
 }
 
 NomValue NomInteger_FromInt(
@@ -38,8 +39,8 @@ NomValue NomInteger_FromInt(
     )
 {
     NomValue integer = NomValue_Nil();
-    integer.fields.type = TYPE_INTEGER;
-    integer.fields.data.integerValue = value;
+    SET_TYPE_BITS(integer, TYPE_INTEGER);
+    SET_INTEGER_BITS(integer, value);
     return integer;
 }
 
@@ -48,7 +49,7 @@ NomValue NomInteger_FromUnsignedLongLong(
     )
 {
     NomValue integer = NomValue_Nil();
-    integer.fields.type = TYPE_INTEGER;
-    integer.fields.data.integerValue = (int)value;
+    SET_TYPE_BITS(integer, TYPE_INTEGER);
+    SET_INTEGER_BITS(integer, (int)value);
     return integer;
 }

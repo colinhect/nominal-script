@@ -24,6 +24,9 @@
 #ifndef NODE_H
 #define NODE_H
 
+#include "ByteCode.h"
+#include "StringPool.h"
+
 #include <stdint.h>
 
 ///
@@ -36,107 +39,86 @@ typedef enum
     NODE_STRING,
     NODE_MAP,
     NODE_IDENT,
-    NODE_BINARY_OP,
-    NODE_UNARY_OP,
-    NODE_EXPRS
+    NODE_BINARY,
+    NODE_UNARY,
+    NODE_SEQUENCE
 } NodeType;
 
 ///
 /// \brief An AST node.
 typedef struct _Node
 {
-    NodeType    type;
-
+    NodeType type;
     union
     {
-        uint32_t    handle;
-        int64_t     integerValue;
-        double      realValue;
-    } data;
+        // NODE_INTEGER
+        struct
+        {
+            long long value;
+        } integer;
 
-    struct _Node*   first;
-    struct _Node*   second;
+        // NODE_REAL
+        struct
+        {
+            double value;
+        } real;
+
+        // NODE_STRING
+        struct
+        {
+            StringId id;
+        } string;
+
+        // NODE_MAP (compatable with NODE_SEQUENCE)
+        struct
+        {
+            struct _Node* node;
+            struct _Node* next;
+        } map;
+
+        // NODE_IDENT
+        struct
+        {
+            StringId id;
+        } ident;
+
+        // NODE_BINARY
+        struct
+        {
+            OpCode op;
+            struct _Node* left;
+            struct _Node* right;
+        } binary;
+
+        // NODE_UNARY
+        struct
+        {
+            OpCode op;
+            struct _Node* node;
+        } unary;
+
+        // NODE_SEQUENCE
+        struct
+        {
+            struct _Node* node;
+            struct _Node* next;
+        } sequence;
+    } data;
 } Node;
 
 ///
-/// \brief Creates a new AST node without data.
+/// \brief Creates a new AST node.
 ///
 /// \param type
-///     The type of node.
-/// \param first
-///     The first child node.
-/// \param second
-///     The second child node.
+///     The node type.
 ///
 /// \returns The new node.
-Node* Node_WithoutData(
-    NodeType    type,
-    Node*       first,
-    Node*       second
+Node* Node_Create(
+    NodeType    type
     );
 
 ///
-/// \brief Creates a new AST node with a handle value.
-///
-/// \param type
-///     The type of node.
-/// \param value
-///     The value.
-/// \param first
-///     The first child node.
-/// \param second
-///     The second child node.
-///
-/// \returns The new node.
-Node* Node_WithHandle(
-    NodeType    type,
-    uint32_t    value,
-    Node*       first,
-    Node*       second
-    );
-
-///
-/// \brief Creates a new AST node with an integer value.
-///
-/// \param type
-///     The type of node.
-/// \param value
-///     The value.
-/// \param first
-///     The first child node.
-/// \param second
-///     The second child node.
-///
-/// \returns The new node.
-Node* Node_WithInteger(
-    NodeType    type,
-    int64_t     value,
-    Node*       first,
-    Node*       second
-    );
-
-///
-/// \brief Creates a new AST node with a real value.
-///
-/// \param type
-///     The type of node.
-/// \param value
-///     The value.
-/// \param first
-///     The first child node.
-/// \param second
-///     The second child node.
-///
-/// \returns The new node.
-Node* Node_WithReal(
-    NodeType    type,
-    double      value,
-    Node*       first,
-    Node*       second
-    );
-
-///
-/// \brief Frees a node.
+/// \brief Frees an AST node.
 ///
 /// \param node
 ///     The node to free.

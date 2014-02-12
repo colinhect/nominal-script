@@ -47,28 +47,30 @@ size_t GenerateCode(
         break;
     case NODE_INTEGER:
         OPCODE(OP_PUSH);
-        VALUE(NomInteger_FromUnsignedLongLong(node->data.integerValue));
+        VALUE(NomInteger_FromUnsignedLongLong(node->data.integer.value));
         break;
     case NODE_REAL:
         OPCODE(OP_PUSH);
-        VALUE(NomReal_FromDouble(node->data.realValue));
+        VALUE(NomReal_FromDouble(node->data.real.value));
         break;
     case NODE_STRING:
         OPCODE(OP_PUSH);
-        VALUE(NomString_FromId(node->data.handle));
+        VALUE(NomString_FromId(node->data.string.id));
         break;
     case NODE_MAP:
         {
             size_t itemCount = 0;
             while (node)
             {
+                Node* assoc = node->data.map.node;
+
                 // Value on stack
-                index = GenerateCode(node->first->second, byteCode, index);
+                index = GenerateCode(assoc->data.binary.right, byteCode, index);
 
                 // Key on stack
-                index = GenerateCode(node->first->first, byteCode, index);
+                index = GenerateCode(assoc->data.binary.left, byteCode, index);
 
-                node = node->second;
+                node = node->data.map.next;
                 ++itemCount;
             }
             OPCODE(OP_PUSH);
@@ -77,37 +79,37 @@ size_t GenerateCode(
         } break;
     case NODE_IDENT:
         OPCODE(OP_GET);
-        STRING(node->data.handle);
+        STRING(node->data.ident.id);
         break;
-    case NODE_UNARY_OP:
-        index = GenerateCode(node->first, byteCode, index);
-        OPCODE(node->data.integerValue);
+    case NODE_UNARY:
+        index = GenerateCode(node->data.unary.node, byteCode, index);
+        OPCODE(node->data.unary.op);
         break;
-    case NODE_BINARY_OP:
+    case NODE_BINARY:
         {
-            OpCode op = (OpCode)node->data.integerValue;
+            OpCode op = node->data.binary.op;
 
             // Push right hand side on stack
-            index = GenerateCode(node->second, byteCode, index);
+            index = GenerateCode(node->data.binary.right, byteCode, index);
 
             if (op == OP_LET || op == OP_SET)
             {
                 // Perform set
                 OPCODE(op);
-                STRING(node->first->data.handle);
+                STRING(node->data.binary.left->data.ident.id);
             }
             else
             {
-                index = GenerateCode(node->first, byteCode, index);
+                index = GenerateCode(node->data.binary.left, byteCode, index);
                 OPCODE(op);
             }
         }
         break;
-    case NODE_EXPRS:
+    case NODE_SEQUENCE:
         while (node)
         {
-            index = GenerateCode(node->first, byteCode, index);
-            node = node->second;
+            index = GenerateCode(node->data.sequence.node, byteCode, index);
+            node = node->data.sequence.next;
         }
         break;
     }

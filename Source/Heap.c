@@ -36,7 +36,7 @@ typedef struct _Heap
 {
     HeapObject*     objects;
     size_t          objectCapacity;
-    ObjectHandle    nextHandle;
+    ObjectId        nextId;
 } Heap;
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
@@ -52,7 +52,7 @@ Heap* Heap_Create(
     memset(heap->objects, 0, objectsSize);
 
     heap->objectCapacity = INITIAL_HEAP_SIZE;
-    heap->nextHandle = 0;
+    heap->nextId = 0;
 
     return heap;
 }
@@ -62,7 +62,7 @@ void Heap_Free(
     )
 {
     // For each (potential) object
-    for (ObjectHandle i = 0; i < heap->objectCapacity; ++i)
+    for (ObjectId i = 0; i < heap->objectCapacity; ++i)
     {
         HeapObject* object = &heap->objects[i];
 
@@ -77,26 +77,26 @@ void Heap_Free(
     free(heap);
 }
 
-ObjectHandle Heap_Alloc(
+ObjectId Heap_Alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
     )
 {
-    ObjectHandle handle = heap->nextHandle++;
+    ObjectId id = heap->nextId++;
 
-    HeapObject* object = &heap->objects[handle];
+    HeapObject* object = &heap->objects[id];
     object->data = malloc(size);
     object->free = free;
 
-    return handle;
+    return id;
 }
 
 void* Heap_GetData(
-    Heap*           heap,
-    ObjectHandle    handle
+    Heap*       heap,
+    ObjectId    id
     )
 {
-    HeapObject* object = &heap->objects[handle];
+    HeapObject* object = &heap->objects[id];
     return object->data;
 }

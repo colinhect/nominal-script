@@ -31,19 +31,9 @@ typedef struct _NomState NomState;
 
 ///
 /// \brief A Nominal value.
-typedef union
+typedef struct
 {
-    struct
-    {
-        char type;
-        union
-        {
-            int         integerValue;
-            float       realValue;
-            unsigned    handle;
-        } data;
-    } fields;
-    uint64_t raw;
+    uint64_t data;
 } NomValue;
 
 ///

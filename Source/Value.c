@@ -28,6 +28,7 @@
 #include "Nominal/Real.h"
 
 #include "Type.h"
+#include "Value.h"
 #include "State.h"
 
 #include <math.h>
@@ -40,8 +41,7 @@ NomValue NomValue_Nil(
     )
 {
     NomValue value;
-    value.raw = 0;
-    value.fields.type = TYPE_NIL;
+    value.data = 0;
     return value;
 }
 
@@ -83,11 +83,11 @@ int NomValue_Compare(
     {
         if (NomString_Check(other))
         {
-            if (value.fields.type == TYPE_POOLED_STRING &&
-                other.fields.type == TYPE_POOLED_STRING)
+            if (GET_TYPE_BITS(value) == TYPE_POOLED_STRING &&
+                GET_TYPE_BITS(other) == TYPE_POOLED_STRING)
             {
-                unsigned l = value.fields.data.handle;
-                unsigned r = other.fields.data.handle;
+                unsigned l = GET_ID_BITS(value);
+                unsigned r = GET_ID_BITS(other);
                 return l == r ? 0 : (l < r ? -1 : 1);
             }
             const char* l = NomString_AsString(state, value);
@@ -101,15 +101,15 @@ int NomValue_Compare(
     }
     else
     {
-        uint64_t l = value.raw;
-        uint64_t r = other.raw;
+        uint64_t l = value.data;
+        uint64_t r = other.data;
         return l == r ? 0 : (l < r ? -1 : 1);
     }
 }
 
 void NomValue_AsString(NomState* s, char* dest, NomValue value)
 {
-    switch (value.fields.type)
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_INTEGER:
         sprintf(dest, "%d", NomNumber_AsInt(value));

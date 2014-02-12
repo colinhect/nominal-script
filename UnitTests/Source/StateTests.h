@@ -62,6 +62,7 @@ void Test_State_RealArithmetic(void)
     TEST_EXPR("6.0 / 3", NomReal_FromDouble(2.0));
     TEST_EXPR("6 / 3.0", NomReal_FromDouble(2.0));
     TEST_EXPR("6.0 / 4.0", NomReal_FromDouble(6.0 / 4.0));
+    TEST_EXPR("6.53 / 4.23", NomReal_FromDouble(6.53 / 4.23));
 }
 
 void Test_State_GlobalVariables(void)

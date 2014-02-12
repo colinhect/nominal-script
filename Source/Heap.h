@@ -34,7 +34,7 @@ typedef struct _Heap Heap;
 /// \brief A handle to a GC object.
 ///
 /// \remarks Specific to a certain heap.
-typedef uint32_t ObjectHandle;
+typedef size_t ObjectId;
 
 ///
 /// \brief Creates a new heap.
@@ -63,8 +63,8 @@ void Heap_Free(
 /// \param free
 ///     The function used to free the object when it is collected.
 ///
-/// \returns A handle to the new object.
-ObjectHandle Heap_Alloc(
+/// \returns A ID to the new object.
+ObjectId Heap_Alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
@@ -75,13 +75,13 @@ ObjectHandle Heap_Alloc(
 ///
 /// \param heap
 ///     The heap.
-/// \param handle
-///     The handle of the object to get the data for.
+/// \param id
+///     The ID of the object to get the data for.
 ///
 /// \returns A pointer to the object's data.
 void* Heap_GetData(
-    Heap*           heap,
-    ObjectHandle    handle
+    Heap*       heap,
+    ObjectId    id
     );
 
 #endif

@@ -26,6 +26,7 @@
 #include "State.h"
 #include "Heap.h"
 #include "Type.h"
+#include "Value.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -34,8 +35,9 @@ bool NomString_Check(
     NomValue    value
     )
 {
-    return value.fields.type == TYPE_STRING
-        || value.fields.type == TYPE_POOLED_STRING;
+    Type type = GET_TYPE_BITS(value);
+    return type == TYPE_STRING
+        || type == TYPE_POOLED_STRING;
 }
 
 NomValue NomString_FromString(
@@ -48,16 +50,16 @@ NomValue NomString_FromString(
 
     if (pooled)
     {
-        value.fields.type = TYPE_POOLED_STRING;
         StringId id = StringPool_InsertOrFind(state->stringPool, string);
-        value.fields.data.handle = (unsigned)id;
+        SET_TYPE_BITS(value, TYPE_POOLED_STRING);
+        SET_ID_BITS(value, id);
     }
     else
     {
-        ObjectHandle handle = Heap_Alloc(state->heap, strlen(string) + 1, free);
-        strcpy((char*)Heap_GetData(state->heap, handle), string);
-        value.fields.type = TYPE_STRING;
-        value.fields.data.handle = handle;
+        ObjectId id = Heap_Alloc(state->heap, strlen(string) + 1, free);
+        strcpy((char*)Heap_GetData(state->heap, id), string);
+        SET_TYPE_BITS(value, TYPE_STRING);
+        SET_ID_BITS(value, id);
     }
 
     return value;
@@ -68,13 +70,13 @@ const char* NomString_AsString(
     NomValue    value
     )
 {
-    switch (value.fields.type)
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_STRING:
-        return (const char*)Heap_GetData(state->heap, value.fields.data.handle);
+        return (const char*)Heap_GetData(state->heap, GET_ID_BITS(value));
         break;
     case TYPE_POOLED_STRING:
-        return StringPool_Find(state->stringPool, value.fields.data.handle);
+        return StringPool_Find(state->stringPool, GET_ID_BITS(value));
         break;
     }
     return NULL;
@@ -85,7 +87,7 @@ NomValue NomString_FromId(
     )
 {
     NomValue value = NomValue_Nil();
-    value.fields.type = TYPE_POOLED_STRING;
-    value.fields.data.handle = (unsigned)id;
+    SET_TYPE_BITS(value, TYPE_POOLED_STRING);
+    SET_ID_BITS(value, id);
     return value;
 }

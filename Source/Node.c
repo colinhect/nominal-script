@@ -25,52 +25,13 @@
 
 #include <stdlib.h>
 
-Node* Node_WithoutData(
-    NodeType    type,
-    Node*       first,
-    Node*       second
+Node* Node_Create(
+    NodeType    type
     )
 {
     Node* node = (Node*)malloc(sizeof(Node));
+    memset(node, 0, sizeof(Node));
     node->type = type;
-    node->data.integerValue = 0;
-    node->first = first;
-    node->second = second;
-    return node;
-}
-
-Node* Node_WithHandle(
-    NodeType    type,
-    uint32_t    value,
-    Node*       first,
-    Node*       second
-    )
-{
-    Node* node = Node_WithoutData(type, first, second);
-    node->data.handle = value;
-    return node;
-}
-
-Node* Node_WithInteger(
-    NodeType    type,
-    int64_t     value,
-    Node*       first,
-    Node*       second
-    )
-{
-    Node* node = Node_WithoutData(type, first, second);
-    node->data.integerValue = value;
-    return node;
-}
-
-Node* Node_WithReal(
-    NodeType    type,
-    double      value,
-    Node*       first,
-    Node*       second)
-{
-    Node* node = Node_WithoutData(type, first, second);
-    node->data.realValue = value;
     return node;
 }
 
@@ -78,14 +39,44 @@ void Node_Free(
     Node*   node
     )
 {
-    if (node->first)
+    switch (node->type)
     {
-        Node_Free(node->first);
-    }
-
-    if (node->second)
-    {
-        Node_Free(node->second);
+    case NODE_MAP:
+        if (node->data.map.node)
+        {
+            Node_Free(node->data.map.node);
+        }
+        if (node->data.map.next)
+        {
+            Node_Free(node->data.map.next);
+        }
+        break;
+    case NODE_BINARY:
+        if (node->data.binary.left)
+        {
+            free(node->data.binary.left);
+        }
+        if (node->data.binary.right)
+        {
+            free(node->data.binary.right);
+        }
+        break;
+    case NODE_UNARY:
+        if (node->data.unary.node)
+        {
+            free(node->data.unary.node);
+        }
+        break;
+    case NODE_SEQUENCE:
+        if (node->data.sequence.node)
+        {
+            Node_Free(node->data.sequence.node);
+        }
+        if (node->data.sequence.next)
+        {
+            Node_Free(node->data.sequence.next);
+        }
+        break;
     }
 
     free(node);

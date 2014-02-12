@@ -26,6 +26,7 @@
 #include "Nominal/Real.h"
 
 #include "Type.h"
+#include "Value.h"
 #include "State.h"
 #include "HashTable.h"
 #include "Heap.h"
@@ -46,20 +47,20 @@ Hash HashValue(
     NomState* state = (NomState*)context;
 
     NomValue value;
-    value.raw = key;
+    value.data = key;
 
-    Hash hash = value.raw;
-    switch (value.fields.type)
+    Hash hash = value.data;
+    switch ((Type)GET_TYPE_BITS(value))
     {
     case TYPE_INTEGER:
-        hash = (Hash)value.fields.data.integerValue;
-        break;
     case TYPE_REAL:
-        hash = (Hash)value.fields.data.realValue;
+        hash = (Hash)GET_INTEGER_BITS(value);
         break;
     case TYPE_STRING:
-    case TYPE_POOLED_STRING:
         hash = HashString((UserData)NomString_AsString(state, value), 0);
+        break;
+    case TYPE_POOLED_STRING:
+        hash = StringPool_Hash(state->stringPool, GET_ID_BITS(value));
         break;
     case TYPE_NIL:
         hash = 0;
@@ -78,10 +79,10 @@ int CompareValue(
     NomState* state = (NomState*)context;
 
     NomValue leftValue;
-    leftValue.raw = left;
+    leftValue.data = left;
 
     NomValue rightValue;
-    rightValue.raw = right;
+    rightValue.data = right;
 
     return NomValue_Compare(state, leftValue, rightValue);
 }
@@ -90,7 +91,7 @@ bool NomMap_Check(
     NomValue value
     )
 {
-    return value.fields.type == TYPE_MAP;
+    return GET_TYPE_BITS(value) == TYPE_MAP;
 }
 
 NomValue NomMap_Create(
@@ -98,14 +99,14 @@ NomValue NomMap_Create(
     )
 {
     NomValue map = NomValue_Nil();
-    map.fields.type = TYPE_MAP;
+    SET_TYPE_BITS(map, TYPE_MAP);
 
-    ObjectHandle handle = Heap_Alloc(state->heap, sizeof(MapData), free);
-    MapData* data = Heap_GetData(state->heap, handle);
+    ObjectId id = Heap_Alloc(state->heap, sizeof(MapData), free);
+    MapData* data = Heap_GetData(state->heap, id);
     data->state = state;
     data->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
 
-    map.fields.data.handle = handle;
+    SET_ID_BITS(map, id);
     return map;
 }
 
@@ -121,9 +122,9 @@ bool NomMap_Set(
         return false;
     }
 
-    ObjectHandle handle = map.fields.data.handle;
-    MapData* data = Heap_GetData(state->heap, handle);
-    return HashTable_InsertOrSet(data->hashTable, (UserData)key.raw, (UserData)value.raw);
+    ObjectId id = GET_ID_BITS(map);
+    MapData* data = Heap_GetData(state->heap, id);
+    return HashTable_InsertOrSet(data->hashTable, (UserData)key.data, (UserData)value.data);
 }
 
 NomValue NomMap_Get(
@@ -149,7 +150,7 @@ bool NomMap_TryGet(
         return false;
     }
 
-    ObjectHandle handle = map.fields.data.handle;
-    MapData* data = Heap_GetData(state->heap, handle);
-    return HashTable_Find(data->hashTable, (UserData)key.raw, (UserData*)&value->raw);
+    ObjectId id = GET_ID_BITS(map);
+    MapData* data = Heap_GetData(state->heap, id);
+    return HashTable_Find(data->hashTable, (UserData)key.data, (UserData*)&value->data);
 }
