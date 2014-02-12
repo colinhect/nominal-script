@@ -21,54 +21,52 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#ifndef NOMINAL_NUMBER_H
+#define NOMINAL_NUMBER_H
 
-#include "Nominal/State.h"
 #include "Nominal/Value.h"
 
-#include <stdbool.h>
-
 ///
-/// \brief Checks if a Nominal value is a string.
+/// \brief Checks if a Nominal value is a number (integer or real).
 ///
 /// \param value
 ///     The value in question.
 ///
-/// \returns True if the value is a string; false otherwise.
-bool NomString_Check(
+/// \returns True if the value is a number; false otherwise.
+bool NomNumber_Check(
     NomValue    value
     );
 
 ///
-/// \brief Creates a new Nominal string value from a string.
+/// \brief Returns the Nominal number coerced to an int.
 ///
-/// \param state
-///     The state.
-/// \param string
-///     The string.
-/// \param pooled
-///     Whether the string should be pooled (normally false).
+/// \param value
+///     The number value to coerce.
 ///
-/// \returns The new Nominal value.
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string,
-    bool        pooled
+/// \returns The resulting value (-1 if the value is not a number).
+int NomNumber_AsInt(
+    NomValue    value
     );
 
 ///
-/// \brief Returns the value of a Nominal string as a string.
+/// \brief Returns the Nominal number coerced to a float.
 ///
-/// \param state
-///     The state.
 /// \param value
-///     The string value.
+///     The number value to coerce.
 ///
-/// \returns A pointer to a NULL terminated string; NULL if the value is not
-/// a string.
-const char* NomString_AsString(
-    NomState*   state,
+/// \returns The resulting value (NaN if the value is not a number).
+float NomNumber_AsFloat(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number coerced to a double.
+///
+/// \param value
+///     The number value to coerce.
+///
+/// \returns The resulting value (NaN if the value is not a number).
+double NomNumber_AsDouble(
     NomValue    value
     );
 

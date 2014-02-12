@@ -35,7 +35,7 @@
 ///
 /// \returns True if the value is a map; false otherwise.
 bool NomMap_Check(
-    NomValue value
+    NomValue    value
     );
 
 ///
@@ -46,7 +46,7 @@ bool NomMap_Check(
 ///
 /// \returns The new Nominal map.
 NomValue NomMap_Create(
-    NomState*    state
+    NomState*   state
     );
 
 ///
@@ -64,7 +64,7 @@ NomValue NomMap_Create(
 /// \returns False if the map already had a value for the given key; true
 /// otherwise.
 bool NomMap_Set(
-    NomState*    state,
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -83,7 +83,7 @@ bool NomMap_Set(
 /// \returns The value for the given key; nil if no value is set for the given
 /// key.
 NomValue NomMap_Get(
-    NomState*    state,
+    NomState*   state,
     NomValue    map,
     NomValue    key
     );
@@ -102,7 +102,7 @@ NomValue NomMap_Get(
 ///
 /// \returns True if the value was found; false otherwise.
 bool NomMap_TryGet(
-    NomState*    state,
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue*   value

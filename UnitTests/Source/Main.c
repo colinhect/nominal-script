@@ -25,6 +25,7 @@
 #include "Win/Win.h"
 
 #include "HashTableTests.h"
+#include "MapTests.h"
 #include "StateTests.h"
 
 #define BEGIN_TEST_SUITE(name)  suite = CU_add_suite("HashTable", NULL, NULL)
@@ -39,7 +40,7 @@ int main()
     {
         return CU_get_error();
     }
-    
+
     // HashTable test suite
     BEGIN_TEST_SUITE("HashTable");
     ADD_TEST(Test_HashTable_InsertAndFind);
@@ -49,6 +50,16 @@ int main()
     ADD_TEST(Test_HashTable_SetNonExisting);
     ADD_TEST(Test_HashTable_InsertOrFindExisting);
     ADD_TEST(Test_HashTable_InsertOrFindNonExisting);
+
+    // Map test suite
+    BEGIN_TEST_SUITE("Map");
+    ADD_TEST(Test_Map_CreateAndCheck);
+    ADD_TEST(Test_Map_SetAndGet);
+    ADD_TEST(Test_Map_SetExisting);
+    ADD_TEST(Test_Map_TryGet);
+    ADD_TEST(Test_Map_TryGetNonExisting);
+    ADD_TEST(Test_Map_StringKeys);
+    ADD_TEST(Test_Map_PooledStringKeys);
 
     // State test suite
     BEGIN_TEST_SUITE("State");

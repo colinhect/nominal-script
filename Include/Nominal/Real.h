@@ -34,7 +34,7 @@
 ///
 /// \returns True if the value is a real; false otherwise.
 bool NomReal_Check(
-    NomValue value
+    NomValue    value
     );
 
 ///
@@ -45,7 +45,7 @@ bool NomReal_Check(
 ///
 /// \returns The Nominal real value.
 NomValue NomReal_FromFloat(
-    float value
+    float   value
     );
 
 ///
@@ -56,7 +56,7 @@ NomValue NomReal_FromFloat(
 ///
 /// \returns The Nominal real value.
 NomValue NomReal_FromDouble(
-    double value
+    double  value
     );
 
 #endif

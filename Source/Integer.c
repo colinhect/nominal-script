@@ -22,30 +22,33 @@
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Integer.h"
+#include "Nominal/Real.h"
+
+#include "Type.h"
 
 bool NomInteger_Check(
     NomValue    value
     )
 {
-    return value.fields.type == NOM_TYPE_INTEGER;
+    return value.fields.type == TYPE_INTEGER;
 }
 
 NomValue NomInteger_FromInt(
     int value
     )
 {
-    NomValue newValue;
-    newValue.fields.type = NOM_TYPE_INTEGER;
-    newValue.fields.data.integerValue = value;
-    return newValue;
+    NomValue integer = NomValue_Nil();
+    integer.fields.type = TYPE_INTEGER;
+    integer.fields.data.integerValue = value;
+    return integer;
 }
 
 NomValue NomInteger_FromUnsignedLongLong(
     unsigned long long    value
     )
 {
-    NomValue newValue;
-    newValue.fields.type = NOM_TYPE_INTEGER;
-    newValue.fields.data.integerValue = (int)value;
-    return newValue;
+    NomValue integer = NomValue_Nil();
+    integer.fields.type = TYPE_INTEGER;
+    integer.fields.data.integerValue = (int)value;
+    return integer;
 }

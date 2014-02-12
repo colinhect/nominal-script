@@ -172,6 +172,7 @@
     <ClInclude Include="Source\CUnit\Sources\Win\resource.h" />
     <ClInclude Include="Source\CUnit\Sources\Win\Win.h" />
     <ClInclude Include="Source\HashTableTests.h" />
+    <ClInclude Include="Source\MapTests.h" />
     <ClInclude Include="Source\StateTests.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

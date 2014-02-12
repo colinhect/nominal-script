@@ -78,36 +78,6 @@ void NomState_SetError(
 #define PUSH(v)         state->stack[state->sp++] = v
 #define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
-#define ARITH(l, r, op, name)\
-    if (!NomValue_IsNumber(l) || !NomValue_IsNumber(r))\
-    {\
-        NomState_SetError(state, "Cannot %s non-numeric values", name);\
-        break;\
-    }\
-    else if (NomReal_Check(l) || NomReal_Check(r))\
-    {\
-        result = NomReal_FromFloat(NomValue_AsFloat(l) op NomValue_AsFloat(r));\
-    }\
-    else\
-    {\
-        result = NomInteger_FromInt(NomValue_AsInt(l) op NomValue_AsInt(r));\
-    }
-
-#define NEG(v)\
-    if (!NomValue_IsNumber(v))\
-    {\
-        NomState_SetError(state, "Cannot negate a non-numeric value");\
-        break;\
-    }\
-    else if (NomReal_Check(v))\
-    {\
-        result = NomReal_FromFloat(-NomValue_AsFloat(v));\
-    }\
-    else\
-    {\
-        result = NomInteger_FromInt(-NomValue_AsInt(v));\
-    }
-
 NomValue NomState_Execute(
     NomState*   state,
     const char* source
@@ -165,30 +135,30 @@ NomValue NomState_Execute(
         case OP_ADD:
             l = POP();
             r = POP();
-            ARITH(l, r, +, "add");
+            result = NomValue_Add(state, l, r);
             PUSH(result);
             break;
         case OP_SUB:
             l = POP();
             r = POP();
-            ARITH(l, r, -, "subtract");
+            result = NomValue_Subtract(state, l, r);
             PUSH(result);
             break;
         case OP_MUL:
             l = POP();
             r = POP();
-            ARITH(l, r, *, "multiply");
+            result = NomValue_Multiply(state, l, r);
             PUSH(result);
             break;
         case OP_DIV:
             l = POP();
             r = POP();
-            ARITH(l, r, /, "divide");
+            result = NomValue_Divide(state, l, r);
             PUSH(result);
             break;
         case OP_NEG:
             l = POP();
-            NEG(l);
+            result = NomValue_Negate(state, l);
             PUSH(result);
             break;
         }

@@ -21,8 +21,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMSTATETESTS_H
-#define NOMSTATETESTS_H
+#ifndef STATETESTS_H
+#define STATETESTS_H
 
 #include "Basic.h"
 
@@ -34,7 +34,7 @@
         CU_ASSERT(state != NULL);\
         NomValue value = NomState_Execute(state, expr);\
         CU_ASSERT(!NomState_ErrorOccurred(state));\
-        CU_ASSERT(NomValue_Equals(value, expected));\
+        CU_ASSERT(NomValue_Equals(state, value, expected));\
         NomState_Free(state);\
     }
 

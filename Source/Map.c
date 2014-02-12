@@ -25,6 +25,7 @@
 #include "Nominal/String.h"
 #include "Nominal/Real.h"
 
+#include "Type.h"
 #include "State.h"
 #include "HashTable.h"
 #include "Heap.h"
@@ -33,7 +34,7 @@
 
 typedef struct _MapData
 {
-    NomState*    state;
+    NomState*   state;
     HashTable*  hashTable;
 } MapData;
 
@@ -50,18 +51,17 @@ Hash HashValue(
     Hash hash = value.raw;
     switch (value.fields.type)
     {
-    case NOM_TYPE_INTEGER:
+    case TYPE_INTEGER:
         hash = (Hash)value.fields.data.integerValue;
         break;
-    case NOM_TYPE_REAL:
+    case TYPE_REAL:
         hash = (Hash)value.fields.data.realValue;
         break;
-    case NOM_TYPE_STRING:
+    case TYPE_STRING:
+    case TYPE_POOLED_STRING:
         hash = HashString((UserData)NomString_AsString(state, value), 0);
-    case NOM_TYPE_STATIC_STRING:
-        hash = (Hash)value.fields.data.handle;
         break;
-    case NOM_TYPE_NIL:
+    case TYPE_NIL:
         hash = 0;
         break;
     }
@@ -83,58 +83,34 @@ int CompareValue(
     NomValue rightValue;
     rightValue.raw = right;
 
-    if (NomValue_IsNumber(leftValue) && NomValue_IsNumber(rightValue))
-    {
-        if (NomReal_Check(leftValue) || NomReal_Check(rightValue))
-        {
-            double l = NomValue_AsDouble(leftValue);
-            double r = NomValue_AsDouble(rightValue);
-            return l < r ? -1 : 1;
-        }
-        else
-        {
-            int l = NomValue_AsInt(leftValue);
-            int r = NomValue_AsInt(rightValue);
-            return l < r ? -1 : 1;
-        }
-    }
-    else if (NomString_Check(value) && Nom)
-
-    if (left == right)
-    {
-        return 0;
-    }
-    else
-    {
-        return left < right ? -1 : 1;
-    }
+    return NomValue_Compare(state, leftValue, rightValue);
 }
 
 bool NomMap_Check(
     NomValue value
     )
 {
-    return value.fields.type == NOM_TYPE_MAP;
+    return value.fields.type == TYPE_MAP;
 }
 
 NomValue NomMap_Create(
-    NomState*    state
+    NomState*   state
     )
 {
-    NomValue mapValue = NomValue_Nil();
-    mapValue.fields.type = NOM_TYPE_MAP;
+    NomValue map = NomValue_Nil();
+    map.fields.type = TYPE_MAP;
 
     ObjectHandle handle = Heap_Alloc(state->heap, sizeof(MapData), free);
-    MapData* map = Heap_GetData(state->heap, handle);
-    map->state = state;
-    map->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
+    MapData* data = Heap_GetData(state->heap, handle);
+    data->state = state;
+    data->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
 
-    mapValue.fields.data.handle = handle;
-    return mapValue;
+    map.fields.data.handle = handle;
+    return map;
 }
 
 bool NomMap_Set(
-    NomState*    state,
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -142,17 +118,16 @@ bool NomMap_Set(
 {
     if (!NomMap_Check(map))
     {
-        NomState_SetError(state, "The value is not a map");
         return false;
     }
 
     ObjectHandle handle = map.fields.data.handle;
-    MapData* mapData = Heap_GetData(state->heap, handle);
-    return HashTable_Insert(mapData->hashTable, (UserData)key.raw, (UserData)value.raw);
+    MapData* data = Heap_GetData(state->heap, handle);
+    return HashTable_InsertOrSet(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
 NomValue NomMap_Get(
-    NomState*    state,
+    NomState*   state,
     NomValue    map,
     NomValue    key
     )
@@ -163,7 +138,7 @@ NomValue NomMap_Get(
 }
 
 bool NomMap_TryGet(
-    NomState*    state,
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue*   value
@@ -171,12 +146,10 @@ bool NomMap_TryGet(
 {
     if (!NomMap_Check(map))
     {
-        NomState_SetError(state, "The value is not a map");
         return false;
     }
 
     ObjectHandle handle = map.fields.data.handle;
-    MapData* mapData = Heap_GetData(state->heap, handle);
-
-    return HashTable_Find(mapData->hashTable, (UserData)key.raw, (UserData*)&value->raw);
+    MapData* data = Heap_GetData(state->heap, handle);
+    return HashTable_Find(data->hashTable, (UserData)key.raw, (UserData*)&value->raw);
 }

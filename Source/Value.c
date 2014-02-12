@@ -23,8 +23,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Value.h"
 #include "Nominal/String.h"
+#include "Nominal/Number.h"
+#include "Nominal/Integer.h"
+#include "Nominal/Real.h"
 
-#include <float.h>
+#include "Type.h"
+#include "State.h"
+
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -36,91 +41,172 @@ NomValue NomValue_Nil(
 {
     NomValue value;
     value.raw = 0;
-    value.fields.type = NOM_TYPE_NIL;
+    value.fields.type = TYPE_NIL;
     return value;
 }
 
-bool NomValue_IsNumber(NomValue value)
-{
-    switch (value.fields.type)
-    {
-    case NOM_TYPE_INTEGER:
-    case NOM_TYPE_REAL:
-        return true;
-    default:
-        return false;
-    }
-}
-
-int NomValue_AsInt(NomValue value)
-{
-    switch (value.fields.type)
-    {
-    case NOM_TYPE_INTEGER:
-        return value.fields.data.integerValue;
-    case NOM_TYPE_REAL:
-        return (int)value.fields.data.realValue;
-    default:
-        return -1;
-    }
-}
-
-float NomValue_AsFloat(NomValue value)
-{
-    switch (value.fields.type)
-    {
-    case NOM_TYPE_INTEGER:
-        return (float)value.fields.data.integerValue;
-    case NOM_TYPE_REAL:
-        return value.fields.data.realValue;
-    default:
-        return NAN;
-    }
-}
-
-double NomValue_AsDouble(NomValue value)
-{
-    switch (value.fields.type)
-    {
-    case NOM_TYPE_INTEGER:
-        return (double)value.fields.data.integerValue;
-    case NOM_TYPE_REAL:
-        return (double)value.fields.data.realValue;
-    default:
-        return NAN;
-    }
-}
-
 bool NomValue_Equals(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    // Incomplete implementation
-    return
-        value.fields.type == other.fields.type &&
-        value.fields.data.integerValue == other.fields.data.integerValue;
+    return NomValue_Compare(state, value, other) == 0;
+}
+
+int NomValue_Compare(
+    NomState*   state,
+    NomValue    value,
+    NomValue    other
+    )
+{
+    if (NomNumber_Check(value))
+    {
+        if (NomInteger_Check(value) || NomInteger_Check(other))
+        {
+            int l = NomNumber_AsInt(value);
+            int r = NomNumber_AsInt(other);
+            return l == r ? 0 : (l < r ? -1 : 1);
+        }
+        else if (NomReal_Check(value) || NomReal_Check(other))
+        {
+            double l = NomNumber_AsDouble(value);
+            double r = NomNumber_AsDouble(other);
+            return l == r ? 0 : (l < r ? -1 : 1);
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else if (NomString_Check(value))
+    {
+        if (NomString_Check(other))
+        {
+            if (value.fields.type == TYPE_POOLED_STRING &&
+                other.fields.type == TYPE_POOLED_STRING)
+            {
+                unsigned l = value.fields.data.handle;
+                unsigned r = other.fields.data.handle;
+                return l == r ? 0 : (l < r ? -1 : 1);
+            }
+            const char* l = NomString_AsString(state, value);
+            const char* r = NomString_AsString(state, other);
+            return strcmp(l, r);
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        uint64_t l = value.raw;
+        uint64_t r = other.raw;
+        return l == r ? 0 : (l < r ? -1 : 1);
+    }
 }
 
 void NomValue_AsString(NomState* s, char* dest, NomValue value)
 {
     switch (value.fields.type)
     {
-    case NOM_TYPE_INTEGER:
-        sprintf(dest, "%d", NomValue_AsInt(value));
+    case TYPE_INTEGER:
+        sprintf(dest, "%d", NomNumber_AsInt(value));
         break;
-    case NOM_TYPE_REAL:
-        sprintf(dest, "%f", NomValue_AsDouble(value));
+    case TYPE_REAL:
+        sprintf(dest, "%f", NomNumber_AsDouble(value));
         break;
-    case NOM_TYPE_STRING:
-    case NOM_TYPE_STATIC_STRING:
+    case TYPE_STRING:
+    case TYPE_POOLED_STRING:
         sprintf(dest, "\"%s\"", NomString_AsString(s, value));
         break;
-    case NOM_TYPE_NIL:
+    case TYPE_NIL:
         sprintf(dest, "nil");
         break;
     default:
         sprintf(dest, "<unknown>");
         break;
     }
+}
+
+#define ARITH(l, r, op, name)\
+    if (!NomNumber_Check(l) || !NomNumber_Check(r))\
+    {\
+        NomState_SetError(state, "Cannot %s non-numeric values", name);\
+    }\
+    else if (NomReal_Check(l) || NomReal_Check(r))\
+    {\
+        result = NomReal_FromDouble(NomNumber_AsDouble(l) op NomNumber_AsDouble(r));\
+    }\
+    else\
+    {\
+        result = NomInteger_FromInt(NomNumber_AsInt(l) op NomNumber_AsInt(r));\
+    }
+
+NomValue NomValue_Add(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    )
+{
+    NomValue result = NomValue_Nil();
+    ARITH(left, right, +, "add");
+    return result;
+}
+
+NomValue NomValue_Subtract(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    )
+{
+    NomValue result = NomValue_Nil();
+    ARITH(left, right, -, "subtract");
+    return result;
+}
+
+NomValue NomValue_Multiply(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    )
+{
+    NomValue result = NomValue_Nil();
+    ARITH(left, right, *, "multiply");
+    return result;
+}
+
+NomValue NomValue_Divide(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    )
+{
+    NomValue result = NomValue_Nil();
+    ARITH(left, right, /, "divide");
+    return result;
+}
+
+NomValue NomValue_Negate(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    NomValue result = NomValue_Nil();
+
+    if (!NomNumber_Check(value))
+    {
+        NomState_SetError(state, "Cannot negate a non-numeric value");
+    }
+    else if (NomReal_Check(value))
+    {
+        result = NomReal_FromDouble(-NomNumber_AsDouble(value));
+    }
+    else
+    {
+        result = NomInteger_FromInt(-NomNumber_AsInt(value));
+    }
+
+    return result;
 }

@@ -30,20 +30,6 @@
 typedef struct _NomState NomState;
 
 ///
-/// \brief Enumeration of each type a Nominal value can be.
-typedef enum
-{
-    NOM_TYPE_NIL,
-    NOM_TYPE_INTEGER,
-    NOM_TYPE_REAL,
-    NOM_TYPE_BOOLEAN,
-    NOM_TYPE_STRING,
-    NOM_TYPE_STATIC_STRING,
-    NOM_TYPE_MAP,
-    NOM_TYPE_FUNCTION
-} NomType;
-
-///
 /// \brief A Nominal value.
 typedef union
 {
@@ -67,43 +53,10 @@ NomValue NomValue_Nil(
     );
 
 ///
-/// \brief Checks whether a Nominal value is a real or integer.
-///
-/// \param value
-///     The value in question.
-///
-/// \returns True if the value is a real or integer; false otherwise.
-bool NomValue_IsNumber(
-    NomValue    value
-    );
-
-///
-/// \brief Returns the Nominal value coerced to an int.
-///
-/// \returns The resulting value.
-int NomValue_AsInt(
-    NomValue    value
-    );
-
-///
-/// \brief Returns the Nominal value coerced to a float.
-///
-/// \returns The resulting value.
-float NomValue_AsFloat(
-    NomValue    value
-    );
-
-///
-/// \brief Returns the Nominal value coerced to a double.
-///
-/// \returns The resulting value.
-double NomValue_AsDouble(
-    NomValue    value
-    );
-
-///
 /// \brief Returns whether a Nominal value is equal to another.
 ///
+/// \param state
+///     The state.
 /// \param value
 ///     The value to compare.
 /// \param other
@@ -111,6 +64,25 @@ double NomValue_AsDouble(
 ///
 /// \returns True if they are equal; false otherwise.
 bool NomValue_Equals(
+    NomState*   state,
+    NomValue    value,
+    NomValue    other
+    );
+
+///
+/// \brief Compares a Nominal value with another Nominal value.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value.
+/// \param other
+///     The value to compare to.
+///
+/// \returns 0 if the values are equivalent; -1 if the value is less than the
+/// other; 1 if the value is greater than the other.
+int NomValue_Compare(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     );
@@ -127,6 +99,88 @@ bool NomValue_Equals(
 void NomValue_AsString(
     NomState*   state,
     char*       dest,
+    NomValue    value
+    );
+
+///
+/// \brief Performs addition on two Nominal values.
+///
+/// \param state
+///     The state.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
+///
+/// \returns The resulting value.
+NomValue NomValue_Add(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    );
+
+///
+/// \brief Performs subtraction on two Nominal values.
+///
+/// \param state
+///     The state.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
+///
+/// \returns The resulting value.
+NomValue NomValue_Subtract(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    );
+
+///
+/// \brief Performs multiplication on two Nominal values.
+///
+/// \param state
+///     The state.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
+///
+/// \returns The resulting value.
+NomValue NomValue_Multiply(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    );
+
+///
+/// \brief Performs division on two Nominal values.
+///
+/// \param state
+///     The state.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
+///
+/// \returns The resulting value.
+NomValue NomValue_Divide(
+    NomState*   state,
+    NomValue    left,
+    NomValue    right
+    );
+
+///
+/// \brief Negates a Nominal value.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value to negate.
+///
+/// \returns The resulting value.
+NomValue NomValue_Negate(
+    NomState*   state,
     NomValue    value
     );
 

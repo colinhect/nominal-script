@@ -34,7 +34,7 @@
 ///
 /// \returns True if the value is an integer; false otherwise.
 bool NomInteger_Check(
-    NomValue value
+    NomValue    value
     );
 
 ///
@@ -56,7 +56,7 @@ NomValue NomInteger_FromInt(
 ///
 /// \returns The Nominal integer value.
 NomValue NomInteger_FromUnsignedLongLong(
-    unsigned long long value
+    unsigned long long  value
     );
 
 #endif

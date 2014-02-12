@@ -143,6 +143,24 @@ bool HashTable_Set(
     );
 
 ///
+/// \brief Inserts a new value or sets an existing value in the hash table.
+///
+/// \param hashTable
+///     The hash table.
+/// \param key
+///     The key.
+/// \param value
+///     The value.
+///
+/// \returns True if a new value was inserted; false if an existing value was
+/// changed
+bool HashTable_InsertOrSet(
+    HashTable*  hashTable,
+    UserData    key,
+    UserData    value
+    );
+
+///
 /// \brief Gets the value for a key.
 ///
 /// \param hashTable

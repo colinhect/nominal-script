@@ -21,71 +21,64 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "String.h"
-#include "StringPool.h"
-#include "State.h"
-#include "Heap.h"
+#include "Nominal/Value.h"
+#include "Nominal/Integer.h"
+#include "Nominal/Real.h"
+
 #include "Type.h"
 
+#include <float.h>
+#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 
-bool NomString_Check(
-    NomValue    value
-    )
-{
-    return value.fields.type == TYPE_STRING
-        || value.fields.type == TYPE_POOLED_STRING;
-}
-
-NomValue NomString_FromString(
-    NomState*   state,
-    const char* string,
-    bool        pooled
-    )
-{
-    NomValue value = NomValue_Nil();
-
-    if (pooled)
-    {
-        value.fields.type = TYPE_POOLED_STRING;
-        StringId id = StringPool_InsertOrFind(state->stringPool, string);
-        value.fields.data.handle = (unsigned)id;
-    }
-    else
-    {
-        ObjectHandle handle = Heap_Alloc(state->heap, strlen(string) + 1, free);
-        strcpy((char*)Heap_GetData(state->heap, handle), string);
-        value.fields.type = TYPE_STRING;
-        value.fields.data.handle = handle;
-    }
-
-    return value;
-}
-
-const char* NomString_AsString(
-    NomState*   state,
-    NomValue    value
-    )
+bool NomNumber_Check(NomValue value)
 {
     switch (value.fields.type)
     {
-    case TYPE_STRING:
-        return (const char*)Heap_GetData(state->heap, value.fields.data.handle);
-        break;
-    case TYPE_POOLED_STRING:
-        return StringPool_Find(state->stringPool, value.fields.data.handle);
-        break;
+    case TYPE_INTEGER:
+    case TYPE_REAL:
+        return true;
+    default:
+        return false;
     }
-    return NULL;
 }
 
-NomValue NomString_FromId(
-    StringId    id
-    )
+int NomNumber_AsInt(NomValue value)
 {
-    NomValue value = NomValue_Nil();
-    value.fields.type = TYPE_POOLED_STRING;
-    value.fields.data.handle = (unsigned)id;
-    return value;
+    switch (value.fields.type)
+    {
+    case TYPE_INTEGER:
+        return value.fields.data.integerValue;
+    case TYPE_REAL:
+        return (int)value.fields.data.realValue;
+    default:
+        return -1;
+    }
+}
+
+float NomNumber_AsFloat(NomValue value)
+{
+    switch (value.fields.type)
+    {
+    case TYPE_INTEGER:
+        return (float)value.fields.data.integerValue;
+    case TYPE_REAL:
+        return value.fields.data.realValue;
+    default:
+        return NAN;
+    }
+}
+
+double NomNumber_AsDouble(NomValue value)
+{
+    switch (value.fields.type)
+    {
+    case TYPE_INTEGER:
+        return (double)value.fields.data.integerValue;
+    case TYPE_REAL:
+        return (double)value.fields.data.realValue;
+    default:
+        return NAN;
+    }
 }

@@ -22,30 +22,34 @@
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Real.h"
+#include "Nominal/Number.h"
+#include "Nominal/Integer.h"
+
+#include "Type.h"
 
 bool NomReal_Check(
     NomValue    value
     )
 {
-    return value.fields.type == NOM_TYPE_REAL;
+    return value.fields.type == TYPE_REAL;
 }
 
 NomValue NomReal_FromFloat(
     float   value
     )
 {
-    NomValue newValue;
-    newValue.fields.type = NOM_TYPE_REAL;
-    newValue.fields.data.realValue = value;
-    return newValue;
+    NomValue real = NomValue_Nil();
+    real.fields.type = TYPE_REAL;
+    real.fields.data.realValue = value;
+    return real;
 }
 
 NomValue NomReal_FromDouble(
     double  value
     )
 {
-    NomValue newValue;
-    newValue.fields.type = NOM_TYPE_REAL;
-    newValue.fields.data.realValue = (float)value;
-    return newValue;
+    NomValue real = NomValue_Nil();
+    real.fields.type = TYPE_REAL;
+    real.fields.data.realValue = (float)value;
+    return real;
 }

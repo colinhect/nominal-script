@@ -66,6 +66,12 @@
     <ClInclude Include="Include\Nominal\Map.h">
       <Filter>Include\Nominal</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Nominal\Number.h">
+      <Filter>Include\Nominal</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Type.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\HashTable.c">
@@ -114,6 +120,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Map.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Number.c">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -193,6 +193,18 @@ bool HashTable_Set(
     return false;
 }
 
+bool HashTable_InsertOrSet(
+    HashTable*  hashTable,
+    UserData    key,
+    UserData    value
+    )
+{
+    BucketNode* node = NULL;
+    bool result = FindNode(hashTable, key, true, &node);
+    node->value = value;
+    return result;
+}
+
 bool HashTable_Find(
     HashTable*  hashTable,
     UserData    key,
