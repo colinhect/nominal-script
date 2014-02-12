@@ -34,9 +34,11 @@ typedef enum
     NODE_INTEGER,
     NODE_REAL,
     NODE_STRING,
+    NODE_MAP,
     NODE_IDENT,
     NODE_BINARY_OP,
     NODE_UNARY_OP,
+    NODE_EXPRS
 } NodeType;
 
 ///

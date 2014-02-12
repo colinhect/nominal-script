@@ -64,4 +64,45 @@ void Test_State_RealArithmetic(void)
     TEST_EXPR("6.0 / 4.0", NomReal_FromDouble(6.0 / 4.0));
 }
 
+void Test_State_GlobalVariables(void)
+{
+    TEST_EXPR("a := 1, b := 2, a + b", NomInteger_FromInt(3));
+}
+
+void Test_State_MapWithImplicitKeys(void)
+{
+    NomState* state = NomState_Create();
+
+    NomValue map = NomState_Execute(state, "{ 0, 1, 2, 3 }");
+    CU_ASSERT(!NomState_ErrorOccurred(state));
+    CU_ASSERT(NomMap_Check(map));
+
+    NomValue result;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        result = NomMap_Get(state, map, NomInteger_FromInt(i));
+        CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(i)));
+    }
+
+    NomState_Free(state);
+}
+
+void Test_State_MapWithExplicitKeys(void)
+{
+    NomState* state = NomState_Create();
+
+    NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1 }");
+    CU_ASSERT(!NomState_ErrorOccurred(state));
+    CU_ASSERT(NomMap_Check(map));
+
+    NomValue result;
+    result = NomMap_Get(state, map, NomString_FromString(state, "zero", false));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(0)));
+    result = NomMap_Get(state, map, NomString_FromString(state, "one", false));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(1)));
+
+    NomState_Free(state);
+}
+
 #endif

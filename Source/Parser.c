@@ -36,6 +36,18 @@ typedef struct _Parser
     char        error[256];
 } Parser;
 
+void ErrorUnexpectedToken(
+    Parser*     parser
+    )
+{
+    char buffer[128];
+    size_t length = Lexer_GetTokenLength(parser->lexer);
+    const char* string = Lexer_GetTokenString(parser->lexer);
+    memcpy(buffer, string, length);
+    buffer[length] = '\0';
+    Parser_SetError(parser, "Unexpected token '%s'", buffer);
+}
+
 Parser* Parser_Create(
     const char* source,
     StringPool* stringPool
@@ -73,6 +85,29 @@ const char* Parser_GetError(
     )
 {
     return parser->error;
+}
+
+Node* Parser_Exprs(
+    Parser* parser
+    )
+{
+    // Parse an expression
+    Node* expr = Parser_Expr(parser);
+    if (!expr)
+    {
+        return NULL;
+    }
+
+    // If there is a trailing comma, recursively parse another expression
+    // sequence
+    Node* exprs = NULL;
+    if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ','))
+    {
+        Lexer_Next(parser->lexer);
+        exprs = Parser_Exprs(parser);
+    }
+
+    return Node_WithoutData(NODE_EXPRS, expr, exprs);
 }
 
 Node* Parser_Expr(
@@ -128,19 +163,64 @@ Node* Parser_SecondaryExpr(
     switch (type)
     {
     case TOK_SYMBOL:
+
+        // Paren expression
         if (id == '(')
         {
             n = Parser_ParenExpr(parser);
             break;
         }
+
+        // Map literal
+        else if (id == '{')
+        {
+            Lexer_Next(parser->lexer);
+
+            n = Parser_Exprs(parser);
+            if (!n)
+            {
+                return NULL;
+            }
+            else if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
+            {
+                Parser_SetError(parser, "Expected closing '}'");
+                return NULL;
+            }
+
+            size_t i = 0;
+            Node* map = n;
+            while (map)
+            {
+                Node* item = map->first;
+
+                // Infer the key if it is not a association operation
+                if (item->type != NODE_BINARY_OP && item->data.integerValue != OP_ASSOC)
+                {
+                    Node* key = Node_WithInteger(NODE_INTEGER, i, NULL, NULL);
+                    item = Node_WithInteger(NODE_BINARY_OP, OP_ASSOC, key, item);
+                    map->first = item;
+                }
+
+                map->type = NODE_MAP;
+                map = map->second;
+                ++i;
+            }
+            break;
+        }
+
+    // Integer literal
     case TOK_INTEGER:
         n = Node_WithInteger(NODE_INTEGER, Lexer_GetTokenAsInteger(parser->lexer), NULL, NULL);
         Lexer_Next(parser->lexer);
         break;
+
+    // Real literal
     case TOK_REAL:
         n = Node_WithReal(NODE_REAL, Lexer_GetTokenAsReal(parser->lexer), NULL, NULL);
         Lexer_Next(parser->lexer);
         break;
+
+    // String literal
     case TOK_STRING:
         {
             size_t length = Lexer_GetTokenLength(parser->lexer);
@@ -149,6 +229,8 @@ Node* Parser_SecondaryExpr(
             n = Node_WithHandle(NODE_STRING, (unsigned)id, NULL, NULL);
             Lexer_Next(parser->lexer);
         } break;
+
+    // Identifier
     case TOK_IDENT:
         {
             size_t length = Lexer_GetTokenLength(parser->lexer);
@@ -157,6 +239,8 @@ Node* Parser_SecondaryExpr(
             n = Node_WithHandle(NODE_IDENT, (unsigned)id, NULL, NULL);
             Lexer_Next(parser->lexer);
         } break;
+
+    // Keyword literals
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
@@ -164,14 +248,10 @@ Node* Parser_SecondaryExpr(
             Lexer_Next(parser->lexer);
             break;
         }
+
     default:
         {
-            char buffer[64];
-            size_t length = Lexer_GetTokenLength(parser->lexer);
-            const char* string = Lexer_GetTokenString(parser->lexer);
-            memcpy(buffer, string, length);
-            buffer[length] = '\0';
-            Parser_SetError(parser, "Unexpected token '%s'", buffer);
+            ErrorUnexpectedToken(parser);
             return NULL;
         }
     }
@@ -253,6 +333,14 @@ Node* Parser_BinExpr(
                 Node_Free(left);
                 return NULL;
             }
+        }
+
+        if (nodeOp == OP_LET && left->type != NODE_IDENT)
+        {
+            Parser_SetError(parser, "The left side of a let operation must be an identifier");
+            Node_Free(left);
+            Node_Free(right);
+            return NULL;
         }
 
         left = Node_WithInteger(NODE_BINARY_OP, nodeOp, left, right);

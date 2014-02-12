@@ -47,7 +47,8 @@ typedef enum
     OP_NOT,
     OP_ASSOC,
     OP_RET,
-    OP_PUSH
+    OP_PUSH,
+    OP_NEW_MAP
 } OpCode;
 
 ///

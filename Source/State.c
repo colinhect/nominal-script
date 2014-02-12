@@ -86,7 +86,7 @@ NomValue NomState_Execute(
     state->errorFlag = false;
 
     Parser* p = Parser_Create(source, state->stringPool);
-    Node* node = Parser_Expr(p);
+    Node* node = Parser_Exprs(p);
 
     if (!node)
     {
@@ -132,6 +132,21 @@ NomValue NomState_Execute(
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
             }
             break;
+        case OP_NEW_MAP:
+            {
+                NomValue map = NomMap_Create(state);
+
+                int itemCount = NomNumber_AsInt(POP());
+                for (int i = 0; i < itemCount; ++i)
+                {
+                    NomValue key = POP();
+                    NomValue value = POP();
+
+                    NomMap_Set(state, map, key, value);
+                }
+
+                PUSH(map);
+            } break;
         case OP_ADD:
             l = POP();
             r = POP();

@@ -154,4 +154,24 @@ void Test_Map_PooledStringKeys(void)
     NomState_Free(state);
 }
 
+void Test_Map_MixedStringKeys(void)
+{
+    NomState* state = NomState_Create();
+
+    NomValue map = NomMap_Create(state);
+
+    NomValue a = NomString_FromString(state, "a", true);
+    NomValue b = NomString_FromString(state, "b", true);
+
+    CU_ASSERT(NomMap_Set(state, map, a, b));
+
+    NomValue a2 = NomString_FromString(state, "a", false);
+
+    NomValue result;
+    result = NomMap_Get(state, map, a2);
+    CU_ASSERT(NomValue_Equals(state, result, b));
+
+    NomState_Free(state);
+}
+
 #endif

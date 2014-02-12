@@ -66,7 +66,7 @@ Hash HashValue(
         break;
     }
 
-    return (Hash)key;
+    return (Hash)hash;
 }
 
 int CompareValue(

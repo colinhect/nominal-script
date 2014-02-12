@@ -60,11 +60,15 @@ int main()
     ADD_TEST(Test_Map_TryGetNonExisting);
     ADD_TEST(Test_Map_StringKeys);
     ADD_TEST(Test_Map_PooledStringKeys);
+    ADD_TEST(Test_Map_MixedStringKeys);
 
     // State test suite
     BEGIN_TEST_SUITE("State");
     ADD_TEST(Test_State_IntegerArithmetic);
     ADD_TEST(Test_State_RealArithmetic);
+    ADD_TEST(Test_State_GlobalVariables);
+    ADD_TEST(Test_State_MapWithImplicitKeys);
+    ADD_TEST(Test_State_MapWithExplicitKeys);
     
     // Run the tests
     CU_basic_set_mode(CU_BRM_VERBOSE);

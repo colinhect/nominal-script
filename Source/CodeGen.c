@@ -54,9 +54,26 @@ size_t GenerateCode(
         VALUE(NomReal_FromDouble(node->data.realValue));
         break;
     case NODE_STRING:
+        OPCODE(OP_PUSH);
+        VALUE(NomString_FromId(node->data.handle));
+        break;
+    case NODE_MAP:
         {
+            size_t itemCount = 0;
+            while (node)
+            {
+                // Value on stack
+                index = GenerateCode(node->first->second, byteCode, index);
+
+                // Key on stack
+                index = GenerateCode(node->first->first, byteCode, index);
+
+                node = node->second;
+                ++itemCount;
+            }
             OPCODE(OP_PUSH);
-            VALUE(NomString_FromId(node->data.handle));
+            VALUE(NomInteger_FromUnsignedLongLong(itemCount));
+            OPCODE(OP_NEW_MAP);
         } break;
     case NODE_IDENT:
         OPCODE(OP_GET);
@@ -86,6 +103,14 @@ size_t GenerateCode(
             }
         }
         break;
+    case NODE_EXPRS:
+        while (node)
+        {
+            index = GenerateCode(node->first, byteCode, index);
+            node = node->second;
+        }
+        break;
     }
+
     return index;
 }

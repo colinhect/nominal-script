@@ -81,6 +81,17 @@ const char* Parser_GetError(
     );
 
 ///
+/// \brief Parses a sequence of expressions.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_Exprs(
+    Parser* parser
+    );
+
+///
 /// \brief Parses an expression.
 ///
 /// \param parser

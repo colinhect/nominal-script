@@ -44,7 +44,8 @@ const int OP_PREC[] =
     6,  // OP_NOT
     1,  // OP_ASSOC
     1,  // OP_RET
-    0   // OP_PUSH
+    0,  // OP_PUSH
+    0   // OP_NEW_MAP
 };
 
 const char* const OP_STR[] =
@@ -69,4 +70,5 @@ const char* const OP_STR[] =
     "->", // OP_ASSOC
     "<-", // OP_RET
     " ",  // OP_PUSH
+    " "  // OP_NEW_MAP
 };
