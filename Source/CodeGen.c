@@ -77,7 +77,7 @@ size_t GenerateCode(
             }
             OPCODE(OP_PUSH);
             VALUE(NomInteger_FromUnsignedLongLong(state, itemCount));
-            OPCODE(OP_NEW_MAP);
+            OPCODE(OP_MAP);
         } break;
     case NODE_IDENT:
         OPCODE(OP_GET);

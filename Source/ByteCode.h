@@ -48,7 +48,7 @@ typedef enum
     OP_ASSOC,
     OP_RET,
     OP_PUSH,
-    OP_NEW_MAP
+    OP_MAP
 } OpCode;
 
 ///
@@ -58,5 +58,9 @@ extern const int OP_PREC[];
 ///
 /// \brief The string value of each operator.
 extern const char* const OP_STR[];
+
+///
+/// \brief The string value of each op code.
+extern const char* const OP_CODE_STR[];
 
 #endif

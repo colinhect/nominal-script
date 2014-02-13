@@ -91,6 +91,24 @@ void NomState_SetError(
 #define PUSH(v)         state->stack[state->sp++] = v
 #define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
+#ifndef _DEBUG
+
+#define BEGIN_OP(op)    printf("%s\t", OP_CODE_STR[op]);
+#define END_OP()        printf("\n");
+
+#define SHOW_DEBUG_VALUE(v) \
+{\
+    char buffer[256]; \
+    NomValue_AsString(buffer, v); \
+    printf(buffer); \
+}
+
+#else
+#define BEGIN_OP(op)
+#define END_OP()
+#define SHOW_DEBUG_VALUE(v)
+#endif
+
 NomValue NomState_Execute(
     NomState*   state,
     const char* source
@@ -120,17 +138,24 @@ NomValue NomState_Execute(
         NomValue l;
         NomValue r;
         NomValue result = nil;
+        NomValue string = nil;
 
         OpCode op = (OpCode)state->byteCode[state->ip++];
+
+        BEGIN_OP(op);
+
         switch (op)
         {
         case OP_PUSH:
             result = READAS(NomValue);
+            SHOW_DEBUG_VALUE(result);
             PUSH(result);
             break;
         case OP_GET:
             id = READAS(StringId);
-            if (!NomMap_TryGet(scope, NomString_FromId(state, id), &result))
+            string = NomString_FromId(state, id);
+            SHOW_DEBUG_VALUE(string);
+            if (!NomMap_TryGet(scope, string, &result))
             {
                 NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
             }
@@ -138,19 +163,23 @@ NomValue NomState_Execute(
             break;
         case OP_SET:
             id = READAS(StringId);
-            if (!NomMap_Set(scope, NomString_FromId(state, id), TOP()))
+            string = NomString_FromId(state, id);
+            SHOW_DEBUG_VALUE(string);
+            if (!NomMap_Set(scope, string, TOP()))
             {
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
             break;
         case OP_LET:
             id = READAS(StringId);
-            if (!NomMap_Insert(scope, NomString_FromId(state, id), TOP()))
+            string = NomString_FromId(state, id);
+            SHOW_DEBUG_VALUE(string);
+            if (!NomMap_Insert(scope, string, TOP()))
             {
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
             }
             break;
-        case OP_NEW_MAP:
+        case OP_MAP:
             {
                 NomValue map = NomMap_Create(state);
 
@@ -195,6 +224,8 @@ NomValue NomState_Execute(
             PUSH(result);
             break;
         }
+
+        END_OP();
     }
 
     // Return the result

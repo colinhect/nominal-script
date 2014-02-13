@@ -27,8 +27,6 @@
 #include "ByteCode.h"
 #include "StringPool.h"
 
-#include <stdint.h>
-
 ///
 /// \brief A type of AST node.
 typedef enum

@@ -28,19 +28,22 @@
 
 int main()
 {
+    char resultString[4096];
+    char line[4096];
+
     NomState* state = NomState_Create();
 
-    for (;;)
+    bool quit = false;
+    while (!quit)
     {
         printf(":> ");
-        char line[512];
-        fgets(line, 512, stdin);
+        fgets(line, 4096, stdin);
+
         if (line[0] != '\n')
         {
             NomValue result = NomState_Execute(state, line);
             if (!NomState_ErrorOccurred(state))
             {
-                char resultString[256];
                 NomValue_AsString(resultString, result);
                 printf("%s\n", resultString);
             }
@@ -51,7 +54,7 @@ int main()
         }
         else
         {
-            break;
+            quit = true;
         }
     }
 

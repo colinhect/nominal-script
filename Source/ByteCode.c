@@ -45,7 +45,7 @@ const int OP_PREC[] =
     1,  // OP_ASSOC
     1,  // OP_RET
     0,  // OP_PUSH
-    0   // OP_NEW_MAP
+    0   // OP_MAP
 };
 
 const char* const OP_STR[] =
@@ -58,7 +58,7 @@ const char* const OP_STR[] =
     "*",  // OP_MUL
     "/",  // OP_DIV
     "-",  // OP_NEG
-    "==", // OP_EQUAL
+    "==", // OP_EQ
     "!=", // OP_NE
     ">",  // OP_GT
     ">=", // OP_GTE
@@ -70,5 +70,30 @@ const char* const OP_STR[] =
     "->", // OP_ASSOC
     "<-", // OP_RET
     " ",  // OP_PUSH
-    " "  // OP_NEW_MAP
+    " "   // OP_MAP
+};
+
+const char* const OP_CODE_STR[] =
+{
+    "let",      // OP_LET
+    "set",      // OP_SET
+    "get",      // OP_GET
+    "add",      // OP_ADD
+    "sub",      // OP_SUB
+    "mul",      // OP_MUL
+    "div",      // OP_DIV
+    "neg",      // OP_NEG
+    "eq",       // OP_EQ
+    "ne",       // OP_NE
+    "gt",       // OP_GT
+    "gte",      // OP_GTE
+    "lt",       // OP_LT
+    "lte",      // OP_LTE
+    "and",      // OP_AND
+    "or",       // OP_OR
+    "not",      // OP_NOT
+    "assoc",    // OP_ASSOC
+    "ret",      // OP_RET
+    "push",     // OP_PUSH
+    "map"       // OP_MAP
 };

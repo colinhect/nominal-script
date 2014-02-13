@@ -242,8 +242,8 @@ Hash HashString(
     char* s = (char*)key;
     Hash hash = 5381;
 
-    int c;
-    while (c = *s++)
+    char c;
+    while ((c = *s++) != '\0')
     {
         hash = ((hash << 5) + hash) + c;
     }
