@@ -25,7 +25,6 @@
 #include "StringPool.h"
 #include "State.h"
 #include "Heap.h"
-#include "Type.h"
 #include "Value.h"
 
 #include <stdlib.h>
@@ -35,59 +34,61 @@ bool NomString_Check(
     NomValue    value
     )
 {
-    Type type = GET_TYPE_BITS(value);
+    Type type = GET_TYPE(value);
     return type == TYPE_STRING
         || type == TYPE_POOLED_STRING;
 }
 
 NomValue NomString_FromString(
     NomState*   state,
-    const char* string,
+    const char* value,
     bool        pooled
     )
 {
-    NomValue value = NomValue_Nil();
+    NomValue string;
+    INIT_VALUE(string, TYPE_STRING, state);
 
     if (pooled)
     {
-        StringId id = StringPool_InsertOrFind(state->stringPool, string);
-        SET_TYPE_BITS(value, TYPE_POOLED_STRING);
-        SET_ID_BITS(value, id);
+        StringId id = StringPool_InsertOrFind(state->stringPool, value);
+
+        SET_TYPE_BITS(string, TYPE_POOLED_STRING);
+        SET_ID_BITS(string, id);
     }
     else
     {
-        ObjectId id = Heap_Alloc(state->heap, strlen(string) + 1, free);
-        strcpy((char*)Heap_GetData(state->heap, id), string);
-        SET_TYPE_BITS(value, TYPE_STRING);
-        SET_ID_BITS(value, id);
+        ObjectId id = Heap_Alloc(state->heap, strlen(value) + 1, free);
+        strcpy((char*)Heap_GetData(state->heap, id), value);
+        SET_ID_BITS(string, id);
     }
 
-    return value;
+    return string;
 }
 
 const char* NomString_AsString(
-    NomState*   state,
     NomValue    value
     )
 {
-    switch ((Type)GET_TYPE_BITS(value))
+    NomState* state = NomValue_GetState(value);
+
+    switch (GET_TYPE(value))
     {
     case TYPE_STRING:
         return (const char*)Heap_GetData(state->heap, GET_ID_BITS(value));
-        break;
     case TYPE_POOLED_STRING:
         return StringPool_Find(state->stringPool, GET_ID_BITS(value));
-        break;
     }
+
     return NULL;
 }
 
 NomValue NomString_FromId(
+    NomState*   state,
     StringId    id
     )
 {
-    NomValue value = NomValue_Nil();
-    SET_TYPE_BITS(value, TYPE_POOLED_STRING);
-    SET_ID_BITS(value, id);
-    return value;
+    NomValue string;
+    INIT_VALUE(string, TYPE_POOLED_STRING, state);
+    SET_ID_BITS(string, id);
+    return string;
 }

@@ -26,6 +26,7 @@
 #include "State.h"
 #include "Parser.h"
 #include "CodeGen.h"
+#include "String.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -33,19 +34,31 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#define STRING_POOL_STRING_COUNT    (128)
+#define STRING_POOL_STRING_COUNT    (256)
+
+NomState* states[STATE_MAX_INSTANCES] = { 0 };
 
 NomState* NomState_Create(
     void
     )
 {
     NomState* state = (NomState*)malloc(sizeof(NomState));
+
+    // Find the next available ID
+    state->id = 0;
+    while (states[state->id])
+    {
+        ++state->id;
+    }
+    states[state->id] = state;
+
     state->sp = 0;
     state->ip = 0;
     state->heap = Heap_Create();
     state->stringPool = StringPool_Create(STRING_POOL_STRING_COUNT);
-    state->globalScope = Scope_Create();
     state->errorFlag = 0;
+
+    state->globalScope = NomMap_Create(state);
 
     return state;
 }
@@ -54,9 +67,9 @@ void NomState_Free(
     NomState*   state
     )
 {
-    Scope_Free(state->globalScope);
     StringPool_Free(state->stringPool);
     Heap_Free(state->heap);
+    states[state->id] = NULL;
     free(state);
 }
 
@@ -85,26 +98,28 @@ NomValue NomState_Execute(
 {
     state->errorFlag = false;
 
+    NomValue nil = NomValue_Nil(state);
+
     Parser* p = Parser_Create(source, state->stringPool);
     Node* node = Parser_Exprs(p);
 
     if (!node)
     {
         NomState_SetError(state, Parser_GetError(p));
-        return NomValue_Nil();
+        return nil;
     }
 
-    size_t end = GenerateCode(node, state->byteCode, state->ip);
+    size_t end = GenerateCode(state, node, state->byteCode, state->ip);
     Node_Free(node);
 
-    Scope* scope = state->globalScope;
+    NomValue scope = state->globalScope;
 
     while (state->ip < end && !state->errorFlag)
     {
         StringId id;
         NomValue l;
         NomValue r;
-        NomValue result;
+        NomValue result = nil;
 
         OpCode op = (OpCode)state->byteCode[state->ip++];
         switch (op)
@@ -115,19 +130,22 @@ NomValue NomState_Execute(
             break;
         case OP_GET:
             id = READAS(StringId);
-            Scope_Get(scope, id, &result);
+            if (!NomMap_TryGet(scope, NomString_FromId(state, id), &result))
+            {
+                NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
+            }
             PUSH(result);
             break;
         case OP_SET:
             id = READAS(StringId);
-            if (!Scope_Set(scope, id, TOP()))
+            if (!NomMap_Set(scope, NomString_FromId(state, id), TOP()))
             {
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
             break;
         case OP_LET:
             id = READAS(StringId);
-            if (!Scope_Let(scope, id, TOP()))
+            if (!NomMap_Insert(scope, NomString_FromId(state, id), TOP()))
             {
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
             }
@@ -142,7 +160,7 @@ NomValue NomState_Execute(
                     NomValue key = POP();
                     NomValue value = POP();
 
-                    NomMap_Set(state, map, key, value);
+                    NomMap_InsertOrSet(map, key, value);
                 }
 
                 PUSH(map);
@@ -150,30 +168,30 @@ NomValue NomState_Execute(
         case OP_ADD:
             l = POP();
             r = POP();
-            result = NomValue_Add(state, l, r);
+            result = NomValue_Add(l, r);
             PUSH(result);
             break;
         case OP_SUB:
             l = POP();
             r = POP();
-            result = NomValue_Subtract(state, l, r);
+            result = NomValue_Subtract(l, r);
             PUSH(result);
             break;
         case OP_MUL:
             l = POP();
             r = POP();
-            result = NomValue_Multiply(state, l, r);
+            result = NomValue_Multiply(l, r);
             PUSH(result);
             break;
         case OP_DIV:
             l = POP();
             r = POP();
-            result = NomValue_Divide(state, l, r);
+            result = NomValue_Divide(l, r);
             PUSH(result);
             break;
         case OP_NEG:
             l = POP();
-            result = NomValue_Negate(state, l);
+            result = NomValue_Negate(l);
             PUSH(result);
             break;
         }
@@ -182,7 +200,7 @@ NomValue NomState_Execute(
     // Return the result
     if (state->sp == 0)
     {
-        return NomValue_Nil();
+        return nil;
     }
     else
     {
@@ -204,4 +222,11 @@ const char* NomState_GetError(
     )
 {
     return state->error;
+}
+
+NomState* NomState_GetInstance(
+    StateId id
+    )
+{
+    return states[id];
 }

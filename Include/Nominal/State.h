@@ -26,8 +26,6 @@
 
 #include "Nominal/Value.h"
 
-#include <stdbool.h>
-
 ///
 /// \brief A Nominal state.
 typedef struct _NomState NomState;

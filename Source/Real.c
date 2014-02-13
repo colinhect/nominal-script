@@ -25,34 +25,36 @@
 #include "Nominal/Number.h"
 #include "Nominal/Integer.h"
 
-#include "Type.h"
 #include "Value.h"
+#include "State.h"
 
 bool NomReal_Check(
     NomValue    value
     )
 {
-    return GET_TYPE_BITS(value) == TYPE_REAL;
+    return GET_TYPE(value) == TYPE_REAL;
 }
 
 NomValue NomReal_FromFloat(
-    float   value
+    NomState*   state,
+    float       value
     )
 {
-    NomValue real = NomValue_Nil();
-    SET_TYPE_BITS(real, TYPE_REAL);
+    NomValue real;
+    INIT_VALUE(real, TYPE_REAL, state);
     SET_REAL_BITS(real, *(uint32_t*)&value);
     return real;
 }
 
 NomValue NomReal_FromDouble(
-    double  value
+    NomState*   state,
+    double      value
     )
 {
     float floatValue = (float)value;
 
-    NomValue real = NomValue_Nil();
-    SET_TYPE_BITS(real, TYPE_REAL);
+    NomValue real;
+    INIT_VALUE(real, TYPE_REAL, state);
     SET_REAL_BITS(real, *(uint32_t*)&floatValue);
     return real;
 }

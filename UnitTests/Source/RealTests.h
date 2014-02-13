@@ -30,9 +30,13 @@
 
 void Test_Real_ToAndFromDouble(void)
 {
-    NomValue value = NomReal_FromDouble(1.234);
+    NomState* state = NomState_Create();
+
+    NomValue value = NomReal_FromDouble(state, 1.234);
     double doubleValue = NomNumber_AsDouble(value);
     CU_ASSERT_DOUBLE_EQUAL(doubleValue, 1.234, 0.0001);
+
+    NomState_Free(state);
 }
 
 #endif

@@ -40,22 +40,28 @@ bool NomInteger_Check(
 ///
 /// \brief Creates a Nominal integer value from an int.
 ///
+/// \param state
+///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal integer value.
 NomValue NomInteger_FromInt(
-    int value
+    NomState*   state,
+    int         value
     );
 
 ///
 /// \brief Creates a Nominal integer value from an unsigned long long.
 ///
+/// \param state
+///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal integer value.
 NomValue NomInteger_FromUnsignedLongLong(
+    NomState*           state,
     unsigned long long  value
     );
 

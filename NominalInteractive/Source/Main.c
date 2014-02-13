@@ -21,67 +21,41 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Scope.h"
-#include "HashTable.h"
+#include <Nominal.h>
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#define SCOPE_BUCKET_COUNT  (10)
-
-typedef struct _Scope
+int main()
 {
-    HashTable*  hashTable;
-} Scope;
+    NomState* state = NomState_Create();
 
-Scope* Scope_Create(
-    void
-    )
-{
-    Scope* scope = (Scope*)malloc(sizeof(Scope));
-    scope->hashTable = HashTable_Create(HashIdentity, CompareIdentity, 0, SCOPE_BUCKET_COUNT);
-    return scope;
-}
-
-void Scope_Free(
-    Scope*  scope
-    )
-{
-    HashTable_Free(scope->hashTable, NULL, NULL);
-    free(scope);
-}
-
-bool Scope_Let(
-    Scope*      scope,
-    StringId    id,
-    NomValue    value
-    )
-{
-    return HashTable_Insert(scope->hashTable, (UserData)id, (UserData)value.data);
-}
-
-bool Scope_Set(
-    Scope*      scope,
-    StringId    id,
-    NomValue    value
-    )
-{
-    return HashTable_Set(scope->hashTable, (UserData)id, (UserData)value.data);
-}
-
-bool Scope_Get(
-    Scope*      scope,
-    StringId    id,
-    NomValue*   result
-    )
-{
-    NomValue value = NomValue_Nil();
-    if (HashTable_Find(scope->hashTable, (UserData)id, (UserData*)&value.data))
+    for (;;)
     {
-        *result = value;
-        return true;
+        printf(":> ");
+        char line[512];
+        fgets(line, 512, stdin);
+        if (line[0] != '\n')
+        {
+            NomValue result = NomState_Execute(state, line);
+            if (!NomState_ErrorOccurred(state))
+            {
+                char resultString[256];
+                NomValue_AsString(resultString, result);
+                printf("%s\n", resultString);
+            }
+            else
+            {
+                printf("Error: %s\n", NomState_GetError(state));
+            }
+        }
+        else
+        {
+            break;
+        }
     }
-    else
-    {
-        return false;
-    }
+
+    NomState_Free(state);
+
+    return 0;
 }

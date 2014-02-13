@@ -1,0 +1,7 @@
+Deploy/*
+Intermediate/*
+NominalInteractive/Intermediate/*
+UnitTests/Intermediate/*
+*.opensdf
+*.sdf
+*.suo

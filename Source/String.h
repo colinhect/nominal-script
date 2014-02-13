@@ -31,11 +31,14 @@
 ///
 /// \brief Creates a pooled string from a string ID.
 ///
+/// \param state
+///     The state.
 /// \param id
 ///     The string ID.
 ///
 /// \returns The new Nominal string.
 NomValue NomString_FromId(
+    NomState*   state,
     StringId    id
     );
 

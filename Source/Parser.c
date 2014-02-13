@@ -333,7 +333,6 @@ Node* Parser_BinExpr(
             return left;
         }
 
-        OpCode op = (OpCode)Lexer_GetTokenId(parser->lexer);
         Lexer_Next(parser->lexer);
         Node* right = Parser_PrimaryExpr(parser);
         if (!right)

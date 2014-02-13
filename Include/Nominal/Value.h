@@ -31,6 +31,10 @@ typedef struct _NomState NomState;
 
 ///
 /// \brief A Nominal value.
+///
+/// \remarks Every Nominal value is created for a specific Nominal state
+/// instance.  Mixing Nominal values from differring Nominal state instances
+/// will result in undefined behavior.
 typedef struct
 {
     uint64_t data;
@@ -38,15 +42,18 @@ typedef struct
 
 ///
 /// \brief Creates a new Nominal nil value.
+///
+/// \param state
+///     The Nominal state to create the value for.
+///
+/// \returns The nil value.
 NomValue NomValue_Nil(
-    void
+    NomState*   state
     );
 
 ///
 /// \brief Returns whether a Nominal value is equal to another.
 ///
-/// \param state
-///     The state.
 /// \param value
 ///     The value to compare.
 /// \param other
@@ -54,123 +61,108 @@ NomValue NomValue_Nil(
 ///
 /// \returns True if they are equal; false otherwise.
 bool NomValue_Equals(
-    NomState*   state,
     NomValue    value,
     NomValue    other
     );
 
 ///
-/// \brief Compares a Nominal value with another Nominal value.
+/// \brief Returns the hash of a Nominal value.
 ///
-/// \param state
-///     The state.
 /// \param value
-///     The value.
-/// \param other
-///     The value to compare to.
+///     The value to hash.
 ///
-/// \returns 0 if the values are equivalent; -1 if the value is less than the
-/// other; 1 if the value is greater than the other.
-int NomValue_Compare(
-    NomState*   state,
-    NomValue    value,
-    NomValue    other
+/// \returns The hash of the value.
+long long NomValue_Hash(
+    NomValue    value
     );
 
 ///
 /// \brief Gets a representation of a Nominal value as a string.
 ///
-/// \param state
-///     The state.
-/// \param dest
+/// \param string
 ///     The destination string to copy to.
 /// \param value
 ///     The value.
 void NomValue_AsString(
-    NomState*   state,
-    char*       dest,
+    char*       string,
     NomValue    value
     );
 
 ///
-/// \brief Performs addition on two Nominal values.
+/// \brief Adds another value to a Nominal value.
 ///
-/// \param state
-///     The state.
-/// \param left
-///     The left value.
-/// \param right
-///     The right value.
+/// \param value
+///     The value to add to.
+/// \param other
+///     The other value.
 ///
 /// \returns The resulting value.
 NomValue NomValue_Add(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     );
 
 ///
-/// \brief Performs subtraction on two Nominal values.
+/// \brief Subtracts another value from a Nominal value.
 ///
-/// \param state
-///     The state.
-/// \param left
-///     The left value.
-/// \param right
-///     The right value.
+/// \param value
+///     The value to subtract from.
+/// \param other
+///     The other value.
 ///
 /// \returns The resulting value.
 NomValue NomValue_Subtract(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     );
 
 ///
-/// \brief Performs multiplication on two Nominal values.
+/// \brief Multiplies a Nominal value by another value.
 ///
-/// \param state
-///     The state.
-/// \param left
-///     The left value.
-/// \param right
-///     The right value.
+/// \param value
+///     The value to multiply.
+/// \param other
+///     The other value.
 ///
 /// \returns The resulting value.
 NomValue NomValue_Multiply(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     );
 
 ///
-/// \brief Performs division on two Nominal values.
+/// \brief Divides a Nominal value by another value.
 ///
-/// \param state
-///     The state.
-/// \param left
-///     The left value.
-/// \param right
-///     The right value.
+/// \param value
+///     The value to divide.
+/// \param other
+///     The other value.
 ///
 /// \returns The resulting value.
 NomValue NomValue_Divide(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     );
 
 ///
 /// \brief Negates a Nominal value.
 ///
-/// \param state
-///     The state.
 /// \param value
 ///     The value to negate.
 ///
 /// \returns The resulting value.
 NomValue NomValue_Negate(
-    NomState*   state,
+    NomValue    value
+    );
+
+///
+/// \brief Gets a value's associated Nominal state.
+///
+/// \param value
+///     The value.
+///
+/// \returns The associated state; NULL if no associated state is found.
+NomState* NomValue_GetState(
     NomValue    value
     );
 

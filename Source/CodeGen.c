@@ -26,6 +26,7 @@
 #include "CodeGen.h"
 #include "ByteCode.h"
 #include "Node.h"
+#include "State.h"
 #include "String.h"
 #include "StringPool.h"
 
@@ -34,6 +35,7 @@
 #define VALUE(v)    *(NomValue*)&byteCode[index] = v; index += sizeof(NomValue)
 
 size_t GenerateCode(
+    NomState*       state,
     Node*           node,
     unsigned char*  byteCode,
     size_t          index
@@ -43,19 +45,19 @@ size_t GenerateCode(
     {
     case NODE_NIL:
         OPCODE(OP_PUSH);
-        VALUE(NomValue_Nil());
+        VALUE(NomValue_Nil(state));
         break;
     case NODE_INTEGER:
         OPCODE(OP_PUSH);
-        VALUE(NomInteger_FromUnsignedLongLong(node->data.integer.value));
+        VALUE(NomInteger_FromUnsignedLongLong(state, node->data.integer.value));
         break;
     case NODE_REAL:
         OPCODE(OP_PUSH);
-        VALUE(NomReal_FromDouble(node->data.real.value));
+        VALUE(NomReal_FromDouble(state, node->data.real.value));
         break;
     case NODE_STRING:
         OPCODE(OP_PUSH);
-        VALUE(NomString_FromId(node->data.string.id));
+        VALUE(NomString_FromId(state, node->data.string.id));
         break;
     case NODE_MAP:
         {
@@ -65,16 +67,16 @@ size_t GenerateCode(
                 Node* assoc = node->data.map.node;
 
                 // Value on stack
-                index = GenerateCode(assoc->data.binary.right, byteCode, index);
+                index = GenerateCode(state, assoc->data.binary.right, byteCode, index);
 
                 // Key on stack
-                index = GenerateCode(assoc->data.binary.left, byteCode, index);
+                index = GenerateCode(state, assoc->data.binary.left, byteCode, index);
 
                 node = node->data.map.next;
                 ++itemCount;
             }
             OPCODE(OP_PUSH);
-            VALUE(NomInteger_FromUnsignedLongLong(itemCount));
+            VALUE(NomInteger_FromUnsignedLongLong(state, itemCount));
             OPCODE(OP_NEW_MAP);
         } break;
     case NODE_IDENT:
@@ -82,7 +84,7 @@ size_t GenerateCode(
         STRING(node->data.ident.id);
         break;
     case NODE_UNARY:
-        index = GenerateCode(node->data.unary.node, byteCode, index);
+        index = GenerateCode(state, node->data.unary.node, byteCode, index);
         OPCODE(node->data.unary.op);
         break;
     case NODE_BINARY:
@@ -90,7 +92,7 @@ size_t GenerateCode(
             OpCode op = node->data.binary.op;
 
             // Push right hand side on stack
-            index = GenerateCode(node->data.binary.right, byteCode, index);
+            index = GenerateCode(state, node->data.binary.right, byteCode, index);
 
             if (op == OP_LET || op == OP_SET)
             {
@@ -100,7 +102,7 @@ size_t GenerateCode(
             }
             else
             {
-                index = GenerateCode(node->data.binary.left, byteCode, index);
+                index = GenerateCode(state, node->data.binary.left, byteCode, index);
                 OPCODE(op);
             }
         }
@@ -108,7 +110,7 @@ size_t GenerateCode(
     case NODE_SEQUENCE:
         while (node)
         {
-            index = GenerateCode(node->data.sequence.node, byteCode, index);
+            index = GenerateCode(state, node->data.sequence.node, byteCode, index);
             node = node->data.sequence.next;
         }
         break;

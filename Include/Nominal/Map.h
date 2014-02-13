@@ -24,7 +24,6 @@
 #ifndef NOMINAL_MAP_H
 #define NOMINAL_MAP_H
 
-#include "Nominal/State.h"
 #include "Nominal/Value.h"
 
 ///
@@ -42,7 +41,7 @@ bool NomMap_Check(
 /// \brief Creates a new Nominal map.
 ///
 /// \param state
-///     The state.
+///     The Nominal state to create the value for.
 ///
 /// \returns The new Nominal map.
 NomValue NomMap_Create(
@@ -50,21 +49,54 @@ NomValue NomMap_Create(
     );
 
 ///
+/// \brief Inserts a new key/value in a Nominal map.
+///
+/// \param map
+///     The map to insert the value in.
+/// \param key
+///     The key.
+/// \param value
+///     The new value.
+///
+/// \returns True if the key/value was inserted; false if a value already
+/// exists for the key.
+bool NomMap_Insert(
+    NomValue    map,
+    NomValue    key,
+    NomValue    value
+    );
+
+///
 /// \brief Sets the value for a key in a Nominal map.
 ///
-/// \param state
-///        The state.
 /// \param map
-///        The map to set the value in.
+///     The map to set the value in.
 /// \param key
-///        The key.
-///    \param value
-///        The new value.
+///     The key.
+/// \param value
+///     The new value.
 ///
 /// \returns False if the map already had a value for the given key; true
 /// otherwise.
 bool NomMap_Set(
-    NomState*   state,
+    NomValue    map,
+    NomValue    key,
+    NomValue    value
+    );
+
+///
+/// \brief Inserts a new value or sets an existing value in a Nominal map.
+///
+/// \param map
+///     The map to insert or set the value in.
+/// \param key
+///     The key.
+/// \param value
+///     The new value.
+///
+/// \returns True if a new value was inserted; false if an existing value was
+/// changed.
+bool NomMap_InsertOrSet(
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -73,17 +105,14 @@ bool NomMap_Set(
 ///
 /// \brief Gets the value for a key in a Nominal map.
 ///
-/// \param state
-///        The state.
 /// \param map
-///        The map to get the value from.
+///     The map to get the value from.
 /// \param key
-///        The key.
+///     The key.
 ///
 /// \returns The value for the given key; nil if no value is set for the given
 /// key.
 NomValue NomMap_Get(
-    NomState*   state,
     NomValue    map,
     NomValue    key
     );
@@ -91,18 +120,15 @@ NomValue NomMap_Get(
 ///
 /// \brief Tries to get the value for a key in a Nominal map.
 ///
-/// \param state
-///        The state.
 /// \param map
-///        The map to get the value from.
+///     The map to get the value from.
 /// \param key
-///        The key.
+///     The key.
 /// \param value
-///        The value (nil if no value is set for the given key)..
+///     The value (nil if no value is set for the given key)..
 ///
 /// \returns True if the value was found; false otherwise.
 bool NomMap_TryGet(
-    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue*   value

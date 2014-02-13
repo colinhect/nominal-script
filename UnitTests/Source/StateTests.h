@@ -30,44 +30,48 @@
 
 #define TEST_EXPR(expr, expected)\
     {\
-        NomState* state = NomState_Create(); \
         CU_ASSERT(state != NULL);\
         NomValue value = NomState_Execute(state, expr);\
         CU_ASSERT(!NomState_ErrorOccurred(state));\
-        CU_ASSERT(NomValue_Equals(state, value, expected));\
-        NomState_Free(state);\
+        CU_ASSERT(NomValue_Equals(value, expected));\
     }
 
 void Test_State_IntegerArithmetic(void)
 {
-    TEST_EXPR("2 + 3", NomInteger_FromInt(5));
-    TEST_EXPR("2 - 3", NomInteger_FromInt(-1));
-    TEST_EXPR("2 * 3", NomInteger_FromInt(6));
-    TEST_EXPR("6 / 3", NomInteger_FromInt(2));
-    TEST_EXPR("6 / 4", NomInteger_FromInt(1));
+    NomState* state = NomState_Create();
+    TEST_EXPR("2 + 3", NomInteger_FromInt(state, 5));
+    TEST_EXPR("2 - 3", NomInteger_FromInt(state, -1));
+    TEST_EXPR("2 * 3", NomInteger_FromInt(state, 6));
+    TEST_EXPR("6 / 3", NomInteger_FromInt(state, 2));
+    TEST_EXPR("6 / 4", NomInteger_FromInt(state, 1));
+    NomState_Free(state);
 }
 
 void Test_State_RealArithmetic(void)
 {
-    TEST_EXPR("2 + 3.0", NomReal_FromDouble(5.0));
-    TEST_EXPR("2.0 + 3.0", NomReal_FromDouble(5.0));
-    TEST_EXPR("2.0 + 3", NomReal_FromDouble(5.0));
-    TEST_EXPR("2 - 3.0", NomReal_FromDouble(-1.0));
-    TEST_EXPR("2.0 - 3", NomReal_FromDouble(-1.0));
-    TEST_EXPR("2.0 - 3.0", NomReal_FromDouble(-1.0));
-    TEST_EXPR("2 * 3.0", NomReal_FromDouble(6.0));
-    TEST_EXPR("2.0 * 3", NomReal_FromDouble(6.0));
-    TEST_EXPR("2 * 3.0", NomReal_FromDouble(6.0));
-    TEST_EXPR("6 / 3.0", NomReal_FromDouble(2.0));
-    TEST_EXPR("6.0 / 3", NomReal_FromDouble(2.0));
-    TEST_EXPR("6 / 3.0", NomReal_FromDouble(2.0));
-    TEST_EXPR("6.0 / 4.0", NomReal_FromDouble(6.0 / 4.0));
-    TEST_EXPR("6.53 / 4.23", NomReal_FromDouble(6.53 / 4.23));
+    NomState* state = NomState_Create();
+    TEST_EXPR("2 + 3.0", NomReal_FromDouble(state, 5.0));
+    TEST_EXPR("2.0 + 3.0", NomReal_FromDouble(state, 5.0));
+    TEST_EXPR("2.0 + 3", NomReal_FromDouble(state, 5.0));
+    TEST_EXPR("2 - 3.0", NomReal_FromDouble(state, -1.0));
+    TEST_EXPR("2.0 - 3", NomReal_FromDouble(state, -1.0));
+    TEST_EXPR("2.0 - 3.0", NomReal_FromDouble(state, -1.0));
+    TEST_EXPR("2 * 3.0", NomReal_FromDouble(state, 6.0));
+    TEST_EXPR("2.0 * 3", NomReal_FromDouble(state, 6.0));
+    TEST_EXPR("2 * 3.0", NomReal_FromDouble(state, 6.0));
+    TEST_EXPR("6 / 3.0", NomReal_FromDouble(state, 2.0));
+    TEST_EXPR("6.0 / 3", NomReal_FromDouble(state, 2.0));
+    TEST_EXPR("6 / 3.0", NomReal_FromDouble(state, 2.0));
+    TEST_EXPR("6.0 / 4.0", NomReal_FromDouble(state, 6.0 / 4.0));
+    TEST_EXPR("6.53 / 4.23", NomReal_FromDouble(state, 6.53 / 4.23));
+    NomState_Free(state);
 }
 
 void Test_State_GlobalVariables(void)
 {
-    TEST_EXPR("a := 1, b := 2, a + b", NomInteger_FromInt(3));
+    NomState* state = NomState_Create();
+    TEST_EXPR("a := 1, b := 2, a + b", NomInteger_FromInt(state, 3));
+    NomState_Free(state);
 }
 
 void Test_State_MapWithImplicitKeys(void)
@@ -82,8 +86,8 @@ void Test_State_MapWithImplicitKeys(void)
 
     for (int i = 0; i < 4; ++i)
     {
-        result = NomMap_Get(state, map, NomInteger_FromInt(i));
-        CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(i)));
+        result = NomMap_Get(map, NomInteger_FromInt(state, i));
+        CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, i)));
     }
 
     NomState_Free(state);
@@ -98,10 +102,10 @@ void Test_State_MapWithExplicitKeys(void)
     CU_ASSERT(NomMap_Check(map));
 
     NomValue result;
-    result = NomMap_Get(state, map, NomString_FromString(state, "zero", false));
-    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(0)));
-    result = NomMap_Get(state, map, NomString_FromString(state, "one", false));
-    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(1)));
+    result = NomMap_Get(map, NomString_FromString(state, "zero", false));
+    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 0)));
+    result = NomMap_Get(map, NomString_FromString(state, "one", false));
+    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 1)));
 
     NomState_Free(state);
 }

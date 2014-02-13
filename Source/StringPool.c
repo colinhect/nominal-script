@@ -40,7 +40,7 @@ StringPool* StringPool_Create(
     )
 {
     StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
-    stringPool->hashTable = HashTable_Create(HashString, CompareString, 0, stringCount * 2);
+    stringPool->hashTable = HashTable_Create(HashString, CompareString, stringCount * 2);
 
     stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
     memset(stringPool->strings, 0, sizeof(char*) * stringCount);
@@ -89,11 +89,11 @@ StringId StringPool_InsertOrFindSubString(
 
     StringId id;
     UserData outputId = 0;
-    if (!HashTable_InsertOrFind(stringPool->hashTable, (UserData)newString, (UserData)stringPool->nextStringId, &outputId))
+    if (!HashTable_InsertOrGet(stringPool->hashTable, (UserData)newString, (UserData)stringPool->nextStringId, &outputId))
     {
         id = stringPool->nextStringId;
         stringPool->strings[id] = newString;
-        stringPool->hashes[id] = HashString((UserData)newString, 0);
+        stringPool->hashes[id] = HashString((UserData)newString);
         ++stringPool->nextStringId;
     }
     else

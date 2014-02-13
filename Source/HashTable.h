@@ -41,13 +41,10 @@ typedef uint64_t Hash;
 ///
 /// \param key
 ///     The key to hash.
-/// \param context
-///     The context.
 ///
 /// \returns The hash value.
 typedef Hash (*HashFunction)(
-    UserData    key,
-    UserData    context
+    UserData    key
     );
 
 ///
@@ -57,14 +54,11 @@ typedef Hash (*HashFunction)(
 ///     The left operand.
 /// \param right
 ///     The right operand.
-/// \param context
-///     The context.
 ///
-/// \returns 0 if the values are equal; non-zero otherwise.
-typedef int (*CompareFunction)(
+/// \returns True if the values are equal; false otherwise.
+typedef bool (*CompareFunction)(
     UserData    left,
-    UserData    right,
-    UserData    context
+    UserData    right
     );
 
 ///
@@ -78,8 +72,6 @@ typedef struct _HashTable HashTable;
 ///     The hash function to use.
 /// \param compare
 ///     The compare function to use.
-/// \param context
-///        The context passed to the hash/compare functions.
 /// \param bucketCount
 ///     The number of buckets to use.
 ///
@@ -87,7 +79,6 @@ typedef struct _HashTable HashTable;
 HashTable* HashTable_Create(
     HashFunction    hash,
     CompareFunction compare,
-    UserData        context,
     size_t          bucketCount
     );
 
@@ -153,7 +144,7 @@ bool HashTable_Set(
 ///     The value.
 ///
 /// \returns True if a new value was inserted; false if an existing value was
-/// changed
+/// changed.
 bool HashTable_InsertOrSet(
     HashTable*  hashTable,
     UserData    key,
@@ -172,7 +163,7 @@ bool HashTable_InsertOrSet(
 ///
 /// \returns True if a value was found for the given key; false if no value
 /// was found for the given key.
-bool HashTable_Find(
+bool HashTable_Get(
     HashTable*  hashTable,
     UserData    key,
     UserData*   value
@@ -193,7 +184,7 @@ bool HashTable_Find(
 ///
 /// \returns True if a value was found for the given key; false if no value
 /// was found for the given and a new value was inserted.
-bool HashTable_InsertOrFind(
+bool HashTable_InsertOrGet(
     HashTable*  hashTable,
     UserData    key,
     UserData    value,
@@ -205,13 +196,10 @@ bool HashTable_InsertOrFind(
 ///
 /// \param key
 ///     The string to hash (casted to const char*).
-/// \param context
-///     The context (ignored).
 ///
 /// \returns The hash value.
 Hash HashString(
-    UserData    key,
-    UserData    context
+    UserData    key
     );
 
 ///
@@ -221,14 +209,11 @@ Hash HashString(
 ///     The left string (casted to const char*).
 /// \param right
 ///     The right string (casted to const char*).
-/// \param context
-///     The context (ignored).
 ///
-/// \returns 0 if the string are equal; non-zero otherwise.
-int CompareString(
+/// \returns True if the strings are equal; false otherwise.
+bool CompareString(
     UserData    left,
-    UserData    right,
-    UserData    context
+    UserData    right
     );
 
 ///
@@ -236,13 +221,10 @@ int CompareString(
 ///
 /// \param key
 ///     The key to hash.
-/// \param context
-///     The context (ignored).
 /// 
 /// \returns The hash value.
 Hash HashIdentity(
-    UserData    key,
-    UserData    context
+    UserData    key
     );
 
 ///
@@ -252,15 +234,11 @@ Hash HashIdentity(
 ///     The left key.
 /// \param right
 ///     The right key.
-/// \param context
-///     The context (ignored).
 ///
-/// \returns 0 if the keys are equal; 1 if the left value is greater than the
-/// right; -1 if the left value is greater than the left.
-int CompareIdentity(
+/// \returns True if the keys are equal; false otherwise.
+bool CompareIdentity(
     UserData    left,
-    UserData    right,
-    UserData    context
+    UserData    right
     );
 
 #endif

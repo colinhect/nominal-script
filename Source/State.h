@@ -26,13 +26,19 @@
 
 #include "Heap.h"
 #include "StringPool.h"
-#include "Scope.h"
 
 #define STATE_MAX_STACK_SIZE    (1024)
 #define STATE_MAX_BYTE_CODE     (8096)
+#define STATE_MAX_INSTANCES     (256)
+
+///
+/// \brief An ID corresponding to a state instance.
+typedef size_t StateId;
 
 typedef struct _NomState
 {
+    StateId          id;
+
     NomValue        stack[STATE_MAX_STACK_SIZE];
     size_t          sp;
 
@@ -41,10 +47,11 @@ typedef struct _NomState
 
     Heap*           heap;
     StringPool*     stringPool;
-    Scope*          globalScope;
 
     char            error[2048];
     bool            errorFlag;
+
+    NomValue        globalScope;
 } NomState;
 
 ///
@@ -58,6 +65,17 @@ void NomState_SetError(
     NomState*   state,
     const char* fmt,
     ...
+    );
+
+///
+/// \brief Gets a state by ID.
+///
+/// \param id
+///     The state ID.
+///
+/// \returns The state.
+NomState* NomState_GetInstance(
+    StateId id
     );
 
 #endif

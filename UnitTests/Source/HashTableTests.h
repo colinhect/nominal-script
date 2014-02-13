@@ -33,10 +33,10 @@ void Test_HashTable_InsertAndFind(void)
     const char* value = "Value";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
-    CU_ASSERT(HashTable_Find(hashTable, (UserData)key, (UserData*)&result));
+    CU_ASSERT(HashTable_Get(hashTable, (UserData)key, (UserData*)&result));
     CU_ASSERT_EQUAL(result, value);
 
     HashTable_Free(hashTable, NULL, NULL);
@@ -49,7 +49,7 @@ void Test_HashTable_InsertExisting(void)
     const char* value = "Value";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
     CU_ASSERT(!HashTable_Insert(hashTable, (UserData)key, (UserData)value));
@@ -57,14 +57,14 @@ void Test_HashTable_InsertExisting(void)
     HashTable_Free(hashTable, NULL, NULL);
 }
 
-void Test_HashTable_FindNonExisting(void)
+void Test_HashTable_GetNonExisting(void)
 {
     HashTable*  hashTable;
     UserData    result;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
-    CU_ASSERT(!HashTable_Find(hashTable, (UserData)"DoesNotExist", (UserData*)&result));
+    CU_ASSERT(!HashTable_Get(hashTable, (UserData)"DoesNotExist", (UserData*)&result));
 
     HashTable_Free(hashTable, NULL, NULL);
 }
@@ -77,11 +77,11 @@ void Test_HashTable_Set(void)
     const char* newValue = "NewValue";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
     CU_ASSERT(HashTable_Set(hashTable, (UserData)key, (UserData)newValue));
-    CU_ASSERT(HashTable_Find(hashTable, (UserData)key, (UserData*)&result));
+    CU_ASSERT(HashTable_Get(hashTable, (UserData)key, (UserData*)&result));
     CU_ASSERT_EQUAL(result, newValue);
 
     HashTable_Free(hashTable, NULL, NULL);
@@ -94,40 +94,40 @@ void Test_HashTable_SetNonExisting(void)
     const char* value = "Value";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
     CU_ASSERT(!HashTable_Set(hashTable, (UserData)key, (UserData)value));
 
     HashTable_Free(hashTable, NULL, NULL);
 }
 
-void Test_HashTable_InsertOrFindExisting(void)
+void Test_HashTable_InsertOrGetExisting(void)
 {
     HashTable*  hashTable;
     const char* key = "Key";
     const char* value = "Value";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
-    CU_ASSERT(HashTable_InsertOrFind(hashTable, (UserData)key, (UserData)value, (UserData*)&result));
+    CU_ASSERT(HashTable_InsertOrGet(hashTable, (UserData)key, (UserData)value, (UserData*)&result));
     CU_ASSERT_EQUAL(result, value);
 
     HashTable_Free(hashTable, NULL, NULL);
 }
 
-void Test_HashTable_InsertOrFindNonExisting(void)
+void Test_HashTable_InsertOrGetNonExisting(void)
 {
     HashTable*  hashTable;
     const char* key = "Key";
     const char* value = "Value";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 10);
 
-    CU_ASSERT(!HashTable_InsertOrFind(hashTable, (UserData)key, (UserData)value, (UserData*)&result));
-    CU_ASSERT(HashTable_Find(hashTable, (UserData)key, (UserData*)&result));
+    CU_ASSERT(!HashTable_InsertOrGet(hashTable, (UserData)key, (UserData)value, (UserData*)&result));
+    CU_ASSERT(HashTable_Get(hashTable, (UserData)key, (UserData*)&result));
     CU_ASSERT_EQUAL(result, value);
 
     HashTable_Free(hashTable, NULL, NULL);

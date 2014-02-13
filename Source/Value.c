@@ -27,7 +27,6 @@
 #include "Nominal/Integer.h"
 #include "Nominal/Real.h"
 
-#include "Type.h"
 #include "Value.h"
 #include "State.h"
 
@@ -37,95 +36,78 @@
 #include <string.h>
 
 NomValue NomValue_Nil(
-    void
+    NomState*   state
     )
 {
-    NomValue value;
-    value.data = 0;
+    NomValue value = { 0 };
+    SET_STATE_ID_BITS(value, state->id);
     return value;
 }
 
 bool NomValue_Equals(
-    NomState*   state,
-    NomValue    value,
-    NomValue    other
-    )
-{
-    return NomValue_Compare(state, value, other) == 0;
-}
-
-int NomValue_Compare(
-    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
     if (NomNumber_Check(value))
     {
-        if (NomInteger_Check(value) || NomInteger_Check(other))
+        if (NomReal_Check(value) || NomReal_Check(other))
         {
-            int l = NomNumber_AsInt(value);
-            int r = NomNumber_AsInt(other);
-            return l == r ? 0 : (l < r ? -1 : 1);
-        }
-        else if (NomReal_Check(value) || NomReal_Check(other))
-        {
-            double l = NomNumber_AsDouble(value);
-            double r = NomNumber_AsDouble(other);
-            return l == r ? 0 : (l < r ? -1 : 1);
-        }
-        else
-        {
-            return -1;
+            return NomNumber_AsDouble(value) == NomNumber_AsDouble(other);
         }
     }
-    else if (NomString_Check(value))
+    else if (NomString_Check(value) && NomString_Check(other))
     {
-        if (NomString_Check(other))
+        if (GET_TYPE(value) != TYPE_POOLED_STRING ||
+            GET_TYPE(other) != TYPE_POOLED_STRING)
         {
-            if (GET_TYPE_BITS(value) == TYPE_POOLED_STRING &&
-                GET_TYPE_BITS(other) == TYPE_POOLED_STRING)
-            {
-                unsigned l = GET_ID_BITS(value);
-                unsigned r = GET_ID_BITS(other);
-                return l == r ? 0 : (l < r ? -1 : 1);
-            }
-            const char* l = NomString_AsString(state, value);
-            const char* r = NomString_AsString(state, other);
-            return strcmp(l, r);
-        }
-        else
-        {
-            return -1;
+            return strcmp(NomString_AsString(value), NomString_AsString(other)) == 0;
         }
     }
-    else
-    {
-        uint64_t l = value.data;
-        uint64_t r = other.data;
-        return l == r ? 0 : (l < r ? -1 : 1);
-    }
+
+    return value.data == other.data;
 }
 
-void NomValue_AsString(NomState* s, char* dest, NomValue value)
+long long NomValue_Hash(
+    NomValue    value
+    )
 {
-    switch ((Type)GET_TYPE_BITS(value))
+    long long hash = value.data;
+    switch (GET_TYPE(value))
+    {
+    case TYPE_STRING:
+        hash = HashString((UserData)NomString_AsString(value));
+        break;
+    case TYPE_POOLED_STRING:
+        {
+            NomState* state = NomValue_GetState(value);
+            hash = StringPool_Hash(state->stringPool, GET_ID_BITS(value));
+        }
+        break;
+    }
+
+    return (Hash)hash;
+}
+
+void NomValue_AsString(char* string, NomValue value)
+{
+    switch (GET_TYPE(value))
     {
     case TYPE_INTEGER:
-        sprintf(dest, "%d", NomNumber_AsInt(value));
+        sprintf(string, "%d", NomNumber_AsInt(value));
         break;
     case TYPE_REAL:
-        sprintf(dest, "%f", NomNumber_AsDouble(value));
+        sprintf(string, "%f", NomNumber_AsDouble(value));
         break;
     case TYPE_STRING:
     case TYPE_POOLED_STRING:
-        sprintf(dest, "\"%s\"", NomString_AsString(s, value));
+        sprintf(string, "\"%s\"", NomString_AsString(value));
         break;
     case TYPE_NIL:
-        sprintf(dest, "nil");
+        sprintf(string, "nil");
         break;
     default:
-        sprintf(dest, "<unknown>");
+        sprintf(string, "<unknown>");
         break;
     }
 }
@@ -137,63 +119,64 @@ void NomValue_AsString(NomState* s, char* dest, NomValue value)
     }\
     else if (NomReal_Check(l) || NomReal_Check(r))\
     {\
-        result = NomReal_FromDouble(NomNumber_AsDouble(l) op NomNumber_AsDouble(r));\
+        result = NomReal_FromDouble(state, NomNumber_AsDouble(l) op NomNumber_AsDouble(r));\
     }\
     else\
     {\
-        result = NomInteger_FromInt(NomNumber_AsInt(l) op NomNumber_AsInt(r));\
+        result = NomInteger_FromInt(state, NomNumber_AsInt(l) op NomNumber_AsInt(r)); \
     }
 
 NomValue NomValue_Add(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     )
 {
-    NomValue result = NomValue_Nil();
-    ARITH(left, right, +, "add");
+    NomState* state = NomValue_GetState(value);
+    NomValue result = NomValue_Nil(state);
+    ARITH(value, other, +, "add");
     return result;
 }
 
 NomValue NomValue_Subtract(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     )
 {
-    NomValue result = NomValue_Nil();
-    ARITH(left, right, -, "subtract");
+    NomState* state = NomValue_GetState(value);
+    NomValue result = NomValue_Nil(state);
+    ARITH(value, other, -, "subtract");
     return result;
 }
 
 NomValue NomValue_Multiply(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     )
 {
-    NomValue result = NomValue_Nil();
-    ARITH(left, right, *, "multiply");
+    NomState* state = NomValue_GetState(value);
+    NomValue result = NomValue_Nil(state);
+    ARITH(value, other, *, "multiply");
     return result;
 }
 
 NomValue NomValue_Divide(
-    NomState*   state,
-    NomValue    left,
-    NomValue    right
+    NomValue    value,
+    NomValue    other
     )
 {
-    NomValue result = NomValue_Nil();
-    ARITH(left, right, /, "divide");
+    NomState* state = NomValue_GetState(value);
+    NomValue result = NomValue_Nil(state);
+    ARITH(value, other, / , "divide");
     return result;
 }
 
 NomValue NomValue_Negate(
-    NomState*   state,
     NomValue    value
     )
 {
-    NomValue result = NomValue_Nil();
+    NomState* state = NomValue_GetState(value);
+
+    NomValue result = NomValue_Nil(state);
 
     if (!NomNumber_Check(value))
     {
@@ -201,12 +184,19 @@ NomValue NomValue_Negate(
     }
     else if (NomReal_Check(value))
     {
-        result = NomReal_FromDouble(-NomNumber_AsDouble(value));
+        result = NomReal_FromDouble(state, -NomNumber_AsDouble(value));
     }
     else
     {
-        result = NomInteger_FromInt(-NomNumber_AsInt(value));
+        result = NomInteger_FromInt(state, -NomNumber_AsInt(value));
     }
 
     return result;
+}
+
+NomState* NomValue_GetState(
+    NomValue    value
+    )
+{
+    return NomState_GetInstance(GET_STATE_ID_BITS(value));
 }

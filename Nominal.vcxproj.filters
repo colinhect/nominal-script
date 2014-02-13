@@ -60,17 +60,11 @@
     <ClInclude Include="Include\Nominal\Real.h">
       <Filter>Include\Nominal</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scope.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Nominal\Map.h">
       <Filter>Include\Nominal</Filter>
     </ClInclude>
     <ClInclude Include="Include\Nominal\Number.h">
       <Filter>Include\Nominal</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Type.h">
-      <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\Value.h">
       <Filter>Source</Filter>
@@ -95,9 +89,6 @@
     <ClCompile Include="Source\ByteCode.c">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Main.c">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CodeGen.c">
       <Filter>Source</Filter>
     </ClCompile>
@@ -117,9 +108,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Integer.c">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scope.c">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Map.c">

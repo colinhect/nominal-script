@@ -24,25 +24,58 @@
 #ifndef VALUE_H
 #define VALUE_H
 
+#include "Nominal/Value.h"
+
+///
+/// \brief Enumeration of each type a Nominal value can be.
+typedef enum
+{
+    TYPE_NIL,
+    TYPE_INTEGER,
+    TYPE_REAL,
+    TYPE_BOOLEAN,
+    TYPE_STRING,
+    TYPE_POOLED_STRING,
+    TYPE_MAP,
+    TYPE_CLOSURE
+} Type;
+
+// Set a certain range of bits in a value
 #define SET_VALUE_BITS(offset, count, value, bits) \
     { \
     uint64_t mask = ((((uint64_t)1 << count) - 1) << offset); \
     value.data = (((uint64_t)bits << offset) & mask) | (value.data & ~mask); \
     }
 
+// Get a certain range of bits from a value
 #define GET_VALUE_BITS(offset, count, value) \
     ((value.data & ((((uint64_t)1 << count) - 1) << offset)) >> offset)
 
+// Get/set bits corresponding to a value's type
 #define SET_TYPE_BITS(value, bits)      SET_VALUE_BITS(61, 3, value, bits)
 #define GET_TYPE_BITS(value)            GET_VALUE_BITS(61, 3, value)
 
-#define SET_INTEGER_BITS(value, bits)   SET_VALUE_BITS(0, 61, value, bits)
-#define GET_INTEGER_BITS(value)         ((int64_t)GET_VALUE_BITS(0, 61, value))
+// Get/set the bits corresponding to the value of an integer
+#define SET_INTEGER_BITS(value, bits)   SET_VALUE_BITS(0, 48, value, bits)
+#define GET_INTEGER_BITS(value)         ((int64_t)GET_VALUE_BITS(0, 48, value))
 
+// Get/set the bits corresponding to the value of an real
 #define SET_REAL_BITS(value, bits)      SET_VALUE_BITS(0, 32, value, bits)
-#define GET_REAL_BITS(value)            ((uint64_t)GET_VALUE_BITS(0, 32, value))
+#define GET_REAL_BITS(value)            ((uint32_t)GET_VALUE_BITS(0, 32, value))
 
-#define SET_ID_BITS(value, bits)        SET_VALUE_BITS(0, 48, value, bits)
-#define GET_ID_BITS(value)              ((uint64_t)GET_VALUE_BITS(0, 48, value))
+// Get/set the bits corresponding to the value of an ID (such as object ID)
+#define SET_ID_BITS(value, bits)        SET_VALUE_BITS(0, 32, value, bits)
+#define GET_ID_BITS(value)              ((uint64_t)GET_VALUE_BITS(0, 32, value))
+
+// Get/set the bits corresponding to the value's state ID
+#define SET_STATE_ID_BITS(value, bits)  SET_VALUE_BITS(48, 8, value, bits)
+#define GET_STATE_ID_BITS(value)        ((StateId)GET_VALUE_BITS(48, 8, value))
+
+#define GET_TYPE(value)                 (Type)GET_TYPE_BITS(value)
+
+#define INIT_VALUE(value, type, state) \
+    value.data = 0; \
+    SET_TYPE_BITS(value, type); \
+    SET_STATE_ID_BITS(value, state->id);
 
 #endif

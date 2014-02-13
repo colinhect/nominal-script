@@ -46,16 +46,16 @@ int main()
     BEGIN_TEST_SUITE("HashTable");
     ADD_TEST(Test_HashTable_InsertAndFind);
     ADD_TEST(Test_HashTable_InsertExisting);
-    ADD_TEST(Test_HashTable_FindNonExisting);
+    ADD_TEST(Test_HashTable_GetNonExisting);
     ADD_TEST(Test_HashTable_Set);
     ADD_TEST(Test_HashTable_SetNonExisting);
-    ADD_TEST(Test_HashTable_InsertOrFindExisting);
-    ADD_TEST(Test_HashTable_InsertOrFindNonExisting);
+    ADD_TEST(Test_HashTable_InsertOrGetExisting);
+    ADD_TEST(Test_HashTable_InsertOrGetNonExisting);
 
     // Map test suite
     BEGIN_TEST_SUITE("Map");
     ADD_TEST(Test_Map_CreateAndCheck);
-    ADD_TEST(Test_Map_SetAndGet);
+    ADD_TEST(Test_Map_InsertAndGet);
     ADD_TEST(Test_Map_SetExisting);
     ADD_TEST(Test_Map_TryGet);
     ADD_TEST(Test_Map_TryGetNonExisting);

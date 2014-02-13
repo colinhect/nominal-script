@@ -40,23 +40,29 @@ bool NomReal_Check(
 ///
 /// \brief Creates a Nominal real value from a float.
 ///
+/// \param state
+///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal real value.
 NomValue NomReal_FromFloat(
-    float   value
+    NomState*   state,
+    float       value
     );
 
 ///
 /// \brief Creates a Nominal real value from a double.
 ///
+/// \param state
+///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal real value.
 NomValue NomReal_FromDouble(
-    double  value
+    NomState*   state,
+    double      value
     );
 
 #endif

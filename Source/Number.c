@@ -25,7 +25,6 @@
 #include "Nominal/Integer.h"
 #include "Nominal/Real.h"
 
-#include "Type.h"
 #include "Value.h"
 
 #include <float.h>
@@ -35,7 +34,7 @@
 
 bool NomNumber_Check(NomValue value)
 {
-    switch ((Type)GET_TYPE_BITS(value))
+    switch (GET_TYPE(value))
     {
     case TYPE_INTEGER:
     case TYPE_REAL:
@@ -47,7 +46,7 @@ bool NomNumber_Check(NomValue value)
 
 int NomNumber_AsInt(NomValue value)
 {
-    switch ((Type)GET_TYPE_BITS(value))
+    switch (GET_TYPE(value))
     {
     case TYPE_INTEGER:
         return GET_INTEGER_BITS(value);
@@ -63,7 +62,7 @@ int NomNumber_AsInt(NomValue value)
 
 float NomNumber_AsFloat(NomValue value)
 {
-    switch ((Type)GET_TYPE_BITS(value))
+    switch (GET_TYPE(value))
     {
     case TYPE_INTEGER:
         return (float)GET_INTEGER_BITS(value);
@@ -79,7 +78,7 @@ float NomNumber_AsFloat(NomValue value)
 
 double NomNumber_AsDouble(NomValue value)
 {
-    switch ((Type)GET_TYPE_BITS(value))
+    switch (GET_TYPE(value))
     {
     case TYPE_INTEGER:
         return (double)GET_INTEGER_BITS(value);

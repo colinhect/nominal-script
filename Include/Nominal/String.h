@@ -24,10 +24,7 @@
 #ifndef NOMINAL_STRING_H
 #define NOMINAL_STRING_H
 
-#include "Nominal/State.h"
 #include "Nominal/Value.h"
-
-#include <stdbool.h>
 
 ///
 /// \brief Checks if a Nominal value is a string.
@@ -44,31 +41,28 @@ bool NomString_Check(
 /// \brief Creates a new Nominal string value from a string.
 ///
 /// \param state
-///     The state.
-/// \param string
-///     The string.
+///     The Nominal state to create the value for.
+/// \param value
+///     The NULL-terminated string value.
 /// \param pooled
 ///     Whether the string should be pooled (normally false).
 ///
 /// \returns The new Nominal value.
 NomValue NomString_FromString(
     NomState*   state,
-    const char* string,
+    const char* value,
     bool        pooled
     );
 
 ///
 /// \brief Returns the value of a Nominal string as a string.
 ///
-/// \param state
-///     The state.
 /// \param value
 ///     The string value.
 ///
 /// \returns A pointer to a NULL terminated string; NULL if the value is not
 /// a string.
 const char* NomString_AsString(
-    NomState*   state,
     NomValue    value
     );
 

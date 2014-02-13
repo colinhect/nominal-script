@@ -24,32 +24,34 @@
 #include "Nominal/Integer.h"
 #include "Nominal/Real.h"
 
-#include "Type.h"
 #include "Value.h"
+#include "State.h"
 
 bool NomInteger_Check(
     NomValue    value
     )
 {
-    return GET_TYPE_BITS(value) == TYPE_INTEGER;
+    return GET_TYPE(value) == TYPE_INTEGER;
 }
 
 NomValue NomInteger_FromInt(
-    int value
+    NomState*   state,
+    int         value
     )
 {
-    NomValue integer = NomValue_Nil();
-    SET_TYPE_BITS(integer, TYPE_INTEGER);
+    NomValue integer;
+    INIT_VALUE(integer, TYPE_INTEGER, state);
     SET_INTEGER_BITS(integer, value);
     return integer;
 }
 
 NomValue NomInteger_FromUnsignedLongLong(
-    unsigned long long    value
+    NomState*           state,
+    unsigned long long  value
     )
 {
-    NomValue integer = NomValue_Nil();
-    SET_TYPE_BITS(integer, TYPE_INTEGER);
+    NomValue integer;
+    INIT_VALUE(integer, TYPE_INTEGER, state);
     SET_INTEGER_BITS(integer, (int)value);
     return integer;
 }

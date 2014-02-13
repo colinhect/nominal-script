@@ -48,7 +48,7 @@ void Node_Free(
         }
         if (node->data.map.next)
         {
-            Node_Free(node->data.map.next);
+            //Node_Free(node->data.map.next);
         }
         break;
     case NODE_BINARY:

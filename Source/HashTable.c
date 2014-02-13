@@ -37,7 +37,6 @@ typedef struct _HashTable
 {
     HashFunction    hash;
     CompareFunction compare;
-    UserData        context;
     BucketNode**    buckets;
     size_t          bucketCount;
 } HashTable;
@@ -52,7 +51,7 @@ bool FindNode(
     )
 {
     // Hash the key
-    Hash hash = hashTable->hash(key, hashTable->context);
+    Hash hash = hashTable->hash(key);
     hash = hash % hashTable->bucketCount;
 
     // Find the first node of the bucket for the hash
@@ -63,7 +62,7 @@ bool FindNode(
     while (curr)
     {
         // Check if this is the right node
-        if (hashTable->compare(curr->key, key, hashTable->context) == 0)
+        if (hashTable->compare(curr->key, key))
         {
             // Found the node
             *node = curr;
@@ -113,14 +112,12 @@ bool FindNode(
 HashTable* HashTable_Create(
     HashFunction    hash,
     CompareFunction compare,
-    UserData        context,
     size_t          bucketCount
     )
 {
     HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
     hashTable->hash = hash;
     hashTable->compare = compare;
-    hashTable->context = context;
     hashTable->buckets = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
     memset(hashTable->buckets, 0, sizeof(BucketNode*) * bucketCount);
     hashTable->bucketCount = bucketCount;
@@ -205,7 +202,7 @@ bool HashTable_InsertOrSet(
     return result;
 }
 
-bool HashTable_Find(
+bool HashTable_Get(
     HashTable*  hashTable,
     UserData    key,
     UserData*   value
@@ -221,7 +218,7 @@ bool HashTable_Find(
     return false;
 }
 
-bool HashTable_InsertOrFind(
+bool HashTable_InsertOrGet(
     HashTable*  hashTable,
     UserData    key,
     UserData    value,
@@ -239,11 +236,9 @@ bool HashTable_InsertOrFind(
 }
 
 Hash HashString(
-    UserData    key,
-    UserData    context
+    UserData    key
     )
 {
-    context;
     char* s = (char*)key;
     Hash hash = 5381;
 
@@ -256,38 +251,25 @@ Hash HashString(
     return hash;
 }
 
-int CompareString(
+bool CompareString(
     UserData    left,
-    UserData    right,
-    UserData    context
+    UserData    right
     )
 {
-    context;
-    return strcmp((const char*)left, (const char*)right);
+    return strcmp((const char*)left, (const char*)right) == 0;
 }
 
 Hash HashIdentity(
-    UserData    key,
-    UserData    context
+    UserData    key
     )
 {
-    context;
     return (Hash)key;
 }
 
-int CompareIdentity(
+bool CompareIdentity(
     UserData    left,
-    UserData    right,
-    UserData    context
+    UserData    right
     )
 {
-    context;
-    if (left == right)
-    {
-        return 0;
-    }
-    else
-    {
-        return left < right ? -1 : 1;
-    }
+    return left == right;
 }
