@@ -91,24 +91,6 @@ void NomState_SetError(
 #define PUSH(v)         state->stack[state->sp++] = v
 #define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
-#ifndef _DEBUG
-
-#define BEGIN_OP(op)    printf("%s\t", OP_CODE_STR[op]);
-#define END_OP()        printf("\n");
-
-#define SHOW_DEBUG_VALUE(v) \
-{\
-    char buffer[256]; \
-    NomValue_AsString(buffer, v); \
-    printf(buffer); \
-}
-
-#else
-#define BEGIN_OP(op)
-#define END_OP()
-#define SHOW_DEBUG_VALUE(v)
-#endif
-
 NomValue NomState_Execute(
     NomState*   state,
     const char* source
@@ -142,19 +124,15 @@ NomValue NomState_Execute(
 
         OpCode op = (OpCode)state->byteCode[state->ip++];
 
-        BEGIN_OP(op);
-
         switch (op)
         {
         case OP_PUSH:
             result = READAS(NomValue);
-            SHOW_DEBUG_VALUE(result);
             PUSH(result);
             break;
         case OP_GET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
-            SHOW_DEBUG_VALUE(string);
             if (!NomMap_TryGet(scope, string, &result))
             {
                 NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
@@ -164,7 +142,6 @@ NomValue NomState_Execute(
         case OP_SET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
-            SHOW_DEBUG_VALUE(string);
             if (!NomMap_Set(scope, string, TOP()))
             {
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
@@ -173,7 +150,6 @@ NomValue NomState_Execute(
         case OP_LET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
-            SHOW_DEBUG_VALUE(string);
             if (!NomMap_Insert(scope, string, TOP()))
             {
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
@@ -224,8 +200,6 @@ NomValue NomState_Execute(
             PUSH(result);
             break;
         }
-
-        END_OP();
     }
 
     // Return the result

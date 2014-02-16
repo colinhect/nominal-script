@@ -140,12 +140,27 @@ Node* Parser_ParenExpr(
 ///
 /// \param parser
 ///     The parser.
+/// \param prec
+///     The current precedence
+/// \param leftExpr
+///     The left-hand expression
 ///
 /// \returns The parsed AST node; NULL if a parse error occurred.
 Node* Parser_BinExpr(
     Parser* parser,
     int     prec,
-    Node*   left
+    Node*   leftExpr
+    );
+
+///
+/// \brief Parses a map.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_Map(
+    Parser* parser
     );
 
 #endif

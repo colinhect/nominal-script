@@ -64,13 +64,13 @@ size_t GenerateCode(
             size_t itemCount = 0;
             while (node)
             {
-                Node* assoc = node->data.map.node;
+                Node* assoc = node->data.map.assoc;
 
                 // Value on stack
-                index = GenerateCode(state, assoc->data.binary.right, byteCode, index);
+                index = GenerateCode(state, assoc->data.binary.rightExpr, byteCode, index);
 
                 // Key on stack
-                index = GenerateCode(state, assoc->data.binary.left, byteCode, index);
+                index = GenerateCode(state, assoc->data.binary.leftExpr, byteCode, index);
 
                 node = node->data.map.next;
                 ++itemCount;
@@ -84,25 +84,28 @@ size_t GenerateCode(
         STRING(node->data.ident.id);
         break;
     case NODE_UNARY:
-        index = GenerateCode(state, node->data.unary.node, byteCode, index);
+        index = GenerateCode(state, node->data.unary.expr, byteCode, index);
         OPCODE(node->data.unary.op);
         break;
     case NODE_BINARY:
         {
             OpCode op = node->data.binary.op;
 
+            Node* leftExpr = node->data.binary.leftExpr;
+            Node* rightExpr = node->data.binary.rightExpr;
+
             // Push right hand side on stack
-            index = GenerateCode(state, node->data.binary.right, byteCode, index);
+            index = GenerateCode(state, rightExpr, byteCode, index);
 
             if (op == OP_LET || op == OP_SET)
             {
                 // Perform set
                 OPCODE(op);
-                STRING(node->data.binary.left->data.ident.id);
+                STRING(leftExpr->data.ident.id);
             }
             else
             {
-                index = GenerateCode(state, node->data.binary.left, byteCode, index);
+                index = GenerateCode(state, leftExpr, byteCode, index);
                 OPCODE(op);
             }
         }
@@ -110,7 +113,7 @@ size_t GenerateCode(
     case NODE_SEQUENCE:
         while (node)
         {
-            index = GenerateCode(state, node->data.sequence.node, byteCode, index);
+            index = GenerateCode(state, node->data.sequence.expr, byteCode, index);
             node = node->data.sequence.next;
         }
         break;

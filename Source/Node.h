@@ -50,55 +50,63 @@ typedef struct _Node
     union
     {
         // NODE_INTEGER
+        // An integer number literal
         struct
         {
             long long value;
         } integer;
 
         // NODE_REAL
+        // A real number literal
         struct
         {
             double value;
         } real;
 
         // NODE_STRING
+        // A string literal
         struct
         {
             StringId id;
         } string;
 
-        // NODE_MAP (compatable with NODE_SEQUENCE)
+        // NODE_MAP
+        // A map literal (sequence of associations)
         struct
         {
-            struct _Node* node;
+            struct _Node* assoc;
             struct _Node* next;
         } map;
 
         // NODE_IDENT
+        // A variable name
         struct
         {
             StringId id;
         } ident;
 
         // NODE_BINARY
+        // A binary operation applied to two expressions
         struct
         {
             OpCode op;
-            struct _Node* left;
-            struct _Node* right;
+            struct _Node* leftExpr;
+            struct _Node* rightExpr;
         } binary;
 
         // NODE_UNARY
+        // A unary operation applied to an expression
         struct
         {
             OpCode op;
-            struct _Node* node;
+            struct _Node* expr;
         } unary;
 
         // NODE_SEQUENCE
+        // A sequence of expressions
         struct
         {
-            struct _Node* node;
+            struct _Node* expr;
             struct _Node* next;
         } sequence;
     } data;

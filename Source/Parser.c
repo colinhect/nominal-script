@@ -29,18 +29,20 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+#define MAX_PARSER_ERROR_LENGTH (256)
+
 typedef struct _Parser
 {
     Lexer*      lexer;
     StringPool* stringPool;
-    char        error[256];
+    char        error[MAX_PARSER_ERROR_LENGTH];
 } Parser;
 
-void ErrorUnexpectedToken(
+void SetUnexpectedTokenError(
     Parser*     parser
     )
 {
-    char buffer[128];
+    char buffer[MAX_PARSER_ERROR_LENGTH];
     size_t length = Lexer_GetTokenLength(parser->lexer);
     const char* string = Lexer_GetTokenString(parser->lexer);
     memcpy(buffer, string, length);
@@ -56,7 +58,10 @@ Parser* Parser_Create(
     Parser* parser = (Parser*)malloc(sizeof(Parser));
     parser->lexer = Lexer_Create(source);
     parser->stringPool = stringPool;
+
+    // Move to the first token
     Lexer_Next(parser->lexer);
+
     return parser;
 }
 
@@ -98,19 +103,26 @@ Node* Parser_Exprs(
         return NULL;
     }
 
-    // If there is a trailing comma, recursively parse another expression
+    // If there is a trailing comma then recursively parse another expression
     // sequence
     Node* exprs = NULL;
     if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ','))
     {
         Lexer_Next(parser->lexer);
         exprs = Parser_Exprs(parser);
+        if (!exprs)
+        {
+            Node_Free(expr);
+            return NULL;
+        }
     }
 
-    Node* n = Node_Create(NODE_SEQUENCE);
-    n->data.sequence.node = expr;
-    n->data.sequence.next = exprs;
-    return n;
+    // Create a sequence node for this expression and the potential expressions
+    // after it
+    Node* sequence = Node_Create(NODE_SEQUENCE);
+    sequence->data.sequence.expr = expr;
+    sequence->data.sequence.next = exprs;
+    return sequence;
 }
 
 Node* Parser_Expr(
@@ -147,9 +159,10 @@ Node* Parser_PrimaryExpr(
             return NULL;
         }
 
+        // Create the unary node around the expression
         Node* unary = Node_Create(NODE_UNARY);
         unary->data.unary.op = op;
-        unary->data.unary.node = expr;
+        unary->data.unary.expr = expr;
         return unary;
     }
     else
@@ -165,7 +178,7 @@ Node* Parser_SecondaryExpr(
     TokenType type = Lexer_GetTokenType(parser->lexer);
     unsigned id = Lexer_GetTokenId(parser->lexer);
 
-    Node* n;
+    Node* node = NULL;
     switch (type)
     {
     case TOK_SYMBOL:
@@ -173,90 +186,49 @@ Node* Parser_SecondaryExpr(
         // Paren expression
         if (id == '(')
         {
-            n = Parser_ParenExpr(parser);
+            node = Parser_ParenExpr(parser);
             break;
         }
 
         // Map literal
         else if (id == '{')
         {
-            Lexer_Next(parser->lexer);
-
-            n = Parser_Exprs(parser);
-            if (!n)
-            {
-                return NULL;
-            }
-            else if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
-            {
-                Parser_SetError(parser, "Expected closing '}'");
-                return NULL;
-            }
-
-            size_t i = 0;
-            Node* map = n;
-            while (map)
-            {
-                Node* item = map->data.sequence.node;
-
-                // Infer the key if it is not a association operation
-                if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
-                {
-                    Node* key = Node_Create(NODE_INTEGER);
-                    key->data.integer.value = i;
-
-                    // Create an association operation
-                    Node* assoc = Node_Create(NODE_BINARY);
-                    assoc->data.binary.op = OP_ASSOC;
-                    assoc->data.binary.left = key;
-                    assoc->data.binary.right = item;
-
-                    map->data.sequence.node = assoc;
-                }
-
-                map->type = NODE_MAP;
-                map = map->data.sequence.next;
-                ++i;
-            }
+            node = Parser_Map(parser);
             break;
         }
 
     // Integer literal
     case TOK_INTEGER:
-        n = Node_Create(NODE_INTEGER);
-        n->data.integer.value = Lexer_GetTokenAsInteger(parser->lexer);
+        node = Node_Create(NODE_INTEGER);
+        node->data.integer.value = Lexer_GetTokenAsInteger(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
 
     // Real literal
     case TOK_REAL:
-        n = Node_Create(NODE_REAL);
-        n->data.real.value = Lexer_GetTokenAsReal(parser->lexer);
+        node = Node_Create(NODE_REAL);
+        node->data.real.value = Lexer_GetTokenAsReal(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
 
-    // String literal
+    // String literal or identifier
     case TOK_STRING:
-        {
-            size_t length = Lexer_GetTokenLength(parser->lexer);
-            const char* string = Lexer_GetTokenString(parser->lexer);
-            StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
-
-            n = Node_Create(NODE_STRING);
-            n->data.string.id = id;
-
-            Lexer_Next(parser->lexer);
-        } break;
-
-    // Identifier
     case TOK_IDENT:
         {
             size_t length = Lexer_GetTokenLength(parser->lexer);
             const char* string = Lexer_GetTokenString(parser->lexer);
             StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
 
-            n = Node_Create(NODE_IDENT);
-            n->data.string.id = id;
+            if (type == TOK_STRING)
+            {
+                node = Node_Create(NODE_STRING);
+            }
+            else
+            {
+                node = Node_Create(NODE_IDENT);
+            }
+
+            node->data.string.id = id;
 
             Lexer_Next(parser->lexer);
         } break;
@@ -265,19 +237,16 @@ Node* Parser_SecondaryExpr(
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
-            n = Node_Create(NODE_NIL);
+            node = Node_Create(NODE_NIL);
             Lexer_Next(parser->lexer);
             break;
         }
 
     default:
-        {
-            ErrorUnexpectedToken(parser);
-            return NULL;
-        }
+        SetUnexpectedTokenError(parser);
     }
 
-    return n;
+    return node;
 }
 
 Node* Parser_ParenExpr(
@@ -292,81 +261,159 @@ Node* Parser_ParenExpr(
 
     Lexer_Next(parser->lexer);
 
-    Node* n = Parser_Expr(parser);
-    if (!n)
+    Node* expr = Parser_Expr(parser);
+    if (!expr)
     {
         return NULL;
     }
 
     if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ')'))
     {
-        Node_Free(n);
         Parser_SetError(parser, "Expected closing ')'");
+        Node_Free(expr);
         return NULL;
     }
 
     Lexer_Next(parser->lexer);
 
-    return n;
+    return expr;
 }
 
 Node* Parser_BinExpr(
     Parser* parser,
     int     prec,
-    Node*   left
+    Node*   leftExpr
     )
 {
-    if (!left)
-    {
-        return NULL;
-    }
-
     for (;;)
     {
-        OpCode nodeOp = (OpCode)Lexer_GetTokenId(parser->lexer);
-        int opPrec = Lexer_IsTokenType(parser->lexer, TOK_OPERATOR)
-            ? OP_PREC[Lexer_GetTokenId(parser->lexer)]
-            : -1;
-
-        if (opPrec < prec)
+        OpCode op = (OpCode)Lexer_GetTokenId(parser->lexer);
+        
+        // Check that the current token is an operator
+        if (!Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
         {
-            return left;
+            return leftExpr; // The current token is not an operator
         }
 
-        Lexer_Next(parser->lexer);
-        Node* right = Parser_PrimaryExpr(parser);
-        if (!right)
+        // Get operator precedence and move to next token
+        int opPrec = OP_PREC[Lexer_GetTokenId(parser->lexer)];
+
+        // This operator has less precedence
+        if (opPrec < prec)
         {
-            Node_Free(left);
+            return leftExpr;
+        }
+
+        // Move past the operator
+        Lexer_Next(parser->lexer);
+
+        // Parse the right-hand expression
+        Node* rightExpr = Parser_PrimaryExpr(parser);
+        if (!rightExpr)
+        {
+            Node_Free(leftExpr);
             return NULL;
         }
 
-        int nextOpPrec = Lexer_IsTokenType(parser->lexer, TOK_OPERATOR)
-            ? OP_PREC[Lexer_GetTokenId(parser->lexer)]
-            : -1;
-
-        if (opPrec < nextOpPrec)
+        // Check if the token past the right-hand expression is an operator
+        if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
         {
-            right = Parser_BinExpr(parser, opPrec + 1, right);
-            if (!right)
+            int nextOpPrec = OP_PREC[Lexer_GetTokenId(parser->lexer)];
+
+            // If the current operator is of less precedence then parse the
+            // next binary expression first
+            if (opPrec < nextOpPrec)
             {
-                Node_Free(left);
-                return NULL;
+                rightExpr = Parser_BinExpr(parser, opPrec + 1, rightExpr);
+                if (!rightExpr)
+                {
+                    Node_Free(leftExpr);
+                    return NULL;
+                }
             }
         }
 
-        if (nodeOp == OP_LET && left->type != NODE_IDENT)
+        // Verify the binary operation is valid
+        if (op == OP_LET && leftExpr->type != NODE_IDENT)
         {
-            Parser_SetError(parser, "The left side of a let operation must be an identifier");
-            Node_Free(left);
-            Node_Free(right);
+            Parser_SetError(parser, "The left side of a ':=' expression must be an identifier");
+            Node_Free(leftExpr);
+            Node_Free(rightExpr);
             return NULL;
         }
 
-        Node* newLeft = Node_Create(NODE_BINARY);
-        newLeft->data.binary.op = nodeOp;
-        newLeft->data.binary.left = left;
-        newLeft->data.binary.right = right;
-        left = newLeft;
+        // Create the binary operation node
+        Node* binary = Node_Create(NODE_BINARY);
+        binary->data.binary.op = op;
+        binary->data.binary.leftExpr = leftExpr;
+        binary->data.binary.rightExpr = rightExpr;
+
+        leftExpr = binary;
     }
+}
+
+Node* Parser_Map(
+    Parser* parser
+    )
+{
+    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '{'))
+    {
+        Parser_SetError(parser, "Expected opening '{'");
+        return NULL;
+    }
+
+    Lexer_Next(parser->lexer);
+
+    // Parse the expressions in the map
+    Node* exprs = Parser_Exprs(parser);
+    if (!exprs)
+    {
+        return NULL;
+    }
+    else if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
+    {
+        Parser_SetError(parser, "Expected closing '}'");
+        Node_Free(exprs);
+        return NULL;
+    }
+
+    Node* mapRoot = Node_Create(NODE_MAP);
+
+    size_t i = 0;
+    Node* map = mapRoot;
+    Node* expr = exprs;
+    while (expr)
+    {
+        Node* item = expr->data.sequence.expr;
+        expr->data.sequence.expr = NULL;
+
+        // Infer the key if it is not a association operation
+        if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
+        {
+            Node* key = Node_Create(NODE_INTEGER);
+            key->data.integer.value = i;
+
+            // Create an association operation
+            Node* assoc = Node_Create(NODE_BINARY);
+            assoc->data.binary.op = OP_ASSOC;
+            assoc->data.binary.leftExpr = key;
+            assoc->data.binary.rightExpr = item;
+
+            item = assoc;
+        }
+
+        map->data.map.assoc = item;
+
+        expr = expr->data.sequence.next;
+        if (expr)
+        {
+            map->data.map.next = Node_Create(NODE_MAP);
+            map = map->data.map.next;
+        }
+
+        ++i;
+    }
+
+    Node_Free(exprs);
+    return mapRoot;
 }

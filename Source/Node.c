@@ -42,9 +42,9 @@ void Node_Free(
     switch (node->type)
     {
     case NODE_MAP:
-        if (node->data.map.node)
+        if (node->data.map.assoc)
         {
-            Node_Free(node->data.map.node);
+            Node_Free(node->data.map.assoc);
         }
         if (node->data.map.next)
         {
@@ -52,25 +52,25 @@ void Node_Free(
         }
         break;
     case NODE_BINARY:
-        if (node->data.binary.left)
+        if (node->data.binary.leftExpr)
         {
-            free(node->data.binary.left);
+            free(node->data.binary.leftExpr);
         }
-        if (node->data.binary.right)
+        if (node->data.binary.rightExpr)
         {
-            free(node->data.binary.right);
+            free(node->data.binary.rightExpr);
         }
         break;
     case NODE_UNARY:
-        if (node->data.unary.node)
+        if (node->data.unary.expr)
         {
-            free(node->data.unary.node);
+            free(node->data.unary.expr);
         }
         break;
     case NODE_SEQUENCE:
-        if (node->data.sequence.node)
+        if (node->data.sequence.expr)
         {
-            Node_Free(node->data.sequence.node);
+            Node_Free(node->data.sequence.expr);
         }
         if (node->data.sequence.next)
         {
