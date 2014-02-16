@@ -214,24 +214,8 @@ Node* Parser_SecondaryExpr(
     // String literal or identifier
     case TOK_STRING:
     case TOK_IDENT:
-        {
-            size_t length = Lexer_GetTokenLength(parser->lexer);
-            const char* string = Lexer_GetTokenString(parser->lexer);
-            StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
-
-            if (type == TOK_STRING)
-            {
-                node = Node_Create(NODE_STRING);
-            }
-            else
-            {
-                node = Node_Create(NODE_IDENT);
-            }
-
-            node->data.string.id = id;
-
-            Lexer_Next(parser->lexer);
-        } break;
+        node = Parser_StringOrIdent(parser);
+        break;
 
     // Keyword literals
     case TOK_KEYWORD:
@@ -248,12 +232,15 @@ Node* Parser_SecondaryExpr(
 
     if (node)
     {
+        // Parse and trailing indexing operations
         for (;;)
         {
+            // Check for bracket index
             if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
             {
                 Lexer_Next(parser->lexer);
 
+                // Parse the expression in the brackets
                 Node* key = Parser_Expr(parser);
                 if (!key)
                 {
@@ -261,6 +248,7 @@ Node* Parser_SecondaryExpr(
                     return NULL;
                 }
 
+                // Expect a closing bracket
                 if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
                 {
                     Parser_SetError(parser, "Expected closing ']'");
@@ -268,41 +256,50 @@ Node* Parser_SecondaryExpr(
                     Node_Free(node);
                     return NULL;
                 }
+                Lexer_Next(parser->lexer);
 
+                // Create the index node
                 Node* index = Node_Create(NODE_INDEX);
                 index->data.index.expr = node;
                 index->data.index.key = key;
+
                 node = index;
             }
+
+            // Check for dot index
             else if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '.'))
             {
                 Lexer_Next(parser->lexer);
 
-                Node* key = Parser_Expr(parser);
+                // Expect an identifier
+                if (!Lexer_IsTokenType(parser->lexer, TOK_IDENT))
+                {
+                    Parser_SetError(parser, "Right side of '.' operation must be an identifier");
+                    Node_Free(node);
+                    return NULL;
+                }
+
+                // Parse the identifier
+                Node* key = Parser_StringOrIdent(parser);
                 if (!key)
                 {
                     Node_Free(node);
                     return NULL;
                 }
 
-                if (key->type != NODE_IDENT)
-                {
-                    Parser_SetError(parser, "Right side of '.' operation must be an identifier");
-                    Node_Free(key);
-                    Node_Free(node);
-                    return NULL;
-                }
-
+                // Use identifier as a string
                 key->type = NODE_STRING;
 
+                // Create the index node
                 Node* index = Node_Create(NODE_INDEX);
                 index->data.index.expr = node;
                 index->data.index.key = key;
+
                 node = index;
             }
             else
             {
-                break;
+                break; // No more dot or bracket indices
             }
         }
     }
@@ -430,6 +427,15 @@ Node* Parser_Map(
 
     Lexer_Next(parser->lexer);
 
+    Node* mapRoot = Node_Create(NODE_MAP);
+    if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
+    {
+        Lexer_Next(parser->lexer);
+
+        // An empty map
+        return mapRoot;
+    }
+
     // Parse the expressions in the map
     Node* exprs = Parser_Exprs(parser);
     if (!exprs)
@@ -439,12 +445,12 @@ Node* Parser_Map(
     else if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
     {
         Parser_SetError(parser, "Expected closing '}'");
+        Node_Free(mapRoot);
         Node_Free(exprs);
         return NULL;
     }
 
     Lexer_Next(parser->lexer);
-    Node* mapRoot = Node_Create(NODE_MAP);
 
     size_t i = 0;
     Node* map = mapRoot;
@@ -469,6 +475,8 @@ Node* Parser_Map(
             item = assoc;
         }
 
+        // Use the left-hand side of the association as a string if it was an
+        // identifier
         if (item->data.binary.leftExpr->type == NODE_IDENT)
         {
             item->data.binary.leftExpr->type = NODE_STRING;
@@ -488,4 +496,33 @@ Node* Parser_Map(
 
     Node_Free(exprs);
     return mapRoot;
+}
+
+Node* Parser_StringOrIdent(
+    Parser* parser
+    )
+{
+    Node* node;
+    if (Lexer_IsTokenType(parser->lexer, TOK_STRING))
+    {
+        node = Node_Create(NODE_STRING);
+    }
+    else if (Lexer_IsTokenType(parser->lexer, TOK_IDENT))
+    {
+        node = Node_Create(NODE_IDENT);
+    }
+    else
+    {
+        Parser_SetError(parser, "Expected a string or identifier");
+        return NULL;
+    }
+
+    size_t length = Lexer_GetTokenLength(parser->lexer);
+    const char* string = Lexer_GetTokenString(parser->lexer);
+    StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
+    node->data.string.id = id;
+
+    Lexer_Next(parser->lexer);
+
+    return node;
 }

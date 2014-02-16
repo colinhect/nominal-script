@@ -88,14 +88,24 @@ size_t GenerateCode(
             {
                 Node* assoc = node->data.map.assoc;
 
-                // Value on stack
-                index = GenerateCode(state, assoc->data.binary.rightExpr, byteCode, index);
+                if (assoc)
+                {
+                    Node* leftExpr = assoc->data.binary.leftExpr;
+                    Node* rightExpr = assoc->data.binary.rightExpr;
 
-                // Key on stack
-                index = GenerateCode(state, assoc->data.binary.leftExpr, byteCode, index);
+                    // Value on stack
+                    index = GenerateCode(state, rightExpr, byteCode, index);
 
-                node = node->data.map.next;
-                ++itemCount;
+                    // Key on stack
+                    index = GenerateCode(state, leftExpr, byteCode, index);
+
+                    node = node->data.map.next;
+                    ++itemCount;
+                }
+                else
+                {
+                    break;
+                }
             }
             OPCODE(OPCODE_PUSH);
             VALUE(NomInteger_FromUnsignedLongLong(state, itemCount));

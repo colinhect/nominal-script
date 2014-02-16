@@ -120,6 +120,13 @@ void Test_State_Indexing(void)
     TEST_EXPR("{ 5 }[0]", NomInteger_FromInt(state, 5));
     TEST_EXPR("{ 2, 3, 4, 5 }[2]", NomInteger_FromInt(state, 4));
     TEST_EXPR("{ one -> 1 }.one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ two -> { one -> 1 } }[\"two\"][\"one\"]", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ two -> { one -> 1 } }.two.one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("({ two -> { one -> 1 } }.two).one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ two -> { one -> 1 } }[{ }]", NomValue_Nil(state));
+    TEST_EXPR("{ two -> { one -> 1 } }[{ one -> \"two\" }.one].one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("({ two -> { one -> 1 } })[{ one -> \"two\" }.one].one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("({ two -> { one -> 1 } })[({ one -> \"two\" }.one)].one", NomInteger_FromInt(state, 1));
     NomState_Free(state);
 }
 

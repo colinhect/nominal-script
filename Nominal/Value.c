@@ -207,10 +207,6 @@ NomValue NomValue_Index(
     {
         NomMap_TryGet(value, key, &result);
     }
-    else
-    {
-        NomState_SetError(state, "The value cannot be indexed");
-    }
 
     return result;
 }

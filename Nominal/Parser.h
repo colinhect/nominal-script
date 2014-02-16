@@ -162,4 +162,15 @@ Node* Parser_Map(
     Parser* parser
     );
 
+///
+/// \brief Parses a string or identifier.
+///
+/// \param parser
+///     The parser.
+///
+/// \returns The parsed AST node; NULL if a parse error occurred.
+Node* Parser_StringOrIdent(
+    Parser* parser
+    );
+
 #endif
