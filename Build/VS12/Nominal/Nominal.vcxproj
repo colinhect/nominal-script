@@ -19,31 +19,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{85380091-7164-4C4E-8CE5-FF081F5EA7E4}</ProjectGuid>
+    <ProjectGuid>{F1153588-BE54-4864-94DC-96E48A36DD15}</ProjectGuid>
     <RootNamespace>Nominal</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -65,24 +65,20 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <TargetName>nominal</TargetName>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominal</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
+    <TargetName>nominal</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominal</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IntDir>$(ProjectDir)Intermediate\$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)Deploy\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominal</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -90,8 +86,9 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -102,8 +99,9 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -116,8 +114,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -132,8 +131,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -142,40 +142,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\Nominal.h" />
-    <ClInclude Include="Include\Nominal\Integer.h" />
-    <ClInclude Include="Include\Nominal\Map.h" />
-    <ClInclude Include="Include\Nominal\Number.h" />
-    <ClInclude Include="Include\Nominal\Real.h" />
-    <ClInclude Include="Include\Nominal\State.h" />
-    <ClInclude Include="Include\Nominal\String.h" />
-    <ClInclude Include="Include\Nominal\Value.h" />
-    <ClInclude Include="Source\CodeGen.h" />
-    <ClInclude Include="Source\HashTable.h" />
-    <ClInclude Include="Source\Heap.h" />
-    <ClInclude Include="Source\Lexer.h" />
-    <ClInclude Include="Source\Node.h" />
-    <ClInclude Include="Source\Parser.h" />
-    <ClInclude Include="Source\State.h" />
-    <ClInclude Include="Source\String.h" />
-    <ClInclude Include="Source\StringPool.h" />
-    <ClInclude Include="Source\Value.h" />
+    <ClCompile Include="..\..\..\Nominal\Main.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CodeGen.c" />
-    <ClCompile Include="Source\HashTable.c" />
-    <ClCompile Include="Source\Heap.c" />
-    <ClCompile Include="Source\Integer.c" />
-    <ClCompile Include="Source\Lexer.c" />
-    <ClCompile Include="Source\Map.c" />
-    <ClCompile Include="Source\Node.c" />
-    <ClCompile Include="Source\Number.c" />
-    <ClCompile Include="Source\Real.c" />
-    <ClCompile Include="Source\State.c" />
-    <ClCompile Include="Source\String.c" />
-    <ClCompile Include="Source\Value.c" />
-    <ClCompile Include="Source\Parser.c" />
-    <ClCompile Include="Source\StringPool.c" />
+    <ProjectReference Include="..\NominalLib\NominalLib.vcxproj">
+      <Project>{77051585-8f05-433f-bb12-650cfde4fc66}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

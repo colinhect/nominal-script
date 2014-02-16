@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source">
-      <UniqueIdentifier>{d13c4ae6-7c73-4b12-9037-c08480b6a489}</UniqueIdentifier>
+      <UniqueIdentifier>{e7cb0483-129c-41db-9a06-7e6f3bef1ba1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Main.c">
+    <ClCompile Include="..\..\..\Nominal\Main.c">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
