@@ -26,9 +26,38 @@
 
 #include <string.h>
 
+#include "Node.h"
+
 typedef struct _NomState State;
-typedef struct _Node Node;
 typedef struct _StringPool StringPool;
+
+///
+/// \brief A Nominal byte code operation.
+typedef enum
+{
+    OPCODE_LET,
+    OPCODE_SET,
+    OPCODE_GET,
+    OPCODE_ADD,
+    OPCODE_SUB,
+    OPCODE_MUL,
+    OPCODE_DIV,
+    OPCODE_NEG,
+    OPCODE_EQ,
+    OPCODE_NE,
+    OPCODE_GT,
+    OPCODE_GTE,
+    OPCODE_LT,
+    OPCODE_LTE,
+    OPCODE_AND,
+    OPCODE_OR,
+    OPCODE_NOT,
+    OPCODE_ASSOC,
+    OPCODE_RET,
+    OPCODE_INDEX,
+    OPCODE_PUSH,
+    OPCODE_NEW_MAP
+} OpCode;
 
 ///
 /// \brief Generates Nominal byte code from an AST.

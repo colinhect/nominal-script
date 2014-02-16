@@ -25,7 +25,6 @@
 #define PARSER_H
 
 #include "Node.h"
-#include "ByteCode.h"
 #include "StringPool.h"
 #include "Lexer.h"
 

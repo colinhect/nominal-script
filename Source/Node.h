@@ -24,8 +24,39 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "ByteCode.h"
 #include "StringPool.h"
+
+///
+/// \brief A Nominal binary/unary operator
+typedef enum
+{
+    OP_LET,
+    OP_SET,
+    OP_ADD,
+    OP_SUB,
+    OP_MUL,
+    OP_DIV,
+    OP_NEG,
+    OP_EQ,
+    OP_NE,
+    OP_GT,
+    OP_GTE,
+    OP_LT,
+    OP_LTE,
+    OP_AND,
+    OP_OR,
+    OP_NOT,
+    OP_ASSOC,
+    OP_RET
+} Operator;
+
+///
+/// \brief The precedence of each operator.
+extern const int OP_PREC[];
+
+///
+/// \brief The string value of each operator.
+extern const char* const OP_STR[];
 
 ///
 /// \brief A type of AST node.
@@ -39,6 +70,7 @@ typedef enum
     NODE_IDENT,
     NODE_BINARY,
     NODE_UNARY,
+    NODE_INDEX,
     NODE_SEQUENCE
 } NodeType;
 
@@ -89,7 +121,7 @@ typedef struct _Node
         // A binary operation applied to two expressions
         struct
         {
-            OpCode op;
+            Operator op;
             struct _Node* leftExpr;
             struct _Node* rightExpr;
         } binary;
@@ -98,9 +130,17 @@ typedef struct _Node
         // A unary operation applied to an expression
         struct
         {
-            OpCode op;
+            Operator op;
             struct _Node* expr;
         } unary;
+
+        // NODE_INDEX
+        // Indexing a value by a key
+        struct
+        {
+            struct _Node* expr;
+            struct _Node* key;
+        } index;
 
         // NODE_SEQUENCE
         // A sequence of expressions

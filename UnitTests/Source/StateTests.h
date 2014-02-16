@@ -42,6 +42,8 @@ void Test_State_IntegerArithmetic(void)
     TEST_EXPR("2 + 3", NomInteger_FromInt(state, 5));
     TEST_EXPR("2 - 3", NomInteger_FromInt(state, -1));
     TEST_EXPR("2 * 3", NomInteger_FromInt(state, 6));
+    TEST_EXPR("2 * 3 + 1", NomInteger_FromInt(state, 7));
+    TEST_EXPR("2 * (3 + 1)", NomInteger_FromInt(state, 8));
     TEST_EXPR("6 / 3", NomInteger_FromInt(state, 2));
     TEST_EXPR("6 / 4", NomInteger_FromInt(state, 1));
     NomState_Free(state);
@@ -97,7 +99,7 @@ void Test_State_MapWithExplicitKeys(void)
 {
     NomState* state = NomState_Create();
 
-    NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1 }");
+    NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two -> 2 }");
     CU_ASSERT(!NomState_ErrorOccurred(state));
     CU_ASSERT(NomMap_Check(map));
 
@@ -106,7 +108,18 @@ void Test_State_MapWithExplicitKeys(void)
     CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 0)));
     result = NomMap_Get(map, NomString_FromString(state, "one", false));
     CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 1)));
+    result = NomMap_Get(map, NomString_FromString(state, "two", false));
+    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 2)));
 
+    NomState_Free(state);
+}
+
+void Test_State_Indexing(void)
+{
+    NomState* state = NomState_Create();
+    TEST_EXPR("{ 5 }[0]", NomInteger_FromInt(state, 5));
+    TEST_EXPR("{ 2, 3, 4, 5 }[2]", NomInteger_FromInt(state, 4));
+    TEST_EXPR("{ one -> 1 }.one", NomInteger_FromInt(state, 1));
     NomState_Free(state);
 }
 

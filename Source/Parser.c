@@ -139,7 +139,7 @@ Node* Parser_PrimaryExpr(
     // Unary operator
     if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
     {
-        OpCode op = (OpCode)Lexer_GetTokenId(parser->lexer);
+        Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
         if (op == OP_SUB)
         {
             op = OP_NEG;
@@ -246,6 +246,67 @@ Node* Parser_SecondaryExpr(
         SetUnexpectedTokenError(parser);
     }
 
+    if (node)
+    {
+        for (;;)
+        {
+            if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
+            {
+                Lexer_Next(parser->lexer);
+
+                Node* key = Parser_Expr(parser);
+                if (!key)
+                {
+                    Node_Free(node);
+                    return NULL;
+                }
+
+                if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
+                {
+                    Parser_SetError(parser, "Expected closing ']'");
+                    Node_Free(key);
+                    Node_Free(node);
+                    return NULL;
+                }
+
+                Node* index = Node_Create(NODE_INDEX);
+                index->data.index.expr = node;
+                index->data.index.key = key;
+                node = index;
+            }
+            else if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '.'))
+            {
+                Lexer_Next(parser->lexer);
+
+                Node* key = Parser_Expr(parser);
+                if (!key)
+                {
+                    Node_Free(node);
+                    return NULL;
+                }
+
+                if (key->type != NODE_IDENT)
+                {
+                    Parser_SetError(parser, "Right side of '.' operation must be an identifier");
+                    Node_Free(key);
+                    Node_Free(node);
+                    return NULL;
+                }
+
+                key->type = NODE_STRING;
+
+                Node* index = Node_Create(NODE_INDEX);
+                index->data.index.expr = node;
+                index->data.index.key = key;
+                node = index;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
     return node;
 }
 
@@ -285,9 +346,14 @@ Node* Parser_BinExpr(
     Node*   leftExpr
     )
 {
+    if (!leftExpr)
+    {
+        return NULL;
+    }
+
     for (;;)
     {
-        OpCode op = (OpCode)Lexer_GetTokenId(parser->lexer);
+        Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
         
         // Check that the current token is an operator
         if (!Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
@@ -377,6 +443,7 @@ Node* Parser_Map(
         return NULL;
     }
 
+    Lexer_Next(parser->lexer);
     Node* mapRoot = Node_Create(NODE_MAP);
 
     size_t i = 0;
@@ -400,6 +467,11 @@ Node* Parser_Map(
             assoc->data.binary.rightExpr = item;
 
             item = assoc;
+        }
+
+        if (item->data.binary.leftExpr->type == NODE_IDENT)
+        {
+            item->data.binary.leftExpr->type = NODE_STRING;
         }
 
         map->data.map.assoc = item;

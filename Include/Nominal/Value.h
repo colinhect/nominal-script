@@ -156,6 +156,20 @@ NomValue NomValue_Negate(
     );
 
 ///
+/// \brief Indexes a Nominal value by a key.
+///
+/// \param value
+///     The value to index.
+/// \param key
+///     The key.
+///
+/// \returns The resulting value.
+NomValue NomValue_Index(
+    NomValue    value,
+    NomValue    key
+    );
+
+///
 /// \brief Gets a value's associated Nominal state.
 ///
 /// \param value

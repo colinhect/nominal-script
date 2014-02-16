@@ -26,6 +26,7 @@
 #include "Nominal/Number.h"
 #include "Nominal/Integer.h"
 #include "Nominal/Real.h"
+#include "Nominal/Map.h"
 
 #include "Value.h"
 #include "State.h"
@@ -189,6 +190,26 @@ NomValue NomValue_Negate(
     else
     {
         result = NomInteger_FromInt(state, -NomNumber_AsInt(value));
+    }
+
+    return result;
+}
+
+NomValue NomValue_Index(
+    NomValue    value,
+    NomValue    key
+    )
+{
+    NomState* state = NomValue_GetState(value);
+
+    NomValue result = NomValue_Nil(state);
+    if (NomMap_Check(value))
+    {
+        NomMap_TryGet(value, key, &result);
+    }
+    else
+    {
+        NomState_SetError(state, "The value cannot be indexed");
     }
 
     return result;

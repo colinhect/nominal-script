@@ -150,7 +150,6 @@
     <ClInclude Include="Include\Nominal\State.h" />
     <ClInclude Include="Include\Nominal\String.h" />
     <ClInclude Include="Include\Nominal\Value.h" />
-    <ClInclude Include="Source\ByteCode.h" />
     <ClInclude Include="Source\CodeGen.h" />
     <ClInclude Include="Source\HashTable.h" />
     <ClInclude Include="Source\Heap.h" />
@@ -163,7 +162,6 @@
     <ClInclude Include="Source\Value.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\ByteCode.c" />
     <ClCompile Include="Source\CodeGen.c" />
     <ClCompile Include="Source\HashTable.c" />
     <ClCompile Include="Source\Heap.c" />

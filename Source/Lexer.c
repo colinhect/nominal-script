@@ -22,7 +22,7 @@
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
 #include "Lexer.h"
-#include "bytecode.h"
+#include "Node.h"
 
 #include <stdlib.h>
 #include <stdio.h>

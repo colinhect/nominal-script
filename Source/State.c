@@ -126,11 +126,11 @@ NomValue NomState_Execute(
 
         switch (op)
         {
-        case OP_PUSH:
+        case OPCODE_PUSH:
             result = READAS(NomValue);
             PUSH(result);
             break;
-        case OP_GET:
+        case OPCODE_GET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
             if (!NomMap_TryGet(scope, string, &result))
@@ -139,7 +139,7 @@ NomValue NomState_Execute(
             }
             PUSH(result);
             break;
-        case OP_SET:
+        case OPCODE_SET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
             if (!NomMap_Set(scope, string, TOP()))
@@ -147,7 +147,7 @@ NomValue NomState_Execute(
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
             break;
-        case OP_LET:
+        case OPCODE_LET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
             if (!NomMap_Insert(scope, string, TOP()))
@@ -155,7 +155,7 @@ NomValue NomState_Execute(
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
             }
             break;
-        case OP_MAP:
+        case OPCODE_NEW_MAP:
             {
                 NomValue map = NomMap_Create(state);
 
@@ -170,33 +170,39 @@ NomValue NomState_Execute(
 
                 PUSH(map);
             } break;
-        case OP_ADD:
+        case OPCODE_ADD:
             l = POP();
             r = POP();
             result = NomValue_Add(l, r);
             PUSH(result);
             break;
-        case OP_SUB:
+        case OPCODE_SUB:
             l = POP();
             r = POP();
             result = NomValue_Subtract(l, r);
             PUSH(result);
             break;
-        case OP_MUL:
+        case OPCODE_MUL:
             l = POP();
             r = POP();
             result = NomValue_Multiply(l, r);
             PUSH(result);
             break;
-        case OP_DIV:
+        case OPCODE_DIV:
             l = POP();
             r = POP();
             result = NomValue_Divide(l, r);
             PUSH(result);
             break;
-        case OP_NEG:
+        case OPCODE_NEG:
             l = POP();
             result = NomValue_Negate(l);
+            PUSH(result);
+            break;
+        case OPCODE_INDEX:
+            l = POP();
+            r = POP();
+            result = NomValue_Index(r, l);
             PUSH(result);
             break;
         }

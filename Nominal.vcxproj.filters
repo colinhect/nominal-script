@@ -27,9 +27,6 @@
     <ClInclude Include="Source\Lexer.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="Source\ByteCode.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\CodeGen.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -84,9 +81,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\Lexer.c">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ByteCode.c">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Source\CodeGen.c">

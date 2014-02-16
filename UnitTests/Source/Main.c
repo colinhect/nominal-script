@@ -74,6 +74,7 @@ int main()
     ADD_TEST(Test_State_GlobalVariables);
     ADD_TEST(Test_State_MapWithImplicitKeys);
     ADD_TEST(Test_State_MapWithExplicitKeys);
+    ADD_TEST(Test_State_Indexing);
     
     // Run the tests
     CU_basic_set_mode(CU_BRM_VERBOSE);

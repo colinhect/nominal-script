@@ -67,6 +67,16 @@ void Node_Free(
             free(node->data.unary.expr);
         }
         break;
+    case NODE_INDEX:
+        if (node->data.index.expr)
+        {
+            free(node->data.index.expr);
+        }
+        if (node->data.index.key)
+        {
+            free(node->data.index.key);
+        }
+        break;
     case NODE_SEQUENCE:
         if (node->data.sequence.expr)
         {
@@ -81,3 +91,47 @@ void Node_Free(
 
     free(node);
 }
+
+const int OP_PREC[] =
+{
+    1,  // OP_LET
+    2,  // OP_SET
+    40, // OP_ADD
+    40, // OP_SUB
+    80, // OP_MUL
+    80, // OP_DIV
+    6,  // OP_NEG
+    10, // OP_EQ
+    10, // OP_NE
+    20, // OP_GT
+    20, // OP_GTE
+    20, // OP_LT
+    20, // OP_LTE
+    5,  // OP_AND
+    5,  // OP_OR
+    6,  // OP_NOT
+    1,  // OP_ASSOC
+    1   // OP_RET
+};
+
+const char* const OP_STR[] =
+{
+    ":=", // OP_LET
+    "=",  // OP_SET
+    "+",  // OP_ADD
+    "-",  // OP_SUB
+    "*",  // OP_MUL
+    "/",  // OP_DIV
+    "-",  // OP_NEG
+    "==", // OP_EQ
+    "!=", // OP_NE
+    ">",  // OP_GT
+    ">=", // OP_GTE
+    "<",  // OP_LT
+    "<=", // OP_LTE
+    "&&", // OP_AND
+    "||", // OP_OR
+    "!",  // OP_NOT
+    "->", // OP_ASSOC
+    "<-"  // OP_RET
+};
