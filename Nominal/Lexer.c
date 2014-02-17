@@ -24,6 +24,7 @@
 #include "Lexer.h"
 #include "Node.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -95,6 +96,8 @@ Lexer* Lexer_Create(
 {
     LexerState state = { 0, 1, TOK_SYMBOL, 0, 0, 0, 0 };
     Lexer* lexer = (Lexer*)malloc(sizeof(Lexer));
+    assert(lexer);
+
     lexer->state = state;
     lexer->source = source;
     return lexer;

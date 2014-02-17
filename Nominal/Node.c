@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Node.h"
 
+#include <assert.h>
 #include <stdlib.h>
 
 Node* Node_Create(
@@ -30,6 +31,8 @@ Node* Node_Create(
     )
 {
     Node* node = (Node*)malloc(sizeof(Node));
+    assert(node);
+
     memset(node, 0, sizeof(Node));
     node->type = type;
     return node;

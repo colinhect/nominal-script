@@ -28,6 +28,7 @@
 #include "CodeGen.h"
 #include "String.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -43,6 +44,7 @@ NomState* NomState_Create(
     )
 {
     NomState* state = (NomState*)malloc(sizeof(NomState));
+    assert(state);
 
     // Find the next available ID
     state->id = 0;

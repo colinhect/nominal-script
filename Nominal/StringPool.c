@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "StringPool.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -40,12 +41,15 @@ StringPool* StringPool_Create(
     )
 {
     StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
+    assert(stringPool);
     stringPool->hashTable = HashTable_Create(HashString, CompareString, stringCount * 2);
 
-    stringPool->strings = (char**)malloc(sizeof(char*) * stringCount);
+    stringPool->strings = (char**)malloc(sizeof(char*)* stringCount);
+    assert(stringPool->strings);
     memset(stringPool->strings, 0, sizeof(char*) * stringCount);
 
     stringPool->hashes = (Hash*)malloc(sizeof(Hash) * stringCount);
+    assert(stringPool->hashes);
     memset(stringPool->hashes, 0, sizeof(Hash)* stringCount);
 
     stringPool->stringCount = stringCount;
@@ -57,6 +61,9 @@ void StringPool_Free(
     StringPool* stringPool
     )
 {
+    assert(stringPool);
+    assert(stringPool->strings);
+
     StringId i;
     for (i = 0; i < stringPool->stringCount; ++i)
     {
@@ -84,6 +91,8 @@ StringId StringPool_InsertOrFindSubString(
     size_t      length)
 {
     char* newString = (char*)malloc(sizeof(char) * (length + 1));
+    assert(newString);
+
     memcpy(newString, string, length);
     newString[length] = '\0';
 

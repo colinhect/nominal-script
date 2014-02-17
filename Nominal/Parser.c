@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Parser.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -56,6 +57,8 @@ Parser* Parser_Create(
     )
 {
     Parser* parser = (Parser*)malloc(sizeof(Parser));
+    assert(parser);
+
     parser->lexer = Lexer_Create(source);
     parser->stringPool = stringPool;
 

@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "HashTable.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -84,6 +85,7 @@ bool FindNode(
     {
         // Create the node
         curr = (BucketNode*)malloc(sizeof(BucketNode));
+        assert(curr);
         curr->key = key;
         curr->next = NULL;
 
@@ -116,9 +118,13 @@ HashTable* HashTable_Create(
     )
 {
     HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
+    assert(hashTable);
+
     hashTable->hash = hash;
     hashTable->compare = compare;
     hashTable->buckets = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
+    assert(hashTable->buckets);
+
     memset(hashTable->buckets, 0, sizeof(BucketNode*) * bucketCount);
     hashTable->bucketCount = bucketCount;
 
@@ -131,6 +137,9 @@ void HashTable_Free(
     void        (*freeValue)(void*)
     )
 {
+    assert(hashTable);
+    assert(hashTable->buckets);
+
     // For each bucket
     for (size_t i = 0; i < hashTable->bucketCount; ++i)
     {

@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Heap.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -46,9 +47,12 @@ Heap* Heap_Create(
     )
 {
     Heap* heap = (Heap*)malloc(sizeof(Heap));
+    assert(heap);
 
     size_t  objectsSize = sizeof(HeapObject) * INITIAL_HEAP_SIZE;
     heap->objects = (HeapObject*)malloc(objectsSize);
+    assert(heap->objects);
+
     memset(heap->objects, 0, objectsSize);
 
     heap->objectCapacity = INITIAL_HEAP_SIZE;
@@ -61,6 +65,9 @@ void Heap_Free(
     Heap*   heap
     )
 {
+    assert(heap);
+    assert(heap->objects);
+
     // For each (potential) object
     for (ObjectId i = 0; i < heap->objectCapacity; ++i)
     {
