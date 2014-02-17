@@ -134,4 +134,33 @@ void Test_HashTable_InsertOrGetNonExisting(void)
     HashTable_Free(hashTable, NULL, NULL);
 }
 
+void Test_HashTable_Iterate(void)
+{
+    HashTable*  hashTable;
+
+    hashTable = HashTable_Create(HashIdentity, CompareIdentity, 10);
+
+    CU_ASSERT(HashTable_Insert(hashTable, 0, 0));
+    CU_ASSERT(HashTable_Insert(hashTable, 1, 2));
+    CU_ASSERT(HashTable_Insert(hashTable, 2, 4));
+    CU_ASSERT(HashTable_Insert(hashTable, 3, 6));
+
+    HashTableIterator iterator = { 0 };
+    CU_ASSERT(HashTable_MoveNext(hashTable, &iterator));
+    CU_ASSERT_EQUAL(iterator.key, 0);
+    CU_ASSERT_EQUAL(iterator.value, 0);
+    CU_ASSERT(HashTable_MoveNext(hashTable, &iterator));
+    CU_ASSERT_EQUAL(iterator.key, 1);
+    CU_ASSERT_EQUAL(iterator.value, 2);
+    CU_ASSERT(HashTable_MoveNext(hashTable, &iterator));
+    CU_ASSERT_EQUAL(iterator.key, 2);
+    CU_ASSERT_EQUAL(iterator.value, 4);
+    CU_ASSERT(HashTable_MoveNext(hashTable, &iterator));
+    CU_ASSERT_EQUAL(iterator.key, 3);
+    CU_ASSERT_EQUAL(iterator.value, 6);
+    CU_ASSERT(!HashTable_MoveNext(hashTable, &iterator));
+
+    HashTable_Free(hashTable, NULL, NULL);
+}
+
 #endif

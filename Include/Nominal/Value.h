@@ -79,12 +79,17 @@ long long NomValue_Hash(
 ///
 /// \brief Gets a representation of a Nominal value as a string.
 ///
-/// \param string
+/// \param buffer
 ///     The destination string to copy to.
+/// \param bufferSize
+///     The size of the buffer.
 /// \param value
 ///     The value.
-void NomValue_AsString(
-    char*       string,
+///
+/// \returns The number of characters written to the buffer.
+size_t NomValue_AsString(
+    char*       buffer,
+    size_t      bufferSize,
     NomValue    value
     );
 

@@ -28,7 +28,7 @@
 
 int main()
 {
-    char resultString[4096];
+    char resultString[8192];
     char line[4096];
 
     NomState* state = NomState_Create();
@@ -44,7 +44,7 @@ int main()
             NomValue result = NomState_Execute(state, line);
             if (!NomState_ErrorOccurred(state))
             {
-                NomValue_AsString(resultString, result);
+                NomValue_AsString(resultString, 8192, result);
                 printf("%s\n", resultString);
             }
             else

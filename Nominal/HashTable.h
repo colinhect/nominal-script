@@ -64,6 +64,18 @@ typedef bool (*CompareFunction)(
 ///
 /// \brief A hash table.
 typedef struct _HashTable HashTable;
+typedef struct _BucketNode BucketNode;
+
+///
+/// \brief An iterator of a hash table.
+typedef struct _HashTableIterator
+{
+    HashTable*  hashTable;
+    size_t      index;
+    UserData    key;
+    UserData    value;
+    BucketNode* bucketNode;
+} HashTableIterator;
 
 ///
 /// \brief Creates a new hash table.
@@ -95,6 +107,22 @@ void HashTable_Free(
     HashTable*  hashTable,
     void        (*freeKey)(void*),
     void        (*freeValue)(void*)
+    );
+
+///
+/// \brief Moves to the next pair in the hash table.
+///
+/// \param hashTable
+///     The hash table.
+/// \param iterator
+///     The iterator.  If initialized to zero then it will be intialized and
+///     moved to the first pair in the table.
+///
+/// \returns True if the next pair was moved to; false if there were no more
+/// pairs in the table.
+bool HashTable_MoveNext(
+    HashTable*          hashTable,
+    HashTableIterator*  iterator
     );
 
 ///

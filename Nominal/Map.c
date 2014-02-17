@@ -85,6 +85,47 @@ NomValue NomMap_Create(
     return map;
 }
 
+bool NomMap_MoveNext(
+    NomValue        map,
+    NomMapIterator* iterator
+    )
+{
+    if (!NomMap_Check(map))
+    {
+        return false;
+    }
+
+    NomState* state = NomValue_GetState(map);
+
+    ObjectId id = GET_ID_BITS(map);
+    MapData* data = Heap_GetData(state->heap, id);
+
+    // Initialize a hash table iterator at the same location as the map
+    // iterator
+    HashTableIterator hashTableIterator = { 0 };
+    if (iterator->map.data == 0)
+    {
+        iterator->map = map;
+    }
+    else
+    {
+        hashTableIterator.hashTable = data->hashTable;
+    }
+    hashTableIterator.index = iterator->index;
+    hashTableIterator.bucketNode = iterator->bucketNode;
+
+    // Move to the next pair in the hash table
+    bool result = HashTable_MoveNext(data->hashTable, &hashTableIterator);
+
+    // Sync the hash table iterator with the map iterator
+    iterator->index = hashTableIterator.index;
+    iterator->bucketNode = hashTableIterator.bucketNode;
+    iterator->key.data = hashTableIterator.key;
+    iterator->value.data = hashTableIterator.value;
+
+    return result;
+}
+
 bool NomMap_Insert(
     NomValue    map,
     NomValue    key,

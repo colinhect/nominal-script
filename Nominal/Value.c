@@ -35,6 +35,50 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
+
+// Define snprintf for compiles which do not support it
+#ifdef _MSC_VER
+
+#define snprintf c99_snprintf
+
+int c99_vsnprintf(
+    char*       str,
+    size_t      size,
+    const char* format,
+    va_list     ap)
+{
+    int count = -1;
+
+    if (size != 0)
+    {
+        count = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
+    }
+    if (count == -1)
+    {
+        count = _vscprintf(format, ap);
+    }
+
+    return count;
+}
+
+int c99_snprintf(
+    char*       str,
+    size_t      size,
+    const char* format,
+    ...)
+{
+    int count;
+    va_list ap;
+
+    va_start(ap, format);
+    count = c99_vsnprintf(str, size, format, ap);
+    va_end(ap);
+
+    return count;
+}
+
+#endif
 
 NomValue NomValue_Nil(
     NomState*   state
@@ -90,27 +134,98 @@ long long NomValue_Hash(
     return (Hash)hash;
 }
 
-void NomValue_AsString(char* string, NomValue value)
+size_t NomValue_AsString(
+    char*       buffer,
+    size_t      bufferSize,
+    NomValue    value
+    )
 {
+    size_t count = 0;
+    
     switch (GET_TYPE(value))
     {
     case TYPE_INTEGER:
-        sprintf(string, "%d", NomNumber_AsInt(value));
+        count += snprintf(buffer, bufferSize, "%d", NomNumber_AsInt(value));
         break;
     case TYPE_REAL:
-        sprintf(string, "%f", NomNumber_AsDouble(value));
+        count += snprintf(buffer, bufferSize, "%f", NomNumber_AsDouble(value));
         break;
     case TYPE_STRING:
     case TYPE_POOLED_STRING:
-        sprintf(string, "\"%s\"", NomString_AsString(value));
+        count += snprintf(buffer, bufferSize, "\"%s\"", NomString_AsString(value));
         break;
+    case TYPE_MAP:
+    {
+        // Opening '{'
+        count += snprintf(buffer, bufferSize, "{");
+        if (count >= bufferSize)
+        {
+            break;
+        }
+
+        // Iterate over each pair
+        bool printComma = false;
+        NomMapIterator iterator = { 0 };
+        while (NomMap_MoveNext(value, &iterator))
+        {
+            if (printComma)
+            {
+                // Print ", "
+                count += snprintf(buffer + count, bufferSize - count, ", ");
+                if (count >= bufferSize)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                // Print " "
+                count += snprintf(buffer + count, bufferSize - count, " ");
+                if (count >= bufferSize)
+                {
+                    break;
+                }
+            }
+
+            // Print the key
+            count += NomValue_AsString(buffer + count, bufferSize - count, iterator.key);
+            if (count >= bufferSize)
+            {
+                break;
+            }
+
+            // Print " -> "
+            count += snprintf(buffer + count, bufferSize - count, " -> ");
+            if (count >= bufferSize)
+            {
+                break;
+            }
+
+            // Print the value
+            count += NomValue_AsString(buffer + count, bufferSize - count, iterator.value);
+            if (count >= bufferSize)
+            {
+                break;
+            }
+            
+            if (!printComma)
+            {
+                printComma = true;
+            }
+        }
+
+        // Closing '}'
+        count += snprintf(buffer + count, bufferSize - count, " }");
+    } break;
     case TYPE_NIL:
-        sprintf(string, "nil");
+        count += snprintf(buffer, bufferSize, "nil");
         break;
     default:
-        sprintf(string, "<unknown>");
+        count += snprintf(buffer, bufferSize, "<unknown>");
         break;
     }
+
+    return count;
 }
 
 #define ARITH(l, r, op, name)\

@@ -27,6 +27,17 @@
 #include "Nominal/Value.h"
 
 ///
+/// \brief An iterator for a Nominal map.
+typedef struct _NomMapIterator
+{
+    NomValue    map;
+    NomValue    key;
+    NomValue    value;
+    size_t      index;
+    void*       bucketNode;
+} NomMapIterator;
+
+///
 /// \brief Checks if a Nominal value is a map.
 ///
 /// \param value
@@ -46,6 +57,22 @@ bool NomMap_Check(
 /// \returns The new Nominal map.
 NomValue NomMap_Create(
     NomState*   state
+    );
+
+///
+/// \brief Moves to the next pair in the map.
+///
+/// \param map
+///     The map.
+/// \param iterator
+///     The iterator.  If initialized to zero then it will be intialized and
+///     moved to the first pair in the map.
+///
+/// \returns True if the next pair was moved to; false if there were no more
+/// pairs in the map.
+bool NomMap_MoveNext(
+    NomValue        map,
+    NomMapIterator* iterator
     );
 
 ///
@@ -125,7 +152,7 @@ NomValue NomMap_Get(
 /// \param key
 ///     The key.
 /// \param value
-///     The value (nil if no value is set for the given key)..
+///     The value (nil if no value is set for the given key).
 ///
 /// \returns True if the value was found; false otherwise.
 bool NomMap_TryGet(

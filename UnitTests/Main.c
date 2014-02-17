@@ -50,6 +50,7 @@ int main()
     ADD_TEST(Test_HashTable_SetNonExisting);
     ADD_TEST(Test_HashTable_InsertOrGetExisting);
     ADD_TEST(Test_HashTable_InsertOrGetNonExisting);
+    ADD_TEST(Test_HashTable_Iterate);
 
     // Map test suite
     BEGIN_TEST_SUITE("Map");
@@ -61,6 +62,7 @@ int main()
     ADD_TEST(Test_Map_StringKeys);
     ADD_TEST(Test_Map_PooledStringKeys);
     ADD_TEST(Test_Map_MixedStringKeys);
+    ADD_TEST(Test_Map_Iterate);
 
     // Real test suite
     BEGIN_TEST_SUITE("Real");

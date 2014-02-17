@@ -26,13 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _BucketNode
-{
-    UserData            key;
-    UserData            value;
-    struct _BucketNode* next;
-} BucketNode;
-
 typedef struct _HashTable
 {
     HashFunction    hash;
@@ -40,6 +33,13 @@ typedef struct _HashTable
     BucketNode**    buckets;
     size_t          bucketCount;
 } HashTable;
+
+typedef struct _BucketNode
+{
+    UserData            key;
+    UserData            value;
+    struct _BucketNode* next;
+} BucketNode;
 
 // Gets a node for a specific key with the option of creating a new node if it
 // is not found
@@ -156,6 +156,47 @@ void HashTable_Free(
             free(t);
         }
     }
+}
+
+bool HashTable_MoveNext(
+    HashTable*          hashTable,
+    HashTableIterator*  iterator
+    )
+{
+    if (!iterator->hashTable)
+    {
+        // Initialize the iterator
+        iterator->hashTable = hashTable;
+        iterator->index = 0;
+        iterator->bucketNode = hashTable->buckets[0];
+    }
+    else if (iterator->hashTable != hashTable)
+    {
+        // Iterator does not correspond to this hash table
+        return false;
+    }
+    else if (iterator->bucketNode)
+    {
+        // Move to the next node if possible
+        iterator->bucketNode = iterator->bucketNode->next;
+    }
+
+    // Find the next bucket node
+    while (!iterator->bucketNode)
+    {
+        ++iterator->index;
+        if (iterator->index >= hashTable->bucketCount)
+        {
+            return false;
+        }
+
+        iterator->bucketNode = hashTable->buckets[iterator->index];
+    }
+
+    iterator->key = iterator->bucketNode->key;
+    iterator->value = iterator->bucketNode->value;
+
+    return true;
 }
 
 bool HashTable_Insert(
