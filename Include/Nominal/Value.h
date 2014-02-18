@@ -160,16 +160,25 @@ NomValue NomValue_Negate(
     NomValue    value
     );
 
-///
-/// \brief Indexes a Nominal value by a key.
-///
-/// \param value
-///     The value to index.
-/// \param key
-///     The key.
-///
-/// \returns The resulting value.
-NomValue NomValue_Index(
+bool NomValue_Insert(
+    NomValue    value,
+    NomValue    key,
+    NomValue    newValue
+    );
+
+bool NomValue_Set(
+    NomValue    value,
+    NomValue    key,
+    NomValue    newValue
+    );
+
+bool NomValue_InsertOrSet(
+    NomValue    value,
+    NomValue    key,
+    NomValue    newValue
+    );
+
+NomValue NomValue_Get(
     NomValue    value,
     NomValue    key
     );

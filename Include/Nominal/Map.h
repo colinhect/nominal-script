@@ -103,8 +103,8 @@ bool NomMap_Insert(
 /// \param value
 ///     The new value.
 ///
-/// \returns False if the map already had a value for the given key; true
-/// otherwise.
+/// \returns True if the set was successful; false if no value exists for the
+/// given key.
 bool NomMap_Set(
     NomValue    map,
     NomValue    key,

@@ -122,7 +122,7 @@ size_t GenerateCode(
     case NODE_INDEX:
         index = GenerateCode(state, node->data.index.expr, byteCode, index);
         index = GenerateCode(state, node->data.index.key, byteCode, index);
-        OPCODE(OPCODE_INDEX);
+        OPCODE(OPCODE_VALUE_GET);
         break;
     case NODE_BINARY:
         {
@@ -136,9 +136,34 @@ size_t GenerateCode(
 
             if (op == OPCODE_LET || op == OPCODE_SET)
             {
-                // Perform set
-                OPCODE(OP_OPCODE[op]);
-                STRING(leftExpr->data.ident.id);
+                if (leftExpr->type == NODE_INDEX)
+                {
+                    index = GenerateCode(state, leftExpr->data.index.expr, byteCode, index);
+                    index = GenerateCode(state, leftExpr->data.index.key, byteCode, index);
+
+                    if (op == OPCODE_SET)
+                    {
+                        bool bracket = leftExpr->data.index.bracket;
+                        if (bracket)
+                        {
+                            OPCODE(OPCODE_VALUE_INSERT_OR_SET);
+                        }
+                        else
+                        {
+                            OPCODE(OPCODE_VALUE_SET);
+                        }
+                    }
+                    else
+                    {
+                        OPCODE(OPCODE_VALUE_INSERT);
+                    }
+                }
+                else
+                {
+                    // Perform set
+                    OPCODE(OP_OPCODE[op]);
+                    STRING(leftExpr->data.ident.id);
+                }
             }
             else
             {
@@ -152,6 +177,11 @@ size_t GenerateCode(
         {
             index = GenerateCode(state, node->data.sequence.expr, byteCode, index);
             node = node->data.sequence.next;
+
+            if (node)
+            {
+                OPCODE(OPCODE_POP);
+            }
         }
         break;
     }

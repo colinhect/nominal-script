@@ -310,7 +310,49 @@ NomValue NomValue_Negate(
     return result;
 }
 
-NomValue NomValue_Index(
+bool NomValue_Insert(
+    NomValue    value,
+    NomValue    key,
+    NomValue    newValue
+    )
+{
+    bool result = false;
+    if (NomMap_Check(value))
+    {
+        result = NomMap_Insert(value, key, newValue);
+    }
+    return result;
+}
+
+bool NomValue_Set(
+    NomValue    value,
+    NomValue    key,
+    NomValue    newValue
+    )
+{
+    bool result = false;
+    if (NomMap_Check(value))
+    {
+        result = NomMap_Set(value, key, newValue);
+    }
+    return result;
+}
+
+bool NomValue_InsertOrSet(
+    NomValue    value,
+    NomValue    key,
+    NomValue    newValue
+    )
+{
+    bool result = false;
+    if (NomMap_Check(value))
+    {
+        result = NomMap_InsertOrSet(value, key, newValue);
+    }
+    return result;
+}
+
+NomValue NomValue_Get(
     NomValue    value,
     NomValue    key
     )

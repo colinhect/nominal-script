@@ -153,8 +153,8 @@ bool HashTable_Insert(
 /// \param value
 ///     The value.
 ///
-/// \returns True if the insertion was successful; false if a value already
-/// exists for the given key.
+/// \returns True if the set was successful; false if no value exists for the
+/// given key.
 bool HashTable_Set(
     HashTable*  hashTable,
     UserData    key,

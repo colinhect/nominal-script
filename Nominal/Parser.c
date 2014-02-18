@@ -263,6 +263,7 @@ Node* Parser_SecondaryExpr(
 
                 // Create the index node
                 Node* index = Node_Create(NODE_INDEX);
+                index->data.index.bracket = true;
                 index->data.index.expr = node;
                 index->data.index.key = key;
 
@@ -295,6 +296,7 @@ Node* Parser_SecondaryExpr(
 
                 // Create the index node
                 Node* index = Node_Create(NODE_INDEX);
+                index->data.index.bracket = false;
                 index->data.index.expr = node;
                 index->data.index.key = key;
 
@@ -400,7 +402,7 @@ Node* Parser_BinExpr(
         }
 
         // Verify the binary operation is valid
-        if (op == OP_LET && leftExpr->type != NODE_IDENT)
+        if (op == OP_LET && leftExpr->type != NODE_IDENT && !(leftExpr->type == NODE_INDEX && leftExpr->data.index.bracket == false))
         {
             Parser_SetError(parser, "The left side of a ':=' expression must be an identifier");
             Node_Free(leftExpr);
@@ -463,6 +465,14 @@ Node* Parser_Map(
         Node* item = expr->data.sequence.expr;
         expr->data.sequence.expr = NULL;
 
+        // If the association is a let operation then treat the left side as
+        // a string
+        if (item->type == NODE_BINARY && item->data.binary.op == OP_LET)
+        {
+            item->data.binary.op = OP_ASSOC;
+            item->data.binary.leftExpr->type = NODE_STRING;
+        }
+
         // Infer the key if it is not a association operation
         if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
         {
@@ -476,14 +486,7 @@ Node* Parser_Map(
             assoc->data.binary.rightExpr = item;
 
             item = assoc;
-        }
-
-        // Use the left-hand side of the association as a string if it was an
-        // identifier
-        if (item->data.binary.leftExpr->type == NODE_IDENT)
-        {
-            item->data.binary.leftExpr->type = NODE_STRING;
-        }
+        }                
 
         map->data.map.assoc = item;
 

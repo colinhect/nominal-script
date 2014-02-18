@@ -132,6 +132,9 @@ NomValue NomState_Execute(
             result = READAS(NomValue);
             PUSH(result);
             break;
+        case OPCODE_POP:
+            POP();
+            break;
         case OPCODE_GET:
             id = READAS(StringId);
             string = NomString_FromId(state, id);
@@ -201,10 +204,30 @@ NomValue NomState_Execute(
             result = NomValue_Negate(l);
             PUSH(result);
             break;
-        case OPCODE_INDEX:
+        case OPCODE_VALUE_INSERT:
             l = POP();
             r = POP();
-            result = NomValue_Index(r, l);
+            NomValue_Insert(r, l, TOP());
+            break;
+        case OPCODE_VALUE_SET:
+            l = POP();
+            r = POP();
+            if (!NomValue_Set(r, l, TOP()))
+            {
+                char buffer[128];
+                NomValue_AsString(buffer, 128, l);
+                NomState_SetError(state, "No value for key '%s'", buffer);
+            }
+            break;
+        case OPCODE_VALUE_INSERT_OR_SET:
+            l = POP();
+            r = POP();
+            NomValue_InsertOrSet(r, l, TOP());
+            break;
+        case OPCODE_VALUE_GET:
+            l = POP();
+            r = POP();
+            result = NomValue_Get(r, l);
             PUSH(result);
             break;
         }

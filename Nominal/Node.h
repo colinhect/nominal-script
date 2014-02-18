@@ -140,6 +140,7 @@ typedef struct _Node
         {
             struct _Node* expr;
             struct _Node* key;
+            bool bracket;
         } index;
 
         // NODE_SEQUENCE

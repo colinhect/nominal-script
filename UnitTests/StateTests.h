@@ -99,7 +99,7 @@ void Test_State_MapWithExplicitKeys(void)
 {
     NomState* state = NomState_Create();
 
-    NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two -> 2 }");
+    NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
     CU_ASSERT(!NomState_ErrorOccurred(state));
     CU_ASSERT(NomMap_Check(map));
 
@@ -119,14 +119,17 @@ void Test_State_Indexing(void)
     NomState* state = NomState_Create();
     TEST_EXPR("{ 5 }[0]", NomInteger_FromInt(state, 5));
     TEST_EXPR("{ 2, 3, 4, 5 }[2]", NomInteger_FromInt(state, 4));
-    TEST_EXPR("{ one -> 1 }.one", NomInteger_FromInt(state, 1));
-    TEST_EXPR("{ two -> { one -> 1 } }[\"two\"][\"one\"]", NomInteger_FromInt(state, 1));
-    TEST_EXPR("{ two -> { one -> 1 } }.two.one", NomInteger_FromInt(state, 1));
-    TEST_EXPR("({ two -> { one -> 1 } }.two).one", NomInteger_FromInt(state, 1));
-    TEST_EXPR("{ two -> { one -> 1 } }[{ }]", NomValue_Nil(state));
-    TEST_EXPR("{ two -> { one -> 1 } }[{ one -> \"two\" }.one].one", NomInteger_FromInt(state, 1));
-    TEST_EXPR("({ two -> { one -> 1 } })[{ one -> \"two\" }.one].one", NomInteger_FromInt(state, 1));
-    TEST_EXPR("({ two -> { one -> 1 } })[({ one -> \"two\" }.one)].one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ one := 1 }.one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ two := { one := 1 } }[\"two\"][\"one\"]", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ two := { one := 1 } }.two.one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("({ two := { one := 1 } }.two).one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("{ two := { one := 1 } }[{ }]", NomValue_Nil(state));
+    TEST_EXPR("{ two := { one := 1 } }[{ one := \"two\" }.one].one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("({ two := { one := 1 } })[{ one := \"two\" }.one].one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("({ two := { one := 1 } })[({ one := \"two\" }.one)].one", NomInteger_FromInt(state, 1));
+    TEST_EXPR("one := { 0 }, two := { one -> 1 }, two[one]", NomInteger_FromInt(state, 1));
+    TEST_EXPR("a := { }, a.b := 1, a.b", NomInteger_FromInt(state, 1));
+    TEST_EXPR("b := { }, b[\"c\"] = 1, b.c", NomInteger_FromInt(state, 1));
     NomState_Free(state);
 }
 
