@@ -82,35 +82,40 @@ size_t GenerateCode(
         VALUE(NomString_FromId(state, node->data.string.id));
         break;
     case NODE_MAP:
+    {
+        // Push all map items on the stack
+        size_t itemCount = 0;
+        while (node)
         {
-            size_t itemCount = 0;
-            while (node)
+            Node* assoc = node->data.map.assoc;
+
+            if (assoc)
             {
-                Node* assoc = node->data.map.assoc;
+                // Value on stack
+                Node* rightExpr = assoc->data.binary.rightExpr;
+                index = GenerateCode(state, rightExpr, byteCode, index);
 
-                if (assoc)
-                {
-                    Node* leftExpr = assoc->data.binary.leftExpr;
-                    Node* rightExpr = assoc->data.binary.rightExpr;
+                // Key on stack
+                Node* leftExpr = assoc->data.binary.leftExpr;
+                index = GenerateCode(state, leftExpr, byteCode, index);
 
-                    // Value on stack
-                    index = GenerateCode(state, rightExpr, byteCode, index);
-
-                    // Key on stack
-                    index = GenerateCode(state, leftExpr, byteCode, index);
-
-                    node = node->data.map.next;
-                    ++itemCount;
-                }
-                else
-                {
-                    break;
-                }
+                node = node->data.map.next;
+                ++itemCount;
             }
-            OPCODE(OPCODE_PUSH);
-            VALUE(NomInteger_FromUnsignedLongLong(state, itemCount));
-            OPCODE(OPCODE_NEW_MAP);
-        } break;
+            else
+            {
+                // No more key/value pairs
+                break;
+            }
+        }
+
+        // Push the item count on the stack
+        OPCODE(OPCODE_PUSH);
+        VALUE(NomInteger_FromUnsignedLongLong(state, itemCount));
+
+        // Create the map
+        OPCODE(OPCODE_NEW_MAP);
+    } break;
     case NODE_IDENT:
         OPCODE(OPCODE_GET);
         STRING(node->data.ident.id);
@@ -122,62 +127,70 @@ size_t GenerateCode(
     case NODE_INDEX:
         index = GenerateCode(state, node->data.index.expr, byteCode, index);
         index = GenerateCode(state, node->data.index.key, byteCode, index);
-        OPCODE(OPCODE_VALUE_GET);
+        if (node->data.index.bracket)
+        {
+            OPCODE(OPCODE_BRACKET_GET);
+        }
+        else
+        {
+            OPCODE(OPCODE_VALUE_GET);
+        }
         break;
     case NODE_BINARY:
+    {
+        OpCode op = node->data.binary.op;
+
+        Node* leftExpr = node->data.binary.leftExpr;
+        Node* rightExpr = node->data.binary.rightExpr;
+
+        // Push right hand side on stack
+        index = GenerateCode(state, rightExpr, byteCode, index);
+
+        if (op == OPCODE_LET || op == OPCODE_SET)
         {
-            OpCode op = node->data.binary.op;
-
-            Node* leftExpr = node->data.binary.leftExpr;
-            Node* rightExpr = node->data.binary.rightExpr;
-
-            // Push right hand side on stack
-            index = GenerateCode(state, rightExpr, byteCode, index);
-
-            if (op == OPCODE_LET || op == OPCODE_SET)
+            if (leftExpr->type == NODE_INDEX)
             {
-                if (leftExpr->type == NODE_INDEX)
-                {
-                    index = GenerateCode(state, leftExpr->data.index.expr, byteCode, index);
-                    index = GenerateCode(state, leftExpr->data.index.key, byteCode, index);
+                index = GenerateCode(state, leftExpr->data.index.expr, byteCode, index);
+                index = GenerateCode(state, leftExpr->data.index.key, byteCode, index);
 
-                    if (op == OPCODE_SET)
+                if (op == OPCODE_SET)
+                {
+                    bool bracket = leftExpr->data.index.bracket;
+                    if (bracket)
                     {
-                        bool bracket = leftExpr->data.index.bracket;
-                        if (bracket)
-                        {
-                            OPCODE(OPCODE_VALUE_INSERT_OR_SET);
-                        }
-                        else
-                        {
-                            OPCODE(OPCODE_VALUE_SET);
-                        }
+                        OPCODE(OPCODE_BRACKET_SET);
                     }
                     else
                     {
-                        OPCODE(OPCODE_VALUE_INSERT);
+                        OPCODE(OPCODE_VALUE_SET);
                     }
                 }
                 else
                 {
-                    // Perform set
-                    OPCODE(OP_OPCODE[op]);
-                    STRING(leftExpr->data.ident.id);
+                    OPCODE(OPCODE_VALUE_LET);
                 }
             }
             else
             {
-                index = GenerateCode(state, leftExpr, byteCode, index);
+                // Perform set
                 OPCODE(OP_OPCODE[op]);
+                STRING(leftExpr->data.ident.id);
             }
         }
-        break;
+        else
+        {
+            index = GenerateCode(state, leftExpr, byteCode, index);
+            OPCODE(OP_OPCODE[op]);
+        }
+    } break;
     case NODE_SEQUENCE:
         while (node)
         {
             index = GenerateCode(state, node->data.sequence.expr, byteCode, index);
             node = node->data.sequence.next;
 
+            // Pop the result of that expression off of the stack if there is
+            // another expression in the sequence
             if (node)
             {
                 OPCODE(OPCODE_POP);

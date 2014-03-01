@@ -31,6 +31,7 @@
 #include "Value.h"
 #include "State.h"
 
+#include <assert.h>
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -84,6 +85,8 @@ NomValue NomValue_Nil(
     NomState*   state
     )
 {
+    assert(state);
+
     NomValue value = { 0 };
     SET_STATE_ID_BITS(value, state->id);
     return value;
@@ -140,6 +143,8 @@ size_t NomValue_AsString(
     NomValue    value
     )
 {
+    assert(buffer);
+
     size_t count = 0;
     
     switch (GET_TYPE(value))
@@ -313,13 +318,13 @@ NomValue NomValue_Negate(
 bool NomValue_Insert(
     NomValue    value,
     NomValue    key,
-    NomValue    newValue
+    NomValue    keyValue
     )
 {
     bool result = false;
     if (NomMap_Check(value))
     {
-        result = NomMap_Insert(value, key, newValue);
+        result = NomMap_Insert(value, key, keyValue);
     }
     return result;
 }
@@ -327,13 +332,13 @@ bool NomValue_Insert(
 bool NomValue_Set(
     NomValue    value,
     NomValue    key,
-    NomValue    newValue
+    NomValue    keyValue
     )
 {
     bool result = false;
     if (NomMap_Check(value))
     {
-        result = NomMap_Set(value, key, newValue);
+        result = NomMap_Set(value, key, keyValue);
     }
     return result;
 }
@@ -341,13 +346,13 @@ bool NomValue_Set(
 bool NomValue_InsertOrSet(
     NomValue    value,
     NomValue    key,
-    NomValue    newValue
+    NomValue    keyValue
     )
 {
     bool result = false;
     if (NomMap_Check(value))
     {
-        result = NomMap_InsertOrSet(value, key, newValue);
+        result = NomMap_InsertOrSet(value, key, keyValue);
     }
     return result;
 }
@@ -366,6 +371,25 @@ NomValue NomValue_Get(
     }
 
     return result;
+}
+
+bool NomValue_TryGet(
+    NomValue    value,
+    NomValue    key,
+    NomValue*   keyValue
+    )
+{
+    assert(keyValue);
+
+    NomState* state = NomValue_GetState(value);
+
+    *keyValue = NomValue_Nil(state);
+    if (NomMap_Check(value))
+    {
+        return NomMap_TryGet(value, key, keyValue);
+    }
+
+    return false;
 }
 
 NomState* NomValue_GetState(

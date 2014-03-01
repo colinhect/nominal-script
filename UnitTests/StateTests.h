@@ -36,6 +36,13 @@
         CU_ASSERT(NomValue_Equals(value, expected));\
     }
 
+#define TEST_EXPR_ERROR(expr)\
+    {\
+        CU_ASSERT(state != NULL);\
+        NomState_Execute(state, expr);\
+        CU_ASSERT(NomState_ErrorOccurred(state));\
+    }
+
 void Test_State_IntegerArithmetic(void)
 {
     NomState* state = NomState_Create();
@@ -130,6 +137,11 @@ void Test_State_Indexing(void)
     TEST_EXPR("one := { 0 }, two := { one -> 1 }, two[one]", NomInteger_FromInt(state, 1));
     TEST_EXPR("a := { }, a.b := 1, a.b", NomInteger_FromInt(state, 1));
     TEST_EXPR("b := { }, b[\"c\"] = 1, b.c", NomInteger_FromInt(state, 1));
+    TEST_EXPR("d := { }, d.e := 1, d.e", NomInteger_FromInt(state, 1));
+
+    TEST_EXPR_ERROR("f := { }, f.g");
+    TEST_EXPR_ERROR("f.g = 1");
+
     NomState_Free(state);
 }
 

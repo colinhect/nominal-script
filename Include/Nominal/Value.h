@@ -160,27 +160,90 @@ NomValue NomValue_Negate(
     NomValue    value
     );
 
+///
+/// \brief Inserts a new value into a Nominal value.
+///
+/// \param value
+///     The value to insert into.
+/// \param key
+///     The key to insert the value for.
+/// \param newValue
+///     The value to insert for the key.
+///
+/// \returns True if the value was inserted for they key; false if a value
+/// already exists for the key.
 bool NomValue_Insert(
     NomValue    value,
     NomValue    key,
-    NomValue    newValue
+    NomValue    keyValue
     );
 
+///
+/// \brief Sets a value for a key in a Nominal value.
+///
+/// \param value
+///     The value.
+/// \param key
+///     The key to set the value for.
+/// \param newValue
+///     The value to set for the key.
+///
+/// \returns True if the value was set for they key; false if a value does
+/// not exist for the key.
 bool NomValue_Set(
     NomValue    value,
     NomValue    key,
-    NomValue    newValue
+    NomValue    keyValue
     );
 
+///
+/// \brief Inserts or sets a value for a key in a Nominal value.
+///
+/// \param value
+///     The value.
+/// \param key
+///     The key to insert or set the value for.
+/// \param newValue
+///     The value to insert or set for the key.
+///
+/// \returns True if the value was inserted for they key; false if a value
+/// already exists for the key.
 bool NomValue_InsertOrSet(
     NomValue    value,
     NomValue    key,
-    NomValue    newValue
+    NomValue    keyValue
     );
 
+///
+/// \brief Gets the value for a key in a Nominal value.
+///
+/// \param value
+///     The value.
+/// \param key
+///     The key to get the value for.
+///
+/// \returns The value for the key; nil of no value exists for the key.
 NomValue NomValue_Get(
     NomValue    value,
     NomValue    key
+    );
+
+///
+/// \brief Gets the value for a key in a Nominal value.
+///
+/// \param value
+///     The value.
+/// \param key
+///     The key to get the value for.
+/// \param keyValue
+///     Returns the found value for the key; nil if no value exists for the
+///     key.
+///
+/// \returns True if the value was found for the key; false otherwise.
+bool NomValue_TryGet(
+    NomValue    value,
+    NomValue    key,
+    NomValue*   keyValue
     );
 
 ///

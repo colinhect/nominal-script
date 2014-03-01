@@ -204,27 +204,37 @@ NomValue NomState_Execute(
             result = NomValue_Negate(l);
             PUSH(result);
             break;
-        case OPCODE_VALUE_INSERT:
+        case OPCODE_VALUE_LET:
             l = POP();
             r = POP();
-            NomValue_Insert(r, l, TOP());
+            if (!NomValue_Insert(r, l, TOP()))
+            {
+                NomState_SetError(state, "Value for key '%s' already exists", NomString_AsString(l));
+            }
             break;
         case OPCODE_VALUE_SET:
             l = POP();
             r = POP();
             if (!NomValue_Set(r, l, TOP()))
             {
-                char buffer[128];
-                NomValue_AsString(buffer, 128, l);
-                NomState_SetError(state, "No value for key '%s'", buffer);
+                NomState_SetError(state, "No value for key '%s'", NomString_AsString(l));
             }
             break;
-        case OPCODE_VALUE_INSERT_OR_SET:
+        case OPCODE_VALUE_GET:
+            l = POP();
+            r = POP();
+            if (!NomValue_TryGet(r, l, &result))
+            {
+                NomState_SetError(state, "No value for key '%s'", NomString_AsString(l));
+            }
+            PUSH(result);
+            break;
+        case OPCODE_BRACKET_SET:
             l = POP();
             r = POP();
             NomValue_InsertOrSet(r, l, TOP());
             break;
-        case OPCODE_VALUE_GET:
+        case OPCODE_BRACKET_GET:
             l = POP();
             r = POP();
             result = NomValue_Get(r, l);
