@@ -32,7 +32,7 @@ void Test_HashTable_InsertAndFind(void)
     const char* key = "Key";
     const char* value = "Value";
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     UserData result;
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
@@ -49,7 +49,7 @@ void Test_HashTable_InsertExisting(void)
     const char* value = "Value";
     const char* result = NULL;
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
     CU_ASSERT(!HashTable_Insert(hashTable, (UserData)key, (UserData)value));
@@ -62,7 +62,7 @@ void Test_HashTable_GetNonExisting(void)
     HashTable*  hashTable;
     UserData    result;
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     CU_ASSERT(!HashTable_Get(hashTable, (UserData)"DoesNotExist", &result));
 
@@ -76,7 +76,7 @@ void Test_HashTable_Set(void)
     const char* value = "Value";
     const char* newValue = "NewValue";
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
     CU_ASSERT(HashTable_Set(hashTable, (UserData)key, (UserData)newValue));
@@ -94,7 +94,7 @@ void Test_HashTable_SetNonExisting(void)
     const char* key = "Key";
     const char* value = "Value";
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     CU_ASSERT(!HashTable_Set(hashTable, (UserData)key, (UserData)value));
 
@@ -107,7 +107,7 @@ void Test_HashTable_InsertOrGetExisting(void)
     const char* key = "Key";
     const char* value = "Value";
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, (UserData)key, (UserData)value));
 
@@ -124,7 +124,7 @@ void Test_HashTable_InsertOrGetNonExisting(void)
     const char* key = "Key";
     const char* value = "Value";
 
-    hashTable = HashTable_Create(HashString, CompareString, 10);
+    hashTable = HashTable_Create(HashString, CompareString, 0, 10);
 
     UserData result;
     CU_ASSERT(!HashTable_InsertOrGet(hashTable, (UserData)key, (UserData)value, &result));
@@ -138,7 +138,7 @@ void Test_HashTable_Iterate(void)
 {
     HashTable*  hashTable;
 
-    hashTable = HashTable_Create(HashIdentity, CompareIdentity, 10);
+    hashTable = HashTable_Create(HashIdentity, CompareIdentity, 0, 10);
 
     CU_ASSERT(HashTable_Insert(hashTable, 0, 0));
     CU_ASSERT(HashTable_Insert(hashTable, 1, 2));

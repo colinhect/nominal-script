@@ -41,10 +41,13 @@ typedef uint64_t Hash;
 ///
 /// \param key
 ///     The key to hash.
+/// \param context
+///     The context.
 ///
 /// \returns The hash value.
 typedef Hash (*HashFunction)(
-    UserData    key
+    UserData    key,
+    UserData    context
     );
 
 ///
@@ -54,11 +57,14 @@ typedef Hash (*HashFunction)(
 ///     The left operand.
 /// \param right
 ///     The right operand.
+/// \param context
+///     The context.
 ///
 /// \returns True if the values are equal; false otherwise.
 typedef bool (*CompareFunction)(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     );
 
 ///
@@ -84,6 +90,8 @@ typedef struct _HashTableIterator
 ///     The hash function to use.
 /// \param compare
 ///     The compare function to use.
+/// \param context
+///     The context to pass to hash/compare function calls.
 /// \param bucketCount
 ///     The number of buckets to use.
 ///
@@ -91,6 +99,7 @@ typedef struct _HashTableIterator
 HashTable* HashTable_Create(
     HashFunction    hash,
     CompareFunction compare,
+    UserData        context,
     size_t          bucketCount
     );
 
@@ -224,10 +233,13 @@ bool HashTable_InsertOrGet(
 ///
 /// \param key
 ///     The string to hash (casted to const char*).
+/// \param context
+///     The context.
 ///
 /// \returns The hash value.
 Hash HashString(
-    UserData    key
+    UserData    key,
+    UserData    context
     );
 
 ///
@@ -237,11 +249,14 @@ Hash HashString(
 ///     The left string (casted to const char*).
 /// \param right
 ///     The right string (casted to const char*).
+/// \param context
+///     The context.
 ///
 /// \returns True if the strings are equal; false otherwise.
 bool CompareString(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     );
 
 ///
@@ -249,10 +264,13 @@ bool CompareString(
 ///
 /// \param key
 ///     The key to hash.
+/// \param context
+///     The context.
 /// 
 /// \returns The hash value.
 Hash HashIdentity(
-    UserData    key
+    UserData    key,
+    UserData    context
     );
 
 ///
@@ -262,11 +280,14 @@ Hash HashIdentity(
 ///     The left key.
 /// \param right
 ///     The right key.
+/// \param context
+///     The context.
 ///
 /// \returns True if the keys are equal; false otherwise.
 bool CompareIdentity(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     );
 
 #endif

@@ -54,6 +54,8 @@ NomValue NomValue_Nil(
 ///
 /// \brief Returns whether a Nominal value is equal to another.
 ///
+/// \param state
+///     The Nominal state.
 /// \param value
 ///     The value to compare.
 /// \param other
@@ -61,6 +63,7 @@ NomValue NomValue_Nil(
 ///
 /// \returns True if they are equal; false otherwise.
 bool NomValue_Equals(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     );
@@ -68,11 +71,14 @@ bool NomValue_Equals(
 ///
 /// \brief Returns the hash of a Nominal value.
 ///
+/// \param state
+///     The Nominal state.
 /// \param value
 ///     The value to hash.
 ///
 /// \returns The hash of the value.
 long long NomValue_Hash(
+    NomState*   state,
     NomValue    value
     );
 

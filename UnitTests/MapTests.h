@@ -46,7 +46,7 @@ void Test_Map_InsertAndGet(void)
     CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 10)));
 
     NomValue result = NomMap_Get(map, NomInteger_FromInt(state, 5));
-    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 10)));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 10)));
 
     NomState_Free(state);
 }
@@ -60,7 +60,7 @@ void Test_Map_SetExisting(void)
     CU_ASSERT(NomMap_Set(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 25)));
 
     NomValue result = NomMap_Get(map, NomInteger_FromInt(state, 5));
-    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 25)));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 25)));
 
     NomState_Free(state);
 }
@@ -74,7 +74,7 @@ void Test_Map_TryGet(void)
 
     NomValue result;
     CU_ASSERT(NomMap_TryGet(map, NomInteger_FromInt(state, 5), &result));
-    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 10)));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 10)));
 
     NomState_Free(state);
 }
@@ -112,13 +112,13 @@ void Test_Map_StringKeys(void)
 
     NomValue result;
     result = NomMap_Get(map, a);
-    CU_ASSERT(NomValue_Equals(result, b));
+    CU_ASSERT(NomValue_Equals(state, result, b));
     result = NomMap_Get(map, b);
-    CU_ASSERT(NomValue_Equals(result, c));
+    CU_ASSERT(NomValue_Equals(state, result, c));
     result = NomMap_Get(map, c);
-    CU_ASSERT(NomValue_Equals(result, d));
+    CU_ASSERT(NomValue_Equals(state, result, d));
     result = NomMap_Get(map, e);
-    CU_ASSERT(NomValue_Equals(result, a));
+    CU_ASSERT(NomValue_Equals(state, result, a));
 
     NomState_Free(state);
 }
@@ -143,13 +143,13 @@ void Test_Map_PooledStringKeys(void)
 
     NomValue result;
     result = NomMap_Get(map, a);
-    CU_ASSERT(NomValue_Equals(result, b));
+    CU_ASSERT(NomValue_Equals(state, result, b));
     result = NomMap_Get(map, b);
-    CU_ASSERT(NomValue_Equals(result, c));
+    CU_ASSERT(NomValue_Equals(state, result, c));
     result = NomMap_Get(map, c);
-    CU_ASSERT(NomValue_Equals(result, d));
+    CU_ASSERT(NomValue_Equals(state, result, d));
     result = NomMap_Get(map, e);
-    CU_ASSERT(NomValue_Equals(result, a));
+    CU_ASSERT(NomValue_Equals(state, result, a));
 
     NomState_Free(state);
 }
@@ -169,7 +169,7 @@ void Test_Map_MixedStringKeys(void)
 
     NomValue result;
     result = NomMap_Get(map, a2);
-    CU_ASSERT(NomValue_Equals(result, b));
+    CU_ASSERT(NomValue_Equals(state, result, b));
 
     NomState_Free(state);
 }
@@ -187,17 +187,17 @@ void Test_Map_Iterate(void)
 
     NomMapIterator iterator = { 0 };
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(iterator.key, NomInteger_FromInt(state, 0)));
-    CU_ASSERT(NomValue_Equals(iterator.value, NomInteger_FromInt(state, 0)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 0)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 0)));
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(iterator.key, NomInteger_FromInt(state, 1)));
-    CU_ASSERT(NomValue_Equals(iterator.value, NomInteger_FromInt(state, 2)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 1)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 2)));
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(iterator.key, NomInteger_FromInt(state, 2)));
-    CU_ASSERT(NomValue_Equals(iterator.value, NomInteger_FromInt(state, 4)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 2)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 4)));
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(iterator.key, NomInteger_FromInt(state, 3)));
-    CU_ASSERT(NomValue_Equals(iterator.value, NomInteger_FromInt(state, 6)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 3)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 6)));
     CU_ASSERT(!NomMap_MoveNext(map, &iterator));
 
     NomState_Free(state);

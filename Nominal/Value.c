@@ -93,10 +93,13 @@ NomValue NomValue_Nil(
 }
 
 bool NomValue_Equals(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
+    state;
+
     if (NomNumber_Check(value))
     {
         if (NomReal_Check(value) || NomReal_Check(other))
@@ -117,6 +120,7 @@ bool NomValue_Equals(
 }
 
 long long NomValue_Hash(
+    NomState*   state,
     NomValue    value
     )
 {
@@ -124,7 +128,7 @@ long long NomValue_Hash(
     switch (GET_TYPE(value))
     {
     case TYPE_STRING:
-        hash = HashString((UserData)NomString_AsString(value));
+        hash = HashString((UserData)NomString_AsString(value), (UserData)state);
         break;
     case TYPE_POOLED_STRING:
         {

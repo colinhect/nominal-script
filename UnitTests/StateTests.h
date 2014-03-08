@@ -33,7 +33,7 @@
         CU_ASSERT(state != NULL);\
         NomValue value = NomState_Execute(state, expr);\
         CU_ASSERT(!NomState_ErrorOccurred(state));\
-        CU_ASSERT(NomValue_Equals(value, expected));\
+        CU_ASSERT(NomValue_Equals(state, value, expected));\
     }
 
 #define TEST_EXPR_ERROR(expr)\
@@ -96,7 +96,7 @@ void Test_State_MapWithImplicitKeys(void)
     for (int i = 0; i < 4; ++i)
     {
         result = NomMap_Get(map, NomInteger_FromInt(state, i));
-        CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, i)));
+        CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, i)));
     }
 
     NomState_Free(state);
@@ -112,11 +112,11 @@ void Test_State_MapWithExplicitKeys(void)
 
     NomValue result;
     result = NomMap_Get(map, NomString_FromString(state, "zero", false));
-    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 0)));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 0)));
     result = NomMap_Get(map, NomString_FromString(state, "one", false));
-    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 1)));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 1)));
     result = NomMap_Get(map, NomString_FromString(state, "two", false));
-    CU_ASSERT(NomValue_Equals(result, NomInteger_FromInt(state, 2)));
+    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 2)));
 
     NomState_Free(state);
 }

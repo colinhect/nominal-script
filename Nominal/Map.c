@@ -39,18 +39,20 @@ typedef struct _MapData
 } MapData;
 
 Hash HashValue(
-    UserData    key
+    UserData    key,
+    UserData    context
     )
 {
     NomValue value;
     value.data = key;
 
-    return NomValue_Hash(value);
+    return NomValue_Hash((NomState*)context, value);
 }
 
 bool CompareValue(
     UserData    left,
-    UserData    right
+    UserData    right,
+    UserData    context
     )
 {
     NomValue leftValue;
@@ -59,7 +61,7 @@ bool CompareValue(
     NomValue rightValue;
     rightValue.data = right;
 
-    return NomValue_Equals(leftValue, rightValue);
+    return NomValue_Equals((NomState*)context, leftValue, rightValue);
 }
 
 bool NomMap_Check(
@@ -79,7 +81,7 @@ NomValue NomMap_Create(
     ObjectId id = Heap_Alloc(state->heap, sizeof(MapData), free);
     MapData* data = Heap_GetData(state->heap, id);
     data->state = state;
-    data->hashTable = HashTable_Create(HashValue, CompareValue, 32);
+    data->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
 
     SET_ID_BITS(map, id);
     return map;
