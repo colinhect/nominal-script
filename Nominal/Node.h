@@ -63,8 +63,7 @@ extern const char* const OP_STR[];
 typedef enum
 {
     NODE_NIL,
-    NODE_INTEGER,
-    NODE_REAL,
+    NODE_NUMBER,
     NODE_STRING,
     NODE_MAP,
     NODE_IDENT,
@@ -81,19 +80,12 @@ typedef struct _Node
     NodeType type;
     union
     {
-        // NODE_INTEGER
-        // An integer number literal
-        struct
-        {
-            long long value;
-        } integer;
-
-        // NODE_REAL
-        // A real number literal
+        // NODE_NUMBER
+        // An number literal
         struct
         {
             double value;
-        } real;
+        } number;
 
         // NODE_STRING
         // A string literal

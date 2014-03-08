@@ -43,10 +43,10 @@ void Test_Map_InsertAndGet(void)
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 10)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 5), NomNumber_FromInt(state, 10)));
 
-    NomValue result = NomMap_Get(map, NomInteger_FromInt(state, 5));
-    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 10)));
+    NomValue result = NomMap_Get(map, NomNumber_FromInt(state, 5));
+    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(state, 10)));
 
     NomState_Free(state);
 }
@@ -56,11 +56,11 @@ void Test_Map_SetExisting(void)
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 10)));
-    CU_ASSERT(NomMap_Set(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 25)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 5), NomNumber_FromInt(state, 10)));
+    CU_ASSERT(NomMap_Set(map, NomNumber_FromInt(state, 5), NomNumber_FromInt(state, 25)));
 
-    NomValue result = NomMap_Get(map, NomInteger_FromInt(state, 5));
-    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 25)));
+    NomValue result = NomMap_Get(map, NomNumber_FromInt(state, 5));
+    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(state, 25)));
 
     NomState_Free(state);
 }
@@ -70,11 +70,11 @@ void Test_Map_TryGet(void)
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 10)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 5), NomNumber_FromInt(state, 10)));
 
     NomValue result;
-    CU_ASSERT(NomMap_TryGet(map, NomInteger_FromInt(state, 5), &result));
-    CU_ASSERT(NomValue_Equals(state, result, NomInteger_FromInt(state, 10)));
+    CU_ASSERT(NomMap_TryGet(map, NomNumber_FromInt(state, 5), &result));
+    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(state, 10)));
 
     NomState_Free(state);
 }
@@ -84,10 +84,10 @@ void Test_Map_TryGetNonExisting(void)
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 5), NomInteger_FromInt(state, 10)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 5), NomNumber_FromInt(state, 10)));
 
     NomValue result;
-    CU_ASSERT(!NomMap_TryGet(map, NomInteger_FromInt(state, 10), &result));
+    CU_ASSERT(!NomMap_TryGet(map, NomNumber_FromInt(state, 10), &result));
 
     NomState_Free(state);
 }
@@ -180,24 +180,24 @@ void Test_Map_Iterate(void)
 
     NomValue map = NomMap_Create(state);
 
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 0), NomInteger_FromInt(state, 0)));
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 1), NomInteger_FromInt(state, 2)));
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 2), NomInteger_FromInt(state, 4)));
-    CU_ASSERT(NomMap_Insert(map, NomInteger_FromInt(state, 3), NomInteger_FromInt(state, 6)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 0), NomNumber_FromInt(state, 0)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 1), NomNumber_FromInt(state, 2)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 2), NomNumber_FromInt(state, 4)));
+    CU_ASSERT(NomMap_Insert(map, NomNumber_FromInt(state, 3), NomNumber_FromInt(state, 6)));
 
     NomMapIterator iterator = { 0 };
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 0)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 0)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(state, 0)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(state, 0)));
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 1)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 2)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(state, 1)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(state, 2)));
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 2)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 4)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(state, 2)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(state, 4)));
     CU_ASSERT(NomMap_MoveNext(map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomInteger_FromInt(state, 3)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomInteger_FromInt(state, 6)));
+    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(state, 3)));
+    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(state, 6)));
     CU_ASSERT(!NomMap_MoveNext(map, &iterator));
 
     NomState_Free(state);

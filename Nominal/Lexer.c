@@ -274,7 +274,7 @@ bool Lexer_Next(
         return true;
     }
 
-    // Integer or float
+    // Number
     if (isdigit(c))
     {
         while (isdigit(PeekNext(lexer)))
@@ -293,14 +293,9 @@ bool Lexer_Next(
                 ReadNext(lexer);
                 ++lexer->state.length;
             }
-
-            lexer->state.type = TOK_REAL;
-        }
-        else
-        {
-            lexer->state.type = TOK_INTEGER;
         }
 
+        lexer->state.type = TOK_NUMBER;
         return true;
     }
 
@@ -388,14 +383,7 @@ const char* Lexer_GetTokenString(
     return &lexer->source[lexer->state.startIndex];
 }
 
-int64_t Lexer_GetTokenAsInteger(
-    Lexer*  lexer
-    )
-{
-    return atoll(Lexer_GetTokenString(lexer));
-}
-
-double Lexer_GetTokenAsReal(
+double Lexer_GetTokenAsNumber(
     Lexer*  lexer
     )
 {

@@ -12,16 +12,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Nominal\Integer.h">
-      <Filter>Include\Nominal</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Nominal\Map.h">
       <Filter>Include\Nominal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Nominal\Number.h">
-      <Filter>Include\Nominal</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Nominal\Real.h">
       <Filter>Include\Nominal</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Nominal\State.h">
@@ -77,9 +71,6 @@
     <ClCompile Include="..\..\..\Nominal\Heap.c">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Nominal\Integer.c">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Nominal\Lexer.c">
       <Filter>Source</Filter>
     </ClCompile>
@@ -93,9 +84,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Nominal\Parser.c">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Nominal\Real.c">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Nominal\State.c">

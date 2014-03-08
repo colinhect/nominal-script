@@ -21,40 +21,22 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Nominal/Real.h"
-#include "Nominal/Number.h"
-#include "Nominal/Integer.h"
+#ifndef NUMBERTESTS_H
+#define NUMBERTESTS_H
 
-#include "Value.h"
-#include "State.h"
+#include "Basic.h"
 
-bool NomReal_Check(
-    NomValue    value
-    )
+#include <Nominal.h>
+
+void Test_Number_ToAndFromDouble(void)
 {
-    return GET_TYPE(value) == TYPE_REAL;
+    NomState* state = NomState_Create();
+
+    NomValue value = NomNumber_FromDouble(state, 1.234);
+    double doubleValue = NomNumber_AsDouble(value);
+    CU_ASSERT_DOUBLE_EQUAL(doubleValue, 1.234, 0.0001);
+
+    NomState_Free(state);
 }
 
-NomValue NomReal_FromFloat(
-    NomState*   state,
-    float       value
-    )
-{
-    NomValue real;
-    INIT_VALUE(real, TYPE_REAL, state);
-    SET_REAL_BITS(real, *(uint32_t*)&value);
-    return real;
-}
-
-NomValue NomReal_FromDouble(
-    NomState*   state,
-    double      value
-    )
-{
-    float floatValue = (float)value;
-
-    NomValue real;
-    INIT_VALUE(real, TYPE_REAL, state);
-    SET_REAL_BITS(real, *(uint32_t*)&floatValue);
-    return real;
-}
+#endif

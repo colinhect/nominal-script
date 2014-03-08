@@ -160,7 +160,7 @@
     <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\Util.h" />
     <ClInclude Include="..\..\..\UnitTests\HashTableTests.h" />
     <ClInclude Include="..\..\..\UnitTests\MapTests.h" />
-    <ClInclude Include="..\..\..\UnitTests\RealTests.h" />
+    <ClInclude Include="..\..\..\UnitTests\NumberTests.h" />
     <ClInclude Include="..\..\..\UnitTests\StateTests.h" />
   </ItemGroup>
   <ItemGroup>

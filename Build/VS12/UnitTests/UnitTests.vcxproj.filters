@@ -15,9 +15,6 @@
     <ClInclude Include="..\..\..\UnitTests\MapTests.h">
       <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\UnitTests\RealTests.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\UnitTests\StateTests.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -53,6 +50,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\Util.h">
       <Filter>Source\CUnit</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\UnitTests\NumberTests.h">
+      <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

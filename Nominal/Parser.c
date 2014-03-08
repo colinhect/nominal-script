@@ -200,20 +200,13 @@ Node* Parser_SecondaryExpr(
             break;
         }
 
-    // Integer literal
-    case TOK_INTEGER:
-        node = Node_Create(NODE_INTEGER);
-        node->data.integer.value = Lexer_GetTokenAsInteger(parser->lexer);
+    // Number literal
+    case TOK_NUMBER:
+        node = Node_Create(NODE_NUMBER);
+        node->data.number.value = Lexer_GetTokenAsNumber(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
-
-    // Real literal
-    case TOK_REAL:
-        node = Node_Create(NODE_REAL);
-        node->data.real.value = Lexer_GetTokenAsReal(parser->lexer);
-        Lexer_Next(parser->lexer);
-        break;
-
+        
     // String literal or identifier
     case TOK_STRING:
     case TOK_IDENT:
@@ -476,8 +469,8 @@ Node* Parser_Map(
         // Infer the key if it is not a association operation
         if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
         {
-            Node* key = Node_Create(NODE_INTEGER);
-            key->data.integer.value = i;
+            Node* key = Node_Create(NODE_NUMBER);
+            key->data.number.value = (double)i;
 
             // Create an association operation
             Node* assoc = Node_Create(NODE_BINARY);

@@ -23,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Map.h"
 #include "Nominal/String.h"
-#include "Nominal/Real.h"
+#include "Nominal/Number.h"
 
 #include "Value.h"
 #include "State.h"

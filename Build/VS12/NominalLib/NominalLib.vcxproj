@@ -143,10 +143,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Nominal.h" />
-    <ClInclude Include="..\..\..\Include\Nominal\Integer.h" />
     <ClInclude Include="..\..\..\Include\Nominal\Map.h" />
     <ClInclude Include="..\..\..\Include\Nominal\Number.h" />
-    <ClInclude Include="..\..\..\Include\Nominal\Real.h" />
     <ClInclude Include="..\..\..\Include\Nominal\State.h" />
     <ClInclude Include="..\..\..\Include\Nominal\String.h" />
     <ClInclude Include="..\..\..\Include\Nominal\Value.h" />
@@ -165,13 +163,11 @@
     <ClCompile Include="..\..\..\Nominal\CodeGen.c" />
     <ClCompile Include="..\..\..\Nominal\HashTable.c" />
     <ClCompile Include="..\..\..\Nominal\Heap.c" />
-    <ClCompile Include="..\..\..\Nominal\Integer.c" />
     <ClCompile Include="..\..\..\Nominal\Lexer.c" />
     <ClCompile Include="..\..\..\Nominal\Map.c" />
     <ClCompile Include="..\..\..\Nominal\Node.c" />
     <ClCompile Include="..\..\..\Nominal\Number.c" />
     <ClCompile Include="..\..\..\Nominal\Parser.c" />
-    <ClCompile Include="..\..\..\Nominal\Real.c" />
     <ClCompile Include="..\..\..\Nominal\State.c" />
     <ClCompile Include="..\..\..\Nominal\String.c" />
     <ClCompile Include="..\..\..\Nominal\StringPool.c" />

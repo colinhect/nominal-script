@@ -48,8 +48,7 @@ typedef enum
     TOK_IDENT,
 
     TOK_STRING,
-    TOK_INTEGER,
-    TOK_REAL,
+    TOK_NUMBER,
 
     TOK_EOI
 } TokenType;
@@ -179,20 +178,11 @@ const char* Lexer_GetTokenString(
     );
 
 ///
-/// \brief Returns the value of the token as an integer.
+/// \brief Returns the value of the token as a number.
 ///
 /// \param lexer
 ///     The lexer.
-int64_t Lexer_GetTokenAsInteger(
-    Lexer*  lexer
-    );
-
-///
-/// \brief Returns the value of the token as an real.
-///
-/// \param lexer
-///     The lexer.
-double Lexer_GetTokenAsReal(
+double Lexer_GetTokenAsNumber(
     Lexer*  lexer
     );
 

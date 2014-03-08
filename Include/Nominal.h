@@ -27,8 +27,6 @@
 #include "Nominal/State.h"
 #include "Nominal/Value.h"
 #include "Nominal/Number.h"
-#include "Nominal/Integer.h"
-#include "Nominal/Real.h"
 #include "Nominal/Map.h"
 #include "Nominal/String.h"
 

@@ -27,7 +27,7 @@
 #include "Nominal/Value.h"
 
 ///
-/// \brief Checks if a Nominal value is a number (integer or real).
+/// \brief Checks if a Nominal value is a number.
 ///
 /// \param value
 ///     The value in question.
@@ -38,7 +38,63 @@ bool NomNumber_Check(
     );
 
 ///
-/// \brief Returns the Nominal number coerced to an int.
+/// \brief Creates a Nominal number value from an int.
+///
+/// \param state
+///     The Nominal state to create the value for.
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromInt(
+    NomState*   state,
+    int         value
+    );
+
+///
+/// \brief Creates a Nominal number value from an unsigned long long.
+///
+/// \param state
+///     The Nominal state to create the value for.
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromUnsignedLongLong(
+    NomState*           state,
+    unsigned long long  value
+    );
+
+///
+/// \brief Creates a Nominal number value from a float.
+///
+/// \param state
+///     The Nominal state to create the value for.
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromFloat(
+    NomState*   state,
+    float       value
+    );
+
+///
+/// \brief Creates a Nominal number value from a double.
+///
+/// \param state
+///     The Nominal state to create the value for.
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromDouble(
+    NomState*   state,
+    double      value
+    );
+
+///
+/// \brief Returns the Nominal number as an int.
 ///
 /// \param value
 ///     The number value to coerce.
@@ -49,10 +105,10 @@ int NomNumber_AsInt(
     );
 
 ///
-/// \brief Returns the Nominal number coerced to a float.
+/// \brief Returns the Nominal number as a float.
 ///
 /// \param value
-///     The number value to coerce.
+///     The number value.
 ///
 /// \returns The resulting value (NaN if the value is not a number).
 float NomNumber_AsFloat(
@@ -60,10 +116,10 @@ float NomNumber_AsFloat(
     );
 
 ///
-/// \brief Returns the Nominal number coerced to a double.
+/// \brief Returns the Nominal number as a double.
 ///
 /// \param value
-///     The number value to coerce.
+///     The number value.
 ///
 /// \returns The resulting value (NaN if the value is not a number).
 double NomNumber_AsDouble(

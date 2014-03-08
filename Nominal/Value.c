@@ -24,8 +24,6 @@
 #include "Nominal/Value.h"
 #include "Nominal/String.h"
 #include "Nominal/Number.h"
-#include "Nominal/Integer.h"
-#include "Nominal/Real.h"
 #include "Nominal/Map.h"
 
 #include "Value.h"
@@ -102,10 +100,7 @@ bool NomValue_Equals(
 
     if (NomNumber_Check(value))
     {
-        if (NomReal_Check(value) || NomReal_Check(other))
-        {
-            return NomNumber_AsDouble(value) == NomNumber_AsDouble(other);
-        }
+        return NomNumber_AsDouble(value) == NomNumber_AsDouble(other);
     }
     else if (NomString_Check(value) && NomString_Check(other))
     {
@@ -153,10 +148,7 @@ size_t NomValue_AsString(
     
     switch (GET_TYPE(value))
     {
-    case TYPE_INTEGER:
-        count += snprintf(buffer, bufferSize, "%d", NomNumber_AsInt(value));
-        break;
-    case TYPE_REAL:
+    case TYPE_NUMBER:
         count += snprintf(buffer, bufferSize, "%f", NomNumber_AsDouble(value));
         break;
     case TYPE_STRING:
@@ -242,13 +234,9 @@ size_t NomValue_AsString(
     {\
         NomState_SetError(state, "Cannot %s non-numeric values", name);\
     }\
-    else if (NomReal_Check(l) || NomReal_Check(r))\
-    {\
-        result = NomReal_FromDouble(state, NomNumber_AsDouble(l) op NomNumber_AsDouble(r));\
-    }\
     else\
     {\
-        result = NomInteger_FromInt(state, NomNumber_AsInt(l) op NomNumber_AsInt(r)); \
+        result = NomNumber_FromDouble(state, NomNumber_AsDouble(l) op NomNumber_AsDouble(r));\
     }
 
 NomValue NomValue_Add(
@@ -307,13 +295,9 @@ NomValue NomValue_Negate(
     {
         NomState_SetError(state, "Cannot negate a non-numeric value");
     }
-    else if (NomReal_Check(value))
-    {
-        result = NomReal_FromDouble(state, -NomNumber_AsDouble(value));
-    }
     else
     {
-        result = NomInteger_FromInt(state, -NomNumber_AsInt(value));
+        result = NomNumber_FromDouble(state, -NomNumber_AsDouble(value));
     }
 
     return result;

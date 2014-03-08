@@ -31,8 +31,7 @@
 typedef enum
 {
     TYPE_NIL,
-    TYPE_INTEGER,
-    TYPE_REAL,
+    TYPE_NUMBER,
     TYPE_BOOLEAN,
     TYPE_STRING,
     TYPE_POOLED_STRING,
@@ -55,13 +54,9 @@ typedef enum
 #define SET_TYPE_BITS(value, bits)      SET_VALUE_BITS(61, 3, value, bits)
 #define GET_TYPE_BITS(value)            GET_VALUE_BITS(61, 3, value)
 
-// Get/set the bits corresponding to the value of an integer
-#define SET_INTEGER_BITS(value, bits)   SET_VALUE_BITS(0, 48, value, bits)
-#define GET_INTEGER_BITS(value)         ((int64_t)GET_VALUE_BITS(0, 48, value))
-
-// Get/set the bits corresponding to the value of an real
-#define SET_REAL_BITS(value, bits)      SET_VALUE_BITS(0, 32, value, bits)
-#define GET_REAL_BITS(value)            ((uint32_t)GET_VALUE_BITS(0, 32, value))
+// Get/set the bits corresponding to the value of a float
+#define SET_FLOAT_BITS(value, bits)     SET_VALUE_BITS(0, 32, value, bits)
+#define GET_FLOAT_BITS(value)           ((uint32_t)GET_VALUE_BITS(0, 32, value))
 
 // Get/set the bits corresponding to the value of an ID (such as object ID)
 #define SET_ID_BITS(value, bits)        SET_VALUE_BITS(0, 32, value, bits)

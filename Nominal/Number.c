@@ -22,10 +22,10 @@
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal/Value.h"
-#include "Nominal/Integer.h"
-#include "Nominal/Real.h"
+#include "Nominal/Number.h"
 
 #include "Value.h"
+#include "State.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -33,25 +33,56 @@
 
 bool NomNumber_Check(NomValue value)
 {
-    switch (GET_TYPE(value))
-    {
-    case TYPE_INTEGER:
-    case TYPE_REAL:
-        return true;
-    default:
-        return false;
-    }
+    return GET_TYPE(value) == TYPE_NUMBER;
+}
+
+NomValue NomNumber_FromInt(
+    NomState*   state,
+    int         value
+    )
+{
+    return NomNumber_FromDouble(state, (double)value);
+}
+
+NomValue NomNumber_FromUnsignedLongLong(
+    NomState*           state,
+    unsigned long long  value
+    )
+{
+    return NomNumber_FromDouble(state, (double)value);
+}
+
+NomValue NomNumber_FromFloat(
+    NomState*   state,
+    float       value
+    )
+{
+    NomValue number;
+    INIT_VALUE(number, TYPE_NUMBER, state);
+    SET_FLOAT_BITS(number, *(uint32_t*)&value);
+    return number;
+}
+
+NomValue NomNumber_FromDouble(
+    NomState*   state,
+    double      value
+    )
+{
+    float floatValue = (float)value;
+
+    NomValue number;
+    INIT_VALUE(number, TYPE_NUMBER, state);
+    SET_FLOAT_BITS(number, *(uint32_t*)&floatValue);
+    return number;
 }
 
 int NomNumber_AsInt(NomValue value)
 {
     switch (GET_TYPE(value))
     {
-    case TYPE_INTEGER:
-        return GET_INTEGER_BITS(value);
-    case TYPE_REAL:
+    case TYPE_NUMBER:
         {
-            uint64_t v = GET_REAL_BITS(value);
+            uint64_t v = GET_FLOAT_BITS(value);
             return (int)*((float*)&v);
         }
     default:
@@ -63,11 +94,9 @@ float NomNumber_AsFloat(NomValue value)
 {
     switch (GET_TYPE(value))
     {
-    case TYPE_INTEGER:
-        return (float)GET_INTEGER_BITS(value);
-    case TYPE_REAL:
+    case TYPE_NUMBER:
         {
-            uint64_t v = GET_REAL_BITS(value);
+            uint64_t v = GET_FLOAT_BITS(value);
             return *((float*)&v);
         }
     default:
@@ -79,11 +108,9 @@ double NomNumber_AsDouble(NomValue value)
 {
     switch (GET_TYPE(value))
     {
-    case TYPE_INTEGER:
-        return (double)GET_INTEGER_BITS(value);
-    case TYPE_REAL:
+    case TYPE_NUMBER:
         {
-            uint64_t v = GET_REAL_BITS(value);
+            uint64_t v = GET_FLOAT_BITS(value);
             return (double)*((float*)&v);
         }
     default:

@@ -25,7 +25,7 @@
 
 #include "HashTableTests.h"
 #include "MapTests.h"
-#include "RealTests.h"
+#include "NumberTests.h"
 #include "StateTests.h"
 
 #define BEGIN_TEST_SUITE(name)  suite = CU_add_suite("HashTable", NULL, NULL)
@@ -64,14 +64,13 @@ int main()
     ADD_TEST(Test_Map_MixedStringKeys);
     ADD_TEST(Test_Map_Iterate);
 
-    // Real test suite
-    BEGIN_TEST_SUITE("Real");
-    ADD_TEST(Test_Real_ToAndFromDouble);
+    // Number test suite
+    BEGIN_TEST_SUITE("Number");
+    ADD_TEST(Test_Number_ToAndFromDouble);
 
     // State test suite
     BEGIN_TEST_SUITE("State");
-    ADD_TEST(Test_State_IntegerArithmetic);
-    ADD_TEST(Test_State_RealArithmetic);
+    ADD_TEST(Test_State_Arithmetic);
     ADD_TEST(Test_State_GlobalVariables);
     ADD_TEST(Test_State_MapWithImplicitKeys);
     ADD_TEST(Test_State_MapWithExplicitKeys);
