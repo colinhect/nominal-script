@@ -44,7 +44,7 @@ int main()
             NomValue result = NomState_Execute(state, line);
             if (!NomState_ErrorOccurred(state))
             {
-                NomValue_AsString(resultString, 8192, result);
+                NomValue_AsString(state, resultString, 8192, result);
                 printf("%s\n", resultString);
             }
             else

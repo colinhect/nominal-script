@@ -66,6 +66,8 @@ int main()
 
     // Number test suite
     BEGIN_TEST_SUITE("Number");
+    ADD_TEST(Test_Number_CheckPositive);
+    ADD_TEST(Test_Number_CheckNegative);
     ADD_TEST(Test_Number_ToAndFromDouble);
 
     // State test suite

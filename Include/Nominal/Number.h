@@ -26,8 +26,10 @@
 
 #include "Nominal/Value.h"
 
+#include <limits.h>
+
 ///
-/// \brief Checks if a Nominal value is a number.
+/// \brief Checks if a value is a number.
 ///
 /// \param value
 ///     The value in question.
@@ -40,56 +42,99 @@ bool NomNumber_Check(
 ///
 /// \brief Creates a Nominal number value from an int.
 ///
-/// \param state
-///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal value.
 NomValue NomNumber_FromInt(
-    NomState*   state,
-    int         value
+    int             value
+    );
+
+///
+/// \brief Creates a Nominal number value from an unsigned int.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromUnsignedInt(
+    unsigned int    value
+    );
+
+///
+/// \brief Creates a Nominal number value from an long.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromLong(
+    long            value
+    );
+
+///
+/// \brief Creates a Nominal number value from an unsigned long.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromUnsignedLong(
+    unsigned long   value
+    );
+
+///
+/// \brief Creates a Nominal number value from a long long.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromLongLong(
+    long long           value
     );
 
 ///
 /// \brief Creates a Nominal number value from an unsigned long long.
 ///
-/// \param state
-///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal value.
 NomValue NomNumber_FromUnsignedLongLong(
-    NomState*           state,
     unsigned long long  value
+    );
+
+///
+/// \brief Creates a Nominal number value from a size.
+///
+/// \param value
+///     The value.
+///
+/// \returns The Nominal value.
+NomValue NomNumber_FromSize(
+    size_t  value
     );
 
 ///
 /// \brief Creates a Nominal number value from a float.
 ///
-/// \param state
-///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal value.
 NomValue NomNumber_FromFloat(
-    NomState*   state,
     float       value
     );
 
 ///
 /// \brief Creates a Nominal number value from a double.
 ///
-/// \param state
-///     The Nominal state to create the value for.
 /// \param value
 ///     The value.
 ///
 /// \returns The Nominal value.
 NomValue NomNumber_FromDouble(
-    NomState*   state,
     double      value
     );
 
@@ -97,10 +142,76 @@ NomValue NomNumber_FromDouble(
 /// \brief Returns the Nominal number as an int.
 ///
 /// \param value
-///     The number value to coerce.
+///     The number value.
 ///
-/// \returns The resulting value (-1 if the value is not a number).
+/// \returns The resulting value (INT_MAX if the value is not a number).
 int NomNumber_AsInt(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number as an unsigned int.
+///
+/// \param value
+///     The number value.
+///
+/// \returns The resulting value (UINT_MAX if the value is not a number).
+unsigned int NomNumber_AsUnsignedInt(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number as a long.
+///
+/// \param value
+///     The number value.
+///
+/// \returns The resulting value (LONG_MAX if the value is not a number).
+long NomNumber_AsLong(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number as an unsigned long.
+///
+/// \param value
+///     The number value.
+///
+/// \returns The resulting value (ULONG_MAX if the value is not a number).
+unsigned long NomNumber_AsUnsignedLong(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number as a long long.
+///
+/// \param value
+///     The number value.
+///
+/// \returns The resulting value (LLONG_MAX if the value is not a number).
+long long NomNumber_AsLongLong(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number as an unsigned long long.
+///
+/// \param value
+///     The number value.
+///
+/// \returns The resulting value (ULLONG_MAX if the value is not a number).
+unsigned long long NomNumber_AsUnsignedLongLong(
+    NomValue    value
+    );
+
+///
+/// \brief Returns the Nominal number as a size.
+///
+/// \param value
+///     The number value.
+///
+/// \returns The resulting value ((size_t)-1 if the value is not a number).
+size_t NomNumber_AsSize(
     NomValue    value
     );
 
@@ -110,7 +221,7 @@ int NomNumber_AsInt(
 /// \param value
 ///     The number value.
 ///
-/// \returns The resulting value (NaN if the value is not a number).
+/// \returns The resulting value (NAN if the value is not a number).
 float NomNumber_AsFloat(
     NomValue    value
     );
@@ -121,7 +232,7 @@ float NomNumber_AsFloat(
 /// \param value
 ///     The number value.
 ///
-/// \returns The resulting value (NaN if the value is not a number).
+/// \returns The resulting value (NAN if the value is not a number).
 double NomNumber_AsDouble(
     NomValue    value
     );

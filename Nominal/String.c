@@ -45,50 +45,49 @@ NomValue NomString_FromString(
     bool        pooled
     )
 {
-    NomValue string;
-    INIT_VALUE(string, TYPE_STRING, state);
+    NomValue string = NOM_NIL;
 
     if (pooled)
     {
         StringId id = StringPool_InsertOrFind(state->stringPool, value);
 
-        SET_TYPE_BITS(string, TYPE_POOLED_STRING);
-        SET_ID_BITS(string, id);
+        SET_TYPE(string, TYPE_POOLED_STRING);
+        SET_ID(string, id);
     }
     else
     {
         ObjectId id = Heap_Alloc(state->heap, strlen(value) + 1, free);
         strcpy((char*)Heap_GetData(state->heap, id), value);
-        SET_ID_BITS(string, id);
+
+        SET_TYPE(string, TYPE_STRING);
+        SET_ID(string, id);
     }
 
     return string;
 }
 
 const char* NomString_AsString(
+    NomState*   state,
     NomValue    value
     )
 {
-    NomState* state = NomValue_GetState(value);
-
     switch (GET_TYPE(value))
     {
     case TYPE_STRING:
-        return (const char*)Heap_GetData(state->heap, GET_ID_BITS(value));
+        return (const char*)Heap_GetData(state->heap, GET_ID(value));
     case TYPE_POOLED_STRING:
-        return StringPool_Find(state->stringPool, GET_ID_BITS(value));
+        return StringPool_Find(state->stringPool, GET_ID(value));
     }
 
     return NULL;
 }
 
 NomValue NomString_FromId(
-    NomState*   state,
     StringId    id
     )
 {
-    NomValue string;
-    INIT_VALUE(string, TYPE_POOLED_STRING, state);
-    SET_ID_BITS(string, id);
+    NomValue string = NOM_NIL;
+    SET_TYPE(string, TYPE_POOLED_STRING);
+    SET_ID(string, id);
     return string;
 }

@@ -34,7 +34,6 @@
 
 typedef struct _MapData
 {
-    NomState*   state;
     HashTable*  hashTable;
 } MapData;
 
@@ -44,7 +43,7 @@ Hash HashValue(
     )
 {
     NomValue value;
-    value.data = key;
+    value.raw = key;
 
     return NomValue_Hash((NomState*)context, value);
 }
@@ -56,10 +55,10 @@ bool CompareValue(
     )
 {
     NomValue leftValue;
-    leftValue.data = left;
+    leftValue.raw = left;
 
     NomValue rightValue;
-    rightValue.data = right;
+    rightValue.raw = right;
 
     return NomValue_Equals((NomState*)context, leftValue, rightValue);
 }
@@ -75,19 +74,19 @@ NomValue NomMap_Create(
     NomState*   state
     )
 {
-    NomValue map;
-    INIT_VALUE(map, TYPE_MAP, state);
+    NomValue map = NOM_NIL;
+    SET_TYPE(map, TYPE_MAP);
 
     ObjectId id = Heap_Alloc(state->heap, sizeof(MapData), free);
     MapData* data = Heap_GetData(state->heap, id);
-    data->state = state;
     data->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
 
-    SET_ID_BITS(map, id);
+    SET_ID(map, id);
     return map;
 }
 
 bool NomMap_MoveNext(
+    NomState*       state,
     NomValue        map,
     NomMapIterator* iterator
     )
@@ -97,15 +96,13 @@ bool NomMap_MoveNext(
         return false;
     }
 
-    NomState* state = NomValue_GetState(map);
-
-    ObjectId id = GET_ID_BITS(map);
+    ObjectId id = GET_ID(map);
     MapData* data = Heap_GetData(state->heap, id);
 
     // Initialize a hash table iterator at the same location as the map
     // iterator
     HashTableIterator hashTableIterator = { 0 };
-    if (iterator->map.data == 0)
+    if (iterator->map.raw == 0)
     {
         iterator->map = map;
     }
@@ -122,13 +119,14 @@ bool NomMap_MoveNext(
     // Sync the hash table iterator with the map iterator
     iterator->index = hashTableIterator.index;
     iterator->bucketNode = hashTableIterator.bucketNode;
-    iterator->key.data = hashTableIterator.key;
-    iterator->value.data = hashTableIterator.value;
+    iterator->key.raw = hashTableIterator.key;
+    iterator->value.raw = hashTableIterator.value;
 
     return result;
 }
 
 bool NomMap_Insert(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -139,14 +137,13 @@ bool NomMap_Insert(
         return false;
     }
 
-    NomState* state = NomValue_GetState(map);
-
-    ObjectId id = GET_ID_BITS(map);
+    ObjectId id = GET_ID(map);
     MapData* data = Heap_GetData(state->heap, id);
-    return HashTable_Insert(data->hashTable, (UserData)key.data, (UserData)value.data);
+    return HashTable_Insert(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
 bool NomMap_Set(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -157,14 +154,13 @@ bool NomMap_Set(
         return false;
     }
 
-    NomState* state = NomValue_GetState(map);
-
-    ObjectId id = GET_ID_BITS(map);
+    ObjectId id = GET_ID(map);
     MapData* data = Heap_GetData(state->heap, id);
-    return HashTable_Set(data->hashTable, (UserData)key.data, (UserData)value.data);
+    return HashTable_Set(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
 bool NomMap_InsertOrSet(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -175,24 +171,24 @@ bool NomMap_InsertOrSet(
         return false;
     }
 
-    NomState* state = NomValue_GetState(map);
-
-    ObjectId id = GET_ID_BITS(map);
+    ObjectId id = GET_ID(map);
     MapData* data = Heap_GetData(state->heap, id);
-    return HashTable_InsertOrSet(data->hashTable, (UserData)key.data, (UserData)value.data);
+    return HashTable_InsertOrSet(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
 NomValue NomMap_Get(
+    NomState*   state,
     NomValue    map,
     NomValue    key
     )
 {
     NomValue value = { 0 };
-    NomMap_TryGet(map, key, &value);
+    NomMap_TryGet(state, map, key, &value);
     return value;
 }
 
 bool NomMap_TryGet(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue*   value
@@ -203,9 +199,7 @@ bool NomMap_TryGet(
         return false;
     }
 
-    NomState* state = NomValue_GetState(map);
-
-    ObjectId id = GET_ID_BITS(map);
+    ObjectId id = GET_ID(map);
     MapData* data = Heap_GetData(state->heap, id);
-    return HashTable_Get(data->hashTable, (UserData)key.data, (UserData*)&value->data);
+    return HashTable_Get(data->hashTable, (UserData)key.raw, (UserData*)&value->data);
 }

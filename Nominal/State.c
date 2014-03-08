@@ -37,22 +37,12 @@
 
 #define STRING_POOL_STRING_COUNT    (256)
 
-NomState* states[STATE_MAX_INSTANCES] = { 0 };
-
 NomState* NomState_Create(
     void
     )
 {
     NomState* state = (NomState*)malloc(sizeof(NomState));
     assert(state);
-
-    // Find the next available ID
-    state->id = 0;
-    while (states[state->id])
-    {
-        ++state->id;
-    }
-    states[state->id] = state;
 
     state->sp = 0;
     state->ip = 0;
@@ -71,7 +61,6 @@ void NomState_Free(
 {
     StringPool_Free(state->stringPool);
     Heap_Free(state->heap);
-    states[state->id] = NULL;
     free(state);
 }
 
@@ -88,10 +77,10 @@ void NomState_SetError(
     state->errorFlag = true;
 }
 
-#define TOP()           state->stack[state->sp - 1]
-#define POP()           state->stack[--state->sp]
-#define PUSH(v)         state->stack[state->sp++] = v
-#define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
+#define TOP()       state->stack[state->sp - 1]
+#define POP()       state->stack[--state->sp]
+#define PUSH(v)     state->stack[state->sp++] = v
+#define READAS(t)   *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
 NomValue NomState_Execute(
     NomState*   state,
@@ -100,15 +89,13 @@ NomValue NomState_Execute(
 {
     state->errorFlag = false;
 
-    NomValue nil = NomValue_Nil(state);
-
     Parser* p = Parser_Create(source, state->stringPool);
     Node* node = Parser_Exprs(p);
 
     if (!node)
     {
         NomState_SetError(state, Parser_GetError(p));
-        return nil;
+        return NOM_NIL;
     }
 
     size_t end = GenerateCode(state, node, state->byteCode, state->ip);
@@ -121,8 +108,8 @@ NomValue NomState_Execute(
         StringId id;
         NomValue l;
         NomValue r;
-        NomValue result = nil;
-        NomValue string = nil;
+        NomValue result = NOM_NIL;
+        NomValue string = NOM_NIL;
 
         OpCode op = (OpCode)state->byteCode[state->ip++];
 
@@ -137,8 +124,8 @@ NomValue NomState_Execute(
             break;
         case OPCODE_GET:
             id = READAS(StringId);
-            string = NomString_FromId(state, id);
-            if (!NomMap_TryGet(scope, string, &result))
+            string = NomString_FromId(id);
+            if (!NomMap_TryGet(state, scope, string, &result))
             {
                 NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
             }
@@ -146,16 +133,16 @@ NomValue NomState_Execute(
             break;
         case OPCODE_SET:
             id = READAS(StringId);
-            string = NomString_FromId(state, id);
-            if (!NomMap_Set(scope, string, TOP()))
+            string = NomString_FromId(id);
+            if (!NomMap_Set(state, scope, string, TOP()))
             {
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
             break;
         case OPCODE_LET:
             id = READAS(StringId);
-            string = NomString_FromId(state, id);
-            if (!NomMap_Insert(scope, string, TOP()))
+            string = NomString_FromId(id);
+            if (!NomMap_Insert(state, scope, string, TOP()))
             {
                 NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
             }
@@ -164,13 +151,13 @@ NomValue NomState_Execute(
             {
                 NomValue map = NomMap_Create(state);
 
-                int itemCount = NomNumber_AsInt(POP());
-                for (int i = 0; i < itemCount; ++i)
+                size_t itemCount = NomNumber_AsSize(POP());
+                for (size_t i = 0; i < itemCount; ++i)
                 {
                     NomValue key = POP();
                     NomValue value = POP();
 
-                    NomMap_InsertOrSet(map, key, value);
+                    NomMap_InsertOrSet(state, map, key, value);
                 }
 
                 PUSH(map);
@@ -178,66 +165,66 @@ NomValue NomState_Execute(
         case OPCODE_ADD:
             l = POP();
             r = POP();
-            result = NomValue_Add(l, r);
+            result = NomValue_Add(state, l, r);
             PUSH(result);
             break;
         case OPCODE_SUB:
             l = POP();
             r = POP();
-            result = NomValue_Subtract(l, r);
+            result = NomValue_Subtract(state, l, r);
             PUSH(result);
             break;
         case OPCODE_MUL:
             l = POP();
             r = POP();
-            result = NomValue_Multiply(l, r);
+            result = NomValue_Multiply(state, l, r);
             PUSH(result);
             break;
         case OPCODE_DIV:
             l = POP();
             r = POP();
-            result = NomValue_Divide(l, r);
+            result = NomValue_Divide(state, l, r);
             PUSH(result);
             break;
         case OPCODE_NEG:
             l = POP();
-            result = NomValue_Negate(l);
+            result = NomValue_Negate(state, l);
             PUSH(result);
             break;
         case OPCODE_VALUE_LET:
             l = POP();
             r = POP();
-            if (!NomValue_Insert(r, l, TOP()))
+            if (!NomValue_Insert(state, r, l, TOP()))
             {
-                NomState_SetError(state, "Value for key '%s' already exists", NomString_AsString(l));
+                NomState_SetError(state, "Value for key '%s' already exists", NomString_AsString(state, l));
             }
             break;
         case OPCODE_VALUE_SET:
             l = POP();
             r = POP();
-            if (!NomValue_Set(r, l, TOP()))
+            if (!NomValue_Set(state, r, l, TOP()))
             {
-                NomState_SetError(state, "No value for key '%s'", NomString_AsString(l));
+                NomState_SetError(state, "No value for key '%s'", NomString_AsString(state, l));
             }
             break;
         case OPCODE_VALUE_GET:
             l = POP();
             r = POP();
-            if (!NomValue_TryGet(r, l, &result))
+            if (!NomValue_TryGet(state, r, l, &result))
             {
-                NomState_SetError(state, "No value for key '%s'", NomString_AsString(l));
+                NomState_SetError(state, "No value for key '%s'", NomString_AsString(state, l));
             }
             PUSH(result);
             break;
         case OPCODE_BRACKET_SET:
             l = POP();
             r = POP();
-            NomValue_InsertOrSet(r, l, TOP());
+            NomValue_InsertOrSet(state, r, l, TOP());
             break;
         case OPCODE_BRACKET_GET:
             l = POP();
             r = POP();
-            result = NomValue_Get(r, l);
+            result = NomValue_Get(state, r, l);
             PUSH(result);
             break;
         }
@@ -246,7 +233,7 @@ NomValue NomState_Execute(
     // Return the result
     if (state->sp == 0)
     {
-        return nil;
+        return NOM_NIL;
     }
     else
     {
@@ -268,11 +255,4 @@ const char* NomState_GetError(
     )
 {
     return state->error;
-}
-
-NomState* NomState_GetInstance(
-    StateId id
-    )
-{
-    return states[id];
 }

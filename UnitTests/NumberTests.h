@@ -28,15 +28,23 @@
 
 #include <Nominal.h>
 
+void Test_Number_CheckPositive(void)
+{
+    NomValue value = NomNumber_FromDouble(1.234);
+    CU_ASSERT_TRUE(NomNumber_Check(value));
+}
+
+void Test_Number_CheckNegative(void)
+{
+    NomValue value = NOM_NIL;
+    CU_ASSERT_FALSE(NomNumber_Check(value));
+}
+
 void Test_Number_ToAndFromDouble(void)
 {
-    NomState* state = NomState_Create();
-
-    NomValue value = NomNumber_FromDouble(state, 1.234);
+    NomValue value = NomNumber_FromDouble(1.234);
     double doubleValue = NomNumber_AsDouble(value);
     CU_ASSERT_DOUBLE_EQUAL(doubleValue, 1.234, 0.0001);
-
-    NomState_Free(state);
 }
 
 #endif

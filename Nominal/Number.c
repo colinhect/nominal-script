@@ -25,95 +25,141 @@
 #include "Nominal/Number.h"
 
 #include "Value.h"
-#include "State.h"
 
 #include <math.h>
-#include <stdlib.h>
-#include <string.h>
 
-bool NomNumber_Check(NomValue value)
+#define FROM_NUMBER(v)      NomValue nv; nv.number = v; return nv
+#define AS_NUMBER(v, t, e)  return IS_NUMBER(v) ? (t)v.number : e
+
+bool NomNumber_Check(
+    NomValue    value
+    )
 {
-    return GET_TYPE(value) == TYPE_NUMBER;
+    return IS_NUMBER(value);
 }
 
 NomValue NomNumber_FromInt(
-    NomState*   state,
-    int         value
+    int             value
     )
 {
-    return NomNumber_FromDouble(state, (double)value);
+    FROM_NUMBER((double)value);
+}
+
+NomValue NomNumber_FromUnsignedInt(
+    unsigned int    value
+    )
+{
+    FROM_NUMBER((double)value);
+}
+
+NomValue NomNumber_FromLong(
+    long            value
+    )
+{
+    FROM_NUMBER((double)value);
+}
+
+NomValue NomNumber_FromUnsignedLong(
+    unsigned long   value
+    )
+{
+    FROM_NUMBER((double)value);
+}
+
+NomValue NomNumber_FromLongLong(
+    long long           value
+    )
+{
+    FROM_NUMBER((double)value);
 }
 
 NomValue NomNumber_FromUnsignedLongLong(
-    NomState*           state,
     unsigned long long  value
     )
 {
-    return NomNumber_FromDouble(state, (double)value);
+    FROM_NUMBER((double)value);
+}
+
+NomValue NomNumber_FromSize(
+    size_t  value
+    )
+{
+    FROM_NUMBER((double)value);
 }
 
 NomValue NomNumber_FromFloat(
-    NomState*   state,
     float       value
     )
 {
-    NomValue number;
-    INIT_VALUE(number, TYPE_NUMBER, state);
-    SET_FLOAT_BITS(number, *(uint32_t*)&value);
-    return number;
+    FROM_NUMBER((double)value);
 }
 
 NomValue NomNumber_FromDouble(
-    NomState*   state,
     double      value
     )
 {
-    float floatValue = (float)value;
-
-    NomValue number;
-    INIT_VALUE(number, TYPE_NUMBER, state);
-    SET_FLOAT_BITS(number, *(uint32_t*)&floatValue);
-    return number;
+    FROM_NUMBER(value);
 }
 
-int NomNumber_AsInt(NomValue value)
+int NomNumber_AsInt(
+    NomValue    value
+    )
 {
-    switch (GET_TYPE(value))
-    {
-    case TYPE_NUMBER:
-        {
-            uint64_t v = GET_FLOAT_BITS(value);
-            return (int)*((float*)&v);
-        }
-    default:
-        return -1;
-    }
+    AS_NUMBER(value, int, INT_MAX);
 }
 
-float NomNumber_AsFloat(NomValue value)
+unsigned int NomNumber_AsUnsignedInt(
+    NomValue    value
+    )
 {
-    switch (GET_TYPE(value))
-    {
-    case TYPE_NUMBER:
-        {
-            uint64_t v = GET_FLOAT_BITS(value);
-            return *((float*)&v);
-        }
-    default:
-        return NAN;
-    }
+    AS_NUMBER(value, unsigned int, UINT_MAX);
 }
 
-double NomNumber_AsDouble(NomValue value)
+long NomNumber_AsLong(
+    NomValue    value
+    )
 {
-    switch (GET_TYPE(value))
-    {
-    case TYPE_NUMBER:
-        {
-            uint64_t v = GET_FLOAT_BITS(value);
-            return (double)*((float*)&v);
-        }
-    default:
-        return NAN;
-    }
+    AS_NUMBER(value, long, LONG_MAX);
+}
+
+unsigned long NomNumber_AsUnsignedLong(
+    NomValue    value
+    )
+{
+    AS_NUMBER(value, unsigned long, ULONG_MAX);
+}
+
+long long NomNumber_AsLongLong(
+    NomValue    value
+    )
+{
+    AS_NUMBER(value, long long, LLONG_MAX);
+}
+
+unsigned long long NomNumber_AsUnsignedLongLong(
+    NomValue    value
+    )
+{
+    AS_NUMBER(value, unsigned long long, ULLONG_MAX);
+}
+
+size_t NomNumber_AsSize(
+    NomValue    value
+    )
+{
+    AS_NUMBER(value, size_t, (size_t)-1);
+}
+
+float NomNumber_AsFloat(
+    NomValue    value
+    )
+{
+    AS_NUMBER(value, float, NAN);
+}
+
+double NomNumber_AsDouble(
+    NomValue    value
+    )
+{
+    AS_NUMBER(value, double, NAN);
 }

@@ -79,16 +79,9 @@ int c99_snprintf(
 
 #endif
 
-NomValue NomValue_Nil(
-    NomState*   state
-    )
-{
-    assert(state);
-
-    NomValue value = { 0 };
-    SET_STATE_ID_BITS(value, state->id);
-    return value;
-}
+NomValue NOM_NIL = { QNAN_VALUE };
+NomValue NOM_TRUE = { QNAN_VALUE };
+NomValue NOM_FALSE = { QNAN_VALUE };
 
 bool NomValue_Equals(
     NomState*   state,
@@ -96,22 +89,20 @@ bool NomValue_Equals(
     NomValue    other
     )
 {
-    state;
-
-    if (NomNumber_Check(value))
+    if (IS_NUMBER(value))
     {
-        return NomNumber_AsDouble(value) == NomNumber_AsDouble(other);
+        return value.number == other.number;
     }
     else if (NomString_Check(value) && NomString_Check(other))
     {
         if (GET_TYPE(value) != TYPE_POOLED_STRING ||
             GET_TYPE(other) != TYPE_POOLED_STRING)
         {
-            return strcmp(NomString_AsString(value), NomString_AsString(other)) == 0;
+            return strcmp(NomString_AsString(state, value), NomString_AsString(state, other)) == 0;
         }
     }
 
-    return value.data == other.data;
+    return value.raw == other.raw;
 }
 
 long long NomValue_Hash(
@@ -119,17 +110,14 @@ long long NomValue_Hash(
     NomValue    value
     )
 {
-    long long hash = value.data;
+    long long hash = value.raw;
     switch (GET_TYPE(value))
     {
     case TYPE_STRING:
-        hash = HashString((UserData)NomString_AsString(value), (UserData)state);
+        hash = HashString((UserData)NomString_AsString(state, value), (UserData)state);
         break;
     case TYPE_POOLED_STRING:
-        {
-            NomState* state = NomValue_GetState(value);
-            hash = StringPool_Hash(state->stringPool, GET_ID_BITS(value));
-        }
+        hash = StringPool_Hash(state->stringPool, GET_ID(value));
         break;
     }
 
@@ -137,6 +125,7 @@ long long NomValue_Hash(
 }
 
 size_t NomValue_AsString(
+    NomState*   state,
     char*       buffer,
     size_t      bufferSize,
     NomValue    value
@@ -149,11 +138,11 @@ size_t NomValue_AsString(
     switch (GET_TYPE(value))
     {
     case TYPE_NUMBER:
-        count += snprintf(buffer, bufferSize, "%f", NomNumber_AsDouble(value));
+        count += snprintf(buffer, bufferSize, "%.256g", NomNumber_AsDouble(value));
         break;
     case TYPE_STRING:
     case TYPE_POOLED_STRING:
-        count += snprintf(buffer, bufferSize, "\"%s\"", NomString_AsString(value));
+        count += snprintf(buffer, bufferSize, "\"%s\"", NomString_AsString(state, value));
         break;
     case TYPE_MAP:
     {
@@ -167,7 +156,7 @@ size_t NomValue_AsString(
         // Iterate over each pair
         bool printComma = false;
         NomMapIterator iterator = { 0 };
-        while (NomMap_MoveNext(value, &iterator))
+        while (NomMap_MoveNext(state, value, &iterator))
         {
             if (printComma)
             {
@@ -189,7 +178,7 @@ size_t NomValue_AsString(
             }
 
             // Print the key
-            count += NomValue_AsString(buffer + count, bufferSize - count, iterator.key);
+            count += NomValue_AsString(state, buffer + count, bufferSize - count, iterator.key);
             if (count >= bufferSize)
             {
                 break;
@@ -203,7 +192,7 @@ size_t NomValue_AsString(
             }
 
             // Print the value
-            count += NomValue_AsString(buffer + count, bufferSize - count, iterator.value);
+            count += NomValue_AsString(state, buffer + count, bufferSize - count, iterator.value);
             if (count >= bufferSize)
             {
                 break;
@@ -230,66 +219,65 @@ size_t NomValue_AsString(
 }
 
 #define ARITH(l, r, op, name)\
-    if (!NomNumber_Check(l) || !NomNumber_Check(r))\
+    if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
         NomState_SetError(state, "Cannot %s non-numeric values", name);\
     }\
     else\
     {\
-        result = NomNumber_FromDouble(state, NomNumber_AsDouble(l) op NomNumber_AsDouble(r));\
+        result.number = l.number op r.number;\
     }
 
 NomValue NomValue_Add(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomState* state = NomValue_GetState(value);
-    NomValue result = NomValue_Nil(state);
+    NomValue result = NOM_NIL;
     ARITH(value, other, +, "add");
     return result;
 }
 
 NomValue NomValue_Subtract(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomState* state = NomValue_GetState(value);
-    NomValue result = NomValue_Nil(state);
+    NomValue result = NOM_NIL;
     ARITH(value, other, -, "subtract");
     return result;
 }
 
 NomValue NomValue_Multiply(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomState* state = NomValue_GetState(value);
-    NomValue result = NomValue_Nil(state);
+    NomValue result = NOM_NIL;
     ARITH(value, other, *, "multiply");
     return result;
 }
 
 NomValue NomValue_Divide(
+    NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomState* state = NomValue_GetState(value);
-    NomValue result = NomValue_Nil(state);
+    NomValue result = NOM_NIL;
     ARITH(value, other, / , "divide");
     return result;
 }
 
 NomValue NomValue_Negate(
+    NomState*   state,
     NomValue    value
     )
 {
-    NomState* state = NomValue_GetState(value);
-
-    NomValue result = NomValue_Nil(state);
+    NomValue result = NOM_NIL;
 
     if (!NomNumber_Check(value))
     {
@@ -297,13 +285,14 @@ NomValue NomValue_Negate(
     }
     else
     {
-        result = NomNumber_FromDouble(state, -NomNumber_AsDouble(value));
+        result = NomNumber_FromDouble(-NomNumber_AsDouble(value));
     }
 
     return result;
 }
 
 bool NomValue_Insert(
+    NomState*   state,
     NomValue    value,
     NomValue    key,
     NomValue    keyValue
@@ -312,12 +301,13 @@ bool NomValue_Insert(
     bool result = false;
     if (NomMap_Check(value))
     {
-        result = NomMap_Insert(value, key, keyValue);
+        result = NomMap_Insert(state, value, key, keyValue);
     }
     return result;
 }
 
 bool NomValue_Set(
+    NomState*   state,
     NomValue    value,
     NomValue    key,
     NomValue    keyValue
@@ -326,12 +316,13 @@ bool NomValue_Set(
     bool result = false;
     if (NomMap_Check(value))
     {
-        result = NomMap_Set(value, key, keyValue);
+        result = NomMap_Set(state, value, key, keyValue);
     }
     return result;
 }
 
 bool NomValue_InsertOrSet(
+    NomState*   state,
     NomValue    value,
     NomValue    key,
     NomValue    keyValue
@@ -340,28 +331,28 @@ bool NomValue_InsertOrSet(
     bool result = false;
     if (NomMap_Check(value))
     {
-        result = NomMap_InsertOrSet(value, key, keyValue);
+        result = NomMap_InsertOrSet(state, value, key, keyValue);
     }
     return result;
 }
 
 NomValue NomValue_Get(
+    NomState*   state,
     NomValue    value,
     NomValue    key
     )
 {
-    NomState* state = NomValue_GetState(value);
-
-    NomValue result = NomValue_Nil(state);
+    NomValue result = NOM_NIL;
     if (NomMap_Check(value))
     {
-        NomMap_TryGet(value, key, &result);
+        NomMap_TryGet(state, value, key, &result);
     }
 
     return result;
 }
 
 bool NomValue_TryGet(
+    NomState*   state,
     NomValue    value,
     NomValue    key,
     NomValue*   keyValue
@@ -369,20 +360,11 @@ bool NomValue_TryGet(
 {
     assert(keyValue);
 
-    NomState* state = NomValue_GetState(value);
-
-    *keyValue = NomValue_Nil(state);
+    *keyValue = NOM_NIL;
     if (NomMap_Check(value))
     {
-        return NomMap_TryGet(value, key, keyValue);
+        return NomMap_TryGet(state, value, key, keyValue);
     }
 
     return false;
-}
-
-NomState* NomValue_GetState(
-    NomValue    value
-    )
-{
-    return NomState_GetInstance(GET_STATE_ID_BITS(value));
 }

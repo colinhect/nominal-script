@@ -38,7 +38,7 @@ typedef struct _NomMapIterator
 } NomMapIterator;
 
 ///
-/// \brief Checks if a Nominal value is a map.
+/// \brief Checks if a value is a map.
 ///
 /// \param value
 ///     The value in question.
@@ -52,7 +52,7 @@ bool NomMap_Check(
 /// \brief Creates a new Nominal map.
 ///
 /// \param state
-///     The Nominal state to create the value for.
+///     The state to create the value for.
 ///
 /// \returns The new Nominal map.
 NomValue NomMap_Create(
@@ -62,6 +62,8 @@ NomValue NomMap_Create(
 ///
 /// \brief Moves to the next pair in the map.
 ///
+/// \param state
+///     The state.
 /// \param map
 ///     The map.
 /// \param iterator
@@ -71,6 +73,7 @@ NomValue NomMap_Create(
 /// \returns True if the next pair was moved to; false if there were no more
 /// pairs in the map.
 bool NomMap_MoveNext(
+    NomState*       state,
     NomValue        map,
     NomMapIterator* iterator
     );
@@ -78,6 +81,8 @@ bool NomMap_MoveNext(
 ///
 /// \brief Inserts a new key/value in a Nominal map.
 ///
+/// \param state
+///     The state.
 /// \param map
 ///     The map to insert the value in.
 /// \param key
@@ -88,6 +93,7 @@ bool NomMap_MoveNext(
 /// \returns True if the key/value was inserted; false if a value already
 /// exists for the key.
 bool NomMap_Insert(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -96,6 +102,8 @@ bool NomMap_Insert(
 ///
 /// \brief Sets the value for a key in a Nominal map.
 ///
+/// \param state
+///     The state.
 /// \param map
 ///     The map to set the value in.
 /// \param key
@@ -106,6 +114,7 @@ bool NomMap_Insert(
 /// \returns True if the set was successful; false if no value exists for the
 /// given key.
 bool NomMap_Set(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -114,6 +123,8 @@ bool NomMap_Set(
 ///
 /// \brief Inserts a new value or sets an existing value in a Nominal map.
 ///
+/// \param state
+///     The state.
 /// \param map
 ///     The map to insert or set the value in.
 /// \param key
@@ -124,6 +135,7 @@ bool NomMap_Set(
 /// \returns True if a new value was inserted; false if an existing value was
 /// changed.
 bool NomMap_InsertOrSet(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue    value
@@ -132,6 +144,8 @@ bool NomMap_InsertOrSet(
 ///
 /// \brief Gets the value for a key in a Nominal map.
 ///
+/// \param state
+///     The state.
 /// \param map
 ///     The map to get the value from.
 /// \param key
@@ -140,6 +154,7 @@ bool NomMap_InsertOrSet(
 /// \returns The value for the given key; nil if no value is set for the given
 /// key.
 NomValue NomMap_Get(
+    NomState*   state,
     NomValue    map,
     NomValue    key
     );
@@ -147,6 +162,8 @@ NomValue NomMap_Get(
 ///
 /// \brief Tries to get the value for a key in a Nominal map.
 ///
+/// \param state
+///     The state.
 /// \param map
 ///     The map to get the value from.
 /// \param key
@@ -156,6 +173,7 @@ NomValue NomMap_Get(
 ///
 /// \returns True if the value was found; false otherwise.
 bool NomMap_TryGet(
+    NomState*   state,
     NomValue    map,
     NomValue    key,
     NomValue*   value

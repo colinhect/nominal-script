@@ -28,7 +28,7 @@
 
 #include <string.h>
 
-typedef size_t StringId;
+typedef uint32_t StringId;
 
 typedef struct _StringPool StringPool;
 

@@ -67,15 +67,15 @@ size_t GenerateCode(
     {
     case NODE_NIL:
         OPCODE(OPCODE_PUSH);
-        VALUE(NomValue_Nil(state));
+        VALUE(NOM_NIL);
         break;
     case NODE_NUMBER:
         OPCODE(OPCODE_PUSH);
-        VALUE(NomNumber_FromDouble(state, node->data.number.value));
+        VALUE(NomNumber_FromDouble(node->data.number.value));
         break;
     case NODE_STRING:
         OPCODE(OPCODE_PUSH);
-        VALUE(NomString_FromId(state, node->data.string.id));
+        VALUE(NomString_FromId(node->data.string.id));
         break;
     case NODE_MAP:
     {
@@ -107,7 +107,7 @@ size_t GenerateCode(
 
         // Push the item count on the stack
         OPCODE(OPCODE_PUSH);
-        VALUE(NomNumber_FromUnsignedLongLong(state, itemCount));
+        VALUE(NomNumber_FromSize(itemCount));
 
         // Create the map
         OPCODE(OPCODE_NEW_MAP);

@@ -27,7 +27,7 @@
 #include "Nominal/Value.h"
 
 ///
-/// \brief Checks if a Nominal value is a string.
+/// \brief Checks if a value is a string.
 ///
 /// \param value
 ///     The value in question.
@@ -41,7 +41,7 @@ bool NomString_Check(
 /// \brief Creates a new Nominal string value from a string.
 ///
 /// \param state
-///     The Nominal state to create the value for.
+///     The state to create the value for.
 /// \param value
 ///     The NULL-terminated string value.
 /// \param pooled
@@ -57,12 +57,15 @@ NomValue NomString_FromString(
 ///
 /// \brief Returns the value of a Nominal string as a string.
 ///
+/// \param state
+///     The state.
 /// \param value
 ///     The string value.
 ///
 /// \returns A pointer to a NULL terminated string; NULL if the value is not
 /// a string.
 const char* NomString_AsString(
+    NomState*   state,
     NomValue    value
     );
 

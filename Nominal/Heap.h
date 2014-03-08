@@ -34,7 +34,7 @@ typedef struct _Heap Heap;
 /// \brief A handle to a GC object.
 ///
 /// \remarks Specific to a certain heap.
-typedef size_t ObjectId;
+typedef uint32_t ObjectId;
 
 ///
 /// \brief Creates a new heap.

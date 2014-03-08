@@ -31,15 +31,15 @@
 typedef struct _NomState NomState;
 
 ///
-/// \brief Creates a new Nominal state.
+/// \brief Creates a new state.
 ///
-/// \returns The new Nominal state.
+/// \returns The new state.
 NomState* NomState_Create(
     void
     );
 
 ///
-/// \brief Frees a Nominal state.
+/// \brief Frees a state
 ///
 /// \param state
 ///     The state to free.
@@ -50,7 +50,7 @@ void NomState_Free(
 ///
 /// \brief Executes a snippet of Nominal source code and returns the value.
 ///
-/// \remarks The execution could have encountered an error.  Check
+/// \warning The execution could have encountered an error.  Check
 /// NomState_ErrorOccurred directly after invoking this function.
 ///
 /// \param state

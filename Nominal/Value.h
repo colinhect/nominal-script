@@ -27,7 +27,7 @@
 #include "Nominal/Value.h"
 
 ///
-/// \brief Enumeration of each type a Nominal value can be.
+/// \brief Enumeration of each type a value can be.
 typedef enum
 {
     TYPE_NIL,
@@ -39,38 +39,15 @@ typedef enum
     TYPE_CLOSURE
 } Type;
 
-// Set a certain range of bits in a value
-#define SET_VALUE_BITS(offset, count, value, bits) \
-    { \
-    uint64_t mask = ((((uint64_t)1 << count) - 1) << offset); \
-    value.data = (((uint64_t)bits << offset) & mask) | (value.data & ~mask); \
-    }
+#define TYPE_MASK   (0x000000FF)
+#define QNAN_MASK   (0x000000007FFFFF00)
+#define QNAN_VALUE  (0x000000007FF7A500)
 
-// Get a certain range of bits from a value
-#define GET_VALUE_BITS(offset, count, value) \
-    ((value.data & ((((uint64_t)1 << count) - 1) << offset)) >> offset)
+#define IS_NUMBER(v)    ((v.raw & QNAN_MASK) != QNAN_VALUE)
 
-// Get/set bits corresponding to a value's type
-#define SET_TYPE_BITS(value, bits)      SET_VALUE_BITS(61, 3, value, bits)
-#define GET_TYPE_BITS(value)            GET_VALUE_BITS(61, 3, value)
-
-// Get/set the bits corresponding to the value of a float
-#define SET_FLOAT_BITS(value, bits)     SET_VALUE_BITS(0, 32, value, bits)
-#define GET_FLOAT_BITS(value)           ((uint32_t)GET_VALUE_BITS(0, 32, value))
-
-// Get/set the bits corresponding to the value of an ID (such as object ID)
-#define SET_ID_BITS(value, bits)        SET_VALUE_BITS(0, 32, value, bits)
-#define GET_ID_BITS(value)              ((uint64_t)GET_VALUE_BITS(0, 32, value))
-
-// Get/set the bits corresponding to the value's state ID
-#define SET_STATE_ID_BITS(value, bits)  SET_VALUE_BITS(48, 8, value, bits)
-#define GET_STATE_ID_BITS(value)        ((StateId)GET_VALUE_BITS(48, 8, value))
-
-#define GET_TYPE(value)                 (Type)GET_TYPE_BITS(value)
-
-#define INIT_VALUE(value, type, state) \
-    value.data = 0; \
-    SET_TYPE_BITS(value, type); \
-    SET_STATE_ID_BITS(value, state->id);
+#define SET_TYPE(v, t)  (v.data.lower = (TYPE_MASK & t) | (~TYPE_MASK & v.data.lower))
+#define GET_TYPE(v)     (IS_NUMBER(v) ? TYPE_NUMBER : (Type)(TYPE_MASK & v.data.lower))      
+#define SET_ID(v, i)    (v.data.upper = (uint32_t)i)
+#define GET_ID(v)       (v.data.upper) 
 
 #endif
