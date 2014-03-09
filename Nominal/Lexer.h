@@ -55,7 +55,16 @@ typedef enum
 
 ///
 /// \brief Contains the position and state of a lexer.
-typedef struct _LexerState LexerState;
+typedef struct _LexerState
+{
+    unsigned    index;
+    unsigned    line;
+    TokenType   type;
+    unsigned    startIndex;
+    unsigned    length;
+    unsigned    id;
+    bool        skippedWhitespace;
+} LexerState;
 
 ///
 /// \brief A lexer.
@@ -184,6 +193,29 @@ const char* Lexer_GetTokenString(
 ///     The lexer.
 double Lexer_GetTokenAsNumber(
     Lexer*  lexer
+    );
+
+///
+/// \brief Saves the state of a lexer.
+///
+/// \param lexer
+///     The lexer.
+///
+/// \returns The state of the lexer.
+LexerState Lexer_SaveState(
+    Lexer*  lexer
+    );
+
+///
+/// \brief Restores the state of a lexer.
+///
+/// \param lexer
+///     The lexer.
+/// \param state
+///     The state to restore.
+void Lexer_RestoreState(
+    Lexer*      lexer,
+    LexerState  state
     );
 
 #endif

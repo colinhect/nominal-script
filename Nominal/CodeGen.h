@@ -61,7 +61,9 @@ typedef enum
     OPCODE_BRACKET_GET,
     OPCODE_PUSH,
     OPCODE_POP,
-    OPCODE_NEW_MAP
+    OPCODE_NEW_MAP,
+    OPCODE_NEW_CLOSURE,
+    OPCODE_GOTO
 } OpCode;
 
 ///

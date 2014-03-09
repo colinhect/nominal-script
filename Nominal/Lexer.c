@@ -30,17 +30,6 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct _LexerState
-{
-    unsigned    index;
-    unsigned    line;
-    TokenType   type;
-    unsigned    startIndex;
-    unsigned    length;
-    unsigned    id;
-    bool        skippedWhitespace;
-} LexerState;
-
 typedef struct _Lexer
 {
     const char* source;
@@ -388,4 +377,19 @@ double Lexer_GetTokenAsNumber(
     )
 {
     return atof(Lexer_GetTokenString(lexer));
+}
+
+LexerState Lexer_SaveState(
+    Lexer*  lexer
+    )
+{
+    return lexer->state;
+}
+
+void Lexer_RestoreState(
+    Lexer*      lexer,
+    LexerState  state
+    )
+{
+    lexer->state = state;
 }

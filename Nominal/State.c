@@ -115,6 +115,11 @@ NomValue NomState_Execute(
 
         switch (op)
         {
+        case OPCODE_GOTO:
+        {
+            size_t ip = READAS(size_t);
+            state->ip = ip;
+        } break;
         case OPCODE_PUSH:
             result = READAS(NomValue);
             PUSH(result);
@@ -148,20 +153,25 @@ NomValue NomState_Execute(
             }
             break;
         case OPCODE_NEW_MAP:
+        {
+            NomValue map = NomMap_Create(state);
+
+            size_t itemCount = NomNumber_AsSize(POP());
+            for (size_t i = 0; i < itemCount; ++i)
             {
-                NomValue map = NomMap_Create(state);
+                NomValue key = POP();
+                NomValue value = POP();
 
-                size_t itemCount = NomNumber_AsSize(POP());
-                for (size_t i = 0; i < itemCount; ++i)
-                {
-                    NomValue key = POP();
-                    NomValue value = POP();
+                NomMap_InsertOrSet(state, map, key, value);
+            }
 
-                    NomMap_InsertOrSet(state, map, key, value);
-                }
-
-                PUSH(map);
-            } break;
+            PUSH(map);
+        } break;
+        case OPCODE_NEW_CLOSURE:
+        {
+            READAS(size_t);
+            //NomValue closure = NomClosure_Create(state, state->ip);
+        } break;
         case OPCODE_ADD:
             l = POP();
             r = POP();

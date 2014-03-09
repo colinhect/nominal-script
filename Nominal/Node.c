@@ -90,6 +90,16 @@ void Node_Free(
             Node_Free(node->data.sequence.next);
         }
         break;
+    case NODE_CLOSURE:
+        if (node->data.closure.params)
+        {
+            Node_Free(node->data.closure.params);
+        }
+        if (node->data.closure.exprs)
+        {
+            Node_Free(node->data.closure.exprs);
+        }
+        break;
     }
 
     free(node);

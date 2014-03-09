@@ -139,8 +139,73 @@ Node* Parser_PrimaryExpr(
     Parser* parser
     )
 {
+    // Closure
+    if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
+    {
+        Lexer_Next(parser->lexer);
+        
+        LexerState state = Lexer_SaveState(parser->lexer);
+
+        Node* params = Node_Create(NODE_SEQUENCE);
+        Node* param = params;
+        for (;;)
+        {
+            Node* ident = Parser_StringOrIdent(parser);
+            if (!ident || ident->type != NODE_IDENT)
+            {
+                if (ident)
+                {
+                    Node_Free(ident);
+                    ident = NULL;
+                }
+
+                Node_Free(params);
+                params = NULL;
+
+                // Failed to parse the parametesr
+                break;
+            }
+
+            param->data.sequence.expr = ident;
+
+            if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '|'))
+            {
+                Lexer_Next(parser->lexer);
+                break;
+            }
+
+            param->data.sequence.next = Node_Create(NODE_SEQUENCE);
+            param = param->data.sequence.next;
+        }
+
+        // Restart at the beginning if the parameter parsing failed
+        if (!params)
+        {
+            Lexer_RestoreState(parser->lexer, state);
+        }
+
+        // Parse the body of the closure
+        Node* exprs = Parser_Exprs(parser);
+        if (!exprs)
+        {
+            return NULL;
+        }
+
+        if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
+        {
+            Parser_SetError(parser, "Expected closing ']'");
+            Node_Free(exprs);
+            return NULL;
+        }
+        Lexer_Next(parser->lexer);
+
+        Node* closure = Node_Create(NODE_CLOSURE);
+        closure->data.closure.params = params;
+        closure->data.closure.exprs = exprs;
+        return closure;
+    }
     // Unary operator
-    if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
+    else if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
     {
         Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
         if (op == OP_SUB)

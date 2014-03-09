@@ -70,7 +70,8 @@ typedef enum
     NODE_BINARY,
     NODE_UNARY,
     NODE_INDEX,
-    NODE_SEQUENCE
+    NODE_SEQUENCE,
+    NODE_CLOSURE
 } NodeType;
 
 ///
@@ -142,6 +143,14 @@ typedef struct _Node
             struct _Node* expr;
             struct _Node* next;
         } sequence;
+
+        // NODE_CLOSURE
+        // A closure
+        struct
+        {
+            struct _Node* params;
+            struct _Node* exprs;
+        } closure;
     } data;
 } Node;
 

@@ -52,9 +52,8 @@ const OpCode OP_OPCODE[] =
     OPCODE_RET    // OP_RET
 };
 
-#define OPCODE(op)  byteCode[index++] = (unsigned char)op
-#define STRING(s)   *(StringId*)&byteCode[index] = s; index += sizeof(StringId)
-#define VALUE(v)    *(NomValue*)&byteCode[index] = v; index += sizeof(NomValue)
+#define OPCODE(op)      byteCode[index++] = (unsigned char)op
+#define WRITEAS(t, v)   *(t*)&byteCode[index] = v; index += sizeof(t)
 
 size_t GenerateCode(
     NomState*       state,
@@ -67,15 +66,15 @@ size_t GenerateCode(
     {
     case NODE_NIL:
         OPCODE(OPCODE_PUSH);
-        VALUE(NOM_NIL);
+        WRITEAS(NomValue, NOM_NIL);
         break;
     case NODE_NUMBER:
         OPCODE(OPCODE_PUSH);
-        VALUE(NomNumber_FromDouble(node->data.number.value));
+        WRITEAS(NomValue, NomNumber_FromDouble(node->data.number.value));
         break;
     case NODE_STRING:
         OPCODE(OPCODE_PUSH);
-        VALUE(NomString_FromId(node->data.string.id));
+        WRITEAS(NomValue, NomString_FromId(node->data.string.id));
         break;
     case NODE_MAP:
     {
@@ -107,14 +106,14 @@ size_t GenerateCode(
 
         // Push the item count on the stack
         OPCODE(OPCODE_PUSH);
-        VALUE(NomNumber_FromSize(itemCount));
+        WRITEAS(NomValue, NomNumber_FromSize(itemCount));
 
         // Create the map
         OPCODE(OPCODE_NEW_MAP);
     } break;
     case NODE_IDENT:
         OPCODE(OPCODE_GET);
-        STRING(node->data.ident.id);
+        WRITEAS(StringId, node->data.ident.id);
         break;
     case NODE_UNARY:
         index = GenerateCode(state, node->data.unary.expr, byteCode, index);
@@ -170,7 +169,7 @@ size_t GenerateCode(
             {
                 // Perform set
                 OPCODE(OP_OPCODE[op]);
-                STRING(leftExpr->data.ident.id);
+                WRITEAS(StringId, leftExpr->data.ident.id);
             }
         }
         else
@@ -180,6 +179,7 @@ size_t GenerateCode(
         }
     } break;
     case NODE_SEQUENCE:
+    {
         while (node)
         {
             index = GenerateCode(state, node->data.sequence.expr, byteCode, index);
@@ -192,7 +192,27 @@ size_t GenerateCode(
                 OPCODE(OPCODE_POP);
             }
         }
-        break;
+    } break;
+    case NODE_CLOSURE:
+    {
+        // Go to the end of the closure body
+        OPCODE(OPCODE_GOTO);
+        size_t gotoIndex = index;
+        WRITEAS(size_t, 0); // This will be known once the closure code is generator
+
+        // Generate the code for the closure body
+        size_t closureIndex = index;
+        size_t endIndex = GenerateCode(state, node->data.closure.exprs, byteCode, index);
+
+        // Go back to the goto
+        index = gotoIndex;
+        WRITEAS(size_t, endIndex); // Update the idnex with the write index
+        index = endIndex;
+
+        // Create the closure given the index where it starts
+        OPCODE(OPCODE_NEW_CLOSURE);
+        WRITEAS(size_t, closureIndex);
+    } break;
     }
 
     return index;
