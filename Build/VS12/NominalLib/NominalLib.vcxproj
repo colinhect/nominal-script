@@ -68,10 +68,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominal</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominal</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>

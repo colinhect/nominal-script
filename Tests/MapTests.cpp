@@ -21,78 +21,78 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef MAPTESTS_H
-#define MAPTESTS_H
+#include "catch.hpp"
 
-#include "Basic.h"
-
+extern "C"
+{
 #include <Nominal.h>
+}
 
-void Test_Map_CreateAndCheck(void)
+TEST_CASE("Map_CreateAndCheck")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Check(map));
+    REQUIRE(NomMap_Check(map));
 
     NomState_Free(state);
 }
 
-void Test_Map_InsertAndGet(void)
+TEST_CASE("Map_InsertAndGet")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
 
     NomValue result = NomMap_Get(state, map, NomNumber_FromInt(5));
-    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(10)));
+    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(10)));
 
     NomState_Free(state);
 }
 
-void Test_Map_SetExisting(void)
+TEST_CASE("Map_SetExisting")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
-    CU_ASSERT(NomMap_Set(state, map, NomNumber_FromInt(5), NomNumber_FromInt(25)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+    REQUIRE(NomMap_Set(state, map, NomNumber_FromInt(5), NomNumber_FromInt(25)));
 
     NomValue result = NomMap_Get(state, map, NomNumber_FromInt(5));
-    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(25)));
+    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(25)));
 
     NomState_Free(state);
 }
 
-void Test_Map_TryGet(void)
+TEST_CASE("Map_TryGet")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
 
     NomValue result;
-    CU_ASSERT(NomMap_TryGet(state, map, NomNumber_FromInt(5), &result));
-    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(10)));
+    REQUIRE(NomMap_TryGet(state, map, NomNumber_FromInt(5), &result));
+    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(10)));
 
     NomState_Free(state);
 }
 
-void Test_Map_TryGetNonExisting(void)
+TEST_CASE("Map_TryGetNonExisting")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
 
     NomValue result;
-    CU_ASSERT(!NomMap_TryGet(state, map, NomNumber_FromInt(10), &result));
+    REQUIRE(!NomMap_TryGet(state, map, NomNumber_FromInt(10), &result));
 
     NomState_Free(state);
 }
 
-void Test_Map_StringKeys(void)
+TEST_CASE("Map_StringKeys")
 {
     NomState* state = NomState_Create();
 
@@ -104,26 +104,26 @@ void Test_Map_StringKeys(void)
     NomValue d = NomString_FromString(state, "d", false);
     NomValue e = NomString_FromString(state, "e", false);
 
-    CU_ASSERT(NomMap_Insert(state, map, a, b));
-    CU_ASSERT(NomMap_Insert(state, map, b, c));
-    CU_ASSERT(NomMap_Insert(state, map, c, d));
-    CU_ASSERT(NomMap_Insert(state, map, d, e));
-    CU_ASSERT(NomMap_Insert(state, map, e, a));
+    REQUIRE(NomMap_Insert(state, map, a, b));
+    REQUIRE(NomMap_Insert(state, map, b, c));
+    REQUIRE(NomMap_Insert(state, map, c, d));
+    REQUIRE(NomMap_Insert(state, map, d, e));
+    REQUIRE(NomMap_Insert(state, map, e, a));
 
     NomValue result;
     result = NomMap_Get(state, map, a);
-    CU_ASSERT(NomValue_Equals(state, result, b));
+    REQUIRE(NomValue_Equals(state, result, b));
     result = NomMap_Get(state, map, b);
-    CU_ASSERT(NomValue_Equals(state, result, c));
+    REQUIRE(NomValue_Equals(state, result, c));
     result = NomMap_Get(state, map, c);
-    CU_ASSERT(NomValue_Equals(state, result, d));
+    REQUIRE(NomValue_Equals(state, result, d));
     result = NomMap_Get(state, map, e);
-    CU_ASSERT(NomValue_Equals(state, result, a));
+    REQUIRE(NomValue_Equals(state, result, a));
 
     NomState_Free(state);
 }
 
-void Test_Map_PooledStringKeys(void)
+TEST_CASE("Map_PooledStringKeys")
 {
     NomState* state = NomState_Create();
 
@@ -135,26 +135,26 @@ void Test_Map_PooledStringKeys(void)
     NomValue d = NomString_FromString(state, "d", true);
     NomValue e = NomString_FromString(state, "e", true);
 
-    CU_ASSERT(NomMap_Insert(state, map, a, b));
-    CU_ASSERT(NomMap_Insert(state, map, b, c));
-    CU_ASSERT(NomMap_Insert(state, map, c, d));
-    CU_ASSERT(NomMap_Insert(state, map, d, e));
-    CU_ASSERT(NomMap_Insert(state, map, e, a));
+    REQUIRE(NomMap_Insert(state, map, a, b));
+    REQUIRE(NomMap_Insert(state, map, b, c));
+    REQUIRE(NomMap_Insert(state, map, c, d));
+    REQUIRE(NomMap_Insert(state, map, d, e));
+    REQUIRE(NomMap_Insert(state, map, e, a));
 
     NomValue result;
     result = NomMap_Get(state, map, a);
-    CU_ASSERT(NomValue_Equals(state, result, b));
+    REQUIRE(NomValue_Equals(state, result, b));
     result = NomMap_Get(state, map, b);
-    CU_ASSERT(NomValue_Equals(state, result, c));
+    REQUIRE(NomValue_Equals(state, result, c));
     result = NomMap_Get(state, map, c);
-    CU_ASSERT(NomValue_Equals(state, result, d));
+    REQUIRE(NomValue_Equals(state, result, d));
     result = NomMap_Get(state, map, e);
-    CU_ASSERT(NomValue_Equals(state, result, a));
+    REQUIRE(NomValue_Equals(state, result, a));
 
     NomState_Free(state);
 }
 
-void Test_Map_MixedStringKeys(void)
+TEST_CASE("Map_MixedStringKeys")
 {
     NomState* state = NomState_Create();
 
@@ -163,44 +163,43 @@ void Test_Map_MixedStringKeys(void)
     NomValue a = NomString_FromString(state, "a", true);
     NomValue b = NomString_FromString(state, "b", true);
 
-    CU_ASSERT(NomMap_Insert(state, map, a, b));
+    REQUIRE(NomMap_Insert(state, map, a, b));
 
     NomValue a2 = NomString_FromString(state, "a", false);
 
     NomValue result;
     result = NomMap_Get(state, map, a2);
-    CU_ASSERT(NomValue_Equals(state, result, b));
+    REQUIRE(NomValue_Equals(state, result, b));
 
     NomState_Free(state);
 }
 
-void Test_Map_Iterate(void)
+TEST_CASE("Map_Iterate")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
 
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(0), NomNumber_FromInt(0)));
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(1), NomNumber_FromInt(2)));
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(2), NomNumber_FromInt(4)));
-    CU_ASSERT(NomMap_Insert(state, map, NomNumber_FromInt(3), NomNumber_FromInt(6)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(0), NomNumber_FromInt(0)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(1), NomNumber_FromInt(2)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(2), NomNumber_FromInt(4)));
+    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(3), NomNumber_FromInt(6)));
 
     NomMapIterator iterator = { 0 };
-    CU_ASSERT(NomMap_MoveNext(state, map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(0)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(0)));
-    CU_ASSERT(NomMap_MoveNext(state, map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(1)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(2)));
-    CU_ASSERT(NomMap_MoveNext(state, map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(2)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(4)));
-    CU_ASSERT(NomMap_MoveNext(state, map, &iterator));
-    CU_ASSERT(NomValue_Equals(state, iterator.key, NomNumber_FromInt(3)));
-    CU_ASSERT(NomValue_Equals(state, iterator.value, NomNumber_FromInt(6)));
-    CU_ASSERT(!NomMap_MoveNext(state, map, &iterator));
+    REQUIRE(NomMap_MoveNext(state, map, &iterator));
+    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(0)));
+    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(0)));
+    REQUIRE(NomMap_MoveNext(state, map, &iterator));
+    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(1)));
+    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(2)));
+    REQUIRE(NomMap_MoveNext(state, map, &iterator));
+    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(2)));
+    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(4)));
+    REQUIRE(NomMap_MoveNext(state, map, &iterator));
+    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(3)));
+    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(6)));
+    REQUIRE(!NomMap_MoveNext(state, map, &iterator));
 
     NomState_Free(state);
 }
 
-#endif

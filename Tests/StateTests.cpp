@@ -21,29 +21,29 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef STATETESTS_H
-#define STATETESTS_H
+#include "catch.hpp"
 
-#include "Basic.h"
-
+extern "C"
+{
 #include <Nominal.h>
+}
 
 #define TEST_EXPR(expr, expected)\
-    {\
-        CU_ASSERT(state != NULL);\
-        NomValue value = NomState_Execute(state, expr);\
-        CU_ASSERT(!NomState_ErrorOccurred(state));\
-        CU_ASSERT(NomValue_Equals(state, value, expected));\
-    }
+{\
+    REQUIRE(state != NULL); \
+    NomValue value = NomState_Execute(state, expr); \
+    REQUIRE(NomState_ErrorOccurred(state) == false); \
+    REQUIRE(NomValue_Equals(state, value, expected) == true); \
+}
 
 #define TEST_EXPR_ERROR(expr)\
-    {\
-        CU_ASSERT(state != NULL);\
-        NomState_Execute(state, expr);\
-        CU_ASSERT(NomState_ErrorOccurred(state));\
-    }
+{\
+    REQUIRE(state != NULL); \
+    NomState_Execute(state, expr); \
+    REQUIRE(NomState_ErrorOccurred(state) == true); \
+}
 
-void Test_State_Arithmetic(void)
+TEST_CASE("State_Arithmetic")
 {
     NomState* state = NomState_Create();
     TEST_EXPR("2 + 3", NomNumber_FromInt(5));
@@ -69,52 +69,52 @@ void Test_State_Arithmetic(void)
     NomState_Free(state);
 }
 
-void Test_State_GlobalVariables(void)
+TEST_CASE("State_GlobalVariables")
 {
     NomState* state = NomState_Create();
     TEST_EXPR("a := 1, b := 2, a + b", NomNumber_FromInt(3));
     NomState_Free(state);
 }
 
-void Test_State_MapWithImplicitKeys(void)
+TEST_CASE("State_MapWithImplicitKeys")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomState_Execute(state, "{ 0, 1, 2, 3 }");
-    CU_ASSERT(!NomState_ErrorOccurred(state));
-    CU_ASSERT(NomMap_Check(map));
+    REQUIRE(NomState_ErrorOccurred(state) == false);
+    REQUIRE(NomMap_Check(map) == true);
 
     NomValue result;
 
     for (int i = 0; i < 4; ++i)
     {
         result = NomMap_Get(state, map, NomNumber_FromInt(i));
-        CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(i)));
+        REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(i)));
     }
 
     NomState_Free(state);
 }
 
-void Test_State_MapWithExplicitKeys(void)
+TEST_CASE("State_MapWithExplicitKeys")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
-    CU_ASSERT(!NomState_ErrorOccurred(state));
-    CU_ASSERT(NomMap_Check(map));
+    REQUIRE(NomState_ErrorOccurred(state) == false);
+    REQUIRE(NomMap_Check(map));
 
     NomValue result;
     result = NomMap_Get(state, map, NomString_FromString(state, "zero", false));
-    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(0)));
+    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(0)) == true);
     result = NomMap_Get(state, map, NomString_FromString(state, "one", false));
-    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(1)));
+    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(1)) == true);
     result = NomMap_Get(state, map, NomString_FromString(state, "two", false));
-    CU_ASSERT(NomValue_Equals(state, result, NomNumber_FromInt(2)));
+    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(2)) == true);
 
     NomState_Free(state);
 }
 
-void Test_State_Indexing(void)
+TEST_CASE("State_Indexing")
 {
     NomState* state = NomState_Create();
     TEST_EXPR("{ 5 }[0]", NomNumber_FromInt(5));
@@ -137,5 +137,3 @@ void Test_State_Indexing(void)
 
     NomState_Free(state);
 }
-
-#endif

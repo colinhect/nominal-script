@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9F3D3C8F-0E5E-4D59-B964-EE5513B537C2}</ProjectGuid>
-    <RootNamespace>UnitTests</RootNamespace>
+    <ProjectGuid>{9AD87B4B-A807-40DA-A13B-2E0D22511DBF}</ProjectGuid>
+    <RootNamespace>Tests</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -68,10 +68,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominaltests</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>nominaltests</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)..\..\Deploy\$(Platform)\$(Configuration)\</OutDir>
@@ -83,12 +85,10 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\;$(SolutionDir)..\..\Nominal\;$(SolutionDir)..\..\UnitTests\CUnit\Headers\</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -96,12 +96,10 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\;$(SolutionDir)..\..\Nominal\;$(SolutionDir)..\..\UnitTests\CUnit\Headers\</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -109,14 +107,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\;$(SolutionDir)..\..\Nominal\;$(SolutionDir)..\..\UnitTests\CUnit\Headers\</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,14 +122,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level2</WarningLevel>
+      <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\;$(SolutionDir)..\..\Nominal\;$(SolutionDir)..\..\UnitTests\CUnit\Headers\</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\..\Include\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -142,37 +136,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Tests\catch.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Tests\Main.cpp" />
+    <ClCompile Include="..\..\..\Tests\MapTests.cpp" />
+    <ClCompile Include="..\..\..\Tests\NumberTests.cpp" />
+    <ClCompile Include="..\..\..\Tests\StateTests.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\NominalLib\NominalLib.vcxproj">
       <Project>{77051585-8f05-433f-bb12-650cfde4fc66}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\Automated.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\Basic.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\Console.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\CUCurses.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\CUError.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\CUnit.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\CUnit_intl.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\MyMem.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\TestDB.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\TestRun.h" />
-    <ClInclude Include="..\..\..\UnitTests\CUnit\Headers\Util.h" />
-    <ClInclude Include="..\..\..\UnitTests\HashTableTests.h" />
-    <ClInclude Include="..\..\..\UnitTests\MapTests.h" />
-    <ClInclude Include="..\..\..\UnitTests\NumberTests.h" />
-    <ClInclude Include="..\..\..\UnitTests\StateTests.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Automated\Automated.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Basic\Basic.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Console\Console.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Framework\CUError.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Framework\MyMem.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Framework\TestDB.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Framework\TestRun.c" />
-    <ClCompile Include="..\..\..\UnitTests\CUnit\Sources\Framework\Util.c" />
-    <ClCompile Include="..\..\..\UnitTests\Main.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

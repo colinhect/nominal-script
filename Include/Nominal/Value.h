@@ -46,15 +46,15 @@ typedef union
 
 ///
 /// \brief The nil value.
-NomValue NOM_NIL;
+extern NomValue NOM_NIL;
 
 ///
 /// \brief The true value
-NomValue NOM_TRUE;
+extern NomValue NOM_TRUE;
 
 ///
 /// \brief The false value
-NomValue NOM_FALSE;
+extern NomValue NOM_FALSE;
 
 ///
 /// \brief Returns whether a value is equal to another.

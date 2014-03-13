@@ -21,30 +21,5 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NUMBERTESTS_H
-#define NUMBERTESTS_H
-
-#include "Basic.h"
-
-#include <Nominal.h>
-
-void Test_Number_CheckPositive(void)
-{
-    NomValue value = NomNumber_FromDouble(1.234);
-    CU_ASSERT_TRUE(NomNumber_Check(value));
-}
-
-void Test_Number_CheckNegative(void)
-{
-    NomValue value = NOM_NIL;
-    CU_ASSERT_FALSE(NomNumber_Check(value));
-}
-
-void Test_Number_ToAndFromDouble(void)
-{
-    NomValue value = NomNumber_FromDouble(1.234);
-    double doubleValue = NomNumber_AsDouble(value);
-    CU_ASSERT_DOUBLE_EQUAL(doubleValue, 1.234, 0.0001);
-}
-
-#endif
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
