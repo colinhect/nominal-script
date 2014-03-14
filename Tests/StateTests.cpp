@@ -43,7 +43,7 @@ extern "C"
     REQUIRE(NomState_ErrorOccurred(state) == true); \
 }
 
-TEST_CASE("State_Arithmetic")
+TEST_CASE("Performing arithmetic operations", "[State]")
 {
     NomState* state = NomState_Create();
     TEST_EXPR("2 + 3", NomNumber_FromInt(5));
@@ -69,14 +69,14 @@ TEST_CASE("State_Arithmetic")
     NomState_Free(state);
 }
 
-TEST_CASE("State_GlobalVariables")
+TEST_CASE("Setting global variables", "[State]")
 {
     NomState* state = NomState_Create();
     TEST_EXPR("a := 1, b := 2, a + b", NomNumber_FromInt(3));
     NomState_Free(state);
 }
 
-TEST_CASE("State_MapWithImplicitKeys")
+TEST_CASE("Creating a map with implicit keys", "[State]")
 {
     NomState* state = NomState_Create();
 
@@ -95,7 +95,7 @@ TEST_CASE("State_MapWithImplicitKeys")
     NomState_Free(state);
 }
 
-TEST_CASE("State_MapWithExplicitKeys")
+TEST_CASE("Creating a map with explicit keys", "[State]")
 {
     NomState* state = NomState_Create();
 
@@ -114,7 +114,7 @@ TEST_CASE("State_MapWithExplicitKeys")
     NomState_Free(state);
 }
 
-TEST_CASE("State_Indexing")
+TEST_CASE("Indexing maps", "[State]")
 {
     NomState* state = NomState_Create();
     TEST_EXPR("{ 5 }[0]", NomNumber_FromInt(5));

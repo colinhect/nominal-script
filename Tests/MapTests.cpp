@@ -28,71 +28,135 @@ extern "C"
 #include <Nominal.h>
 }
 
-TEST_CASE("Map_CreateAndCheck")
+TEST_CASE("A Nominal map can be created", "[Map]")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    REQUIRE(NomMap_Check(map));
+    REQUIRE(NomMap_Check(map) == true);
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_InsertAndGet")
+TEST_CASE("Calling NomMap_Check on non-map Nominal values", "[Map]")
 {
     NomState* state = NomState_Create();
 
-    NomValue map = NomMap_Create(state);
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+    SECTION("Checking nil")
+    {
+        NomValue value = NOM_NIL;
+        REQUIRE(NomMap_Check(value) == false);
+    }
 
-    NomValue result = NomMap_Get(state, map, NomNumber_FromInt(5));
-    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(10)));
+    SECTION("Checking number")
+    {
+        NomValue value = NomNumber_FromDouble(1.0);
+        REQUIRE(NomMap_Check(value) == false);
+    }
+
+    SECTION("Checking string")
+    {
+        NomValue value = NomString_FromString(state, "Testing...", false);
+        REQUIRE(NomMap_Check(value) == false);
+    }
+
+    SECTION("Checking pooled string")
+    {
+        NomValue value = NomString_FromString(state, "Testing...", true);
+        REQUIRE(NomMap_Check(value) == false);
+    }
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_SetExisting")
+TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
-
+    
     NomValue map = NomMap_Create(state);
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
-    REQUIRE(NomMap_Set(state, map, NomNumber_FromInt(5), NomNumber_FromInt(25)));
 
-    NomValue result = NomMap_Get(state, map, NomNumber_FromInt(5));
-    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(25)));
+    SECTION("Using number keys")
+    {
+        NomValue key = NomNumber_FromInt(5);
+        NomValue value = NomNumber_FromInt(10);
+        REQUIRE(NomMap_Insert(state, map, key, value) == true);
+        NomValue result = NomMap_Get(state, map, key);
+        REQUIRE(NomValue_Equals(state, result, value) == true);
+    }
+
+    SECTION("Using string keys")
+    {
+        NomValue key = NomString_FromString(state, "Key", false);
+        NomValue value = NomNumber_FromInt(10);
+        REQUIRE(NomMap_Insert(state, map, key, value) == true);
+        NomValue result = NomMap_Get(state, map, key);
+        REQUIRE(NomValue_Equals(state, result, value) == true);
+    }
+
+    SECTION("Using pooled string keys")
+    {
+        NomValue key = NomString_FromString(state, "Key", true);
+        NomValue value = NomNumber_FromInt(10);
+        REQUIRE(NomMap_Insert(state, map, key, value) == true);
+        NomValue result = NomMap_Get(state, map, key);
+        REQUIRE(NomValue_Equals(state, result, value) == true);
+    }
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_TryGet")
+TEST_CASE("Setting a value in a Nominal map after it is inserted", "[Map]")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+
+    NomValue key = NomNumber_FromInt(5);
+    NomValue value = NomNumber_FromInt(10);
+    NomValue newValue = NomNumber_FromInt(25);
+    REQUIRE(NomMap_Insert(state, map, key, value) == true);
+    REQUIRE(NomMap_Set(state, map, key, newValue) == true);
+
+    NomValue result = NomMap_Get(state, map, key);
+    REQUIRE(NomValue_Equals(state, result, newValue) == true);
+
+    NomState_Free(state);
+}
+
+TEST_CASE("Calling Map_TryGet for a key that exists", "[Map]")
+{
+    NomState* state = NomState_Create();
+
+    NomValue map = NomMap_Create(state);
+
+    NomValue key = NomNumber_FromInt(5);
+    NomValue value = NomNumber_FromInt(10);
+    REQUIRE(NomMap_Insert(state, map, key, value) == true);
 
     NomValue result;
-    REQUIRE(NomMap_TryGet(state, map, NomNumber_FromInt(5), &result));
-    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(10)));
+    REQUIRE(NomMap_TryGet(state, map, key, &result) == true);
+    REQUIRE(NomValue_Equals(state, result, value) == true);
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_TryGetNonExisting")
+TEST_CASE("Calling Map_TryGet for a key that does not exist", "[Map]")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(5), NomNumber_FromInt(10)));
+
+    NomValue key = NomNumber_FromInt(5);
+    NomValue value = NomNumber_FromInt(10);
+    REQUIRE(NomMap_Insert(state, map, key, value) == true);
 
     NomValue result;
-    REQUIRE(!NomMap_TryGet(state, map, NomNumber_FromInt(10), &result));
+    REQUIRE(NomMap_TryGet(state, map, value, &result) == false);
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_StringKeys")
+TEST_CASE("Inserting and retrieving multiple values keyed from strings in a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
 
@@ -104,26 +168,26 @@ TEST_CASE("Map_StringKeys")
     NomValue d = NomString_FromString(state, "d", false);
     NomValue e = NomString_FromString(state, "e", false);
 
-    REQUIRE(NomMap_Insert(state, map, a, b));
-    REQUIRE(NomMap_Insert(state, map, b, c));
-    REQUIRE(NomMap_Insert(state, map, c, d));
-    REQUIRE(NomMap_Insert(state, map, d, e));
-    REQUIRE(NomMap_Insert(state, map, e, a));
+    REQUIRE(NomMap_Insert(state, map, a, b) == true);
+    REQUIRE(NomMap_Insert(state, map, b, c) == true);
+    REQUIRE(NomMap_Insert(state, map, c, d) == true);
+    REQUIRE(NomMap_Insert(state, map, d, e) == true);
+    REQUIRE(NomMap_Insert(state, map, e, a) == true);
 
     NomValue result;
     result = NomMap_Get(state, map, a);
-    REQUIRE(NomValue_Equals(state, result, b));
+    REQUIRE(NomValue_Equals(state, result, b) == true);
     result = NomMap_Get(state, map, b);
-    REQUIRE(NomValue_Equals(state, result, c));
+    REQUIRE(NomValue_Equals(state, result, c) == true);
     result = NomMap_Get(state, map, c);
-    REQUIRE(NomValue_Equals(state, result, d));
+    REQUIRE(NomValue_Equals(state, result, d) == true);
     result = NomMap_Get(state, map, e);
-    REQUIRE(NomValue_Equals(state, result, a));
+    REQUIRE(NomValue_Equals(state, result, a) == true);
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_PooledStringKeys")
+TEST_CASE("Inserting and retrieving multiple values keyed from pooled strings in a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
 
@@ -135,26 +199,26 @@ TEST_CASE("Map_PooledStringKeys")
     NomValue d = NomString_FromString(state, "d", true);
     NomValue e = NomString_FromString(state, "e", true);
 
-    REQUIRE(NomMap_Insert(state, map, a, b));
-    REQUIRE(NomMap_Insert(state, map, b, c));
-    REQUIRE(NomMap_Insert(state, map, c, d));
-    REQUIRE(NomMap_Insert(state, map, d, e));
-    REQUIRE(NomMap_Insert(state, map, e, a));
+    REQUIRE(NomMap_Insert(state, map, a, b) == true);
+    REQUIRE(NomMap_Insert(state, map, b, c) == true);
+    REQUIRE(NomMap_Insert(state, map, c, d) == true);
+    REQUIRE(NomMap_Insert(state, map, d, e) == true);
+    REQUIRE(NomMap_Insert(state, map, e, a) == true);
 
     NomValue result;
     result = NomMap_Get(state, map, a);
-    REQUIRE(NomValue_Equals(state, result, b));
+    REQUIRE(NomValue_Equals(state, result, b) == true);
     result = NomMap_Get(state, map, b);
-    REQUIRE(NomValue_Equals(state, result, c));
+    REQUIRE(NomValue_Equals(state, result, c) == true);
     result = NomMap_Get(state, map, c);
-    REQUIRE(NomValue_Equals(state, result, d));
+    REQUIRE(NomValue_Equals(state, result, d) == true);
     result = NomMap_Get(state, map, e);
-    REQUIRE(NomValue_Equals(state, result, a));
+    REQUIRE(NomValue_Equals(state, result, a) == true);
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_MixedStringKeys")
+TEST_CASE("Inserting values keyed from mixed pooled/non-pooled strings into a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
 
@@ -163,42 +227,50 @@ TEST_CASE("Map_MixedStringKeys")
     NomValue a = NomString_FromString(state, "a", true);
     NomValue b = NomString_FromString(state, "b", true);
 
-    REQUIRE(NomMap_Insert(state, map, a, b));
+    REQUIRE(NomMap_Insert(state, map, a, b) == true);
 
     NomValue a2 = NomString_FromString(state, "a", false);
 
     NomValue result;
     result = NomMap_Get(state, map, a2);
-    REQUIRE(NomValue_Equals(state, result, b));
+    REQUIRE(NomValue_Equals(state, result, b) == true);
 
     NomState_Free(state);
 }
 
-TEST_CASE("Map_Iterate")
+TEST_CASE("Iterating over a map", "[Map]")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
 
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(0), NomNumber_FromInt(0)));
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(1), NomNumber_FromInt(2)));
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(2), NomNumber_FromInt(4)));
-    REQUIRE(NomMap_Insert(state, map, NomNumber_FromInt(3), NomNumber_FromInt(6)));
+    NomValue a = NomNumber_FromInt(0);
+    NomValue b = NomNumber_FromInt(1);
+    NomValue c = NomNumber_FromInt(2);
+    NomValue d = NomNumber_FromInt(3);
+    NomValue e = NomNumber_FromInt(4);
+    NomValue f = NomNumber_FromInt(5);
+    NomValue g = NomNumber_FromInt(6);
+
+    REQUIRE(NomMap_Insert(state, map, a, a) == true);
+    REQUIRE(NomMap_Insert(state, map, b, c) == true);
+    REQUIRE(NomMap_Insert(state, map, c, e) == true);
+    REQUIRE(NomMap_Insert(state, map, d, g) == true);
 
     NomMapIterator iterator = { 0 };
-    REQUIRE(NomMap_MoveNext(state, map, &iterator));
-    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(0)));
-    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(0)));
-    REQUIRE(NomMap_MoveNext(state, map, &iterator));
-    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(1)));
-    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(2)));
-    REQUIRE(NomMap_MoveNext(state, map, &iterator));
-    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(2)));
-    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(4)));
-    REQUIRE(NomMap_MoveNext(state, map, &iterator));
-    REQUIRE(NomValue_Equals(state, iterator.key, NomNumber_FromInt(3)));
-    REQUIRE(NomValue_Equals(state, iterator.value, NomNumber_FromInt(6)));
-    REQUIRE(!NomMap_MoveNext(state, map, &iterator));
+    REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
+    REQUIRE(NomValue_Equals(state, iterator.key, a) == true);
+    REQUIRE(NomValue_Equals(state, iterator.value, a) == true);
+    REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
+    REQUIRE(NomValue_Equals(state, iterator.key, b) == true);
+    REQUIRE(NomValue_Equals(state, iterator.value, c) == true);
+    REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
+    REQUIRE(NomValue_Equals(state, iterator.key, c) == true);
+    REQUIRE(NomValue_Equals(state, iterator.value, e) == true);
+    REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
+    REQUIRE(NomValue_Equals(state, iterator.key, d) == true);
+    REQUIRE(NomValue_Equals(state, iterator.value, g) == true);
+    REQUIRE(NomMap_MoveNext(state, map, &iterator) == false);
 
     NomState_Free(state);
 }

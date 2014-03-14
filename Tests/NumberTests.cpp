@@ -28,21 +28,547 @@ extern "C"
 #include <Nominal.h>
 }
 
-TEST_CASE("A numeric value can be identified as a number")
+TEST_CASE("Creating/converting a Nominal number from/to all supported numeric types", "[Number]")
 {
-    NomValue value = NomNumber_FromDouble(1.234);
-    REQUIRE(NomNumber_Check(value) == true);
+    SECTION("Creating from int")
+    {
+        NomValue value = NomNumber_FromInt(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from unsigned int")
+    {
+        NomValue value = NomNumber_FromUnsignedInt(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from long")
+    {
+        NomValue value = NomNumber_FromLong(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from unsigned long")
+    {
+        NomValue value = NomNumber_FromUnsignedLong(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from long long")
+    {
+        NomValue value = NomNumber_FromLongLong(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from unsigned long long")
+    {
+        NomValue value = NomNumber_FromUnsignedLongLong(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from size")
+    {
+        NomValue value = NomNumber_FromSize(4);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.0f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.0);
+        }
+    }
+
+    SECTION("Creating from float")
+    {
+        NomValue value = NomNumber_FromFloat(4.321f);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.321f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == (double)4.321f);
+        }
+    }
+
+    SECTION("Creating from double")
+    {
+        NomValue value = NomNumber_FromDouble(4.321);
+
+        REQUIRE(NomNumber_Check(value) == true);
+
+        SECTION("Converting to int")
+        {
+            REQUIRE(NomNumber_AsInt(value) == 4);
+        }
+
+        SECTION("Converting to unsigned int")
+        {
+            REQUIRE(NomNumber_AsUnsignedInt(value) == 4);
+        }
+
+        SECTION("Converting to long")
+        {
+            REQUIRE(NomNumber_AsLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLong(value) == 4);
+        }
+
+        SECTION("Converting to long long")
+        {
+            REQUIRE(NomNumber_AsLongLong(value) == 4);
+        }
+
+        SECTION("Converting to unsigned long long")
+        {
+            REQUIRE(NomNumber_AsUnsignedLongLong(value) == 4);
+        }
+
+        SECTION("Converting to size_t")
+        {
+            REQUIRE(NomNumber_AsSize(value) == 4);
+        }
+
+        SECTION("Converting to float")
+        {
+            REQUIRE(NomNumber_AsFloat(value) == 4.321f);
+        }
+
+        SECTION("Converting to double")
+        {
+            REQUIRE(NomNumber_AsDouble(value) == 4.321);
+        }
+    }
 }
 
-TEST_CASE("A non-numeric value cannot be identified as a number")
+TEST_CASE("Calling NomNumber_Check on non-number Nominal values", "[Number]")
 {
-    NomValue value = NOM_NIL;
-    REQUIRE(NomNumber_Check(value) == false);
+    NomState* state = NomState_Create();
+
+    SECTION("Checking nil")
+    {
+        NomValue value = NOM_NIL;
+        REQUIRE(NomNumber_Check(value) == false);
+    }
+
+    SECTION("Checking string")
+    {
+        NomValue value = NomString_FromString(state, "Testing...", false);
+        REQUIRE(NomNumber_Check(value) == false);
+    }
+
+    SECTION("Checking pooled string")
+    {
+        NomValue value = NomString_FromString(state, "Testing...", true);
+        REQUIRE(NomNumber_Check(value) == false);
+    }
+
+    SECTION("Checking map")
+    {
+        NomValue value = NomMap_Create(state);
+        REQUIRE(NomNumber_Check(value) == false);
+    }
+
+    NomState_Free(state);
 }
 
-TEST_CASE("Creating a Nominal number and converting back to a double maintains the same value")
+TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]")
 {
-    NomValue value = NomNumber_FromDouble(1.234);
-    double doubleValue = NomNumber_AsDouble(value);
-    REQUIRE(doubleValue == 1.234);
+    NomState* state = NomState_Create();
+
+    SECTION("Addition")
+    {
+        NomValue a = NomNumber_FromInt(3);
+        NomValue b = NomNumber_FromInt(2);
+        NomValue c = NomValue_Add(state, a, b);
+        REQUIRE(NomNumber_Check(c) == true);
+        REQUIRE(NomNumber_AsDouble(c) == 5.0);
+    }
+
+    SECTION("Subtraction")
+    {
+        NomValue a = NomNumber_FromInt(3);
+        NomValue b = NomNumber_FromInt(2);
+        NomValue c = NomValue_Subtract(state, a, b);
+        REQUIRE(NomNumber_Check(c) == true);
+        REQUIRE(NomNumber_AsDouble(c) == 1.0);
+    }
+
+    SECTION("Multiplication")
+    {
+        NomValue a = NomNumber_FromInt(3);
+        NomValue b = NomNumber_FromInt(2);
+        NomValue c = NomValue_Multiply(state, a, b);
+        REQUIRE(NomNumber_Check(c) == true);
+        REQUIRE(NomNumber_AsDouble(c) == 6.0);
+    }
+
+    SECTION("Division")
+    {
+        NomValue a = NomNumber_FromInt(6);
+        NomValue b = NomNumber_FromInt(2);
+        NomValue c = NomValue_Divide(state, a, b);
+        REQUIRE(NomNumber_Check(c) == true);
+        REQUIRE(NomNumber_AsDouble(c) == 3.0);
+    }
+
+    NomState_Free(state);
 }
