@@ -156,7 +156,7 @@ NomValue NomState_Execute(
         {
             NomValue map = NomMap_Create(state);
 
-            size_t itemCount = NomNumber_AsSize(POP());
+            size_t itemCount = READAS(size_t);
             for (size_t i = 0; i < itemCount; ++i)
             {
                 NomValue key = POP();

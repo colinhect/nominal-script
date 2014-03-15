@@ -39,9 +39,9 @@ typedef enum
     TYPE_CLOSURE
 } Type;
 
-#define TYPE_MASK   (0x000000FF)
-#define QNAN_MASK   (0x000000007FFFFF00)
-#define QNAN_VALUE  (0x000000007FF7A500)
+#define TYPE_MASK       (0x000000FF)
+#define QNAN_MASK       (0x000000007FFFFF00)
+#define QNAN_VALUE      (0x000000007FF7A500)
 
 #define IS_NUMBER(v)    ((v.raw & QNAN_MASK) != QNAN_VALUE)
 

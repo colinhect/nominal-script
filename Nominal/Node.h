@@ -71,7 +71,8 @@ typedef enum
     NODE_UNARY,
     NODE_INDEX,
     NODE_SEQUENCE,
-    NODE_CLOSURE
+    NODE_CLOSURE,
+    NODE_INVOCATION
 } NodeType;
 
 ///
@@ -81,21 +82,18 @@ typedef struct _Node
     NodeType type;
     union
     {
-        // NODE_NUMBER
-        // An number literal
+        // A number literal
         struct
         {
             double value;
         } number;
 
-        // NODE_STRING
         // A string literal
         struct
         {
             StringId id;
         } string;
 
-        // NODE_MAP
         // A map literal (sequence of associations)
         struct
         {
@@ -103,14 +101,12 @@ typedef struct _Node
             struct _Node* next;
         } map;
 
-        // NODE_IDENT
         // A variable name
         struct
         {
             StringId id;
         } ident;
 
-        // NODE_BINARY
         // A binary operation applied to two expressions
         struct
         {
@@ -119,7 +115,6 @@ typedef struct _Node
             struct _Node* rightExpr;
         } binary;
 
-        // NODE_UNARY
         // A unary operation applied to an expression
         struct
         {
@@ -127,7 +122,6 @@ typedef struct _Node
             struct _Node* expr;
         } unary;
 
-        // NODE_INDEX
         // Indexing a value by a key
         struct
         {
@@ -136,7 +130,6 @@ typedef struct _Node
             bool bracket;
         } index;
 
-        // NODE_SEQUENCE
         // A sequence of expressions
         struct
         {
@@ -144,13 +137,19 @@ typedef struct _Node
             struct _Node* next;
         } sequence;
 
-        // NODE_CLOSURE
         // A closure
         struct
         {
             struct _Node* params;
             struct _Node* exprs;
         } closure;
+
+        // An invocation
+        struct
+        {
+            struct _Node* expr;
+            struct _Node* args;
+        } invocation;
     } data;
 } Node;
 

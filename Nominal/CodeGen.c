@@ -104,12 +104,9 @@ size_t GenerateCode(
             }
         }
 
-        // Push the item count on the stack
-        OPCODE(OPCODE_PUSH);
-        WRITEAS(NomValue, NomNumber_FromSize(itemCount));
-
         // Create the map
         OPCODE(OPCODE_NEW_MAP);
+        WRITEAS(size_t, itemCount);
     } break;
     case NODE_IDENT:
         OPCODE(OPCODE_GET);

@@ -100,6 +100,16 @@ void Node_Free(
             Node_Free(node->data.closure.exprs);
         }
         break;
+    case NODE_INVOCATION:
+        if (node->data.invocation.expr)
+        {
+            Node_Free(node->data.invocation.expr);
+        }
+        if (node->data.invocation.args)
+        {
+            Node_Free(node->data.invocation.args);
+        }
+        break;
     }
 
     free(node);

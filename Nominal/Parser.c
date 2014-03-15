@@ -204,6 +204,7 @@ Node* Parser_PrimaryExpr(
         closure->data.closure.exprs = exprs;
         return closure;
     }
+
     // Unary operator
     else if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
     {
@@ -262,6 +263,12 @@ Node* Parser_SecondaryExpr(
         else if (id == '{')
         {
             node = Parser_Map(parser);
+            break;
+        }
+        
+        else
+        {
+            SetUnexpectedTokenError(parser);
             break;
         }
 
@@ -363,6 +370,53 @@ Node* Parser_SecondaryExpr(
             else
             {
                 break; // No more dot or bracket indices
+            }
+        }
+
+        // Check for invocation
+        if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ':'))
+        {
+            Lexer_Next(parser->lexer);
+
+            Node* expr = node;
+            Node* args = Node_Create(NODE_SEQUENCE);
+
+            // Create the invocation node
+            node = Node_Create(NODE_INVOCATION);
+            node->data.invocation.expr = expr;
+            node->data.invocation.args = args;
+
+            // Parse the argments
+            for (;;)
+            {
+                // Save the parser state
+                LexerState state = Lexer_SaveState(parser->lexer);
+
+                // Try to parse an argument
+                Node* arg = Parser_PrimaryExpr(parser);
+                if (arg)
+                {
+                    // Append the argument to the end of the invocation node's
+                    // argument sequence
+                    args->data.sequence.expr = arg;
+
+                    // Create the next node
+                    Node* next = Node_Create(NODE_SEQUENCE);
+                    args->data.sequence.next = next;
+
+                    // Move to the next node
+                    args = next;                    
+                }
+                else
+                {
+                    // Failed to parse an argument which indicates the end of
+                    // argument list
+
+                    // Restore the parser state
+                    Lexer_RestoreState(parser->lexer, state);
+                    
+                    break;
+                }
             }
         }
     }
