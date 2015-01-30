@@ -237,6 +237,8 @@ NomValue NomState_Execute(
             result = NomValue_Get(state, r, l);
             PUSH(result);
             break;
+        default:
+            break;
         }
     }
 
