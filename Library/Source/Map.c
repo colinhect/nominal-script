@@ -109,7 +109,7 @@ bool NomMap_MoveNext(
 
     // Initialize a hash table iterator at the same location as the map
     // iterator
-    HashTableIterator hashTableIterator = { 0 };
+    HashTableIterator hashTableIterator = { 0, 0, 0, 0, 0 };
     if (iterator->map.raw == 0)
     {
         iterator->map = map;
