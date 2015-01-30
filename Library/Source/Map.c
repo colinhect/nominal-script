@@ -85,6 +85,14 @@ NomValue NomMap_Create(
     return map;
 }
 
+NomMapIterator NomMap_Iterator(
+    void
+    )
+{
+    NomMapIterator iterator = { { 0 }, { 0 }, { 0 }, 0, 0 };
+    return iterator;
+}
+
 bool NomMap_MoveNext(
     NomState*       state,
     NomValue        map,
