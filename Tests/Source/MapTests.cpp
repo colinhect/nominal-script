@@ -274,4 +274,3 @@ TEST_CASE("Iterating over a map", "[Map]")
 
     NomState_Free(state);
 }
-
