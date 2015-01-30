@@ -44,6 +44,10 @@ void Node_Free(
 {
     switch (node->type)
     {
+    case NODE_NIL:
+    case NODE_NUMBER:
+    case NODE_STRING:
+        break;
     case NODE_MAP:
         if (node->data.map.assoc)
         {
@@ -53,6 +57,8 @@ void Node_Free(
         {
             Node_Free(node->data.map.next);
         }
+        break;
+    case NODE_IDENT:
         break;
     case NODE_BINARY:
         if (node->data.binary.leftExpr)
