@@ -24,8 +24,9 @@
 #ifndef NOMINAL_VALUE_H
 #define NOMINAL_VALUE_H
 
-#include <stdint.h>
+#include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "Nominal/Export.h"
 

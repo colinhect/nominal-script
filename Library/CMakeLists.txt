@@ -19,7 +19,7 @@ file(
 if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS /DNOMINAL_EXPORTS")
 elseif(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -pedantic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall -Wextra -Werror -pedantic")
 endif()
 
 add_library(Nominal SHARED ${SOURCE_FILES})

@@ -27,6 +27,7 @@
 #include "Nominal/Export.h"
 #include "Nominal/Value.h"
 
+#include <stddef.h>
 #include <limits.h>
 
 ///

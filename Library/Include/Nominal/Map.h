@@ -27,6 +27,8 @@
 #include "Nominal/Export.h"
 #include "Nominal/Value.h"
 
+#include <stddef.h>
+
 ///
 /// \brief An iterator for a Nominal map.
 typedef struct _NomMapIterator

@@ -14,7 +14,7 @@ if(WIN32)
     include(CheckIncludeFiles)
     check_include_files(vld.h NOMINAL_USE_VLD)
 elseif(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -pedantic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall -Wextra -Werror -pedantic")
 endif()
 
 add_executable(NominalInteractive ${SOURCE_FILES})    
