@@ -4,9 +4,6 @@ env:
  - BUILD_TYPE=Debug
  - BUILD_TYPE=Release
 
-before_install:
- - sudo apt-get install -qq valgrind
-
 compiler: clang
 
 install:
@@ -18,4 +15,3 @@ install:
 script:
  - cd Build/Output
  - ./nominaltests
- - valgrind ./nominaltests
