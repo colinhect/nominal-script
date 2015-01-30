@@ -1,14 +1,1 @@
-*.opensdf
-*.sdf
-*.suo
-*.tlog
-*.log
-*.lastbuildstate
-*.obj
-*.idb
-*.ilk
-*.pdb
-*.exe
-*.lib
-
-
+Build/*

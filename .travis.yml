@@ -1,0 +1,21 @@
+language: c
+
+env:
+ - BUILD_TYPE=Debug
+ - BUILD_TYPE=Release
+
+before_install:
+ - sudo apt-get install -qq valgrind
+
+compiler: clang
+
+install:
+ - cmake -H./ -BBuild -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+ - cd Build
+ - make
+ - cd ..
+
+script:
+ - cd Build/Output
+ - ./nominaltests
+ - valgrind ./nominaltests

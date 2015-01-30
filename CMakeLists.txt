@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 2.8)
+project(Nominal CXX)
+
+enable_language(C)
+
+set(NOMINAL_MAJOR_VERSION 0)
+set(NOMINAL_MINOR_VERSION 0)
+set(NOMINAL_PATCH_VERSION 1)
+set(NOMINAL_VERSION ${NOMINAL_MAJOR_VERSION}.${NOMINAL_MINOR_VERSION}.${NOMINAL_PATCH_VERSION})
+
+set(OUTPUT_DIR "${CMAKE_BINARY_DIR}/Output" CACHE PATH "Output directory for built files")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
+
+foreach(OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${OUTPUTCONFIG} OUTPUTCONFIG)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${OUTPUT_DIR})
+endforeach()
+
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+add_subdirectory("${PROJECT_SOURCE_DIR}/Interactive")
+add_subdirectory("${PROJECT_SOURCE_DIR}/Library")
+add_subdirectory("${PROJECT_SOURCE_DIR}/Tests")
