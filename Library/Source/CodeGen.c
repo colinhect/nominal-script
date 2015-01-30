@@ -130,7 +130,7 @@ size_t GenerateCode(
         break;
     case NODE_BINARY:
     {
-        OpCode op = node->data.binary.op;
+        OpCode op = (OpCode)node->data.binary.op;
 
         Node* leftExpr = node->data.binary.leftExpr;
         Node* rightExpr = node->data.binary.rightExpr;
@@ -210,6 +210,8 @@ size_t GenerateCode(
         OPCODE(OPCODE_NEW_CLOSURE);
         WRITEAS(size_t, closureIndex);
     } break;
+    case NODE_INVOCATION:
+        break;
     }
 
     return index;

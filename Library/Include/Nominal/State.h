@@ -29,7 +29,7 @@
 
 ///
 /// \brief A Nominal state.
-typedef struct NomState NomState;
+typedef struct _NomState NomState;
 
 ///
 /// \brief Creates a new state.
