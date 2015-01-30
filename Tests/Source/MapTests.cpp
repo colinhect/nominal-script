@@ -250,12 +250,11 @@ TEST_CASE("Iterating over a map", "[Map]")
     NomValue d = NomNumber_FromInt(3);
     NomValue e = NomNumber_FromInt(4);
     NomValue f = NomNumber_FromInt(5);
-    NomValue g = NomNumber_FromInt(6);
 
     REQUIRE(NomMap_Insert(state, map, a, a) == true);
     REQUIRE(NomMap_Insert(state, map, b, c) == true);
     REQUIRE(NomMap_Insert(state, map, c, e) == true);
-    REQUIRE(NomMap_Insert(state, map, d, g) == true);
+    REQUIRE(NomMap_Insert(state, map, d, f) == true);
 
     NomMapIterator iterator = NomMap_Iterator();
     REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
@@ -269,7 +268,7 @@ TEST_CASE("Iterating over a map", "[Map]")
     REQUIRE(NomValue_Equals(state, iterator.value, e) == true);
     REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
     REQUIRE(NomValue_Equals(state, iterator.key, d) == true);
-    REQUIRE(NomValue_Equals(state, iterator.value, g) == true);
+    REQUIRE(NomValue_Equals(state, iterator.value, f) == true);
     REQUIRE(NomMap_MoveNext(state, map, &iterator) == false);
 
     NomState_Free(state);
