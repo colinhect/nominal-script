@@ -293,7 +293,7 @@ Hash HashString(
     UserData    context
     )
 {
-    context;
+    (void)context;
 
     char* s = (char*)key;
     Hash hash = 5381;
@@ -313,7 +313,7 @@ bool CompareString(
     UserData    context
     )
 {
-    context;
+    (void)context;
     return strcmp((const char*)left, (const char*)right) == 0;
 }
 
@@ -322,7 +322,7 @@ Hash HashIdentity(
     UserData    context
     )
 {
-    context;
+    (void)context;
     return (Hash)key;
 }
 
@@ -332,6 +332,6 @@ bool CompareIdentity(
     UserData    context
     )
 {
-    context;
+    (void)context;
     return left == right;
 }
