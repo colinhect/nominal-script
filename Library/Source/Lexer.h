@@ -55,7 +55,7 @@ typedef enum
 
 ///
 /// \brief Contains the position and state of a lexer.
-typedef struct _LexerState
+typedef struct
 {
     unsigned    index;
     unsigned    line;

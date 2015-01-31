@@ -31,7 +31,7 @@
 
 ///
 /// \brief An iterator for a Nominal map.
-typedef struct _NomMapIterator
+typedef struct
 {
     NomValue    map;
     NomValue    key;

@@ -77,7 +77,7 @@ typedef enum
 
 ///
 /// \brief An AST node.
-typedef struct _Node
+typedef struct Node
 {
     NodeType type;
     union
@@ -97,8 +97,8 @@ typedef struct _Node
         // A map literal (sequence of associations)
         struct
         {
-            struct _Node* assoc;
-            struct _Node* next;
+            struct Node* assoc;
+            struct Node* next;
         } map;
 
         // A variable name
@@ -111,44 +111,44 @@ typedef struct _Node
         struct
         {
             Operator op;
-            struct _Node* leftExpr;
-            struct _Node* rightExpr;
+            struct Node* leftExpr;
+            struct Node* rightExpr;
         } binary;
 
         // A unary operation applied to an expression
         struct
         {
             Operator op;
-            struct _Node* expr;
+            struct Node* expr;
         } unary;
 
         // Indexing a value by a key
         struct
         {
-            struct _Node* expr;
-            struct _Node* key;
+            struct Node* expr;
+            struct Node* key;
             bool bracket;
         } index;
 
         // A sequence of expressions
         struct
         {
-            struct _Node* expr;
-            struct _Node* next;
+            struct Node* expr;
+            struct Node* next;
         } sequence;
 
         // A closure
         struct
         {
-            struct _Node* params;
-            struct _Node* exprs;
+            struct Node* params;
+            struct Node* exprs;
         } closure;
 
         // An invocation
         struct
         {
-            struct _Node* expr;
-            struct _Node* args;
+            struct Node* expr;
+            struct Node* args;
         } invocation;
     } data;
 } Node;

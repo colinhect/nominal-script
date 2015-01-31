@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _HeapObject
+typedef struct
 {
     void*   data;
     void    (*free)(void*);

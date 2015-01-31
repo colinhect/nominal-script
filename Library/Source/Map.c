@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 
-typedef struct _MapData
+typedef struct
 {
     HashTable*  hashTable;
 } MapData;

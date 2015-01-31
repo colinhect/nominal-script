@@ -40,7 +40,7 @@ struct BucketNode
 {
     UserData            key;
     UserData            value;
-    struct BucketNode* next;
+    struct BucketNode*  next;
 };
 
 // Gets a node for a specific key with the option of creating a new node if it
