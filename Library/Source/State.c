@@ -125,7 +125,7 @@ NomValue NomState_Execute(
             PUSH(result);
             break;
         case OPCODE_POP:
-            POP();
+            (void)POP();
             break;
         case OPCODE_GET:
             id = READAS(StringId);
@@ -169,7 +169,7 @@ NomValue NomState_Execute(
         } break;
         case OPCODE_NEW_CLOSURE:
         {
-            READAS(size_t);
+            (void)READAS(size_t);
             //NomValue closure = NomClosure_Create(state, state->ip);
         } break;
         case OPCODE_ADD:

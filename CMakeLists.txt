@@ -21,3 +21,4 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_subdirectory("${PROJECT_SOURCE_DIR}/Interactive")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Library")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Tests")
+

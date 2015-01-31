@@ -26,6 +26,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(NominalInteractive PROPERTIES
     PROJECT_LABEL Interactive
-    OUTPUT_NAME Nominal
+    OUTPUT_NAME nominal
     LINKER_LANGUAGE C
     )

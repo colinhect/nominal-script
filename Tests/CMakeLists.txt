@@ -13,8 +13,6 @@ if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
     include(CheckIncludeFiles)
     check_include_files(vld.h NOMINAL_USE_VLD)
-elseif(UNIX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 add_executable(NominalTests ${SOURCE_FILES})    
@@ -26,6 +24,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(NominalTests PROPERTIES
     PROJECT_LABEL Tests
-    OUTPUT_NAME NominalTests
+    OUTPUT_NAME nominaltests
     LINKER_LANGUAGE CXX
     )

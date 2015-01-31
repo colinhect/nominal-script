@@ -19,7 +19,7 @@ file(
 if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS /DNOMINAL_EXPORTS")
 elseif(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall -Wextra -Werror -pedantic")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wall -Wextra -Werror -pedantic -Wno-missing-braces -Wno-missing-field-initializers")
 endif()
 
 add_library(Nominal SHARED ${SOURCE_FILES})
@@ -35,6 +35,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(Nominal PROPERTIES
     PROJECT_LABEL Library
-    OUTPUT_NAME Nominal
+    OUTPUT_NAME nominal
     LINKER_LANGUAGE C
     )
