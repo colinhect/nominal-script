@@ -30,22 +30,27 @@
 #define STATE_MAX_STACK_SIZE    (1024)
 #define STATE_MAX_BYTE_CODE     (8096)
 
-typedef struct _NomState
-{
-    NomValue        stack[STATE_MAX_STACK_SIZE];
-    size_t          sp;
+///
+/// \brief Returns the heap used by the specified state.
+///
+/// \param state
+///     The state.
+///
+/// \returns The heap used by the state.
+Heap* NomState_GetHeap(
+    NomState*   state
+    );
 
-    unsigned char   byteCode[STATE_MAX_BYTE_CODE];
-    size_t          ip;
-
-    Heap*           heap;
-    StringPool*     stringPool;
-
-    char            error[2048];
-    bool            errorFlag;
-
-    NomValue        globalScope;
-} NomState;
+///
+/// \brief Returns the string pool used by the specified state.
+///
+/// \param state
+///     The state.
+///
+/// \returns The string pool used by the state.
+StringPool* NomState_GetStringPool(
+    NomState*   state
+    );
 
 ///
 /// \brief Sets the error message of the state.

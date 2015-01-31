@@ -130,6 +130,8 @@ long long NomValue_Hash(
     NomValue    value
     )
 {
+    StringPool* stringPool = NomState_GetStringPool(state);
+
     long long hash = value.raw;
     switch (GET_TYPE(value))
     {
@@ -137,7 +139,7 @@ long long NomValue_Hash(
         hash = HashString((UserData)NomString_AsString(state, value), (UserData)state);
         break;
     case TYPE_POOLED_STRING:
-        hash = StringPool_Hash(state->stringPool, GET_ID(value));
+        hash = StringPool_Hash(stringPool, GET_ID(value));
         break;
     }
 

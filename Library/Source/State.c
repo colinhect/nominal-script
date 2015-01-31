@@ -37,6 +37,23 @@
 
 #define STRING_POOL_STRING_COUNT    (256)
 
+typedef struct _NomState
+{
+    NomValue        stack[STATE_MAX_STACK_SIZE];
+    size_t          sp;
+
+    unsigned char   byteCode[STATE_MAX_BYTE_CODE];
+    size_t          ip;
+
+    Heap*           heap;
+    StringPool*     stringPool;
+
+    char            error[2048];
+    bool            errorFlag;
+
+    NomValue        globalScope;
+} NomState;
+
 NomState* NomState_Create(
     void
     )
@@ -62,6 +79,22 @@ void NomState_Free(
     StringPool_Free(state->stringPool);
     Heap_Free(state->heap);
     free(state);
+}
+
+Heap* NomState_GetHeap(
+    NomState*   state
+    )
+{
+    assert(state);
+    return state->heap;
+}
+
+StringPool* NomState_GetStringPool(
+    NomState*   state
+    )
+{
+    assert(state);
+    return state->stringPool;
 }
 
 void NomState_SetError(

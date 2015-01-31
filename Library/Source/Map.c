@@ -77,8 +77,9 @@ NomValue NomMap_Create(
     NomValue map = NomValue_Nil();
     SET_TYPE(map, TYPE_MAP);
 
-    ObjectId id = Heap_Alloc(state->heap, sizeof(MapData), free);
-    MapData* data = Heap_GetData(state->heap, id);
+    Heap* heap = NomState_GetHeap(state);
+    ObjectId id = Heap_Alloc(heap, sizeof(MapData), free);
+    MapData* data = Heap_GetData(heap, id);
     data->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
 
     SET_ID(map, id);
@@ -97,7 +98,8 @@ bool NomMap_MoveNext(
     }
 
     ObjectId id = GET_ID(map);
-    MapData* data = Heap_GetData(state->heap, id);
+    Heap* heap = NomState_GetHeap(state);
+    MapData* data = Heap_GetData(heap, id);
 
     // Initialize a hash table iterator at the same location as the map
     // iterator
@@ -138,7 +140,8 @@ bool NomMap_Insert(
     }
 
     ObjectId id = GET_ID(map);
-    MapData* data = Heap_GetData(state->heap, id);
+    Heap* heap = NomState_GetHeap(state);
+    MapData* data = Heap_GetData(heap, id);
     return HashTable_Insert(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
@@ -155,7 +158,8 @@ bool NomMap_Set(
     }
 
     ObjectId id = GET_ID(map);
-    MapData* data = Heap_GetData(state->heap, id);
+    Heap* heap = NomState_GetHeap(state);
+    MapData* data = Heap_GetData(heap, id);
     return HashTable_Set(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
@@ -172,7 +176,8 @@ bool NomMap_InsertOrSet(
     }
 
     ObjectId id = GET_ID(map);
-    MapData* data = Heap_GetData(state->heap, id);
+    Heap* heap = NomState_GetHeap(state);
+    MapData* data = Heap_GetData(heap, id);
     return HashTable_InsertOrSet(data->hashTable, (UserData)key.raw, (UserData)value.raw);
 }
 
@@ -200,6 +205,7 @@ bool NomMap_TryGet(
     }
 
     ObjectId id = GET_ID(map);
-    MapData* data = Heap_GetData(state->heap, id);
+    Heap* heap = NomState_GetHeap(state);
+    MapData* data = Heap_GetData(heap, id);
     return HashTable_Get(data->hashTable, (UserData)key.raw, (UserData*)&value->data);
 }

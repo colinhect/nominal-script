@@ -47,17 +47,20 @@ NomValue NomString_FromString(
 {
     NomValue string = NomValue_Nil();
 
+
     if (pooled)
     {
-        StringId id = StringPool_InsertOrFind(state->stringPool, value);
+        StringPool* stringPool = NomState_GetStringPool(state);
+        StringId id = StringPool_InsertOrFind(stringPool, value);
 
         SET_TYPE(string, TYPE_POOLED_STRING);
         SET_ID(string, id);
     }
     else
     {
-        ObjectId id = Heap_Alloc(state->heap, strlen(value) + 1, free);
-        strcpy((char*)Heap_GetData(state->heap, id), value);
+        Heap* heap = NomState_GetHeap(state);
+        ObjectId id = Heap_Alloc(heap, strlen(value) + 1, free);
+        strcpy((char*)Heap_GetData(heap, id), value);
 
         SET_TYPE(string, TYPE_STRING);
         SET_ID(string, id);
@@ -71,12 +74,15 @@ const char* NomString_AsString(
     NomValue    value
     )
 {
+    Heap* heap = NomState_GetHeap(state);
+    StringPool* stringPool = NomState_GetStringPool(state);
+
     switch (GET_TYPE(value))
     {
     case TYPE_STRING:
-        return (const char*)Heap_GetData(state->heap, GET_ID(value));
+        return (const char*)Heap_GetData(heap, GET_ID(value));
     case TYPE_POOLED_STRING:
-        return StringPool_Find(state->stringPool, GET_ID(value));
+        return StringPool_Find(stringPool, GET_ID(value));
     }
 
     return NULL;
