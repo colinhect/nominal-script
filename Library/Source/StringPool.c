@@ -27,14 +27,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct _StringPool
+struct StringPool
 {
     HashTable*  hashTable;
     char**      strings;
     Hash*       hashes;
     size_t      stringCount;
     StringId    nextStringId;
-} StringPool;
+};
 
 StringPool* StringPool_Create(
     size_t  stringCount

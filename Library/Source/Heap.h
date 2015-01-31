@@ -29,7 +29,7 @@
 
 ///
 /// \brief A heap of GC objects.
-typedef struct _Heap Heap;
+typedef struct Heap Heap;
 
 ///
 /// \brief A handle to a GC object.

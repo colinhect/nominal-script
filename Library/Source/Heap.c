@@ -33,12 +33,12 @@ typedef struct _HeapObject
     void    (*free)(void*);
 } HeapObject;
 
-typedef struct _Heap
+struct Heap
 {
     HeapObject* objects;
     size_t      objectCapacity;
     ObjectId    nextId;
-} Heap;
+};
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
 

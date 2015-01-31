@@ -68,7 +68,7 @@ typedef struct _LexerState
 
 ///
 /// \brief A lexer.
-typedef struct _Lexer Lexer;
+typedef struct Lexer Lexer;
 
 ///
 /// \brief Creates a new lexer.

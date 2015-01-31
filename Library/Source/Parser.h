@@ -30,7 +30,7 @@
 
 ///
 /// \brief A parser.
-typedef struct _Parser Parser;
+typedef struct Parser Parser;
 
 ///
 /// \brief Creates a new parser.

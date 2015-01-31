@@ -30,7 +30,9 @@
 
 #include "Nominal/Export.h"
 
-typedef struct _NomState NomState;
+///
+/// \brief A Nominal state.
+typedef struct NomState NomState;
 
 ///
 /// \brief A Nominal value.

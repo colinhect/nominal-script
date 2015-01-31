@@ -37,7 +37,7 @@
 
 #define STRING_POOL_STRING_COUNT    (256)
 
-typedef struct _NomState
+struct NomState
 {
     NomValue        stack[STATE_MAX_STACK_SIZE];
     size_t          sp;
@@ -52,7 +52,7 @@ typedef struct _NomState
     bool            errorFlag;
 
     NomValue        globalScope;
-} NomState;
+};
 
 NomState* NomState_Create(
     void

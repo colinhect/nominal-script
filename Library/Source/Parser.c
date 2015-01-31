@@ -32,12 +32,12 @@
 
 #define MAX_PARSER_ERROR_LENGTH (256)
 
-typedef struct _Parser
+struct Parser
 {
     Lexer*      lexer;
     StringPool* stringPool;
     char        error[MAX_PARSER_ERROR_LENGTH];
-} Parser;
+};
 
 void SetUnexpectedTokenError(
     Parser*     parser

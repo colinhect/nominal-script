@@ -28,10 +28,6 @@
 #include "Nominal/Value.h"
 
 ///
-/// \brief A Nominal state.
-typedef struct _NomState NomState;
-
-///
 /// \brief Creates a new state.
 ///
 /// \returns The new state.

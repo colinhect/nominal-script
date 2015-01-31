@@ -27,9 +27,8 @@
 #include <string.h>
 
 #include "Node.h"
-
-typedef struct _NomState State;
-typedef struct _StringPool StringPool;
+#include "State.h"
+#include "StringPool.h"
 
 ///
 /// \brief A Nominal byte code operation.

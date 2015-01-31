@@ -30,7 +30,7 @@
 
 typedef uint32_t StringId;
 
-typedef struct _StringPool StringPool;
+typedef struct StringPool StringPool;
 
 ///
 /// \brief Creates a new string pool.

@@ -30,11 +30,11 @@
 #include <string.h>
 #include <ctype.h>
 
-typedef struct _Lexer
+struct Lexer
 {
     const char* source;
     LexerState  state;
-} Lexer;
+};
 
 char ReadNext(
     Lexer*  lexer

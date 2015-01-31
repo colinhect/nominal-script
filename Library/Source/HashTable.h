@@ -69,12 +69,15 @@ typedef bool (*CompareFunction)(
 
 ///
 /// \brief A hash table.
-typedef struct _HashTable HashTable;
-typedef struct _BucketNode BucketNode;
+typedef struct HashTable HashTable;
+
+///
+/// \brief A hash table bucket node.
+typedef struct BucketNode BucketNode;
 
 ///
 /// \brief An iterator of a hash table.
-typedef struct _HashTableIterator
+typedef struct
 {
     HashTable*  hashTable;
     size_t      index;
