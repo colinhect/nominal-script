@@ -175,7 +175,7 @@ size_t NomValue_AsString(
 
         // Iterate over each pair
         bool printComma = false;
-        NomMapIterator iterator = NomMap_Iterator();
+        NomMapIterator iterator = { 0 };
         while (NomMap_MoveNext(state, value, &iterator))
         {
             if (printComma)

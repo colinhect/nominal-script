@@ -26,6 +26,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(NominalTests PROPERTIES
     PROJECT_LABEL Tests
-    OUTPUT_NAME nominaltests
+    OUTPUT_NAME NominalTests
     LINKER_LANGUAGE CXX
     )

@@ -85,14 +85,6 @@ NomValue NomMap_Create(
     return map;
 }
 
-NomMapIterator NomMap_Iterator(
-    void
-    )
-{
-    NomMapIterator iterator = { { 0 }, { 0 }, { 0 }, 0, 0 };
-    return iterator;
-}
-
 bool NomMap_MoveNext(
     NomState*       state,
     NomValue        map,
@@ -109,7 +101,7 @@ bool NomMap_MoveNext(
 
     // Initialize a hash table iterator at the same location as the map
     // iterator
-    HashTableIterator hashTableIterator = { 0, 0, 0, 0, 0 };
+    HashTableIterator hashTableIterator = { 0 };
     if (iterator->map.raw == 0)
     {
         iterator->map = map;

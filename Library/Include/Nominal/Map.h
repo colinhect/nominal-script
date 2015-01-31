@@ -63,12 +63,6 @@ NOMINAL_EXPORT NomValue NomMap_Create(
     );
 
 ///
-/// \brief Creates a map iterator.
-NOMINAL_EXPORT NomMapIterator NomMap_Iterator(
-    void
-    );
-
-///
 /// \brief Moves to the next pair in the map.
 ///
 /// \param state

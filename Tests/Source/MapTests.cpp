@@ -256,7 +256,7 @@ TEST_CASE("Iterating over a map", "[Map]")
     REQUIRE(NomMap_Insert(state, map, c, e) == true);
     REQUIRE(NomMap_Insert(state, map, d, f) == true);
 
-    NomMapIterator iterator = NomMap_Iterator();
+    NomMapIterator iterator = { 0 };
     REQUIRE(NomMap_MoveNext(state, map, &iterator) == true);
     REQUIRE(NomValue_Equals(state, iterator.key, a) == true);
     REQUIRE(NomValue_Equals(state, iterator.value, a) == true);
