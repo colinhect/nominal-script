@@ -26,6 +26,7 @@
 #include "Nominal/Number.h"
 
 #include "Value.h"
+#include "Map.h"
 #include "State.h"
 #include "HashTable.h"
 #include "Heap.h"
@@ -89,7 +90,7 @@ NomValue NomMap_Create(
 bool NomMap_MoveNext(
     NomState*       state,
     NomValue        map,
-    NomMapIterator* iterator
+    NomIterator*    iterator
     )
 {
     if (!NomMap_Check(map))
@@ -104,23 +105,23 @@ bool NomMap_MoveNext(
     // Initialize a hash table iterator at the same location as the map
     // iterator
     HashTableIterator hashTableIterator = { 0 };
-    if (iterator->map.raw == 0)
+    if (iterator->source.raw == 0)
     {
-        iterator->map = map;
+        iterator->source = map;
     }
     else
     {
         hashTableIterator.hashTable = data->hashTable;
     }
-    hashTableIterator.index = iterator->index;
-    hashTableIterator.bucketNode = iterator->bucketNode;
+    hashTableIterator.index = iterator->map.index;
+    hashTableIterator.bucketNode = iterator->map.bucketNode;
 
     // Move to the next pair in the hash table
     bool result = HashTable_MoveNext(data->hashTable, &hashTableIterator);
 
     // Sync the hash table iterator with the map iterator
-    iterator->index = hashTableIterator.index;
-    iterator->bucketNode = hashTableIterator.bucketNode;
+    iterator->map.index = hashTableIterator.index;
+    iterator->map.bucketNode = hashTableIterator.bucketNode;
     iterator->key.raw = hashTableIterator.key;
     iterator->value.raw = hashTableIterator.value;
 

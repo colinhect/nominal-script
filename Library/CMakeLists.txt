@@ -35,6 +35,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(Nominal PROPERTIES
     PROJECT_LABEL Library
-    OUTPUT_NAME nominal
+    OUTPUT_NAME nominal1
     LINKER_LANGUAGE C
     )

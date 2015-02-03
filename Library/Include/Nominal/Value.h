@@ -38,7 +38,7 @@ typedef struct NomState NomState;
 /// \brief A Nominal value.
 typedef union
 {
-    uint64_t        raw;
+    uint64_t    raw;
 
     struct
     {
@@ -46,8 +46,26 @@ typedef union
         uint32_t    upper;
     } data;
 
-    double          number;
+    double      number;
 } NomValue;
+
+///
+/// \brief An iterator for a Nominal value.
+typedef struct
+{
+    NomValue    source;
+    NomValue    key;
+    NomValue    value;
+    union
+    {
+        // Map-related iterator data
+        struct
+        {
+            size_t      index;
+            void*       bucketNode;
+        } map;
+    };
+} NomIterator;
 
 ///
 /// \brief Returns the value representing nil.
@@ -198,6 +216,39 @@ NOMINAL_EXPORT NomValue NomValue_Divide(
 NOMINAL_EXPORT NomValue NomValue_Negate(
     NomState*   state,
     NomValue    value
+    );
+
+///
+/// \brief Gets whether a Nominal value can be iterated over.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value.
+///
+/// \returns True if the value can be iterated over; false otherwise.
+NOMINAL_EXPORT bool NomValue_Iterable(
+    NomState*   state,
+    NomValue    value
+    );
+
+///
+/// \brief Moves to the next key/value pair in the Nominal value.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value.
+/// \param iterator
+///     The iterator.  If initialized to zero then it will be intialized and
+///     moved to the first pair in the value.
+///
+/// \returns True if the next pair was moved to; false if there were no more
+/// pairs in the value or if the value is not iterable.
+NOMINAL_EXPORT bool NomValue_MoveNext(
+    NomState*       state,
+    NomValue        value,
+    NomIterator*    iterator
     );
 
 ///

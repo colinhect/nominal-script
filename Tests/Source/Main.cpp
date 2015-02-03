@@ -27,7 +27,7 @@ extern "C"
 }
 
 #ifdef NOMINAL_USE_VLD
-#include <vld.h>
+ #include <vld.h>
 #endif
 
 #define CATCH_CONFIG_MAIN

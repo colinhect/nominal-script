@@ -27,6 +27,7 @@
 #include "Nominal/Map.h"
 
 #include "Value.h"
+#include "Map.h"
 #include "State.h"
 
 #include <assert.h>
@@ -177,8 +178,8 @@ size_t NomValue_AsString(
 
         // Iterate over each pair
         bool printComma = false;
-        NomMapIterator iterator = { 0 };
-        while (NomMap_MoveNext(state, value, &iterator))
+        NomIterator iterator = { 0 };
+        while (NomValue_MoveNext(state, value, &iterator))
         {
             if (printComma)
             {
@@ -310,6 +311,28 @@ NomValue NomValue_Negate(
         result = NomNumber_FromDouble(-NomNumber_AsDouble(value));
     }
 
+    return result;
+}
+
+bool NomValue_Iterable(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    return NomMap_Check(value);
+}
+
+bool NomValue_MoveNext(
+    NomState*       state,
+    NomValue        value,
+    NomIterator*    iterator
+    )
+{
+    bool result = false;
+    if (NomMap_Check(value))
+    {
+        result = NomMap_MoveNext(state, value, iterator);
+    }
     return result;
 }
 

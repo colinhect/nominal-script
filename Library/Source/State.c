@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal.h"
 
+#include "Map.h"
 #include "State.h"
 #include "Parser.h"
 #include "CodeGen.h"

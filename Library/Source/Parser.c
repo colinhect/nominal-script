@@ -585,7 +585,7 @@ Node* Parser_Map(
             item->data.binary.leftExpr->type = NODE_STRING;
         }
 
-        // Infer the key if it is not a association operation
+        // Infer the key if it is not an association operation
         if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
         {
             Node* key = Node_Create(NODE_NUMBER);

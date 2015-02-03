@@ -88,7 +88,7 @@ TEST_CASE("Creating a map with implicit keys", "[State]")
 
     for (int i = 0; i < 4; ++i)
     {
-        result = NomMap_Get(state, map, NomNumber_FromInt(i));
+        result = NomValue_Get(state, map, NomNumber_FromInt(i));
         REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(i)));
     }
 
@@ -104,11 +104,11 @@ TEST_CASE("Creating a map with explicit keys", "[State]")
     REQUIRE(NomMap_Check(map));
 
     NomValue result;
-    result = NomMap_Get(state, map, NomString_FromString(state, "zero", false));
+    result = NomValue_Get(state, map, NomString_FromString(state, "zero", false));
     REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(0)) == true);
-    result = NomMap_Get(state, map, NomString_FromString(state, "one", false));
+    result = NomValue_Get(state, map, NomString_FromString(state, "one", false));
     REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(1)) == true);
-    result = NomMap_Get(state, map, NomString_FromString(state, "two", false));
+    result = NomValue_Get(state, map, NomString_FromString(state, "two", false));
     REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(2)) == true);
 
     NomState_Free(state);

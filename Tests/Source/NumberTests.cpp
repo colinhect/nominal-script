@@ -499,7 +499,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
     }
 }
 
-TEST_CASE("Calling NomNumber_Check on non-number Nominal values", "[Number]")
+TEST_CASE("Calling NomNumber_Check() on non-number Nominal values", "[Number]")
 {
     NomState* state = NomState_Create();
 
@@ -569,6 +569,16 @@ TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]
         REQUIRE(NomNumber_Check(c) == true);
         REQUIRE(NomNumber_AsDouble(c) == 3.0);
     }
+
+    NomState_Free(state);
+}
+
+TEST_CASE("Calling NomValue_Iterable() a Nominal number", "[Number]")
+{
+    NomState* state = NomState_Create();
+
+    NomValue number = NomNumber_FromDouble(1.0);
+    REQUIRE(NomValue_Iterable(state, number) == false);
 
     NomState_Free(state);
 }
