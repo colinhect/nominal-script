@@ -113,15 +113,15 @@ bool NomMap_MoveNext(
     {
         hashTableIterator.hashTable = data->hashTable;
     }
-    hashTableIterator.index = iterator->map.index;
-    hashTableIterator.bucketNode = iterator->map.bucketNode;
+    hashTableIterator.index = iterator->data.map.index;
+    hashTableIterator.bucketNode = iterator->data.map.bucketNode;
 
     // Move to the next pair in the hash table
     bool result = HashTable_MoveNext(data->hashTable, &hashTableIterator);
 
     // Sync the hash table iterator with the map iterator
-    iterator->map.index = hashTableIterator.index;
-    iterator->map.bucketNode = hashTableIterator.bucketNode;
+    iterator->data.map.index = hashTableIterator.index;
+    iterator->data.map.bucketNode = hashTableIterator.bucketNode;
     iterator->key.raw = hashTableIterator.key;
     iterator->value.raw = hashTableIterator.value;
 

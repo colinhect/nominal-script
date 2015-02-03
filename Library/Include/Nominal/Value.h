@@ -64,7 +64,7 @@ typedef struct
             size_t      index;
             void*       bucketNode;
         } map;
-    };
+    } data;
 } NomIterator;
 
 ///
