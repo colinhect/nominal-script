@@ -29,7 +29,7 @@
 #include "StringPool.h"
 
 ///
-/// \brief Creates a pooled string from a string ID.
+/// \brief Creates an interned string from a string ID.
 ///
 /// \param id
 ///     The string ID.

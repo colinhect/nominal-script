@@ -116,8 +116,8 @@ bool NomValue_Equals(
     }
     else if (NomString_Check(value) && NomString_Check(other))
     {
-        if (GET_TYPE(value) != TYPE_POOLED_STRING ||
-            GET_TYPE(other) != TYPE_POOLED_STRING)
+        if (GET_TYPE(value) != TYPE_INTERNED_STRING ||
+            GET_TYPE(other) != TYPE_INTERNED_STRING)
         {
             return strcmp(NomString_AsString(state, value), NomString_AsString(state, other)) == 0;
         }
@@ -139,7 +139,7 @@ long long NomValue_Hash(
     case TYPE_STRING:
         hash = HashString((UserData)NomString_AsString(state, value), (UserData)state);
         break;
-    case TYPE_POOLED_STRING:
+    case TYPE_INTERNED_STRING:
         hash = StringPool_Hash(stringPool, GET_ID(value));
         break;
     }
@@ -164,7 +164,7 @@ size_t NomValue_AsString(
         count += snprintf(buffer, bufferSize, "%.256g", NomNumber_AsDouble(value));
         break;
     case TYPE_STRING:
-    case TYPE_POOLED_STRING:
+    case TYPE_INTERNED_STRING:
         count += snprintf(buffer, bufferSize, "\"%s\"", NomString_AsString(state, value));
         break;
     case TYPE_MAP:
@@ -319,6 +319,7 @@ bool NomValue_Iterable(
     NomValue    value
     )
 {
+    (void)state;
     return NomMap_Check(value);
 }
 

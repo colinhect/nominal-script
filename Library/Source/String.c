@@ -36,24 +36,24 @@ bool NomString_Check(
 {
     Type type = GET_TYPE(value);
     return type == TYPE_STRING
-        || type == TYPE_POOLED_STRING;
+        || type == TYPE_INTERNED_STRING;
 }
 
 NomValue NomString_FromString(
     NomState*   state,
     const char* value,
-    bool        pooled
+    bool        interned
     )
 {
     NomValue string = NomValue_Nil();
 
 
-    if (pooled)
+    if (interned)
     {
         StringPool* stringPool = NomState_GetStringPool(state);
         StringId id = StringPool_InsertOrFind(stringPool, value);
 
-        SET_TYPE(string, TYPE_POOLED_STRING);
+        SET_TYPE(string, TYPE_INTERNED_STRING);
         SET_ID(string, id);
     }
     else
@@ -81,7 +81,7 @@ const char* NomString_AsString(
     {
     case TYPE_STRING:
         return (const char*)Heap_GetData(heap, GET_ID(value));
-    case TYPE_POOLED_STRING:
+    case TYPE_INTERNED_STRING:
         return StringPool_Find(stringPool, GET_ID(value));
     }
 
@@ -93,7 +93,7 @@ NomValue NomString_FromId(
     )
 {
     NomValue string = NomValue_Nil();
-    SET_TYPE(string, TYPE_POOLED_STRING);
+    SET_TYPE(string, TYPE_INTERNED_STRING);
     SET_ID(string, id);
     return string;
 }

@@ -45,14 +45,14 @@ NOMINAL_EXPORT bool NomString_Check(
 ///     The state to create the value for.
 /// \param value
 ///     The NULL-terminated string value.
-/// \param pooled
-///     Whether the string should be pooled (normally false).
+/// \param interned
+///     Whether the string should be interned (normally false).
 ///
 /// \returns The new Nominal value.
 NOMINAL_EXPORT NomValue NomString_FromString(
     NomState*   state,
     const char* value,
-    bool        pooled
+    bool        interned
     );
 
 ///

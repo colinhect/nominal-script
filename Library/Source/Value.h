@@ -34,7 +34,7 @@ typedef enum
     TYPE_NUMBER,
     TYPE_BOOLEAN,
     TYPE_STRING,
-    TYPE_POOLED_STRING,
+    TYPE_INTERNED_STRING,
     TYPE_MAP,
     TYPE_CLOSURE
 } Type;

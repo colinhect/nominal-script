@@ -515,7 +515,7 @@ TEST_CASE("Calling NomNumber_Check() on non-number Nominal values", "[Number]")
         REQUIRE(NomNumber_Check(value) == false);
     }
 
-    SECTION("Checking pooled string")
+    SECTION("Checking interned string")
     {
         NomValue value = NomString_FromString(state, "Testing...", true);
         REQUIRE(NomNumber_Check(value) == false);

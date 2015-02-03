@@ -39,7 +39,7 @@
 ///
 /// \returns True if the next pair was moved to; false if there were no more
 /// pairs in the map.
-NOMINAL_EXPORT bool NomValue_MoveNext(
+bool NomMap_MoveNext(
     NomState*       state,
     NomValue        map,
     NomIterator*    iterator

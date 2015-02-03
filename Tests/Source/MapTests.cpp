@@ -60,7 +60,7 @@ TEST_CASE("Calling NomMap_Check() on non-map Nominal values", "[Map]")
         REQUIRE(NomMap_Check(value) == false);
     }
 
-    SECTION("Checking pooled string")
+    SECTION("Checking interned string")
     {
         NomValue value = NomString_FromString(state, "Testing...", true);
         REQUIRE(NomMap_Check(value) == false);
@@ -93,7 +93,7 @@ TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
         REQUIRE(NomValue_Equals(state, result, value) == true);
     }
 
-    SECTION("Using pooled string keys")
+    SECTION("Using interned string keys")
     {
         NomValue key = NomString_FromString(state, "Key", true);
         NomValue value = NomNumber_FromInt(10);
@@ -187,7 +187,7 @@ TEST_CASE("Inserting and retrieving multiple values keyed from strings in a Nomi
     NomState_Free(state);
 }
 
-TEST_CASE("Inserting and retrieving multiple values keyed from pooled strings in a Nominal map", "[Map]")
+TEST_CASE("Inserting and retrieving multiple values keyed from interned strings in a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
 
@@ -218,7 +218,7 @@ TEST_CASE("Inserting and retrieving multiple values keyed from pooled strings in
     NomState_Free(state);
 }
 
-TEST_CASE("Inserting values keyed from mixed pooled/non-pooled strings into a Nominal map", "[Map]")
+TEST_CASE("Inserting values keyed from mixed interned/non-interned strings into a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
 
