@@ -1,6 +1,6 @@
 configure_file(
-    "${PROJECT_SOURCE_DIR}/Library/Configuration.h.in"
-    "${PROJECT_SOURCE_DIR}/Library/Include/Nominal/Configuration.h"
+    "${PROJECT_SOURCE_DIR}/Library/Config.h.in"
+    "${PROJECT_SOURCE_DIR}/Library/Include/Nominal/Config.h"
     )
 
 include_directories(

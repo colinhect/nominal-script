@@ -23,14 +23,14 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Configuration.h"
+#include "Config.h"
 
 #ifdef NOMINAL_WINDOWS_BUILD
-# ifdef NOMINAL_EXPORTS
-#  define NOMINAL_EXPORT __declspec(dllexport)
-# else
-#  define NOMINAL_EXPORT __declspec(dllimport)
-# endif
+ #ifdef NOMINAL_EXPORTS
+  #define NOMINAL_EXPORT __declspec(dllexport)
+ #else
+  #define NOMINAL_EXPORT __declspec(dllimport)
+ #endif
 #else
-# define NOMINAL_EXPORT
+ #define NOMINAL_EXPORT
 #endif
