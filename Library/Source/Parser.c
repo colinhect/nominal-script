@@ -412,7 +412,7 @@ Node* Parser_SecondaryExpr(
                     args->data.sequence.next = next;
 
                     // Move to the next node
-                    args = next;                    
+                    args = next;
                 }
                 else
                 {
@@ -612,8 +612,10 @@ Node* Parser_Map(
         expr = expr->data.sequence.next;
         if (expr)
         {
-            map->data.map.next = Node_Create(NODE_MAP);
-            map = map->data.map.next;
+            Node* nextMap = Node_Create(NODE_MAP);
+            nextMap->data.map.prev = map;
+            map->data.map.next = nextMap;
+            map = nextMap;
         }
 
         ++i;

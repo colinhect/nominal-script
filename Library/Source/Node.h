@@ -99,6 +99,7 @@ typedef struct Node
         {
             struct Node* assoc;
             struct Node* next;
+            struct Node* prev;
         } map;
 
         // A variable name

@@ -78,7 +78,13 @@ size_t GenerateCode(
         break;
     case NODE_MAP:
     {
-        // Push all map items on the stack
+        // Move to the end of the sequence of key value pairs
+        while (node->data.map.next)
+        {
+            node = node->data.map.next;
+        }
+
+        // Push all map items on the stack in reverse order
         size_t itemCount = 0;
         while (node)
         {
@@ -94,7 +100,7 @@ size_t GenerateCode(
                 Node* leftExpr = assoc->data.binary.leftExpr;
                 index = GenerateCode(state, leftExpr, byteCode, index);
 
-                node = node->data.map.next;
+                node = node->data.map.prev;
                 ++itemCount;
             }
             else
