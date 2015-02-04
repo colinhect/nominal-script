@@ -30,17 +30,17 @@ extern "C"
 
 #define TEST_EXPR(expr, expected)\
 {\
-    REQUIRE(state != NULL); \
+    CHECK(state != NULL); \
     NomValue value = NomState_Execute(state, expr); \
-    REQUIRE(NomState_ErrorOccurred(state) == false); \
-    REQUIRE(NomValue_Equals(state, value, expected) == true); \
+    CHECK(NomState_ErrorOccurred(state) == false); \
+    CHECK(NomValue_Equals(state, value, expected) == true); \
 }
 
 #define TEST_EXPR_ERROR(expr)\
 {\
-    REQUIRE(state != NULL); \
+    CHECK(state != NULL); \
     NomState_Execute(state, expr); \
-    REQUIRE(NomState_ErrorOccurred(state) == true); \
+    CHECK(NomState_ErrorOccurred(state) == true); \
 }
 
 TEST_CASE("Performing arithmetic operations", "[State]")
@@ -81,15 +81,15 @@ TEST_CASE("Creating a map with implicit keys", "[State]")
     NomState* state = NomState_Create();
 
     NomValue map = NomState_Execute(state, "{ 0, 1, 2, 3 }");
-    REQUIRE(NomState_ErrorOccurred(state) == false);
-    REQUIRE(NomMap_Check(map) == true);
+    CHECK(NomState_ErrorOccurred(state) == false);
+    CHECK(NomMap_Check(map) == true);
 
     NomValue result;
 
     for (int i = 0; i < 4; ++i)
     {
         result = NomValue_Get(state, map, NomNumber_FromInt(i));
-        REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(i)));
+        CHECK(NomValue_Equals(state, result, NomNumber_FromInt(i)));
     }
 
     NomState_Free(state);
@@ -100,16 +100,16 @@ TEST_CASE("Creating a map with explicit keys", "[State]")
     NomState* state = NomState_Create();
 
     NomValue map = NomState_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
-    REQUIRE(NomState_ErrorOccurred(state) == false);
-    REQUIRE(NomMap_Check(map));
+    CHECK(NomState_ErrorOccurred(state) == false);
+    CHECK(NomMap_Check(map));
 
     NomValue result;
     result = NomValue_Get(state, map, NomString_FromString(state, "zero", false));
-    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(0)) == true);
+    CHECK(NomValue_Equals(state, result, NomNumber_FromInt(0)) == true);
     result = NomValue_Get(state, map, NomString_FromString(state, "one", false));
-    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(1)) == true);
+    CHECK(NomValue_Equals(state, result, NomNumber_FromInt(1)) == true);
     result = NomValue_Get(state, map, NomString_FromString(state, "two", false));
-    REQUIRE(NomValue_Equals(state, result, NomNumber_FromInt(2)) == true);
+    CHECK(NomValue_Equals(state, result, NomNumber_FromInt(2)) == true);
 
     NomState_Free(state);
 }
@@ -117,6 +117,7 @@ TEST_CASE("Creating a map with explicit keys", "[State]")
 TEST_CASE("Indexing maps", "[State]")
 {
     NomState* state = NomState_Create();
+
     TEST_EXPR("{ 5 }[0]", NomNumber_FromInt(5));
     TEST_EXPR("{ 2, 3, 4, 5 }[2]", NomNumber_FromInt(4));
     TEST_EXPR("{ one := 1 }.one", NomNumber_FromInt(1));
@@ -134,6 +135,21 @@ TEST_CASE("Indexing maps", "[State]")
 
     TEST_EXPR_ERROR("f := { }, f.g");
     TEST_EXPR_ERROR("f.g = 1");
+
+    NomState_Free(state);
+}
+
+TEST_CASE("Creating and invoking trivial closures", "[State]")
+{
+    NomState* state = NomState_Create();
+
+    TEST_EXPR("([ 1 ]):", NomNumber_FromInt(1));
+    TEST_EXPR("([ 1, 2, 3 ]):", NomNumber_FromInt(3));
+    TEST_EXPR("(([ 1, 2, 3, { 4, 5 } ]):)[1]", NomNumber_FromInt(5));
+    TEST_EXPR("a := [ 0, 1, 2 ], b := a:, b", NomNumber_FromInt(2));
+    TEST_EXPR("f := [ 2 ], g := [ f: + 3 ], g:", NomNumber_FromInt(5));
+
+    TEST_EXPR_ERROR("c := { }, c:");
 
     NomState_Free(state);
 }

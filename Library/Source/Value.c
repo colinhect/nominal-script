@@ -28,6 +28,7 @@
 
 #include "Value.h"
 #include "Map.h"
+#include "Closure.h"
 #include "State.h"
 
 #include <assert.h>
@@ -160,8 +161,13 @@ size_t NomValue_AsString(
     
     switch (GET_TYPE(value))
     {
+    case TYPE_NIL:
+        count += snprintf(buffer, bufferSize, "nil");
+        break;
     case TYPE_NUMBER:
         count += snprintf(buffer, bufferSize, "%.256g", NomNumber_AsDouble(value));
+        break;
+    case TYPE_BOOLEAN:
         break;
     case TYPE_STRING:
     case TYPE_INTERNED_STRING:
@@ -235,8 +241,8 @@ size_t NomValue_AsString(
         // Closing '}'
         count += snprintf(buffer + count, bufferSize - count, " }");
     } break;
-    case TYPE_NIL:
-        count += snprintf(buffer, bufferSize, "nil");
+    case TYPE_CLOSURE:
+        count += snprintf(buffer, bufferSize, "<closure at 0x%08x>", NomClosure_GetInstructionPointer(state, value));
         break;
     default:
         count += snprintf(buffer, bufferSize, "<unknown>");

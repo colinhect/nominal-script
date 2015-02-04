@@ -24,6 +24,7 @@
 #include "Nominal.h"
 
 #include "Map.h"
+#include "Closure.h"
 #include "State.h"
 #include "Parser.h"
 #include "CodeGen.h"
@@ -141,6 +142,8 @@ NomValue NomState_Execute(
     if (!node)
     {
         NomState_SetError(state, Parser_GetError(p));
+        Parser_Free(p);
+
         return NomValue_Nil();
     }
 
@@ -153,8 +156,7 @@ NomValue NomState_Execute(
     while (state->ip < end && !state->errorFlag)
     {
         StringId id;
-        NomValue l;
-        NomValue r;
+        NomValue l, r;
         NomValue result = NomValue_Nil();
         NomValue string = NomValue_Nil();
 
@@ -216,8 +218,9 @@ NomValue NomState_Execute(
         } break;
         case OPCODE_NEW_CLOSURE:
         {
-            (void)READAS(size_t);
-            //NomValue closure = NomClosure_Create(state, state->ip);
+            size_t ip = READAS(size_t);
+            result = NomClosure_Create(state, ip);
+            PUSH(result);
         } break;
         case OPCODE_ADD:
             l = POP();
@@ -284,6 +287,36 @@ NomValue NomState_Execute(
             result = NomValue_Get(state, r, l);
             PUSH(result);
             break;
+        case OPCODE_INVOKE:
+        {
+            // Pop the closure
+            NomValue closure = POP();
+            if (!NomClosure_Check(closure))
+            {
+                NomState_SetError(state, "Value cannot be invoked");
+            }
+            else
+            {
+                // Push the instruction pointer onto the stack
+                NomValue currentIp = { (uint64_t)state->ip };
+                PUSH(currentIp);
+
+                // Set the instruction pointer to where the closure begins
+                state->ip = NomClosure_GetInstructionPointer(state, closure);
+            }
+        } break;
+        case OPCODE_RETURN:
+        {
+            // Pop the result of the invokation
+            result = POP();
+
+            // Pop the instruction pointer and restore it
+            NomValue restoredIp = POP();
+            state->ip = (size_t)restoredIp.raw;
+
+            // Re-push the result
+            PUSH(result);
+        } break;
         default:
             break;
         }

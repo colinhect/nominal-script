@@ -305,7 +305,7 @@ Node* Parser_SecondaryExpr(
         SetUnexpectedTokenError(parser);
     }
 
-    if (node)
+    if (node && !Lexer_SkippedWhitespace(parser->lexer))
     {
         // Parse and trailing indexing operations
         for (;;)

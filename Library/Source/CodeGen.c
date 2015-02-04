@@ -201,22 +201,30 @@ size_t GenerateCode(
         // Go to the end of the closure body
         OPCODE(OPCODE_GOTO);
         size_t gotoIndex = index;
-        WRITEAS(size_t, 0); // This will be known once the closure code is generator
+        WRITEAS(size_t, 0); // This will be known once the closure code is generated
+        
+        // Remember the instruction pointer where the closure begins
+        size_t ip = index;
 
         // Generate the code for the closure body
-        size_t closureIndex = index;
-        size_t endIndex = GenerateCode(state, node->data.closure.exprs, byteCode, index);
+        index = GenerateCode(state, node->data.closure.exprs, byteCode, index);
+        OPCODE(OPCODE_RETURN);
+
+        // Remember the instruction pointer where the closure ends
+        size_t endIndex = index;
 
         // Go back to the goto
         index = gotoIndex;
-        WRITEAS(size_t, endIndex); // Update the idnex with the write index
+        WRITEAS(size_t, endIndex); // Update the index with the right index
         index = endIndex;
 
-        // Create the closure given the index where it starts
+        // Create the closure
         OPCODE(OPCODE_NEW_CLOSURE);
-        WRITEAS(size_t, closureIndex);
+        WRITEAS(size_t, ip);
     } break;
     case NODE_INVOCATION:
+        index = GenerateCode(state, node->data.invocation.expr, byteCode, index);
+        OPCODE(OPCODE_INVOKE);
         break;
     }
 
