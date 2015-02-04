@@ -124,7 +124,7 @@ void InsertKey(
     if (data->contiguous)
     {
         // If the key matches the index then the map remains contiguous
-        data->contiguous = IS_NUMBER(key) && (data->count - 1) == (long long)key.number;
+        data->contiguous = IS_NUMBER(key) && (data->count - 1) == (size_t)key.number;
     }
 }
 
