@@ -143,13 +143,20 @@ TEST_CASE("Creating and invoking trivial closures", "[State]")
 {
     NomState* state = NomState_Create();
 
+    TEST_EXPR("[ 1 ]:", NomNumber_FromInt(1));
     TEST_EXPR("([ 1 ]):", NomNumber_FromInt(1));
-    TEST_EXPR("([ 1, 2, 3 ]):", NomNumber_FromInt(3));
-    TEST_EXPR("(([ 1, 2, 3, { 4, 5 } ]):)[1]", NomNumber_FromInt(5));
+    TEST_EXPR("[ 1, 2, 3 ]:", NomNumber_FromInt(3));
+    TEST_EXPR("[ 1, 2, 3, { 4, 5 } ]:[1]", NomNumber_FromInt(5));
+    TEST_EXPR("([ 1, 2, 3, { 4, 5 } ]:)[1]", NomNumber_FromInt(5));
+    TEST_EXPR("-[[[[42]]]]::::", NomNumber_FromInt(-42));
     TEST_EXPR("a := [ 0, 1, 2 ], b := a:, b", NomNumber_FromInt(2));
     TEST_EXPR("f := [ 2 ], g := [ f: + 3 ], g:", NomNumber_FromInt(5));
+    TEST_EXPR("c := { f := [ 23 ], g := [ 19 ] }, c.f: + c.g:", NomNumber_FromInt(42));
+    TEST_EXPR("e := { f := [ [ 23 ] ] }, e.f::", NomNumber_FromInt(23));
+    TEST_EXPR("[ { 0, 1, [ 7 + 3 ] } ]:[2]:", NomNumber_FromInt(10));
+    TEST_EXPR("[ { zero := 0, one := 1, two := 2 } ]:.one", NomNumber_FromInt(1));
 
-    TEST_EXPR_ERROR("c := { }, c:");
+    TEST_EXPR_ERROR("z := { }, z:");
 
     NomState_Free(state);
 }

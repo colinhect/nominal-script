@@ -146,74 +146,8 @@ Node* Parser_PrimaryExpr(
     Parser* parser
     )
 {
-    // Closure
-    if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
-    {
-        Lexer_Next(parser->lexer);
-        
-        LexerState state = Lexer_SaveState(parser->lexer);
-
-        Node* params = Node_Create(NODE_SEQUENCE);
-        Node* param = params;
-        for (;;)
-        {
-            Node* ident = Parser_StringOrIdent(parser);
-            if (!ident || ident->type != NODE_IDENT)
-            {
-                if (ident)
-                {
-                    Node_Free(ident);
-                    ident = NULL;
-                }
-
-                Node_Free(params);
-                params = NULL;
-
-                // Failed to parse the parametesr
-                break;
-            }
-
-            param->data.sequence.expr = ident;
-
-            if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '|'))
-            {
-                Lexer_Next(parser->lexer);
-                break;
-            }
-
-            param->data.sequence.next = Node_Create(NODE_SEQUENCE);
-            param = param->data.sequence.next;
-        }
-
-        // Restart at the beginning if the parameter parsing failed
-        if (!params)
-        {
-            Lexer_RestoreState(parser->lexer, state);
-        }
-
-        // Parse the body of the closure
-        Node* exprs = Parser_Exprs(parser);
-        if (!exprs)
-        {
-            return NULL;
-        }
-
-        if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
-        {
-            Parser_SetError(parser, "Expected closing ']'");
-            Node_Free(exprs);
-            return NULL;
-        }
-        Lexer_Next(parser->lexer);
-
-        Node* closure = Node_Create(NODE_CLOSURE);
-        closure->data.closure.params = params;
-        closure->data.closure.exprs = exprs;
-        return closure;
-    }
-
     // Unary operator
-    else if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
+    if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
     {
         Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
         if (op == OP_SUB)
@@ -228,6 +162,12 @@ Node* Parser_PrimaryExpr(
         }
 
         Lexer_Next(parser->lexer);
+
+        if (Lexer_SkippedWhitespace(parser->lexer))
+        {
+            Parser_SetError(parser, "Unary operator '%s' cannot have trailing whitespace", OP_STR[op]);
+            return NULL;
+        }
 
         Node* expr = Parser_PrimaryExpr(parser);
         if (!expr)
@@ -270,6 +210,13 @@ Node* Parser_SecondaryExpr(
         else if (id == '{')
         {
             node = Parser_Map(parser);
+            break;
+        }
+
+        // Closure literal
+        else if (id == '[')
+        {
+            node = Parser_Closure(parser);
             break;
         }
         
@@ -374,56 +321,59 @@ Node* Parser_SecondaryExpr(
 
                 node = index;
             }
+
+            // Check for invocation
+            else if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ':'))
+            {
+                Lexer_Next(parser->lexer);
+
+                Node* expr = node;
+                Node* args = Node_Create(NODE_SEQUENCE);
+
+                // Create the invocation node
+                node = Node_Create(NODE_INVOCATION);
+                node->data.invocation.expr = expr;
+                node->data.invocation.args = args;
+
+                // Parse the argments
+                if (Lexer_SkippedWhitespace(parser->lexer))
+                {
+                    for (;;)
+                    {
+                        // Save the parser state
+                        LexerState state = Lexer_SaveState(parser->lexer);
+
+                        // Try to parse an argument
+                        Node* arg = Parser_PrimaryExpr(parser);
+                        if (arg)
+                        {
+                            // Append the argument to the end of the invocation node's
+                            // argument sequence
+                            args->data.sequence.expr = arg;
+
+                            // Create the next node
+                            Node* next = Node_Create(NODE_SEQUENCE);
+                            args->data.sequence.next = next;
+
+                            // Move to the next node
+                            args = next;
+                        }
+                        else
+                        {
+                            // Failed to parse an argument which indicates the end of
+                            // argument list
+
+                            // Restore the parser state
+                            Lexer_RestoreState(parser->lexer, state);
+
+                            break;
+                        }
+                    }
+                }
+            }
             else
             {
                 break; // No more dot or bracket indices
-            }
-        }
-
-        // Check for invocation
-        if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ':'))
-        {
-            Lexer_Next(parser->lexer);
-
-            Node* expr = node;
-            Node* args = Node_Create(NODE_SEQUENCE);
-
-            // Create the invocation node
-            node = Node_Create(NODE_INVOCATION);
-            node->data.invocation.expr = expr;
-            node->data.invocation.args = args;
-
-            // Parse the argments
-            for (;;)
-            {
-                // Save the parser state
-                LexerState state = Lexer_SaveState(parser->lexer);
-
-                // Try to parse an argument
-                Node* arg = Parser_PrimaryExpr(parser);
-                if (arg)
-                {
-                    // Append the argument to the end of the invocation node's
-                    // argument sequence
-                    args->data.sequence.expr = arg;
-
-                    // Create the next node
-                    Node* next = Node_Create(NODE_SEQUENCE);
-                    args->data.sequence.next = next;
-
-                    // Move to the next node
-                    args = next;
-                }
-                else
-                {
-                    // Failed to parse an argument which indicates the end of
-                    // argument list
-
-                    // Restore the parser state
-                    Lexer_RestoreState(parser->lexer, state);
-                    
-                    break;
-                }
             }
         }
     }
@@ -623,6 +573,79 @@ Node* Parser_Map(
 
     Node_Free(exprs);
     return mapRoot;
+}
+
+Node* Parser_Closure(
+    Parser* parser
+    )
+{
+    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
+    {
+        Parser_SetError(parser, "Expected opening '['");
+        return NULL;
+    }
+
+    Lexer_Next(parser->lexer);
+
+    LexerState state = Lexer_SaveState(parser->lexer);
+
+    Node* params = Node_Create(NODE_SEQUENCE);
+    Node* param = params;
+    for (;;)
+    {
+        Node* ident = Parser_StringOrIdent(parser);
+        if (!ident || ident->type != NODE_IDENT)
+        {
+            if (ident)
+            {
+                Node_Free(ident);
+                ident = NULL;
+            }
+
+            Node_Free(params);
+            params = NULL;
+
+            // Failed to parse the parametesr
+            break;
+        }
+
+        param->data.sequence.expr = ident;
+
+        if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '|'))
+        {
+            Lexer_Next(parser->lexer);
+            break;
+        }
+
+        param->data.sequence.next = Node_Create(NODE_SEQUENCE);
+        param = param->data.sequence.next;
+    }
+
+    // Restart at the beginning if the parameter parsing failed
+    if (!params)
+    {
+        Lexer_RestoreState(parser->lexer, state);
+    }
+
+    // Parse the body of the closure
+    Node* exprs = Parser_Exprs(parser);
+    if (!exprs)
+    {
+        return NULL;
+    }
+
+    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
+    {
+        Parser_SetError(parser, "Expected closing ']'");
+        Node_Free(exprs);
+        return NULL;
+    }
+    Lexer_Next(parser->lexer);
+
+    Node* closure = Node_Create(NODE_CLOSURE);
+    closure->data.closure.params = params;
+    closure->data.closure.exprs = exprs;
+    return closure;
 }
 
 Node* Parser_StringOrIdent(

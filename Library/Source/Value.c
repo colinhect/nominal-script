@@ -242,8 +242,11 @@ size_t NomValue_AsString(
         count += snprintf(buffer + count, bufferSize - count, " }");
     } break;
     case TYPE_CLOSURE:
-        count += snprintf(buffer, bufferSize, "<closure at 0x%08x>", NomClosure_GetInstructionPointer(state, value));
+    {
+        ObjectId id = GET_ID(value);
+        count += snprintf(buffer, bufferSize, "<closure with ID 0x%08x>", id);
         break;
+    }
     default:
         count += snprintf(buffer, bufferSize, "<unknown>");
         break;
