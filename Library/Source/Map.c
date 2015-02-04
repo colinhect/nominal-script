@@ -91,6 +91,36 @@ bool CompareValue(
     return NomValue_Equals((NomState*)context, leftValue, rightValue);
 }
 
+void InsertKey(
+    MapData*    data,
+    NomValue    key
+    )
+{
+    // If there is not enough capacity
+    if (data->count >= data->capacity)
+    {
+        // Double the capacity
+        data->capacity *= 2;
+
+        // Allocate a new array of keys
+        NomValue* newKeys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
+
+        // Copy the keys from the old array of keys
+        for (size_t i = 0; i < data->count; ++i)
+        {
+            newKeys[i] = data->keys[i];
+        }
+
+        // Free the old keys and use the new array
+        free(data->keys);
+        data->keys = newKeys;
+    }
+
+    // Insert the key at the end
+    data->keys[data->count] = key;
+    data->count += 1;
+}
+
 bool NomMap_Check(
     NomValue value
     )
@@ -132,30 +162,45 @@ bool NomMap_MoveNext(
     Heap* heap = NomState_GetHeap(state);
     MapData* data = Heap_GetData(heap, id);
 
-    // Initialize a hash table iterator at the same location as the map
-    // iterator
-    HashTableIterator hashTableIterator = { 0 };
+    // If this is a new iterator
     if (iterator->source.raw == 0)
     {
         iterator->source = map;
+        iterator->data.map.index = 0;
     }
     else
     {
-        hashTableIterator.hashTable = data->hashTable;
+        iterator->data.map.index += 1;
     }
-    hashTableIterator.index = iterator->data.map.index;
-    hashTableIterator.bucketNode = iterator->data.map.bucketNode;
 
-    // Move to the next pair in the hash table
-    bool result = HashTable_MoveNext(data->hashTable, &hashTableIterator);
+    size_t index = iterator->data.map.index;
 
-    // Sync the hash table iterator with the map iterator
-    iterator->data.map.index = hashTableIterator.index;
-    iterator->data.map.bucketNode = hashTableIterator.bucketNode;
-    iterator->key.raw = hashTableIterator.key;
-    iterator->value.raw = hashTableIterator.value;
+    // If the index is within the range of the keys in the map
+    if (index < data->count)
+    {
+        // Get the key at this index
+        NomValue key = data->keys[index];
 
-    return result;
+        // Get the value with the key
+        NomValue value;
+        HashTable_Get(data->hashTable, (UserData)key.raw, (UserData*)&value.data);
+
+        // Update the iterator
+        iterator->key = key;
+        iterator->value = value;
+
+        return true;
+    }
+
+    // The end of the map has been reached
+    else
+    {
+        iterator->source = NomValue_Nil();
+        iterator->key = NomValue_Nil();
+        iterator->value = NomValue_Nil();
+
+        return false;
+    }
 }
 
 bool NomMap_Insert(
@@ -173,7 +218,14 @@ bool NomMap_Insert(
     ObjectId id = GET_ID(map);
     Heap* heap = NomState_GetHeap(state);
     MapData* data = Heap_GetData(heap, id);
-    return HashTable_Insert(data->hashTable, (UserData)key.raw, (UserData)value.raw);
+
+    bool valueInserted = HashTable_Insert(data->hashTable, (UserData)key.raw, (UserData)value.raw);
+    if (valueInserted)
+    {
+        InsertKey(data, key);
+    }
+
+    return valueInserted;
 }
 
 bool NomMap_Set(
@@ -209,7 +261,14 @@ bool NomMap_InsertOrSet(
     ObjectId id = GET_ID(map);
     Heap* heap = NomState_GetHeap(state);
     MapData* data = Heap_GetData(heap, id);
-    return HashTable_InsertOrSet(data->hashTable, (UserData)key.raw, (UserData)value.raw);
+
+    bool valueInserted = HashTable_InsertOrSet(data->hashTable, (UserData)key.raw, (UserData)value.raw);
+    if (valueInserted)
+    {
+        InsertKey(data, key);
+    }
+    
+    return valueInserted;
 }
 
 NomValue NomMap_Get(

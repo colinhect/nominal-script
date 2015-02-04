@@ -65,27 +65,27 @@ void Node_Free(
     case NODE_BINARY:
         if (node->data.binary.leftExpr)
         {
-            free(node->data.binary.leftExpr);
+            Node_Free(node->data.binary.leftExpr);
         }
         if (node->data.binary.rightExpr)
         {
-            free(node->data.binary.rightExpr);
+            Node_Free(node->data.binary.rightExpr);
         }
         break;
     case NODE_UNARY:
         if (node->data.unary.expr)
         {
-            free(node->data.unary.expr);
+            Node_Free(node->data.unary.expr);
         }
         break;
     case NODE_INDEX:
         if (node->data.index.expr)
         {
-            free(node->data.index.expr);
+            Node_Free(node->data.index.expr);
         }
         if (node->data.index.key)
         {
-            free(node->data.index.key);
+            Node_Free(node->data.index.key);
         }
         break;
     case NODE_SEQUENCE:

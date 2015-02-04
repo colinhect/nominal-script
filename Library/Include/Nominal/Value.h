@@ -61,8 +61,7 @@ typedef struct
         // Map-related iterator data
         struct
         {
-            size_t      index;
-            void*       bucketNode;
+            size_t  index;
         } map;
     } data;
 } NomIterator;
