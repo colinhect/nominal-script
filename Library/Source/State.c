@@ -77,8 +77,20 @@ void NomState_Free(
     NomState*   state
     )
 {
-    StringPool_Free(state->stringPool);
-    Heap_Free(state->heap);
+    assert(state);
+
+    // Free the string pool
+    if (state->stringPool)
+    {
+        StringPool_Free(state->stringPool);
+    }
+
+    // Free the heap
+    if (state->heap)
+    {
+        Heap_Free(state->heap);
+    }
+
     free(state);
 }
 
@@ -134,6 +146,7 @@ NomValue NomState_Execute(
 
     size_t end = GenerateCode(state, node, state->byteCode, state->ip);
     Node_Free(node);
+    Parser_Free(p);
 
     NomValue scope = state->globalScope;
 

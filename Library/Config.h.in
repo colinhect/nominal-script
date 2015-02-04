@@ -35,3 +35,5 @@
 #ifdef NOMINAL_DEBUG_BUILD
  #cmakedefine NOMINAL_USE_VLD
 #endif
+
+//#define NOMINAL_SHARED

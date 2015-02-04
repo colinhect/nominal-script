@@ -66,21 +66,26 @@ void Heap_Free(
     )
 {
     assert(heap);
-    assert(heap->objects);
 
-    // For each (potential) object
-    for (ObjectId i = 0; i < heap->objectCapacity; ++i)
+    // Free all objects
+    if (heap->objects)
     {
-        HeapObject* object = &heap->objects[i];
-
-        // If the object has data and a free function then free it
-        if (object->data && object->free)
+        // For each (potential) object
+        for (ObjectId i = 0; i < heap->objectCapacity; ++i)
         {
-            object->free(object->data);
+            HeapObject* object = &heap->objects[i];
+
+            // If the object has data and a free function then free it
+            if (object->data && object->free)
+            {
+                object->free(object->data);
+            }
         }
     }
 
+    // Free the array of objects
     free(heap->objects);
+
     free(heap);
 }
 

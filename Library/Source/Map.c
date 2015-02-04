@@ -31,11 +31,15 @@
 #include "HashTable.h"
 #include "Heap.h"
 
+#include <assert.h>
 #include <stdlib.h>
 
 typedef struct
 {
     HashTable*  hashTable;
+    size_t      capacity;
+    size_t      count;
+    NomValue*   keys;
 } MapData;
 
 Hash HashValue(
@@ -47,6 +51,29 @@ Hash HashValue(
     value.raw = key;
 
     return NomValue_Hash((NomState*)context, value);
+}
+
+void FreeMapData(
+    void*   data
+    )
+{
+    assert(data);
+
+    MapData* mapData = (MapData*)data;
+
+    // Free the hash table
+    if (mapData->hashTable)
+    {
+        HashTable_Free(mapData->hashTable, NULL, NULL);
+    }
+
+    // Free the array of keys
+    if (mapData->keys)
+    {
+        free(mapData->keys);
+    }
+
+    free(mapData);
 }
 
 bool CompareValue(
@@ -79,10 +106,13 @@ NomValue NomMap_Create(
     SET_TYPE(map, TYPE_MAP);
 
     Heap* heap = NomState_GetHeap(state);
-    ObjectId id = Heap_Alloc(heap, sizeof(MapData), free);
+    ObjectId id = Heap_Alloc(heap, sizeof(MapData), FreeMapData);
     MapData* data = Heap_GetData(heap, id);
     data->hashTable = HashTable_Create(HashValue, CompareValue, (UserData)state, 32);
-
+    data->capacity = 32;
+    data->count = 0;
+    data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
+    
     SET_ID(map, id);
     return map;
 }

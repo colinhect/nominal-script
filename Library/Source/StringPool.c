@@ -62,18 +62,38 @@ void StringPool_Free(
     )
 {
     assert(stringPool);
-    assert(stringPool->strings);
 
-    StringId i;
-    for (i = 0; i < stringPool->stringCount; ++i)
+    // Free the string hashes
+    if (stringPool->hashes)
     {
-        if (stringPool->strings[i])
+        free(stringPool->hashes);
+    }
+
+    // Free the individual strings
+    if (stringPool->strings)
+    {
+        StringId i;
+        for (i = 0; i < stringPool->stringCount; ++i)
         {
-            free(stringPool->strings[i]);
+            if (stringPool->strings[i])
+            {
+                free(stringPool->strings[i]);
+            }
         }
     }
 
-    HashTable_Free(stringPool->hashTable, NULL, NULL);
+    // Free the strings array
+    if (stringPool->strings)
+    {
+        free(stringPool->strings);
+    }
+
+    // Free the hash table of strings
+    if (stringPool->hashTable)
+    {
+        HashTable_Free(stringPool->hashTable, NULL, NULL);
+    }
+
     free(stringPool);
 }
 

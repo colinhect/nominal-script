@@ -25,12 +25,14 @@
 
 #include "Config.h"
 
-#ifdef NOMINAL_WINDOWS_BUILD
- #ifdef NOMINAL_EXPORTS
-  #define NOMINAL_EXPORT __declspec(dllexport)
- #else
-  #define NOMINAL_EXPORT __declspec(dllimport)
+#define NOMINAL_EXPORT
+
+#ifdef NOMINAL_SHARED
+ #ifdef NOMINAL_WINDOWS_BUILD
+  #ifdef NOMINAL_EXPORTS
+   #define NOMINAL_EXPORT __declspec(dllexport)
+  #else
+   #define NOMINAL_EXPORT __declspec(dllimport)
+  #endif
  #endif
-#else
- #define NOMINAL_EXPORT
 #endif

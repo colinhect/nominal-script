@@ -42,6 +42,8 @@ void Node_Free(
     Node*   node
     )
 {
+    assert(node);
+
     switch (node->type)
     {
     case NODE_NIL:

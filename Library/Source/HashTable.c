@@ -141,33 +141,40 @@ void HashTable_Free(
     )
 {
     assert(hashTable);
-    assert(hashTable->buckets);
 
-    // For each bucket
-    for (size_t i = 0; i < hashTable->bucketCount; ++i)
+    // Free each bucket
+    if (hashTable->buckets)
     {
-        // For each node in the bucket
-        BucketNode* n = hashTable->buckets[i];
-        while (n)
+        for (size_t i = 0; i < hashTable->bucketCount; ++i)
         {
-            BucketNode* t = n;
-            n = n->next;
-
-            // Free the key if needed
-            if (freeKey && t->key)
+            // For each node in the bucket
+            BucketNode* n = hashTable->buckets[i];
+            while (n)
             {
-                freeKey((void*)t->key);
-            }
+                BucketNode* t = n;
+                n = n->next;
 
-            // Free the value if needed
-            if (freeValue && t->value)
-            {
-                freeValue((void*)t->value);
-            }
+                // Free the key if needed
+                if (freeKey && t->key)
+                {
+                    freeKey((void*)t->key);
+                }
 
-            free(t);
+                // Free the value if needed
+                if (freeValue && t->value)
+                {
+                    freeValue((void*)t->value);
+                }
+
+                free(t);
+            }
         }
     }
+    
+    // Free the array of buckets
+    free(hashTable->buckets);
+
+    free(hashTable);
 }
 
 bool HashTable_MoveNext(

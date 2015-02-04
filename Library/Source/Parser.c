@@ -72,7 +72,14 @@ void Parser_Free(
     Parser* parser
     )
 {
-    free(parser->lexer);
+    assert(parser);
+
+    // Free the lexer
+    if (parser->lexer)
+    {
+        free(parser->lexer);
+    }
+
     free(parser);
 }
 
