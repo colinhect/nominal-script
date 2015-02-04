@@ -573,12 +573,12 @@ TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]
     NomState_Free(state);
 }
 
-TEST_CASE("Calling NomValue_Iterable() a Nominal number", "[Number]")
+TEST_CASE("Calling NomValue_IsIterable() a Nominal number", "[Number]")
 {
     NomState* state = NomState_Create();
 
     NomValue number = NomNumber_FromDouble(1.0);
-    REQUIRE(NomValue_Iterable(state, number) == false);
+    REQUIRE(NomValue_IsIterable(state, number) == false);
 
     NomState_Free(state);
 }

@@ -27,7 +27,22 @@
 #include "Nominal/Map.h"
 
 ///
-/// \brief Moves to the next key/value pair in the map.
+/// \brief Returns whether the keys in a Nominal map are contiguous natural
+/// numbers starting at zero.
+///
+/// \param state
+///     The state.
+/// \param map
+///     The map.
+///
+/// \returns True if the map has contiguous keys; false otherwise.
+bool NomMap_IsContiguous(
+    NomState*   state,
+    NomValue    map
+    );
+
+///
+/// \brief Moves to the next key/value pair in a Nominal map.
 ///
 /// \param state
 ///     The state.

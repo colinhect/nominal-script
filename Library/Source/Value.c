@@ -169,6 +169,8 @@ size_t NomValue_AsString(
         break;
     case TYPE_MAP:
     {
+        bool contiguous = NomMap_IsContiguous(state, value);
+
         // Opening '{'
         count += snprintf(buffer, bufferSize, "{");
         if (count >= bufferSize)
@@ -200,18 +202,21 @@ size_t NomValue_AsString(
                 }
             }
 
-            // Print the key
-            count += NomValue_AsString(state, buffer + count, bufferSize - count, iterator.key);
-            if (count >= bufferSize)
+            if (!contiguous)
             {
-                break;
-            }
+                // Print the key
+                count += NomValue_AsString(state, buffer + count, bufferSize - count, iterator.key);
+                if (count >= bufferSize)
+                {
+                    break;
+                }
 
-            // Print " -> "
-            count += snprintf(buffer + count, bufferSize - count, " -> ");
-            if (count >= bufferSize)
-            {
-                break;
+                // Print " -> "
+                count += snprintf(buffer + count, bufferSize - count, " -> ");
+                if (count >= bufferSize)
+                {
+                    break;
+                }
             }
 
             // Print the value
@@ -314,7 +319,7 @@ NomValue NomValue_Negate(
     return result;
 }
 
-bool NomValue_Iterable(
+bool NomValue_IsIterable(
     NomState*   state,
     NomValue    value
     )

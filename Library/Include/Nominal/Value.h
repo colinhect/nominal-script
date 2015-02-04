@@ -218,7 +218,7 @@ NOMINAL_EXPORT NomValue NomValue_Negate(
     );
 
 ///
-/// \brief Gets whether a Nominal value can be iterated over.
+/// \brief Returns whether a Nominal value can be iterated over.
 ///
 /// \param state
 ///     The state.
@@ -226,7 +226,7 @@ NOMINAL_EXPORT NomValue NomValue_Negate(
 ///     The value.
 ///
 /// \returns True if the value can be iterated over; false otherwise.
-NOMINAL_EXPORT bool NomValue_Iterable(
+NOMINAL_EXPORT bool NomValue_IsIterable(
     NomState*   state,
     NomValue    value
     );
@@ -263,7 +263,8 @@ NOMINAL_EXPORT bool NomValue_MoveNext(
 ///     The value to insert for the key.
 ///
 /// \returns True if the value was inserted for they key; false if a value
-/// already exists for the key.
+/// already exists for the key or the value does not support settings values
+/// for keys.
 NOMINAL_EXPORT bool NomValue_Insert(
     NomState*   state,
     NomValue    value,
@@ -284,7 +285,8 @@ NOMINAL_EXPORT bool NomValue_Insert(
 ///     The value to set for the key.
 ///
 /// \returns True if the value was set for they key; false if a value does
-/// not exist for the key.
+/// not exist for the key or the value does not support setting values for
+/// keys.
 NOMINAL_EXPORT bool NomValue_Set(
     NomState*   state,
     NomValue    value,

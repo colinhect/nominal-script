@@ -40,6 +40,7 @@ typedef struct
     size_t      capacity;
     size_t      count;
     NomValue*   keys;
+    bool        contiguous;
 } MapData;
 
 Hash HashValue(
@@ -119,6 +120,12 @@ void InsertKey(
     // Insert the key at the end
     data->keys[data->count] = key;
     data->count += 1;
+
+    if (data->contiguous)
+    {
+        // If the key matches the index then the map remains contiguous
+        data->contiguous = IS_NUMBER(key) && (data->count - 1) == (long long)key.number;
+    }
 }
 
 bool NomMap_Check(
@@ -142,9 +149,27 @@ NomValue NomMap_Create(
     data->capacity = 32;
     data->count = 0;
     data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
+    data->contiguous = true;
     
     SET_ID(map, id);
     return map;
+}
+
+bool NomMap_IsContiguous(
+    NomState*   state,
+    NomValue    map
+    )
+{
+    if (!NomMap_Check(map))
+    {
+        return false;
+    }
+
+    ObjectId id = GET_ID(map);
+    Heap* heap = NomState_GetHeap(state);
+    MapData* data = Heap_GetData(heap, id);
+    
+    return data->contiguous;
 }
 
 bool NomMap_MoveNext(

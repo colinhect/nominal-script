@@ -238,12 +238,12 @@ TEST_CASE("Inserting values keyed from mixed interned/non-interned strings into 
     NomState_Free(state);
 }
 
-TEST_CASE("Calling NomValue_Iterable() a Nominal map", "[Map]")
+TEST_CASE("Calling NomValue_IsIterable() a Nominal map", "[Map]")
 {
     NomState* state = NomState_Create();
 
     NomValue map = NomMap_Create(state);
-    REQUIRE(NomValue_Iterable(state, map) == true);
+    REQUIRE(NomValue_IsIterable(state, map) == true);
 
     NomState_Free(state);
 }
