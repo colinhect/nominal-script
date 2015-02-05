@@ -11,8 +11,8 @@ file(
 
 if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
-    include(CheckIncludeFiles)
-    check_include_files(vld.h NOMINAL_USE_VLD)
+elseif(UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null")
 endif()
 
 add_executable(NominalTests ${SOURCE_FILES})    

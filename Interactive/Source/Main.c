@@ -37,9 +37,7 @@ int main()
     while (!quit)
     {
         printf(":> ");
-        fgets(line, 4096, stdin);
-
-        if (line[0] != '\n')
+        if (fgets(line, 4096, stdin) != NULL && line[0] != '\n')
         {
             if (line[0] == '^')
             {
