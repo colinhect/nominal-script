@@ -26,10 +26,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef NOMINAL_USE_VLD
- #include <vld.h>
-#endif
-
 int main()
 {
     char resultString[8192];

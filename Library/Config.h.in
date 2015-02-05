@@ -34,6 +34,10 @@
 // Use VLD on debug builds if it is available
 #ifdef NOMINAL_DEBUG_BUILD
  #cmakedefine NOMINAL_USE_VLD
+
+ #ifdef NOMINAL_USE_VLD
+  #include <vld.h>
+ #endif
 #endif
 
-//#define NOMINAL_SHARED
+#define NOMINAL_SHARED

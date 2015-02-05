@@ -150,7 +150,7 @@ NomValue NomMap_Create(
     data->count = 0;
     data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
     data->contiguous = true;
-    
+
     SET_ID(map, id);
     return map;
 }

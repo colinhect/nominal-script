@@ -22,7 +22,7 @@ elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -Werror -pedantic -Wno-missing-braces -Wno-missing-field-initializers")
 endif()
 
-add_library(Nominal STATIC ${SOURCE_FILES})
+add_library(Nominal SHARED ${SOURCE_FILES})
 
 set(REG_INCLUDE ".*/Include/")
 set(REG_INCLUDE_NOMINAL ".*/Include/Nominal/")
@@ -35,6 +35,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(Nominal PROPERTIES
     PROJECT_LABEL Library
-    OUTPUT_NAME nominal_static
+    OUTPUT_NAME nominal-${NOMINAL_VERSION}
     LINKER_LANGUAGE C
     )

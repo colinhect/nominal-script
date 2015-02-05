@@ -26,9 +26,5 @@ extern "C"
 #include <Nominal.h>
 }
 
-#ifdef NOMINAL_USE_VLD
- #include <vld.h>
-#endif
-
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"

@@ -25,8 +25,6 @@
 
 #include "Config.h"
 
-#define NOMINAL_EXPORT
-
 #ifdef NOMINAL_SHARED
  #ifdef NOMINAL_WINDOWS_BUILD
   #ifdef NOMINAL_EXPORTS
