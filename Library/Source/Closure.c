@@ -31,7 +31,7 @@
 
 typedef struct
 {
-    size_t  ip;
+    uint32_t ip;
 } ClosureData;
 
 bool NomClosure_Check(
@@ -43,7 +43,7 @@ bool NomClosure_Check(
 
 NomValue NomClosure_Create(
     NomState*   state,
-    size_t      ip
+    uint32_t    ip
     )
 {
     NomValue closure = NomValue_Nil();
@@ -58,14 +58,14 @@ NomValue NomClosure_Create(
     return closure;
 }
 
-size_t NomClosure_GetInstructionPointer(
+uint32_t NomClosure_GetInstructionPointer(
     NomState*   state,
     NomValue    closure
     )
 {
     if (!NomClosure_Check(closure))
     {
-        return (size_t)-1;
+        return (uint32_t)-1;
     }
 
     ObjectId id = GET_ID(closure);

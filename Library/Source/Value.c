@@ -158,7 +158,7 @@ size_t NomValue_AsString(
     assert(buffer);
 
     size_t count = 0;
-    
+
     switch (GET_TYPE(value))
     {
     case TYPE_NIL:
@@ -231,7 +231,7 @@ size_t NomValue_AsString(
             {
                 break;
             }
-            
+
             if (!printComma)
             {
                 printComma = true;

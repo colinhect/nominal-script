@@ -42,10 +42,11 @@
 struct NomState
 {
     NomValue        stack[STATE_MAX_STACK_SIZE];
-    size_t          sp;
+    uint32_t        sp;
 
     unsigned char   byteCode[STATE_MAX_BYTE_CODE];
-    size_t          ip;
+    uint32_t        ip;
+    uint32_t        end;
 
     Heap*           heap;
     StringPool*     stringPool;
@@ -56,6 +57,31 @@ struct NomState
     NomValue        globalScope;
 };
 
+void CompileAndAppendByteCode(
+    NomState*   state,
+    const char* source)
+{
+    assert(state);
+    assert(source);
+
+    state->errorFlag = false;
+
+    Parser* p = Parser_Create(source, state->stringPool);
+    Node* node = Parser_Exprs(p);
+
+    if (!node)
+    {
+        NomState_SetError(state, Parser_GetError(p));
+    }
+    else
+    {
+        state->end = GenerateCode(state, node, state->byteCode, state->ip);
+        Node_Free(node);
+    }
+
+    Parser_Free(p);
+}
+
 NomState* NomState_Create(
     void
     )
@@ -65,6 +91,7 @@ NomState* NomState_Create(
 
     state->sp = 0;
     state->ip = 0;
+    state->end = 0;
     state->heap = Heap_Create();
     state->stringPool = StringPool_Create(STRING_POOL_STRING_COUNT);
     state->errorFlag = 0;
@@ -134,26 +161,10 @@ NomValue NomState_Execute(
     const char* source
     )
 {
-    state->errorFlag = false;
-
-    Parser* p = Parser_Create(source, state->stringPool);
-    Node* node = Parser_Exprs(p);
-
-    if (!node)
-    {
-        NomState_SetError(state, Parser_GetError(p));
-        Parser_Free(p);
-
-        return NomValue_Nil();
-    }
-
-    size_t end = GenerateCode(state, node, state->byteCode, state->ip);
-    Node_Free(node);
-    Parser_Free(p);
+    CompileAndAppendByteCode(state, source);
 
     NomValue scope = state->globalScope;
-
-    while (state->ip < end && !state->errorFlag)
+    while (state->ip < state->end && !state->errorFlag)
     {
         StringId id;
         NomValue l, r;
@@ -166,7 +177,7 @@ NomValue NomState_Execute(
         {
         case OPCODE_GOTO:
         {
-            size_t ip = READAS(size_t);
+            uint32_t ip = READAS(uint32_t);
             state->ip = ip;
         } break;
         case OPCODE_PUSH:
@@ -205,8 +216,8 @@ NomValue NomState_Execute(
         {
             NomValue map = NomMap_Create(state);
 
-            size_t itemCount = READAS(size_t);
-            for (size_t i = 0; i < itemCount; ++i)
+            uint32_t itemCount = READAS(uint32_t);
+            for (uint32_t i = 0; i < itemCount; ++i)
             {
                 NomValue key = POP();
                 NomValue value = POP();
@@ -218,7 +229,7 @@ NomValue NomState_Execute(
         } break;
         case OPCODE_NEW_CLOSURE:
         {
-            size_t ip = READAS(size_t);
+            uint32_t ip = READAS(uint32_t);
             result = NomClosure_Create(state, ip);
             PUSH(result);
         } break;
@@ -312,7 +323,7 @@ NomValue NomState_Execute(
 
             // Pop the instruction pointer and restore it
             NomValue restoredIp = POP();
-            state->ip = (size_t)restoredIp.raw;
+            state->ip = (uint32_t)restoredIp.raw;
 
             // Re-push the result
             PUSH(result);
@@ -335,10 +346,66 @@ NomValue NomState_Execute(
     }
 }
 
+void NomState_DumpByteCode(
+    NomState*   state,
+    const char* source
+    )
+{
+    assert(state);
+    assert(source);
+
+    CompileAndAppendByteCode(state, source);
+
+    while (state->ip < state->end && !state->errorFlag)
+    {
+        OpCode op = (OpCode)state->byteCode[state->ip++];
+        printf("0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
+
+        switch (op)
+        {
+        case OPCODE_GOTO:
+        {
+            uint32_t ip = READAS(uint32_t);
+            printf("0x%08x", ip);
+        } break;
+        case OPCODE_PUSH:
+        {
+            NomValue value = READAS(NomValue);
+            char buffer[256];
+            NomValue_AsString(state, buffer, 256, value);
+            printf("%s", buffer);
+        } break;
+        case OPCODE_GET:
+        case OPCODE_SET:
+        case OPCODE_LET:
+        {
+            StringId id = READAS(StringId);
+            const char* string = StringPool_Find(state->stringPool, id);
+            printf("\t%s", string);
+        } break;
+        case OPCODE_NEW_MAP:
+        {
+            uint32_t itemCount = READAS(uint32_t);
+            printf("%u", itemCount);
+        } break;
+        case OPCODE_NEW_CLOSURE:
+        {
+            uint32_t ip = READAS(uint32_t);
+            printf("0x%08x", ip);
+        } break;
+        default:
+            break;
+        }
+
+        printf("\n");
+    }
+}
+
 bool NomState_ErrorOccurred(
     NomState*   state
     )
 {
+    assert(state);
     return state->errorFlag;
 }
 
@@ -346,5 +413,6 @@ const char* NomState_GetError(
     NomState*   state
     )
 {
+    assert(state);
     return state->error;
 }

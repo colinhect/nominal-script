@@ -50,7 +50,7 @@ bool NomClosure_Check(
 /// \returns The new Nominal closure.
 NomValue NomClosure_Create(
     NomState*   state,
-    size_t      ip
+    uint32_t    ip
     );
 
 ///
@@ -62,7 +62,7 @@ NomValue NomClosure_Create(
 ///     The closure.
 ///
 /// \returns The instruction pointer where the closure begins.
-size_t NomClosure_GetInstructionPointer(
+uint32_t NomClosure_GetInstructionPointer(
     NomState*   state,
     NomValue    closure
     );

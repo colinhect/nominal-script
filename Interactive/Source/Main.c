@@ -41,15 +41,26 @@ int main()
 
         if (line[0] != '\n')
         {
-            NomValue result = NomState_Execute(state, line);
-            if (!NomState_ErrorOccurred(state))
+            if (line[0] == '^')
             {
-                NomValue_AsString(state, resultString, 8192, result);
-                printf("%s\n", resultString);
+                NomState_DumpByteCode(state, line + 1);
+                if (NomState_ErrorOccurred(state))
+                {
+                    printf("Error: %s\n", NomState_GetError(state));
+                }
             }
             else
             {
-                printf("Error: %s\n", NomState_GetError(state));
+                NomValue result = NomState_Execute(state, line);
+                if (!NomState_ErrorOccurred(state))
+                {
+                    NomValue_AsString(state, resultString, 8192, result);
+                    printf("%s\n", resultString);
+                }
+                else
+                {
+                    printf("Error: %s\n", NomState_GetError(state));
+                }
             }
         }
         else

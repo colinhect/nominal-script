@@ -32,5 +32,7 @@
   #else
    #define NOMINAL_EXPORT __declspec(dllimport)
   #endif
+ #else
+  #define NOMINAL_EXPORT
  #endif
 #endif

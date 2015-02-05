@@ -170,7 +170,7 @@ void HashTable_Free(
             }
         }
     }
-    
+
     // Free the array of buckets
     free(hashTable->buckets);
 

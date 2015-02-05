@@ -219,27 +219,27 @@ Node* Parser_SecondaryExpr(
             node = Parser_Closure(parser);
             break;
         }
-        
+
         else
         {
             SetUnexpectedTokenError(parser);
             break;
         }
 
-    // Number literal
+        // Number literal
     case TOK_NUMBER:
         node = Node_Create(NODE_NUMBER);
         node->data.number.value = Lexer_GetTokenAsNumber(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
-        
-    // String literal or identifier
+
+        // String literal or identifier
     case TOK_STRING:
     case TOK_IDENT:
         node = Parser_StringOrIdent(parser);
         break;
 
-    // Keyword literals
+        // Keyword literals
     case TOK_KEYWORD:
         if (id == KW_NIL)
         {
@@ -425,7 +425,7 @@ Node* Parser_BinExpr(
     for (;;)
     {
         Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
-        
+
         // Check that the current token is an operator
         if (!Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
         {
@@ -555,7 +555,7 @@ Node* Parser_Map(
             assoc->data.binary.rightExpr = item;
 
             item = assoc;
-        }                
+        }
 
         map->data.map.assoc = item;
 

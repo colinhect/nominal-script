@@ -45,7 +45,7 @@ typedef uint64_t Hash;
 ///     The context.
 ///
 /// \returns The hash value.
-typedef Hash (*HashFunction)(
+typedef Hash(*HashFunction)(
     UserData    key,
     UserData    context
     );
@@ -61,7 +61,7 @@ typedef Hash (*HashFunction)(
 ///     The context.
 ///
 /// \returns True if the values are equal; false otherwise.
-typedef bool (*CompareFunction)(
+typedef bool(*CompareFunction)(
     UserData    left,
     UserData    right,
     UserData    context

@@ -168,7 +168,7 @@ bool NomMap_IsContiguous(
     ObjectId id = GET_ID(map);
     Heap* heap = NomState_GetHeap(state);
     MapData* data = Heap_GetData(heap, id);
-    
+
     return data->contiguous;
 }
 
@@ -292,7 +292,7 @@ bool NomMap_InsertOrSet(
     {
         InsertKey(data, key);
     }
-    
+
     return valueInserted;
 }
 

@@ -52,14 +52,49 @@ const OpCode OP_OPCODE[] =
     OPCODE_RET    // OP_RET
 };
 
+const char* const OPCODE_NAMES[] =
+{
+    "LET",          // OPCODE_LET,
+    "SET",          // OPCODE_SET,
+    "GET",          // OPCODE_GET,
+    "ADD",          // OPCODE_ADD,
+    "SUB",          // OPCODE_SUB,
+    "MUL",          // OPCODE_MUL,
+    "DIV",          // OPCODE_DIV,
+    "NEG",          // OPCODE_NEG,
+    "EQ",           // OPCODE_EQ,
+    "NE",           // OPCODE_NE,
+    "GT",           // OPCODE_GT,
+    "GTE",          // OPCODE_GTE,
+    "LT",           // OPCODE_LT,
+    "LTE",          // OPCODE_LTE,
+    "AND",          // OPCODE_AND,
+    "OR",           // OPCODE_OR,
+    "NOT",          // OPCODE_NOT,
+    "ASSOC",        // OPCODE_ASSOC,
+    "RET",          // OPCODE_RET,
+    "VALUE_LET",    // OPCODE_VALUE_LET,
+    "VALUE_SET",    // OPCODE_VALUE_SET,
+    "VALUE_GET",    // OPCODE_VALUE_GET,
+    "BRACKET_SET",  // OPCODE_BRACKET_SET,
+    "BRACKET_GET",  // OPCODE_BRACKET_GET,
+    "PUSH",         // OPCODE_PUSH,
+    "POP",          // OPCODE_POP,
+    "NEW_MAP",      // OPCODE_NEW_MAP,
+    "NEW_CLOSURE",  // OPCODE_NEW_CLOSURE,
+    "GOTO",         // OPCODE_GOTO,
+    "INVOKE",       // OPCODE_INVOKE,
+    "RETURN",       // OPCODE_RETURN
+};
+
 #define OPCODE(op)      byteCode[index++] = (unsigned char)op
 #define WRITEAS(t, v)   *(t*)&byteCode[index] = v; index += sizeof(t)
 
-size_t GenerateCode(
+uint32_t GenerateCode(
     NomState*       state,
     Node*           node,
     unsigned char*  byteCode,
-    size_t          index
+    uint32_t        index
     )
 {
     switch (node->type)
@@ -85,7 +120,7 @@ size_t GenerateCode(
         }
 
         // Push all map items on the stack in reverse order
-        size_t itemCount = 0;
+        uint32_t itemCount = 0;
         while (node)
         {
             Node* assoc = node->data.map.assoc;
@@ -112,7 +147,7 @@ size_t GenerateCode(
 
         // Create the map
         OPCODE(OPCODE_NEW_MAP);
-        WRITEAS(size_t, itemCount);
+        WRITEAS(uint32_t, itemCount);
     } break;
     case NODE_IDENT:
         OPCODE(OPCODE_GET);
@@ -200,27 +235,27 @@ size_t GenerateCode(
     {
         // Go to the end of the closure body
         OPCODE(OPCODE_GOTO);
-        size_t gotoIndex = index;
-        WRITEAS(size_t, 0); // This will be known once the closure code is generated
-        
+        uint32_t gotoIndex = index;
+        WRITEAS(uint32_t, 0); // This will be known once the closure code is generated
+
         // Remember the instruction pointer where the closure begins
-        size_t ip = index;
+        uint32_t ip = index;
 
         // Generate the code for the closure body
         index = GenerateCode(state, node->data.closure.exprs, byteCode, index);
         OPCODE(OPCODE_RETURN);
 
         // Remember the instruction pointer where the closure ends
-        size_t endIndex = index;
+        uint32_t endIndex = index;
 
         // Go back to the goto
         index = gotoIndex;
-        WRITEAS(size_t, endIndex); // Update the index with the right index
+        WRITEAS(uint32_t, endIndex); // Update the index with the right index
         index = endIndex;
 
         // Create the closure
         OPCODE(OPCODE_NEW_CLOSURE);
-        WRITEAS(size_t, ip);
+        WRITEAS(uint32_t, ip);
     } break;
     case NODE_INVOCATION:
         index = GenerateCode(state, node->data.invocation.expr, byteCode, index);
