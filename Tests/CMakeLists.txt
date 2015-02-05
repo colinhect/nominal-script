@@ -13,10 +13,6 @@ if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
 elseif(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null")
-
-    if(COVERAGE and ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0 --coverage")
-    endif()
 endif()
 
 add_executable(NominalTests ${SOURCE_FILES})    
