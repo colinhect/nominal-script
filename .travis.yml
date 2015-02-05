@@ -6,6 +6,10 @@ env:
 
 compiler: clang
 
+before_install:
+ - sudo apt-get update -qq
+ - sudo apt-get install -y valgrind
+
 install:
  - cmake -H./ -BBuild -DCMAKE_BUILD_TYPE=$BUILD_TYPE
  - cd Build
@@ -15,3 +19,4 @@ install:
 script:
  - cd Build/Output
  - ./nominaltests
+ - valgrind ./nominaltests
