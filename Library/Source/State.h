@@ -27,8 +27,9 @@
 #include "Heap.h"
 #include "StringPool.h"
 
-#define STATE_MAX_STACK_SIZE    (1024)
-#define STATE_MAX_BYTE_CODE     (8096)
+#define STATE_MAX_STACK_SIZE        (128)
+#define STATE_MAX_CALLSTACK_SIZE    (32)
+#define STATE_MAX_BYTE_CODE         (8096)
 
 ///
 /// \brief Returns the heap used by the specified state.

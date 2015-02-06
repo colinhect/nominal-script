@@ -44,6 +44,9 @@ struct NomState
     NomValue        stack[STATE_MAX_STACK_SIZE];
     uint32_t        sp;
 
+    uint32_t        callstack[STATE_MAX_CALLSTACK_SIZE];
+    uint32_t        cp;
+
     unsigned char   byteCode[STATE_MAX_BYTE_CODE];
     uint32_t        ip;
     uint32_t        end;
@@ -90,6 +93,7 @@ NomState* NomState_Create(
     assert(state);
 
     state->sp = 0;
+    state->cp = 0;
     state->ip = 0;
     state->end = 0;
     state->heap = Heap_Create();
@@ -150,10 +154,11 @@ void NomState_SetError(
     va_end(args);
     state->errorFlag = true;
 }
-
-#define TOP()       state->stack[state->sp - 1]
+#define POP_IP()    state->callstack[--state->cp]
+#define PUSH_IP(v)  state->callstack[state->cp++] = v
 #define POP()       state->stack[--state->sp]
 #define PUSH(v)     state->stack[state->sp++] = v
+#define TOP()       state->stack[state->sp - 1]
 #define READAS(t)   *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
 NomValue NomState_Execute(
@@ -299,35 +304,20 @@ NomValue NomState_Execute(
             PUSH(result);
             break;
         case OPCODE_INVOKE:
-        {
-            // Pop the closure
-            NomValue closure = POP();
-            if (!NomClosure_Check(closure))
+            result = POP();
+            if (NomClosure_Check(result))
             {
-                NomState_SetError(state, "Value cannot be invoked");
+                PUSH_IP(state->ip);
+                state->ip = NomClosure_GetInstructionPointer(state, result);
             }
             else
             {
-                // Push the instruction pointer onto the stack
-                NomValue currentIp = { (uint64_t)state->ip };
-                PUSH(currentIp);
-
-                // Set the instruction pointer to where the closure begins
-                state->ip = NomClosure_GetInstructionPointer(state, closure);
+                NomState_SetError(state, "Value cannot be invoked");
             }
-        } break;
+            break;
         case OPCODE_RETURN:
-        {
-            // Pop the result of the invokation
-            result = POP();
-
-            // Pop the instruction pointer and restore it
-            NomValue restoredIp = POP();
-            state->ip = (uint32_t)restoredIp.raw;
-
-            // Re-push the result
-            PUSH(result);
-        } break;
+            state->ip = POP_IP();
+            break;
         default:
             break;
         }
