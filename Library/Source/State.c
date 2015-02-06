@@ -154,12 +154,24 @@ void NomState_SetError(
     va_end(args);
     state->errorFlag = true;
 }
-#define POP_IP()    state->callstack[--state->cp]
-#define PUSH_IP(v)  state->callstack[state->cp++] = v
-#define POP()       state->stack[--state->sp]
-#define PUSH(v)     state->stack[state->sp++] = v
-#define TOP()       state->stack[state->sp - 1]
-#define READAS(t)   *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
+
+// Pops an instruction pointer from the callstack and returns it
+#define POP_IP()        state->callstack[--state->cp]
+
+// Pushes an instruction pointer to the callstack
+#define PUSH_IP(v)      state->callstack[state->cp++] = v
+
+// Pops a value from the value stack and returns it
+#define POP_VALUE()     state->stack[--state->sp]
+
+// Pushes a value to the value stack
+#define PUSH_VALUE(v)   state->stack[state->sp++] = v
+
+// Returns the top value in the value stack
+#define TOP_VALUE()     state->stack[state->sp - 1]
+
+// Reads the a typed value from the byte code at the current instruction
+#define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
 NomValue NomState_Execute(
     NomState*   state,
@@ -180,18 +192,15 @@ NomValue NomState_Execute(
 
         switch (op)
         {
-        case OPCODE_GOTO:
-        {
-            uint32_t ip = READAS(uint32_t);
-            state->ip = ip;
-        } break;
-        case OPCODE_PUSH:
-            result = READAS(NomValue);
-            PUSH(result);
+        case OPCODE_LET:
+            id = READAS(StringId);
+            string = NomString_FromId(id);
+            if (!NomMap_Insert(state, scope, string, TOP_VALUE()))
+            {
+                NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
+            }
             break;
-        case OPCODE_POP:
-            (void)POP();
-            break;
+
         case OPCODE_GET:
             id = READAS(StringId);
             string = NomString_FromId(id);
@@ -199,24 +208,124 @@ NomValue NomState_Execute(
             {
                 NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
             }
-            PUSH(result);
+            else
+            {
+                PUSH_VALUE(result);
+            }
             break;
+
         case OPCODE_SET:
             id = READAS(StringId);
             string = NomString_FromId(id);
-            if (!NomMap_Set(state, scope, string, TOP()))
+            if (!NomMap_Set(state, scope, string, TOP_VALUE()))
             {
                 NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
             }
             break;
-        case OPCODE_LET:
-            id = READAS(StringId);
-            string = NomString_FromId(id);
-            if (!NomMap_Insert(state, scope, string, TOP()))
+
+        case OPCODE_ADD:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = NomValue_Add(state, l, r);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_SUB:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = NomValue_Subtract(state, l, r);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_MUL:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = NomValue_Multiply(state, l, r);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_DIV:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = NomValue_Divide(state, l, r);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_NEG:
+            l = POP_VALUE();
+            result = NomValue_Negate(state, l);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_EQ:
+        case OPCODE_NE:
+        case OPCODE_GT:
+        case OPCODE_GTE:
+        case OPCODE_LT:
+        case OPCODE_LTE:
+        case OPCODE_AND:
+        case OPCODE_OR:
+        case OPCODE_NOT:
+        case OPCODE_ASSOC:
+            break;
+
+        case OPCODE_RET:
+            state->ip = POP_IP();
+            break;
+
+        case OPCODE_VALUE_LET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            if (!NomValue_Insert(state, r, l, TOP_VALUE()))
             {
-                NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
+                NomState_SetError(state, "Value for key '%s' already exists", NomString_AsString(state, l));
             }
             break;
+
+        case OPCODE_VALUE_SET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            if (!NomValue_Set(state, r, l, TOP_VALUE()))
+            {
+                NomState_SetError(state, "No value for key '%s'", NomString_AsString(state, l));
+            }
+            break;
+
+        case OPCODE_VALUE_GET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            if (!NomValue_TryGet(state, r, l, &result))
+            {
+                NomState_SetError(state, "No value for key '%s'", NomString_AsString(state, l));
+            }
+            else
+            {
+                PUSH_VALUE(result);
+            }
+            break;
+
+        case OPCODE_BRACKET_SET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            NomValue_InsertOrSet(state, r, l, TOP_VALUE());
+            break;
+
+        case OPCODE_BRACKET_GET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = NomValue_Get(state, r, l);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_PUSH:
+            result = READAS(NomValue);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_POP:
+            (void)POP_VALUE();
+            break;
+
         case OPCODE_NEW_MAP:
         {
             NomValue map = NomMap_Create(state);
@@ -224,87 +333,30 @@ NomValue NomState_Execute(
             uint32_t itemCount = READAS(uint32_t);
             for (uint32_t i = 0; i < itemCount; ++i)
             {
-                NomValue key = POP();
-                NomValue value = POP();
+                NomValue key = POP_VALUE();
+                NomValue value = POP_VALUE();
 
                 NomMap_InsertOrSet(state, map, key, value);
             }
 
-            PUSH(map);
+            PUSH_VALUE(map);
         } break;
+
         case OPCODE_NEW_CLOSURE:
         {
             uint32_t ip = READAS(uint32_t);
             result = NomClosure_Create(state, ip);
-            PUSH(result);
+            PUSH_VALUE(result);
         } break;
-        case OPCODE_ADD:
-            l = POP();
-            r = POP();
-            result = NomValue_Add(state, l, r);
-            PUSH(result);
-            break;
-        case OPCODE_SUB:
-            l = POP();
-            r = POP();
-            result = NomValue_Subtract(state, l, r);
-            PUSH(result);
-            break;
-        case OPCODE_MUL:
-            l = POP();
-            r = POP();
-            result = NomValue_Multiply(state, l, r);
-            PUSH(result);
-            break;
-        case OPCODE_DIV:
-            l = POP();
-            r = POP();
-            result = NomValue_Divide(state, l, r);
-            PUSH(result);
-            break;
-        case OPCODE_NEG:
-            l = POP();
-            result = NomValue_Negate(state, l);
-            PUSH(result);
-            break;
-        case OPCODE_VALUE_LET:
-            l = POP();
-            r = POP();
-            if (!NomValue_Insert(state, r, l, TOP()))
-            {
-                NomState_SetError(state, "Value for key '%s' already exists", NomString_AsString(state, l));
-            }
-            break;
-        case OPCODE_VALUE_SET:
-            l = POP();
-            r = POP();
-            if (!NomValue_Set(state, r, l, TOP()))
-            {
-                NomState_SetError(state, "No value for key '%s'", NomString_AsString(state, l));
-            }
-            break;
-        case OPCODE_VALUE_GET:
-            l = POP();
-            r = POP();
-            if (!NomValue_TryGet(state, r, l, &result))
-            {
-                NomState_SetError(state, "No value for key '%s'", NomString_AsString(state, l));
-            }
-            PUSH(result);
-            break;
-        case OPCODE_BRACKET_SET:
-            l = POP();
-            r = POP();
-            NomValue_InsertOrSet(state, r, l, TOP());
-            break;
-        case OPCODE_BRACKET_GET:
-            l = POP();
-            r = POP();
-            result = NomValue_Get(state, r, l);
-            PUSH(result);
-            break;
+
+        case OPCODE_GOTO:
+        {
+            uint32_t ip = READAS(uint32_t);
+            state->ip = ip;
+        } break;
+
         case OPCODE_INVOKE:
-            result = POP();
+            result = POP_VALUE();
             if (NomClosure_Check(result))
             {
                 PUSH_IP(state->ip);
@@ -314,11 +366,6 @@ NomValue NomState_Execute(
             {
                 NomState_SetError(state, "Value cannot be invoked");
             }
-            break;
-        case OPCODE_RETURN:
-            state->ip = POP_IP();
-            break;
-        default:
             break;
         }
     }
@@ -330,7 +377,7 @@ NomValue NomState_Execute(
     }
     else
     {
-        NomValue result = POP();
+        NomValue result = POP_VALUE();
         state->sp = 0;
         return result;
     }
@@ -353,11 +400,15 @@ void NomState_DumpByteCode(
 
         switch (op)
         {
-        case OPCODE_GOTO:
+        case OPCODE_LET:
+        case OPCODE_GET:
+        case OPCODE_SET:
         {
-            uint32_t ip = READAS(uint32_t);
-            printf("0x%08x", ip);
+            StringId id = READAS(StringId);
+            const char* string = StringPool_Find(state->stringPool, id);
+            printf("\t%s", string);
         } break;
+
         case OPCODE_PUSH:
         {
             NomValue value = READAS(NomValue);
@@ -365,24 +416,25 @@ void NomState_DumpByteCode(
             NomValue_AsString(state, buffer, 256, value);
             printf("%s", buffer);
         } break;
-        case OPCODE_GET:
-        case OPCODE_SET:
-        case OPCODE_LET:
-        {
-            StringId id = READAS(StringId);
-            const char* string = StringPool_Find(state->stringPool, id);
-            printf("\t%s", string);
-        } break;
+
         case OPCODE_NEW_MAP:
         {
             uint32_t itemCount = READAS(uint32_t);
             printf("%u", itemCount);
         } break;
+
         case OPCODE_NEW_CLOSURE:
         {
             uint32_t ip = READAS(uint32_t);
             printf("0x%08x", ip);
         } break;
+
+        case OPCODE_GOTO:
+        {
+            uint32_t ip = READAS(uint32_t);
+            printf("0x%08x", ip);
+        } break;
+
         default:
             break;
         }

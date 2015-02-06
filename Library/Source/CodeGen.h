@@ -63,8 +63,7 @@ typedef enum
     OPCODE_NEW_MAP,
     OPCODE_NEW_CLOSURE,
     OPCODE_GOTO,
-    OPCODE_INVOKE,
-    OPCODE_RETURN
+    OPCODE_INVOKE
 } OpCode;
 
 ///

@@ -83,8 +83,7 @@ const char* const OPCODE_NAMES[] =
     "NEW_MAP",      // OPCODE_NEW_MAP,
     "NEW_CLOSURE",  // OPCODE_NEW_CLOSURE,
     "GOTO",         // OPCODE_GOTO,
-    "INVOKE",       // OPCODE_INVOKE,
-    "RETURN",       // OPCODE_RETURN
+    "INVOKE"        // OPCODE_INVOKE
 };
 
 #define OPCODE(op)      byteCode[index++] = (unsigned char)op
@@ -243,7 +242,7 @@ uint32_t GenerateCode(
 
         // Generate the code for the closure body
         index = GenerateCode(state, node->data.closure.exprs, byteCode, index);
-        OPCODE(OPCODE_RETURN);
+        OPCODE(OPCODE_RET);
 
         // Remember the instruction pointer where the closure ends
         uint32_t endIndex = index;
