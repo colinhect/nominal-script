@@ -103,10 +103,6 @@ uint32_t GenerateCode(
 {
     switch (node->type)
     {
-    case NODE_NIL:
-        OPCODE(OPCODE_PUSH);
-        WRITEAS(NomValue, NomValue_Nil());
-        break;
     case NODE_NUMBER:
         OPCODE(OPCODE_PUSH);
         WRITEAS(NomValue, NomNumber_FromDouble(node->data.number.value));

@@ -229,7 +229,7 @@ bool Lexer_Next(
     // The attempt to parse an operator accomplished nothing
     lexer->state = state;
 
-    // Identifier or Keyword
+    // Identifier
     if (isalpha(c))
     {
         while (isalnum(PeekNext(lexer)))
@@ -237,28 +237,8 @@ bool Lexer_Next(
             ReadNext(lexer);
             ++lexer->state.length;
         }
-
-        const char* current = &lexer->source[lexer->state.startIndex];
-
-        if (StartsWith(current, "true"))
-        {
-            lexer->state.type = TOK_KEYWORD;
-            lexer->state.id = KW_TRUE;
-        }
-        else if (StartsWith(current, "false"))
-        {
-            lexer->state.type = TOK_KEYWORD;
-            lexer->state.id = KW_FALSE;
-        }
-        else if (StartsWith(current, "nil"))
-        {
-            lexer->state.type = TOK_KEYWORD;
-            lexer->state.id = KW_NIL;
-        }
-        else
-        {
-            lexer->state.type = TOK_IDENT;
-        }
+        
+        lexer->state.type = TOK_IDENT;
 
         return true;
     }

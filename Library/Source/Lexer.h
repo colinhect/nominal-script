@@ -29,22 +29,12 @@
 #include <stdint.h>
 
 ///
-/// \brief A syntactic keyword.
-typedef enum
-{
-    KW_TRUE,
-    KW_FALSE,
-    KW_NIL
-} Keyword;
-
-///
 /// \brief A token type.
 typedef enum
 {
     TOK_SYMBOL,
 
     TOK_OPERATOR,
-    TOK_KEYWORD,
     TOK_IDENT,
 
     TOK_STRING,

@@ -239,15 +239,6 @@ Node* Parser_SecondaryExpr(
         node = Parser_StringOrIdent(parser);
         break;
 
-        // Keyword literals
-    case TOK_KEYWORD:
-        if (id == KW_NIL)
-        {
-            node = Node_Create(NODE_NIL);
-            Lexer_Next(parser->lexer);
-            break;
-        }
-
     default:
         SetUnexpectedTokenError(parser);
     }

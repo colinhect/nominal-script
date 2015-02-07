@@ -46,7 +46,6 @@ void Node_Free(
 
     switch (node->type)
     {
-    case NODE_NIL:
     case NODE_NUMBER:
     case NODE_STRING:
         break;

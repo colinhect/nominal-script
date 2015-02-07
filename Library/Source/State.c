@@ -127,16 +127,21 @@ NomState* NomState_Create(
     NomState* state = (NomState*)malloc(sizeof(NomState));
     assert(state);
 
-    state->sp = 0;
-    state->cp = 0;
-    state->ip = 0;
-    state->end = 0;
+    memset(state, 0, sizeof(NomState));
+
     state->heap = Heap_Create();
     state->stringPool = StringPool_Create(STRING_POOL_STRING_COUNT);
-    state->errorFlag = 0;
 
     // Global scope
     PUSH_FRAME(0, NomMap_Create(state));
+
+    // Declare intrinsic globals
+    StringId id = StringPool_InsertOrFind(state->stringPool, "nil");
+    NomState_FastLet(state, id, NomValue_Nil());
+    //id = StringPool_InsertOrFind(state->stringPool, "true");
+    //NomState_FastLet(state, id, NomBoolean_True());
+    //id = StringPool_InsertOrFind(state->stringPool, "false");
+    //NomState_FastLet(state, id, NomBoolean_False());
 
     return state;
 }

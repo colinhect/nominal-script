@@ -62,7 +62,6 @@ extern const char* const OP_STR[];
 /// \brief A type of AST node.
 typedef enum
 {
-    NODE_NIL,
     NODE_NUMBER,
     NODE_STRING,
     NODE_MAP,
