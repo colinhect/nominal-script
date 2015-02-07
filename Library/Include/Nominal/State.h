@@ -63,7 +63,7 @@ NOMINAL_EXPORT NomValue NomState_Execute(
 
 ///
 /// \brief Prints the byte code resulting from a snippet of Nominal source
-/// code.
+/// code to stdout.
 ///
 /// \warning The source code could have failed to parse.  Check
 /// NomState_ErrorOccurred directly after invoking this function.
@@ -71,7 +71,8 @@ NOMINAL_EXPORT NomValue NomState_Execute(
 /// \param state
 ///     The state.
 /// \param source
-///     The Nominal source code.
+///     The Nominal source code.  If NULL, then all of the state's byte code
+///     is printed.
 ///
 /// \returns The result of the executed code.
 NOMINAL_EXPORT void NomState_DumpByteCode(

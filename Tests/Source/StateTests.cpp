@@ -139,7 +139,7 @@ TEST_CASE("Indexing maps", "[State]")
     NomState_Free(state);
 }
 
-TEST_CASE("Creating and invoking trivial closures", "[State]")
+TEST_CASE("Creating and invoking trivial functions", "[State]")
 {
     NomState* state = NomState_Create();
 

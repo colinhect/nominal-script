@@ -24,7 +24,7 @@
 #include "Nominal.h"
 
 #include "Map.h"
-#include "Closure.h"
+#include "Function.h"
 #include "State.h"
 #include "Parser.h"
 #include "CodeGen.h"
@@ -405,7 +405,7 @@ NomValue NomState_Execute(
             (void)POP_VALUE();
             break;
 
-        case OPCODE_NEW_MAP:
+        case OPCODE_MAP:
         {
             NomValue map = NomMap_Create(state);
 
@@ -421,10 +421,10 @@ NomValue NomState_Execute(
             PUSH_VALUE(map);
         } break;
 
-        case OPCODE_NEW_CLOSURE:
+        case OPCODE_FUNCTION:
         {
             uint32_t ip = READAS(uint32_t);
-            result = NomClosure_Create(state, ip);
+            result = NomFunction_Create(state, ip);
             PUSH_VALUE(result);
         } break;
 
@@ -436,11 +436,10 @@ NomValue NomState_Execute(
 
         case OPCODE_INVOKE:
             result = POP_VALUE();
-            if (NomClosure_Check(result))
+            if (NomFunction_Check(result))
             {
-                NomValue scope = NomClosure_GetScope(state, result);
-                PUSH_FRAME(state->ip, scope);
-                state->ip = NomClosure_GetInstructionPointer(state, result);
+                PUSH_FRAME(state->ip, NomMap_Create(state));
+                state->ip = NomFunction_GetInstructionPointer(state, result);
             }
             else
             {
@@ -449,18 +448,18 @@ NomValue NomState_Execute(
             break;
         }
     }
+        
+    NomValue result = NomValue_Nil();
+    if (!state->errorFlag && state->sp > 0)
+    {
+        result = POP_VALUE();
+    }
 
-    // Return the result
-    if (state->sp == 0)
-    {
-        return NomValue_Nil();
-    }
-    else
-    {
-        NomValue result = POP_VALUE();
-        state->sp = 0;
-        return result;
-    }
+    state->sp = 0;
+    state->cp = 1;
+    state->ip = state->end;
+
+    return result;
 }
 
 void NomState_DumpByteCode(
@@ -469,11 +468,17 @@ void NomState_DumpByteCode(
     )
 {
     assert(state);
-    assert(source);
 
-    CompileAndAppendByteCode(state, source);
+    if (source)
+    {
+        CompileAndAppendByteCode(state, source);
+    }
+    else
+    {
+        state->ip = 0;
+    }
 
-    while (state->ip < state->end && !state->errorFlag)
+    while (state->ip < state->end)
     {
         OpCode op = (OpCode)state->byteCode[state->ip++];
         printf("0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
@@ -497,13 +502,13 @@ void NomState_DumpByteCode(
             printf("%s", buffer);
         } break;
 
-        case OPCODE_NEW_MAP:
+        case OPCODE_MAP:
         {
             uint32_t itemCount = READAS(uint32_t);
-            printf("%u", itemCount);
+            printf("\t%u", itemCount);
         } break;
 
-        case OPCODE_NEW_CLOSURE:
+        case OPCODE_FUNCTION:
         {
             uint32_t ip = READAS(uint32_t);
             printf("0x%08x", ip);
@@ -521,6 +526,8 @@ void NomState_DumpByteCode(
 
         printf("\n");
     }
+
+    state->ip = state->end;
 }
 
 bool NomState_ErrorOccurred(
@@ -536,5 +543,6 @@ const char* NomState_GetError(
     )
 {
     assert(state);
+    state->errorFlag = false;
     return state->error;
 }

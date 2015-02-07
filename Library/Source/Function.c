@@ -22,7 +22,7 @@
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
 #include "Value.h"
-#include "Closure.h"
+#include "Function.h"
 #include "Map.h"
 #include "State.h"
 #include "Heap.h"
@@ -33,70 +33,49 @@
 typedef struct
 {
     uint32_t    ip;
-    NomValue    scope;
-} ClosureData;
+} FunctionData;
 
-bool NomClosure_Check(
+bool NomFunction_Check(
     NomValue value
     )
 {
-    return GET_TYPE(value) == TYPE_CLOSURE;
+    return GET_TYPE(value) == TYPE_FUNCTION;
 }
 
-NomValue NomClosure_Create(
+NomValue NomFunction_Create(
     NomState*   state,
     uint32_t    ip
     )
 {
     assert(state);
 
-    NomValue closure = NomValue_Nil();
-    SET_TYPE(closure, TYPE_CLOSURE);
+    NomValue function = NomValue_Nil();
+    SET_TYPE(function, TYPE_FUNCTION);
 
     Heap* heap = NomState_GetHeap(state);
-    ObjectId id = Heap_Alloc(heap, sizeof(ClosureData), free);
-    ClosureData* data = Heap_GetData(heap, id);
+    ObjectId id = Heap_Alloc(heap, sizeof(FunctionData), free);
+    FunctionData* data = Heap_GetData(heap, id);
     data->ip = ip;
-    data->scope = NomMap_Create(state);
 
-    SET_ID(closure, id);
-    return closure;
+    SET_ID(function, id);
+    return function;
 }
 
-NomValue NomClosure_GetScope(
+uint32_t NomFunction_GetInstructionPointer(
     NomState*   state,
-    NomValue    closure
+    NomValue    function
     )
 {
     assert(state);
 
-    if (!NomClosure_Check(closure))
-    {
-        return NomValue_Nil();
-    }
-
-    ObjectId id = GET_ID(closure);
-    Heap* heap = NomState_GetHeap(state);
-    ClosureData* data = Heap_GetData(heap, id);
-
-    return data->scope;
-}
-
-uint32_t NomClosure_GetInstructionPointer(
-    NomState*   state,
-    NomValue    closure
-    )
-{
-    assert(state);
-
-    if (!NomClosure_Check(closure))
+    if (!NomFunction_Check(function))
     {
         return (uint32_t)-1;
     }
 
-    ObjectId id = GET_ID(closure);
+    ObjectId id = GET_ID(function);
     Heap* heap = NomState_GetHeap(state);
-    ClosureData* data = Heap_GetData(heap, id);
+    FunctionData* data = Heap_GetData(heap, id);
 
     return data->ip;
 }

@@ -36,7 +36,7 @@ typedef enum
     TYPE_STRING,
     TYPE_INTERNED_STRING,
     TYPE_MAP,
-    TYPE_CLOSURE
+    TYPE_FUNCTION
 } Type;
 
 #define TYPE_MASK       (0x000000FF)

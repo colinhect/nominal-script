@@ -21,64 +21,50 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef CLOSURE_H
-#define CLOSURE_H
+#ifndef FUNCTION_H
+#define FUNCTION_H
 
 #include "Nominal/Value.h"
 
 #include <stddef.h>
 
 ///
-/// \brief Checks if a value is a closure.
+/// \brief Checks if a value is a function.
 ///
 /// \param value
 ///     The value in question.
 ///
-/// \returns True if the value is a closure; false otherwise.
-bool NomClosure_Check(
+/// \returns True if the value is a function; false otherwise.
+bool NomFunction_Check(
     NomValue    value
     );
 
 ///
-/// \brief Creates a new Nominal closure.
+/// \brief Creates a new Nominal function.
 ///
 /// \param state
 ///     The state to create the value for.
 /// \param ip
-///     The instruction pointer where the closure begins.
+///     The instruction pointer where the function begins.
 ///
-/// \returns The new Nominal closure.
-NomValue NomClosure_Create(
+/// \returns The new Nominal function.
+NomValue NomFunction_Create(
     NomState*   state,
     uint32_t    ip
     );
 
 ///
-/// \brief Gets the scope of a closure.
+/// \brief Gets the instruction pointer of a function.
 ///
 /// \param state
 ///     The state.
-/// \param closure
-///     The closure.
+/// \param function
+///     The function.
 ///
-/// \returns The scope of the closure.
-NomValue NomClosure_GetScope(
+/// \returns The instruction pointer where the function begins.
+uint32_t NomFunction_GetInstructionPointer(
     NomState*   state,
-    NomValue    closure
-    );
-
-///
-/// \brief Gets the instruction pointer of a closure.
-///
-/// \param state
-///     The state.
-/// \param closure
-///     The closure.
-///
-/// \returns The instruction pointer where the closure begins.
-uint32_t NomClosure_GetInstructionPointer(
-    NomState*   state,
-    NomValue    closure
+    NomValue    function
     );
 
 #endif

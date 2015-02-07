@@ -213,10 +213,10 @@ Node* Parser_SecondaryExpr(
             break;
         }
 
-        // Closure literal
+        // Function literal
         else if (id == '[')
         {
-            node = Parser_Closure(parser);
+            node = Parser_Function(parser);
             break;
         }
 
@@ -575,7 +575,7 @@ Node* Parser_Map(
     return mapRoot;
 }
 
-Node* Parser_Closure(
+Node* Parser_Function(
     Parser* parser
     )
 {
@@ -627,7 +627,7 @@ Node* Parser_Closure(
         Lexer_RestoreState(parser->lexer, state);
     }
 
-    // Parse the body of the closure
+    // Parse the body of the function
     Node* exprs = Parser_Exprs(parser);
     if (!exprs)
     {
@@ -642,10 +642,10 @@ Node* Parser_Closure(
     }
     Lexer_Next(parser->lexer);
 
-    Node* closure = Node_Create(NODE_CLOSURE);
-    closure->data.closure.params = params;
-    closure->data.closure.exprs = exprs;
-    return closure;
+    Node* function = Node_Create(NODE_FUNCTION);
+    function->data.function.params = params;
+    function->data.function.exprs = exprs;
+    return function;
 }
 
 Node* Parser_StringOrIdent(

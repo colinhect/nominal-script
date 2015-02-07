@@ -71,7 +71,7 @@ typedef enum
     NODE_UNARY,
     NODE_INDEX,
     NODE_SEQUENCE,
-    NODE_CLOSURE,
+    NODE_FUNCTION,
     NODE_INVOCATION
 } NodeType;
 
@@ -138,12 +138,12 @@ typedef struct Node
             struct Node* next;
         } sequence;
 
-        // A closure
+        // A function
         struct
         {
             struct Node* params;
             struct Node* exprs;
-        } closure;
+        } function;
 
         // An invocation
         struct

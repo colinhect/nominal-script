@@ -163,13 +163,13 @@ Node* Parser_Map(
     );
 
 ///
-/// \brief Parses a closure.
+/// \brief Parses a function.
 ///
 /// \param parser
 ///     The parser.
 ///
 /// \returns The parsed AST node; NULL if a parse error occurred.
-Node* Parser_Closure(
+Node* Parser_Function(
     Parser* parser
     );
 

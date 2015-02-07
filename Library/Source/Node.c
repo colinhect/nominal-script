@@ -98,14 +98,14 @@ void Node_Free(
             Node_Free(node->data.sequence.next);
         }
         break;
-    case NODE_CLOSURE:
-        if (node->data.closure.params)
+    case NODE_FUNCTION:
+        if (node->data.function.params)
         {
-            Node_Free(node->data.closure.params);
+            Node_Free(node->data.function.params);
         }
-        if (node->data.closure.exprs)
+        if (node->data.function.exprs)
         {
-            Node_Free(node->data.closure.exprs);
+            Node_Free(node->data.function.exprs);
         }
         break;
     case NODE_INVOCATION:

@@ -80,8 +80,8 @@ const char* const OPCODE_NAMES[] =
     "BRACKET_GET",  // OPCODE_BRACKET_GET,
     "PUSH",         // OPCODE_PUSH,
     "POP",          // OPCODE_POP,
-    "NEW_MAP",      // OPCODE_NEW_MAP,
-    "NEW_CLOSURE",  // OPCODE_NEW_CLOSURE,
+    "MAP",          // OPCODE_MAP,
+    "FUNCTION",     // OPCODE_FUNCTION,
     "GOTO",         // OPCODE_GOTO,
     "INVOKE"        // OPCODE_INVOKE
 };
@@ -150,7 +150,7 @@ uint32_t GenerateCode(
         }
 
         // Create the map
-        OPCODE(OPCODE_NEW_MAP);
+        OPCODE(OPCODE_MAP);
         WRITEAS(uint32_t, itemCount);
     } break;
     case NODE_IDENT:
@@ -235,21 +235,21 @@ uint32_t GenerateCode(
             }
         }
     } break;
-    case NODE_CLOSURE:
+    case NODE_FUNCTION:
     {
-        // Go to the end of the closure body
+        // Go to the end of the function body
         OPCODE(OPCODE_GOTO);
         uint32_t gotoIndex = index;
-        WRITEAS(uint32_t, 0); // This will be known once the closure code is generated
+        WRITEAS(uint32_t, 0); // This will be known once the function code is generated
 
-        // Remember the instruction pointer where the closure begins
+        // Remember the instruction pointer where the function begins
         uint32_t ip = index;
 
-        // Generate the code for the closure body
-        index = GenerateCode(state, node->data.closure.exprs, byteCode, index);
+        // Generate the code for the function body
+        index = GenerateCode(state, node->data.function.exprs, byteCode, index);
         OPCODE(OPCODE_RET);
 
-        // Remember the instruction pointer where the closure ends
+        // Remember the instruction pointer where the function ends
         uint32_t endIndex = index;
 
         // Go back to the goto
@@ -257,8 +257,8 @@ uint32_t GenerateCode(
         WRITEAS(uint32_t, endIndex); // Update the index with the right index
         index = endIndex;
 
-        // Create the closure
-        OPCODE(OPCODE_NEW_CLOSURE);
+        // Create the function
+        OPCODE(OPCODE_FUNCTION);
         WRITEAS(uint32_t, ip);
     } break;
     case NODE_INVOCATION:

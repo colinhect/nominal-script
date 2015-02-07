@@ -28,7 +28,7 @@
 
 #include "Value.h"
 #include "Map.h"
-#include "Closure.h"
+#include "Function.h"
 #include "State.h"
 
 #include <assert.h>
@@ -241,10 +241,10 @@ size_t NomValue_AsString(
         // Closing '}'
         count += snprintf(buffer + count, bufferSize - count, " }");
     } break;
-    case TYPE_CLOSURE:
+    case TYPE_FUNCTION:
     {
         ObjectId id = GET_ID(value);
-        count += snprintf(buffer, bufferSize, "<closure with ID 0x%08x>", id);
+        count += snprintf(buffer, bufferSize, "<function with ID 0x%08x>", id);
         break;
     }
     default:

@@ -41,7 +41,7 @@ int main()
         {
             if (line[0] == '^')
             {
-                NomState_DumpByteCode(state, line + 1);
+                NomState_DumpByteCode(state, line[1] != '\n' ? line + 1 : NULL);
                 if (NomState_ErrorOccurred(state))
                 {
                     printf("Error: %s\n", NomState_GetError(state));
