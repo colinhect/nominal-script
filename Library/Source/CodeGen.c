@@ -86,8 +86,13 @@ const char* const OPCODE_NAMES[] =
     "INVOKE"        // OPCODE_INVOKE
 };
 
-#define OPCODE(op)      byteCode[index++] = (unsigned char)op
-#define WRITEAS(t, v)   *(t*)&byteCode[index] = v; index += sizeof(t)
+// Emits an opcode value to the byte code array
+#define OPCODE(op)\
+    byteCode[index++] = (unsigned char)op
+
+// Emits a raw value to the byte code array
+#define WRITEAS(t, v)\
+    *(t*)&byteCode[index] = v; index += sizeof(t)
 
 uint32_t GenerateCode(
     NomState*       state,

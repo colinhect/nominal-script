@@ -155,6 +155,7 @@ TEST_CASE("Creating and invoking trivial closures", "[State]")
     TEST_EXPR("e := { f := [ [ 23 ] ] }, e.f::", NomNumber_FromInt(23));
     TEST_EXPR("[ { 0, 1, [ 7 + 3 ] } ]:[2]:", NomNumber_FromInt(10));
     TEST_EXPR("[ { zero := 0, one := 1, two := 2 } ]:.one", NomNumber_FromInt(1));
+    TEST_EXPR("x := 1, y := 3, w := [ x := 4, x + y ]:, w + x", NomNumber_FromInt(8));
 
     TEST_EXPR_ERROR("z := { }, z:");
 

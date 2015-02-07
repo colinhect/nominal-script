@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Value.h"
 #include "Closure.h"
+#include "Map.h"
 #include "State.h"
 #include "Heap.h"
 
@@ -31,7 +32,8 @@
 
 typedef struct
 {
-    uint32_t ip;
+    uint32_t    ip;
+    NomValue    scope;
 } ClosureData;
 
 bool NomClosure_Check(
@@ -46,6 +48,8 @@ NomValue NomClosure_Create(
     uint32_t    ip
     )
 {
+    assert(state);
+
     NomValue closure = NomValue_Nil();
     SET_TYPE(closure, TYPE_CLOSURE);
 
@@ -53,9 +57,29 @@ NomValue NomClosure_Create(
     ObjectId id = Heap_Alloc(heap, sizeof(ClosureData), free);
     ClosureData* data = Heap_GetData(heap, id);
     data->ip = ip;
+    data->scope = NomMap_Create(state);
 
     SET_ID(closure, id);
     return closure;
+}
+
+NomValue NomClosure_GetScope(
+    NomState*   state,
+    NomValue    closure
+    )
+{
+    assert(state);
+
+    if (!NomClosure_Check(closure))
+    {
+        return NomValue_Nil();
+    }
+
+    ObjectId id = GET_ID(closure);
+    Heap* heap = NomState_GetHeap(state);
+    ClosureData* data = Heap_GetData(heap, id);
+
+    return data->scope;
 }
 
 uint32_t NomClosure_GetInstructionPointer(
@@ -63,6 +87,8 @@ uint32_t NomClosure_GetInstructionPointer(
     NomValue    closure
     )
 {
+    assert(state);
+
     if (!NomClosure_Check(closure))
     {
         return (uint32_t)-1;

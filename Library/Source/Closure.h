@@ -54,6 +54,20 @@ NomValue NomClosure_Create(
     );
 
 ///
+/// \brief Gets the scope of a closure.
+///
+/// \param state
+///     The state.
+/// \param closure
+///     The closure.
+///
+/// \returns The scope of the closure.
+NomValue NomClosure_GetScope(
+    NomState*   state,
+    NomValue    closure
+    );
+
+///
 /// \brief Gets the instruction pointer of a closure.
 ///
 /// \param state

@@ -39,12 +39,18 @@
 
 #define STRING_POOL_STRING_COUNT    (256)
 
+typedef struct
+{
+    uint32_t    ip;
+    NomValue    scope;
+} StackFrame;
+
 struct NomState
 {
     NomValue        stack[STATE_MAX_STACK_SIZE];
     uint32_t        sp;
 
-    uint32_t        callstack[STATE_MAX_CALLSTACK_SIZE];
+    StackFrame      callstack[STATE_MAX_CALLSTACK_SIZE];
     uint32_t        cp;
 
     unsigned char   byteCode[STATE_MAX_BYTE_CODE];
@@ -56,9 +62,38 @@ struct NomState
 
     char            error[2048];
     bool            errorFlag;
-
-    NomValue        globalScope;
 };
+
+// Pops a stack frame from the callstack and returns the return instruction
+// pointer
+#define POP_FRAME()\
+    state->callstack[--state->cp].ip
+
+// Pushes a stack frame on the callstack given the return instruction pointer
+// and the scope
+#define PUSH_FRAME(v, s)\
+    state->callstack[state->cp].ip = v;\
+    state->callstack[state->cp++].scope = s
+
+// Returns the top stack frame on the callstack
+#define TOP_FRAME()\
+    state->callstack[state->cp - 1]
+
+// Pops a value from the value stack and returns it
+#define POP_VALUE()\
+    state->stack[--state->sp]
+
+// Pushes a value to the value stack
+#define PUSH_VALUE(v)\
+    state->stack[state->sp++] = v
+
+// Returns the top value in the value stack
+#define TOP_VALUE()\
+    state->stack[state->sp - 1]
+
+// Reads the a typed value from the byte code at the current instruction
+#define READAS(t)\
+    *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
 
 void CompileAndAppendByteCode(
     NomState*   state,
@@ -100,7 +135,8 @@ NomState* NomState_Create(
     state->stringPool = StringPool_Create(STRING_POOL_STRING_COUNT);
     state->errorFlag = 0;
 
-    state->globalScope = NomMap_Create(state);
+    // Global scope
+    PUSH_FRAME(0, NomMap_Create(state));
 
     return state;
 }
@@ -142,6 +178,84 @@ StringPool* NomState_GetStringPool(
     return state->stringPool;
 }
 
+void NomState_FastLet(
+    NomState*   state,
+    StringId    id,
+    NomValue    value
+    )
+{
+    assert(state);
+
+    NomValue string = NomString_FromId(id);
+
+    NomValue scope = TOP_FRAME().scope;
+
+    if (!NomMap_Insert(state, scope, string, value))
+    {
+        NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
+    }
+}
+
+void NomState_FastSet(
+    NomState*   state,
+    StringId    id,
+    NomValue    value
+    )
+{
+    assert(state);
+
+    NomValue string = NomString_FromId(id);
+
+    bool success = false;
+
+    // For each stack frame
+    for (int i = state->cp - 1; i >= 0; --i)
+    {
+        NomValue scope = state->callstack[i].scope;
+        if (NomMap_Set(state, scope, string, value))
+        {
+            success = true;
+            break;
+        }
+    }
+
+    if (!success)
+    {
+        NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
+    }
+}
+
+NomValue NomState_FastGet(
+    NomState*   state,
+    StringId    id
+    )
+{
+    assert(state);
+
+    NomValue result = NomValue_Nil();
+    NomValue string = NomString_FromId(id);
+
+    bool success = false;
+
+    // For each stack frame
+    for (int i = state->cp - 1; i >= 0; --i)
+    {
+        NomValue scope = state->callstack[i].scope;
+        if (NomMap_TryGet(state, scope, string, &result))
+        {
+            success = true;
+            break;
+        }
+    }
+
+    if (!success)
+    {
+        NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
+    }
+
+    return result;
+}
+
 void NomState_SetError(
     NomState*   state,
     const char* fmt,
@@ -155,24 +269,6 @@ void NomState_SetError(
     state->errorFlag = true;
 }
 
-// Pops an instruction pointer from the callstack and returns it
-#define POP_IP()        state->callstack[--state->cp]
-
-// Pushes an instruction pointer to the callstack
-#define PUSH_IP(v)      state->callstack[state->cp++] = v
-
-// Pops a value from the value stack and returns it
-#define POP_VALUE()     state->stack[--state->sp]
-
-// Pushes a value to the value stack
-#define PUSH_VALUE(v)   state->stack[state->sp++] = v
-
-// Returns the top value in the value stack
-#define TOP_VALUE()     state->stack[state->sp - 1]
-
-// Reads the a typed value from the byte code at the current instruction
-#define READAS(t)       *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
-
 NomValue NomState_Execute(
     NomState*   state,
     const char* source
@@ -180,13 +276,11 @@ NomValue NomState_Execute(
 {
     CompileAndAppendByteCode(state, source);
 
-    NomValue scope = state->globalScope;
     while (state->ip < state->end && !state->errorFlag)
     {
         StringId id;
         NomValue l, r;
         NomValue result = NomValue_Nil();
-        NomValue string = NomValue_Nil();
 
         OpCode op = (OpCode)state->byteCode[state->ip++];
 
@@ -194,33 +288,18 @@ NomValue NomState_Execute(
         {
         case OPCODE_LET:
             id = READAS(StringId);
-            string = NomString_FromId(id);
-            if (!NomMap_Insert(state, scope, string, TOP_VALUE()))
-            {
-                NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
-            }
-            break;
-
-        case OPCODE_GET:
-            id = READAS(StringId);
-            string = NomString_FromId(id);
-            if (!NomMap_TryGet(state, scope, string, &result))
-            {
-                NomState_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
-            }
-            else
-            {
-                PUSH_VALUE(result);
-            }
+            NomState_FastLet(state, id, TOP_VALUE());
             break;
 
         case OPCODE_SET:
             id = READAS(StringId);
-            string = NomString_FromId(id);
-            if (!NomMap_Set(state, scope, string, TOP_VALUE()))
-            {
-                NomState_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
-            }
+            NomState_FastSet(state, id, TOP_VALUE());
+            break;
+
+        case OPCODE_GET:
+            id = READAS(StringId);
+            result = NomState_FastGet(state, id);
+            PUSH_VALUE(result);
             break;
 
         case OPCODE_ADD:
@@ -270,7 +349,7 @@ NomValue NomState_Execute(
             break;
 
         case OPCODE_RET:
-            state->ip = POP_IP();
+            state->ip = POP_FRAME();
             break;
 
         case OPCODE_VALUE_LET:
@@ -359,7 +438,8 @@ NomValue NomState_Execute(
             result = POP_VALUE();
             if (NomClosure_Check(result))
             {
-                PUSH_IP(state->ip);
+                NomValue scope = NomClosure_GetScope(state, result);
+                PUSH_FRAME(state->ip, scope);
                 state->ip = NomClosure_GetInstructionPointer(state, result);
             }
             else

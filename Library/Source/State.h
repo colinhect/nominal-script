@@ -54,6 +54,66 @@ StringPool* NomState_GetStringPool(
     );
 
 ///
+/// \brief Declares the value of a variable given an interned string ID based
+/// on the current scope.
+///
+/// \warning The call may have encountered an error.  Check
+/// NomState_ErrorOccurred directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param id
+///     The interned string ID.
+/// \param value
+///     The value.
+///
+/// \returns The value.
+void NomState_FastLet(
+    NomState*   state,
+    StringId    id,
+    NomValue    value
+    );
+
+///
+/// \brief Sets the value of a variable given an interned string ID based
+/// on the current scope.
+///
+/// \warning The call may have encountered an error.  Check
+/// NomState_ErrorOccurred directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param id
+///     The interned string ID.
+/// \param value
+///     The value.
+///
+/// \returns The value.
+void NomState_FastSet(
+    NomState*   state,
+    StringId    id,
+    NomValue    value
+    );
+
+///
+/// \brief Returns the value of a variable given an interned string ID based
+/// on the current scope.
+///
+/// \warning The call may have encountered an error.  Check
+/// NomState_ErrorOccurred directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param id
+///     The interned string ID.
+///
+/// \returns The value.
+NomValue NomState_FastGet(
+    NomState*   state,
+    StringId    id
+    );
+
+///
 /// \brief Sets the error message of the state.
 ///
 /// \param state
