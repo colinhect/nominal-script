@@ -26,7 +26,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-Node* Node_Create(
+Node* Node_New(
     NodeType    type
     )
 {

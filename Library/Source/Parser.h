@@ -41,7 +41,7 @@ typedef struct Parser Parser;
 ///     The string pool to use.
 ///
 /// \returns The parser.
-Parser* Parser_Create(
+Parser* Parser_New(
     const char* source,
     StringPool* stringPool
     );

@@ -31,7 +31,7 @@ int main()
     char resultString[8192];
     char line[4096];
 
-    NomState* state = NomState_Create();
+    NomState* state = Nom_NewState();
 
     bool quit = false;
     while (!quit)
@@ -41,23 +41,23 @@ int main()
         {
             if (line[0] == '^')
             {
-                NomState_DumpByteCode(state, line[1] != '\n' ? line + 1 : NULL);
-                if (NomState_ErrorOccurred(state))
+                Nom_DumpByteCode(state, line[1] != '\n' ? line + 1 : NULL);
+                if (Nom_ErrorOccurred(state))
                 {
-                    printf("Error: %s\n", NomState_GetError(state));
+                    printf("Error: %s\n", Nom_GetError(state));
                 }
             }
             else
             {
-                NomValue result = NomState_Execute(state, line);
-                if (!NomState_ErrorOccurred(state))
+                NomValue result = Nom_Execute(state, line);
+                if (!Nom_ErrorOccurred(state))
                 {
-                    NomValue_AsString(state, resultString, 8192, result);
+                    Nom_AsString(state, resultString, 8192, result);
                     printf("%s\n", resultString);
                 }
                 else
                 {
-                    printf("Error: %s\n", NomState_GetError(state));
+                    printf("Error: %s\n", Nom_GetError(state));
                 }
             }
         }
@@ -67,7 +67,7 @@ int main()
         }
     }
 
-    NomState_Free(state);
+    Nom_FreeState(state);
 
     return 0;
 }

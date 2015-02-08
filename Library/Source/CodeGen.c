@@ -105,11 +105,11 @@ uint32_t GenerateCode(
     {
     case NODE_NUMBER:
         OPCODE(OPCODE_PUSH);
-        WRITEAS(NomValue, NomNumber_FromDouble(node->data.number.value));
+        WRITEAS(NomValue, Nom_FromDouble(node->data.number.value));
         break;
     case NODE_STRING:
         OPCODE(OPCODE_PUSH);
-        WRITEAS(NomValue, NomString_FromId(node->data.string.id));
+        WRITEAS(NomValue, String_NewInterned(node->data.string.id));
         break;
     case NODE_MAP:
     {

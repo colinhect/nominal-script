@@ -36,7 +36,7 @@
 ///     The map.
 ///
 /// \returns True if the map has contiguous keys; false otherwise.
-bool NomMap_IsContiguous(
+bool Map_IsContiguous(
     NomState*   state,
     NomValue    map
     );
@@ -54,7 +54,7 @@ bool NomMap_IsContiguous(
 ///
 /// \returns True if the next pair was moved to; false if there were no more
 /// pairs in the map.
-bool NomMap_MoveNext(
+bool Map_MoveNext(
     NomState*       state,
     NomValue        map,
     NomIterator*    iterator
@@ -74,7 +74,7 @@ bool NomMap_MoveNext(
 ///
 /// \returns True if the key/value was inserted; false if a value already
 /// exists for the key.
-bool NomMap_Insert(
+bool Map_Insert(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -95,7 +95,7 @@ bool NomMap_Insert(
 ///
 /// \returns True if the set was successful; false if no value exists for the
 /// given key.
-NOMINAL_EXPORT bool NomMap_Set(
+bool Map_Set(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -116,7 +116,7 @@ NOMINAL_EXPORT bool NomMap_Set(
 ///
 /// \returns True if a new value was inserted; false if an existing value was
 /// changed.
-NOMINAL_EXPORT bool NomMap_InsertOrSet(
+bool Map_InsertOrSet(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -135,7 +135,7 @@ NOMINAL_EXPORT bool NomMap_InsertOrSet(
 ///
 /// \returns The value for the given key; nil if no value is set for the given
 /// key.
-NOMINAL_EXPORT NomValue NomMap_Get(
+NomValue Map_Get(
     NomState*   state,
     NomValue    map,
     NomValue    key
@@ -154,7 +154,7 @@ NOMINAL_EXPORT NomValue NomMap_Get(
 ///     The value (nil if no value is set for the given key).
 ///
 /// \returns True if the value was found; false otherwise.
-NOMINAL_EXPORT bool NomMap_TryGet(
+bool Map_TryGet(
     NomState*   state,
     NomValue    map,
     NomValue    key,

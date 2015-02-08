@@ -34,7 +34,7 @@
 ///     The value in question.
 ///
 /// \returns True if the value is a string; false otherwise.
-NOMINAL_EXPORT bool NomString_Check(
+NOMINAL_EXPORT bool Nom_IsString(
     NomValue    value
     );
 
@@ -49,7 +49,7 @@ NOMINAL_EXPORT bool NomString_Check(
 ///     Whether the string should be interned (normally false).
 ///
 /// \returns The new Nominal value.
-NOMINAL_EXPORT NomValue NomString_FromString(
+NOMINAL_EXPORT NomValue Nom_NewString(
     NomState*   state,
     const char* value,
     bool        interned
@@ -65,7 +65,7 @@ NOMINAL_EXPORT NomValue NomString_FromString(
 ///
 /// \returns A pointer to a NULL terminated string; NULL if the value is not
 /// a string.
-NOMINAL_EXPORT const char* NomString_AsString(
+NOMINAL_EXPORT const char* Nom_AsRawString(
     NomState*   state,
     NomValue    value
     );

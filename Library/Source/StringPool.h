@@ -39,7 +39,7 @@ typedef struct StringPool StringPool;
 ///     The maximum number of string the pool can contain.
 /// 
 /// \returns The new string pool.
-StringPool* StringPool_Create(
+StringPool* StringPool_New(
     size_t  stringCount
     );
 

@@ -31,7 +31,7 @@
 /// \brief Creates a new state.
 ///
 /// \returns The new state.
-NOMINAL_EXPORT NomState* NomState_Create(
+NOMINAL_EXPORT NomState* Nom_NewState(
     void
     );
 
@@ -40,7 +40,7 @@ NOMINAL_EXPORT NomState* NomState_Create(
 ///
 /// \param state
 ///     The state to free.
-NOMINAL_EXPORT void NomState_Free(
+NOMINAL_EXPORT void Nom_FreeState(
     NomState*   state
     );
 
@@ -48,7 +48,7 @@ NOMINAL_EXPORT void NomState_Free(
 /// \brief Executes a snippet of Nominal source code and returns the value.
 ///
 /// \warning The execution could have encountered an error.  Check
-/// NomState_ErrorOccurred directly after invoking this function.
+/// Nom_ErrorOccurred() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -56,7 +56,7 @@ NOMINAL_EXPORT void NomState_Free(
 ///     The Nominal source code.
 ///
 /// \returns The result of the executed code.
-NOMINAL_EXPORT NomValue NomState_Execute(
+NOMINAL_EXPORT NomValue Nom_Execute(
     NomState*   state,
     const char* source
     );
@@ -66,7 +66,7 @@ NOMINAL_EXPORT NomValue NomState_Execute(
 /// code to stdout.
 ///
 /// \warning The source code could have failed to parse.  Check
-/// NomState_ErrorOccurred directly after invoking this function.
+/// Nom_ErrorOccurred() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -75,7 +75,7 @@ NOMINAL_EXPORT NomValue NomState_Execute(
 ///     is printed.
 ///
 /// \returns The result of the executed code.
-NOMINAL_EXPORT void NomState_DumpByteCode(
+NOMINAL_EXPORT void Nom_DumpByteCode(
     NomState*   state,
     const char* source
     );
@@ -85,7 +85,7 @@ NOMINAL_EXPORT void NomState_DumpByteCode(
 ///
 /// \param state
 ///     The state.
-NOMINAL_EXPORT bool NomState_ErrorOccurred(
+NOMINAL_EXPORT bool Nom_ErrorOccurred(
     NomState*   state
     );
 
@@ -94,7 +94,7 @@ NOMINAL_EXPORT bool NomState_ErrorOccurred(
 ///
 /// \param state
 ///     The state.
-NOMINAL_EXPORT const char* NomState_GetError(
+NOMINAL_EXPORT const char* Nom_GetError(
     NomState*   state
     );
 

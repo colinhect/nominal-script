@@ -112,7 +112,7 @@ bool FindNode(
     return false;
 }
 
-HashTable* HashTable_Create(
+HashTable* HashTable_New(
     HashFunction    hash,
     CompareFunction compare,
     UserData        context,

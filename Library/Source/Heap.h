@@ -27,59 +27,31 @@
 #include <stddef.h>
 #include <stdint.h>
 
-///
-/// \brief A heap of GC objects.
+// A heap of GC objects
 typedef struct Heap Heap;
 
-///
-/// \brief A handle to a GC object.
-///
-/// \remarks Specific to a certain heap.
+// A handle to a GC object (specific to a certain heap)
 typedef uint32_t ObjectId;
 
-///
-/// \brief Creates a new heap.
-///
-/// \returns The new heap.
-Heap* Heap_Create(
+// Creates a new heap
+Heap* Heap_New(
     void
     );
 
-///
-/// \brief Frees a heap.
-///
-/// \param heap
-///     The heap to free.
+// Frees a heap
 void Heap_Free(
     Heap*   heap
     );
 
-///
-/// \brief Allocates a new object in the heap.
-///
-/// \param heap
-///     The heap.
-/// \param size
-///     The size of the object to allocate.
-/// \param free
-///     The function used to free the object when it is collected.
-///
-/// \returns A ID to the new object.
+// Allocates a new object in the heap given the size (in bytes) of the data to
+// allocate and the function used to free the object when it is collected
 ObjectId Heap_Alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
     );
 
-///
-/// \param Returns a pointer to the data of an object on the heap.
-///
-/// \param heap
-///     The heap.
-/// \param id
-///     The ID of the object to get the data for.
-///
-/// \returns A pointer to the object's data.
+// Returns a pointer to the data of an object on the heap
 void* Heap_GetData(
     Heap*       heap,
     ObjectId    id

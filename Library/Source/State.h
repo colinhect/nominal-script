@@ -38,7 +38,7 @@
 ///     The state.
 ///
 /// \returns The heap used by the state.
-Heap* NomState_GetHeap(
+Heap* State_GetHeap(
     NomState*   state
     );
 
@@ -49,7 +49,7 @@ Heap* NomState_GetHeap(
 ///     The state.
 ///
 /// \returns The string pool used by the state.
-StringPool* NomState_GetStringPool(
+StringPool* State_GetStringPool(
     NomState*   state
     );
 
@@ -58,7 +58,7 @@ StringPool* NomState_GetStringPool(
 /// on the current scope.
 ///
 /// \warning The call may have encountered an error.  Check
-/// NomState_ErrorOccurred directly after invoking this function.
+/// Nom_ErrorOccurred() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -68,7 +68,7 @@ StringPool* NomState_GetStringPool(
 ///     The value.
 ///
 /// \returns The value.
-void NomState_LetInterned(
+void State_LetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -79,7 +79,7 @@ void NomState_LetInterned(
 /// on the current scope.
 ///
 /// \warning The call may have encountered an error.  Check
-/// NomState_ErrorOccurred directly after invoking this function.
+/// Nom_ErrorOccurred() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -89,7 +89,7 @@ void NomState_LetInterned(
 ///     The value.
 ///
 /// \returns The value.
-void NomState_SetInterned(
+void State_SetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -100,7 +100,7 @@ void NomState_SetInterned(
 /// on the current scope.
 ///
 /// \warning The call may have encountered an error.  Check
-/// NomState_ErrorOccurred directly after invoking this function.
+/// Nom_ErrorOccurred() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -108,7 +108,7 @@ void NomState_SetInterned(
 ///     The interned string ID.
 ///
 /// \returns The value.
-NomValue NomState_GetInterned(
+NomValue State_GetInterned(
     NomState*   state,
     StringId    id
     );
@@ -120,7 +120,7 @@ NomValue NomState_GetInterned(
 ///     The state.
 /// \param fmt
 ///     The error message format.
-void NomState_SetError(
+void State_SetError(
     NomState*   state,
     const char* fmt,
     ...

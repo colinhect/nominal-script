@@ -28,55 +28,32 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-///
-/// \brief The data type used for keys/values/contexts in a hash table.
+// The data type used for keys/values/contexts in a hash table
 typedef uint64_t UserData;
 
-///
-/// \brief The result of a hash.
+// The result of a hash
 typedef uint64_t Hash;
 
-///
-/// \brief A hash function.
-///
-/// \param key
-///     The key to hash.
-/// \param context
-///     The context.
-///
-/// \returns The hash value.
-typedef Hash(*HashFunction)(
+// A hash function
+typedef Hash (*HashFunction)(
     UserData    key,
     UserData    context
     );
 
-///
-/// \brief A comparison function.
-///
-/// \param left
-///     The left operand.
-/// \param right
-///     The right operand.
-/// \param context
-///     The context.
-///
-/// \returns True if the values are equal; false otherwise.
-typedef bool(*CompareFunction)(
+// A comparison function
+typedef bool (*CompareFunction)(
     UserData    left,
     UserData    right,
     UserData    context
     );
 
-///
-/// \brief A hash table.
+// A hash table
 typedef struct HashTable HashTable;
 
-///
-/// \brief A hash table bucket node.
+// A hash table bucket node
 typedef struct BucketNode BucketNode;
 
-///
-/// \brief An iterator of a hash table.
+// An iterator of a hash table
 typedef struct
 {
     HashTable*  hashTable;
@@ -86,144 +63,64 @@ typedef struct
     BucketNode* bucketNode;
 } HashTableIterator;
 
-///
-/// \brief Creates a new hash table.
-///
-/// \param hash
-///     The hash function to use.
-/// \param compare
-///     The compare function to use.
-/// \param context
-///     The context to pass to hash/compare function calls.
-/// \param bucketCount
-///     The number of buckets to use.
-///
-/// \returns The new hash table.
-HashTable* HashTable_Create(
+// Creates a new hash table given the hash/compare functions and the context
+// used for those functions
+HashTable* HashTable_New(
     HashFunction    hash,
     CompareFunction compare,
     UserData        context,
     size_t          bucketCount
     );
 
-///
-/// \brief Frees a hash table.
-///
-/// \param hashTable
-///     The hash table to free.
-/// \param freeKey
-///     The function to use to free a key (can be NULL).
-/// \param freeValue
-///     The function to use to free a value (can be NULL).
+// Frees a hash table using the specified functions to free each key and value
+// (both functions can be NULL)
 void HashTable_Free(
     HashTable*  hashTable,
     void        (*freeKey)(void*),
     void        (*freeValue)(void*)
     );
 
-///
-/// \brief Moves to the next pair in the hash table.
-///
-/// \param hashTable
-///     The hash table.
-/// \param iterator
-///     The iterator.  If initialized to zero then it will be intialized and
-///     moved to the first pair in the table.
-///
-/// \returns True if the next pair was moved to; false if there were no more
-/// pairs in the table.
+// Moves to the next pair in the hash table
 bool HashTable_MoveNext(
     HashTable*          hashTable,
     HashTableIterator*  iterator
     );
 
-///
-/// \brief Inserts a new value in the hash table.
-///
-/// \param hashTable
-///     The hash table.
-/// \param key
-///     The key.
-/// \param value
-///     The value.
-///
-/// \returns True if the insertion was successful; false if a value already
-/// exists for the given key.
+// Inserts a new value in the hash table, returning true if the insertion was
+// successful or false if a value already exists for the specified key
 bool HashTable_Insert(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
     );
 
-///
-/// \brief Sets an existing value in the hash table.
-///
-/// \param hashTable
-///     The hash table.
-/// \param key
-///     The key.
-/// \param value
-///     The value.
-///
-/// \returns True if the set was successful; false if no value exists for the
-/// given key.
+// Sets an existing value in the hash table, returning true if the set was
+// successful or false if no value exists for the specified key
 bool HashTable_Set(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
     );
 
-///
-/// \brief Inserts a new value or sets an existing value in the hash table.
-///
-/// \param hashTable
-///     The hash table.
-/// \param key
-///     The key.
-/// \param value
-///     The value.
-///
-/// \returns True if a new value was inserted; false if an existing value was
-/// changed.
+// Inserts a new value or sets an existing value in the hash table, returning
+// true if a new value was inserted or false if an existing value was changed
 bool HashTable_InsertOrSet(
     HashTable*  hashTable,
     UserData    key,
     UserData    value
     );
 
-///
-/// \brief Gets the value for a key.
-///
-/// \param hashTable
-///     The hash table.
-/// \param key
-///     The key.
-/// \param value
-///     A pointer to where to store the found value.
-///
-/// \returns True if a value was found for the given key; false if no value
-/// was found for the given key.
+// Gets the value for a key, returning true if a value was found for the
+// specified key and false if no value was found for the specified key
 bool HashTable_Get(
     HashTable*  hashTable,
     UserData    key,
     UserData*   value
     );
 
-///
-/// \brief Either instert a new value or get an existing value.
-///
-/// \param hashTable
-///     The hash table.
-/// \param key
-///     The key.
-/// \param value
-///     The value.
-/// \param existingValue
-///     A pointer to where to store the found value (if an existing value is
-///     found).
-///
-/// \returns True if a value was found for the given key; false if no value
-/// was found for the given and a new value was inserted.
+// Either inserts a new value or get an existing value, returning true if a
+// value was found for the given key or false if no value was found for the
+// specified and a new value was inserted
 bool HashTable_InsertOrGet(
     HashTable*  hashTable,
     UserData    key,
@@ -231,62 +128,27 @@ bool HashTable_InsertOrGet(
     UserData*   existingValue
     );
 
-///
-/// \brief Hashes a string.
-///
-/// \param key
-///     The string to hash (casted to const char*).
-/// \param context
-///     The context.
-///
-/// \returns The hash value.
+// Hashes a string
 Hash HashString(
     UserData    key,
     UserData    context
     );
 
-///
-/// \brief Compares strings.
-///
-/// \param left
-///     The left string (casted to const char*).
-/// \param right
-///     The right string (casted to const char*).
-/// \param context
-///     The context.
-///
-/// \returns True if the strings are equal; false otherwise.
+// Compares strings, returning true if the strings are equal or false otherwise
 bool CompareString(
     UserData    left,
     UserData    right,
     UserData    context
     );
 
-///
-/// \brief Returns the literal value of the key as the hash.
-///
-/// \param key
-///     The key to hash.
-/// \param context
-///     The context.
-/// 
-/// \returns The hash value.
+// Returns the literal value of the key as the hash
 Hash HashIdentity(
     UserData    key,
     UserData    context
     );
 
-///
-/// \brief Compares the literal value of the keys
-///
-/// \param left
-///     The left key.
-/// \param right
-///     The right key.
-/// \param context
-///     The context.
-///
-/// \returns True if the keys are equal; false otherwise.
+// Compares the literal value of the key, returning true if the keys are equal
+// or false otherwise
 bool CompareIdentity(
     UserData    left,
     UserData    right,

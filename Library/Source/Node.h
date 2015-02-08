@@ -160,7 +160,7 @@ typedef struct Node
 ///     The node type.
 ///
 /// \returns The new node.
-Node* Node_Create(
+Node* Node_New(
     NodeType    type
     );
 

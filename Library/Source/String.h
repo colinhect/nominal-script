@@ -35,7 +35,7 @@
 ///     The string ID.
 ///
 /// \returns The new Nominal string.
-NomValue NomString_FromId(
+NomValue String_NewInterned(
     StringId    id
     );
 

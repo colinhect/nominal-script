@@ -79,7 +79,7 @@ bool StartsWith(
     return strLength < preLength ? false : strncmp(pre, str, preLength) == 0;
 }
 
-Lexer* Lexer_Create(
+Lexer* Lexer_New(
     const char* source
     )
 {

@@ -42,7 +42,7 @@ struct Heap
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
 
-Heap* Heap_Create(
+Heap* Heap_New(
     void
     )
 {

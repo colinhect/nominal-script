@@ -29,89 +29,40 @@
 
 #include <stddef.h>
 
-///
-/// \brief Checks if a value is a function.
-///
-/// \param value
-///     The value in question.
-///
-/// \returns True if the value is a function; false otherwise.
-bool NomFunction_Check(
+// Returns whether a value is a function
+bool Function_Check(
     NomValue    value
     );
 
-///
-/// \brief Creates a new Nominal function.
-///
-/// \param state
-///     The state to create the value for.
-/// \param ip
-///     The instruction pointer where the function begins.
-///
-/// \returns The new Nominal function.
-NomValue NomFunction_Create(
+// Creates a new function
+NomValue Function_New(
     NomState*   state,
     uint32_t    ip
     );
 
-///
-/// \brief Adds a parameter to a Nominal function.
-///
-/// \param state
-///     The state.
-/// \param function
-///     The function to add the parameter to.
-/// \param parameter
-///     The parameter name.
-void NomFunction_AddParameter(
+// Adds a parameter to a function
+void Function_AddParameter(
     NomState*   state,
     NomValue    function,
     StringId    parameter
     );
 
-///
-/// \brief Gets the number of parameters a Nominal function has.
-///
-/// \param state
-///     The state.
-/// \param function
-///     The function.
-///
-/// \returns The number of parameters the function has.
-size_t NomFunction_GetParameterCount(
+// Returns the number of parameters a function has
+size_t Function_GetParameterCount(
     NomState*   state,
     NomValue    function
     );
 
-///
-/// \brief Gets ID of the interned string representing the name of the
-/// parameter at the specified index in a Nominal function.
-///
-/// \param state
-///     The state.
-/// \param function
-///     The function.
-/// \param index
-///     The index.
-///
-/// \returns The ID of the interned string representing the name of the
-/// parameter at the specified index.
-StringId NomFunction_GetParameter(
+// Returns thh ID of the interned string representing the name of the
+// parameter at the specified index in a function
+StringId Function_GetParameter(
     NomState*   state,
     NomValue    function,
     size_t      index
     );
 
-///
-/// \brief Gets the instruction pointer of a function.
-///
-/// \param state
-///     The state.
-/// \param function
-///     The function.
-///
-/// \returns The instruction pointer where the function begins.
-uint32_t NomFunction_GetInstructionPointer(
+// Gets the instruction pointer of a function
+uint32_t Function_GetInstructionPointer(
     NomState*   state,
     NomValue    function
     );

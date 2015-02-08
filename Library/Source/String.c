@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool NomString_Check(
+bool Nom_IsString(
     NomValue    value
     )
 {
@@ -39,18 +39,18 @@ bool NomString_Check(
         || type == TYPE_INTERNED_STRING;
 }
 
-NomValue NomString_FromString(
+NomValue Nom_NewString(
     NomState*   state,
     const char* value,
     bool        interned
     )
 {
-    NomValue string = NomValue_Nil();
+    NomValue string = Nom_Nil();
 
 
     if (interned)
     {
-        StringPool* stringPool = NomState_GetStringPool(state);
+        StringPool* stringPool = State_GetStringPool(state);
         StringId id = StringPool_InsertOrFind(stringPool, value);
 
         SET_TYPE(string, TYPE_INTERNED_STRING);
@@ -58,7 +58,7 @@ NomValue NomString_FromString(
     }
     else
     {
-        Heap* heap = NomState_GetHeap(state);
+        Heap* heap = State_GetHeap(state);
         ObjectId id = Heap_Alloc(heap, strlen(value) + 1, free);
         strcpy((char*)Heap_GetData(heap, id), value);
 
@@ -69,13 +69,13 @@ NomValue NomString_FromString(
     return string;
 }
 
-const char* NomString_AsString(
+const char* Nom_AsRawString(
     NomState*   state,
     NomValue    value
     )
 {
-    Heap* heap = NomState_GetHeap(state);
-    StringPool* stringPool = NomState_GetStringPool(state);
+    Heap* heap = State_GetHeap(state);
+    StringPool* stringPool = State_GetStringPool(state);
 
     switch (GET_TYPE(value))
     {
@@ -88,11 +88,11 @@ const char* NomString_AsString(
     return NULL;
 }
 
-NomValue NomString_FromId(
+NomValue String_NewInterned(
     StringId    id
     )
 {
-    NomValue string = NomValue_Nil();
+    NomValue string = Nom_Nil();
     SET_TYPE(string, TYPE_INTERNED_STRING);
     SET_ID(string, id);
     return string;

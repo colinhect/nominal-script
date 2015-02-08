@@ -36,7 +36,7 @@
 ///     The value in question.
 ///
 /// \returns True if the value is a map; false otherwise.
-NOMINAL_EXPORT bool NomMap_Check(
+NOMINAL_EXPORT bool Nom_IsMap(
     NomValue    value
     );
 
@@ -47,7 +47,7 @@ NOMINAL_EXPORT bool NomMap_Check(
 ///     The state to create the value for.
 ///
 /// \returns The new Nominal map.
-NOMINAL_EXPORT NomValue NomMap_Create(
+NOMINAL_EXPORT NomValue Nom_NewMap(
     NomState*   state
     );
 

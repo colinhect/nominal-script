@@ -28,8 +28,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-///
-/// \brief A token type.
+// A token type
 typedef enum
 {
     TOK_SYMBOL,
@@ -43,8 +42,7 @@ typedef enum
     TOK_EOI
 } TokenType;
 
-///
-/// \brief Contains the position and state of a lexer.
+// Contains the position and state of a lexer
 typedef struct
 {
     unsigned    index;
@@ -56,41 +54,21 @@ typedef struct
     bool        skippedWhitespace;
 } LexerState;
 
-///
-/// \brief A lexer.
+// A lexer
 typedef struct Lexer Lexer;
 
-///
-/// \brief Creates a new lexer.
-///
-/// \param source
-///        The Nominal source code to lex.
-///
-/// \returns The new lexer.
-Lexer* Lexer_Create(
+// Creates a new lexer
+Lexer* Lexer_New(
     const char* source
     );
 
-///
-/// \brief Moves to the next token.
-///
-/// \param lexer
-///     The lexer.
-///
-/// \returns True if there are more tokens to lex; false otherwise.
+// Moves to the next token, returning true if there are more tokens to lex or
+// false otherwise
 bool Lexer_Next(
     Lexer*  lexer
     );
 
-///
-/// \brief Returns whether the current token is of a given type.
-///
-/// \param lexer
-///     The lexer.
-/// \param type
-///     The token type to compare.
-///
-/// \returns True if the token is of the type; false otherwise.
+// Returns whether the current token is of a given type
 bool Lexer_IsTokenType(
     Lexer*      lexer,
     TokenType   type

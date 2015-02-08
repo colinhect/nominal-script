@@ -51,7 +51,7 @@ void SetUnexpectedTokenError(
     Parser_SetError(parser, "Unexpected token '%s'", buffer);
 }
 
-Parser* Parser_Create(
+Parser* Parser_New(
     const char* source,
     StringPool* stringPool
     )
@@ -59,7 +59,7 @@ Parser* Parser_Create(
     Parser* parser = (Parser*)malloc(sizeof(Parser));
     assert(parser);
 
-    parser->lexer = Lexer_Create(source);
+    parser->lexer = Lexer_New(source);
     parser->stringPool = stringPool;
 
     // Move to the first token
@@ -129,7 +129,7 @@ Node* Parser_Exprs(
 
     // Create a sequence node for this expression and the potential expressions
     // after it
-    Node* sequence = Node_Create(NODE_SEQUENCE);
+    Node* sequence = Node_New(NODE_SEQUENCE);
     sequence->data.sequence.expr = expr;
     sequence->data.sequence.next = exprs;
     return sequence;
@@ -176,7 +176,7 @@ Node* Parser_PrimaryExpr(
         }
 
         // Create the unary node around the expression
-        Node* unary = Node_Create(NODE_UNARY);
+        Node* unary = Node_New(NODE_UNARY);
         unary->data.unary.op = op;
         unary->data.unary.expr = expr;
         return unary;
@@ -228,7 +228,7 @@ Node* Parser_SecondaryExpr(
 
         // Number literal
     case TOK_NUMBER:
-        node = Node_Create(NODE_NUMBER);
+        node = Node_New(NODE_NUMBER);
         node->data.number.value = Lexer_GetTokenAsNumber(parser->lexer);
         Lexer_Next(parser->lexer);
         break;
@@ -272,7 +272,7 @@ Node* Parser_SecondaryExpr(
                 Lexer_Next(parser->lexer);
 
                 // Create the index node
-                Node* index = Node_Create(NODE_INDEX);
+                Node* index = Node_New(NODE_INDEX);
                 index->data.index.bracket = true;
                 index->data.index.expr = node;
                 index->data.index.key = key;
@@ -305,7 +305,7 @@ Node* Parser_SecondaryExpr(
                 key->type = NODE_STRING;
 
                 // Create the index node
-                Node* index = Node_Create(NODE_INDEX);
+                Node* index = Node_New(NODE_INDEX);
                 index->data.index.bracket = false;
                 index->data.index.expr = node;
                 index->data.index.key = key;
@@ -319,10 +319,10 @@ Node* Parser_SecondaryExpr(
                 Lexer_Next(parser->lexer);
 
                 Node* expr = node;
-                Node* args = Node_Create(NODE_SEQUENCE);
+                Node* args = Node_New(NODE_SEQUENCE);
 
                 // Create the invocation node
-                node = Node_Create(NODE_INVOCATION);
+                node = Node_New(NODE_INVOCATION);
                 node->data.invocation.expr = expr;
                 node->data.invocation.args = args;
 
@@ -343,7 +343,7 @@ Node* Parser_SecondaryExpr(
                             args->data.sequence.expr = arg;
 
                             // Create the next node
-                            Node* next = Node_Create(NODE_SEQUENCE);
+                            Node* next = Node_New(NODE_SEQUENCE);
                             args->data.sequence.next = next;
 
                             // Move to the next node
@@ -471,7 +471,7 @@ Node* Parser_BinExpr(
         }
 
         // Create the binary operation node
-        Node* binary = Node_Create(NODE_BINARY);
+        Node* binary = Node_New(NODE_BINARY);
         binary->data.binary.op = op;
         binary->data.binary.leftExpr = leftExpr;
         binary->data.binary.rightExpr = rightExpr;
@@ -492,7 +492,7 @@ Node* Parser_Map(
 
     Lexer_Next(parser->lexer);
 
-    Node* mapRoot = Node_Create(NODE_MAP);
+    Node* mapRoot = Node_New(NODE_MAP);
     if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
     {
         Lexer_Next(parser->lexer);
@@ -536,11 +536,11 @@ Node* Parser_Map(
         // Infer the key if it is not an association operation
         if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
         {
-            Node* key = Node_Create(NODE_NUMBER);
+            Node* key = Node_New(NODE_NUMBER);
             key->data.number.value = (double)i;
 
             // Create an association operation
-            Node* assoc = Node_Create(NODE_BINARY);
+            Node* assoc = Node_New(NODE_BINARY);
             assoc->data.binary.op = OP_ASSOC;
             assoc->data.binary.leftExpr = key;
             assoc->data.binary.rightExpr = item;
@@ -553,7 +553,7 @@ Node* Parser_Map(
         expr = expr->data.sequence.next;
         if (expr)
         {
-            Node* nextMap = Node_Create(NODE_MAP);
+            Node* nextMap = Node_New(NODE_MAP);
             nextMap->data.map.prev = map;
             map->data.map.next = nextMap;
             map = nextMap;
@@ -580,7 +580,7 @@ Node* Parser_Function(
 
     LexerState state = Lexer_SaveState(parser->lexer);
 
-    Node* params = Node_Create(NODE_SEQUENCE);
+    Node* params = Node_New(NODE_SEQUENCE);
     Node* param = params;
     for (;;)
     {
@@ -608,7 +608,7 @@ Node* Parser_Function(
             break;
         }
 
-        param->data.sequence.next = Node_Create(NODE_SEQUENCE);
+        param->data.sequence.next = Node_New(NODE_SEQUENCE);
         param = param->data.sequence.next;
     }
 
@@ -633,7 +633,7 @@ Node* Parser_Function(
     }
     Lexer_Next(parser->lexer);
 
-    Node* function = Node_Create(NODE_FUNCTION);
+    Node* function = Node_New(NODE_FUNCTION);
     function->data.function.params = params;
     function->data.function.exprs = exprs;
     return function;
@@ -646,11 +646,11 @@ Node* Parser_StringOrIdent(
     Node* node;
     if (Lexer_IsTokenType(parser->lexer, TOK_STRING))
     {
-        node = Node_Create(NODE_STRING);
+        node = Node_New(NODE_STRING);
     }
     else if (Lexer_IsTokenType(parser->lexer, TOK_IDENT))
     {
-        node = Node_Create(NODE_IDENT);
+        node = Node_New(NODE_IDENT);
     }
     else
     {

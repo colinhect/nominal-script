@@ -36,13 +36,13 @@ struct StringPool
     StringId    nextStringId;
 };
 
-StringPool* StringPool_Create(
+StringPool* StringPool_New(
     size_t  stringCount
     )
 {
     StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
     assert(stringPool);
-    stringPool->hashTable = HashTable_Create(HashString, CompareString, 0, stringCount * 2);
+    stringPool->hashTable = HashTable_New(HashString, CompareString, 0, stringCount * 2);
 
     stringPool->strings = (char**)malloc(sizeof(char*)* stringCount);
     assert(stringPool->strings);
