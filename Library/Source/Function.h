@@ -25,6 +25,7 @@
 #define FUNCTION_H
 
 #include "Nominal/Value.h"
+#include "StringPool.h"
 
 #include <stddef.h>
 
@@ -51,6 +52,54 @@ bool NomFunction_Check(
 NomValue NomFunction_Create(
     NomState*   state,
     uint32_t    ip
+    );
+
+///
+/// \brief Adds a parameter to a Nominal function.
+///
+/// \param state
+///     The state.
+/// \param function
+///     The function to add the parameter to.
+/// \param parameter
+///     The parameter name.
+void NomFunction_AddParameter(
+    NomState*   state,
+    NomValue    function,
+    StringId    parameter
+    );
+
+///
+/// \brief Gets the number of parameters a Nominal function has.
+///
+/// \param state
+///     The state.
+/// \param function
+///     The function.
+///
+/// \returns The number of parameters the function has.
+size_t NomFunction_GetParameterCount(
+    NomState*   state,
+    NomValue    function
+    );
+
+///
+/// \brief Gets ID of the interned string representing the name of the
+/// parameter at the specified index in a Nominal function.
+///
+/// \param state
+///     The state.
+/// \param function
+///     The function.
+/// \param index
+///     The index.
+///
+/// \returns The ID of the interned string representing the name of the
+/// parameter at the specified index.
+StringId NomFunction_GetParameter(
+    NomState*   state,
+    NomValue    function,
+    size_t      index
     );
 
 ///

@@ -161,3 +161,17 @@ TEST_CASE("Creating and invoking trivial functions", "[State]")
 
     NomState_Free(state);
 }
+
+
+TEST_CASE("Creating and invoking functions with parameters", "[State]")
+{
+    NomState* state = NomState_Create();
+
+    TEST_EXPR("[ a b | a + b ]: 2 3", NomNumber_FromInt(5));
+    TEST_EXPR("id := [ a | a ], id: 2", NomNumber_FromInt(2));
+    TEST_EXPR("id:", NomValue_Nil());
+
+    TEST_EXPR_ERROR("z := [ a b c | a + b + c ], z: 1 2 3 4");
+
+    NomState_Free(state);
+}

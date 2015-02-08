@@ -30,9 +30,13 @@
 #include <assert.h>
 #include <stdlib.h>
 
+#define MAX_FUNCTION_PARAMS (16)
+
 typedef struct
 {
     uint32_t    ip;
+    StringId    parameters[MAX_FUNCTION_PARAMS];
+    size_t      parameterCount;
 } FunctionData;
 
 bool NomFunction_Check(
@@ -56,9 +60,69 @@ NomValue NomFunction_Create(
     ObjectId id = Heap_Alloc(heap, sizeof(FunctionData), free);
     FunctionData* data = Heap_GetData(heap, id);
     data->ip = ip;
+    data->parameterCount = 0;
 
     SET_ID(function, id);
     return function;
+}
+
+void NomFunction_AddParameter(
+    NomState*   state,
+    NomValue    function,
+    StringId    parameter
+    )
+{
+    assert(state);
+
+    if (!NomFunction_Check(function))
+    {
+        return;
+    }
+
+    ObjectId id = GET_ID(function);
+    Heap* heap = NomState_GetHeap(state);
+    FunctionData* data = Heap_GetData(heap, id);
+
+    data->parameters[data->parameterCount++] = parameter;
+}
+
+size_t NomFunction_GetParameterCount(
+    NomState*   state,
+    NomValue    function
+    )
+{
+    assert(state);
+
+    if (!NomFunction_Check(function))
+    {
+        return 0;
+    }
+
+    ObjectId id = GET_ID(function);
+    Heap* heap = NomState_GetHeap(state);
+    FunctionData* data = Heap_GetData(heap, id);
+
+    return data->parameterCount;
+}
+
+StringId NomFunction_GetParameter(
+    NomState*   state,
+    NomValue    function,
+    size_t      index
+    )
+{
+    assert(state);
+
+    if (!NomFunction_Check(function))
+    {
+        return (StringId)-1;
+    }
+
+    ObjectId id = GET_ID(function);
+    Heap* heap = NomState_GetHeap(state);
+    FunctionData* data = Heap_GetData(heap, id);
+
+    return data->parameters[index];
 }
 
 uint32_t NomFunction_GetInstructionPointer(

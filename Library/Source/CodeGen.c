@@ -248,19 +248,73 @@ uint32_t GenerateCode(
         // Remember the instruction pointer where the function ends
         uint32_t endIndex = index;
 
-        // Go back to the goto
+        // Re-write the goto instruction pointer
         index = gotoIndex;
-        WRITEAS(uint32_t, endIndex); // Update the index with the right index
+        WRITEAS(uint32_t, endIndex);
         index = endIndex;
 
         // Create the function
         OPCODE(OPCODE_FUNCTION);
         WRITEAS(uint32_t, ip);
+        uint32_t paramCountIndex = index;
+        WRITEAS(uint32_t, 0); // This will be known once the parameters are traversed
+
+        uint32_t paramCount = 0;
+
+        // Emit the parameter names
+        Node* param = node->data.function.params;
+        while (param)
+        {
+            Node* paramExpr = param->data.sequence.expr;
+            if (paramExpr)
+            {
+                WRITEAS(StringId, paramExpr->data.string.id);
+                param = param->data.sequence.next;
+                ++paramCount;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // Remember the instruction pointer where the parameters end
+        endIndex = index;
+
+        // Re-write the parameter count
+        index = paramCountIndex;
+        WRITEAS(uint32_t, paramCount);
+        index = endIndex;
     } break;
     case NODE_INVOCATION:
+    {
+        uint32_t argCount = 0;
+
+        // Push the arguments
+        Node* arg = node->data.invocation.args;
+        while (arg)
+        {
+            Node* argExpr = arg->data.sequence.expr;
+            if (argExpr)
+            {
+                // Generate the code to push the argument on the stack
+                index = GenerateCode(state, argExpr, byteCode, index);
+                arg = arg->data.sequence.next;
+                ++argCount;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // Generate the code to push the function on the stack
         index = GenerateCode(state, node->data.invocation.expr, byteCode, index);
+
+        // Invoke the function
         OPCODE(OPCODE_INVOKE);
-        break;
+        WRITEAS(uint32_t, argCount);
+    } break;
     }
 
     return index;

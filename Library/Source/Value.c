@@ -117,6 +117,7 @@ bool NomValue_Equals(
     }
     else if (NomString_Check(value) && NomString_Check(other))
     {
+        // If one of the strings is not interned
         if (GET_TYPE(value) != TYPE_INTERNED_STRING ||
             GET_TYPE(other) != TYPE_INTERNED_STRING)
         {

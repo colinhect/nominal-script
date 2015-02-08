@@ -68,7 +68,7 @@ StringPool* NomState_GetStringPool(
 ///     The value.
 ///
 /// \returns The value.
-void NomState_FastLet(
+void NomState_LetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -89,7 +89,7 @@ void NomState_FastLet(
 ///     The value.
 ///
 /// \returns The value.
-void NomState_FastSet(
+void NomState_SetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -108,7 +108,7 @@ void NomState_FastSet(
 ///     The interned string ID.
 ///
 /// \returns The value.
-NomValue NomState_FastGet(
+NomValue NomState_GetInterned(
     NomState*   state,
     StringId    id
     );

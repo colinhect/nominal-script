@@ -23,6 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "Nominal.h"
 
+#include "Value.h"
 #include "Map.h"
 #include "Function.h"
 #include "State.h"
@@ -137,11 +138,11 @@ NomState* NomState_Create(
 
     // Declare intrinsic globals
     StringId id = StringPool_InsertOrFind(state->stringPool, "nil");
-    NomState_FastLet(state, id, NomValue_Nil());
-    //id = StringPool_InsertOrFind(state->stringPool, "true");
-    //NomState_FastLet(state, id, NomBoolean_True());
-    //id = StringPool_InsertOrFind(state->stringPool, "false");
-    //NomState_FastLet(state, id, NomBoolean_False());
+    NomState_LetInterned(state, id, NomValue_Nil());
+    id = StringPool_InsertOrFind(state->stringPool, "true");
+    NomState_LetInterned(state, id, NomValue_True());
+    id = StringPool_InsertOrFind(state->stringPool, "false");
+    NomState_LetInterned(state, id, NomValue_False());
 
     return state;
 }
@@ -183,7 +184,7 @@ StringPool* NomState_GetStringPool(
     return state->stringPool;
 }
 
-void NomState_FastLet(
+void NomState_LetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -193,15 +194,15 @@ void NomState_FastLet(
 
     NomValue string = NomString_FromId(id);
 
+    // Attempt to define the variable at the top-most scope
     NomValue scope = TOP_FRAME().scope;
-
     if (!NomMap_Insert(state, scope, string, value))
     {
         NomState_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
     }
 }
 
-void NomState_FastSet(
+void NomState_SetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -216,6 +217,7 @@ void NomState_FastSet(
     // For each stack frame
     for (int i = state->cp - 1; i >= 0; --i)
     {
+        // Try to set the variable
         NomValue scope = state->callstack[i].scope;
         if (NomMap_Set(state, scope, string, value))
         {
@@ -230,7 +232,7 @@ void NomState_FastSet(
     }
 }
 
-NomValue NomState_FastGet(
+NomValue NomState_GetInterned(
     NomState*   state,
     StringId    id
     )
@@ -245,6 +247,7 @@ NomValue NomState_FastGet(
     // For each stack frame
     for (int i = state->cp - 1; i >= 0; --i)
     {
+        // Try to get the variable value
         NomValue scope = state->callstack[i].scope;
         if (NomMap_TryGet(state, scope, string, &result))
         {
@@ -281,29 +284,29 @@ NomValue NomState_Execute(
 {
     CompileAndAppendByteCode(state, source);
 
+    StringId id;
+    NomValue l, r, result;
+    OpCode op;
+    uint32_t count, ip;
+
     while (state->ip < state->end && !state->errorFlag)
     {
-        StringId id;
-        NomValue l, r;
-        NomValue result = NomValue_Nil();
-
-        OpCode op = (OpCode)state->byteCode[state->ip++];
-
+        op = (OpCode)state->byteCode[state->ip++];
         switch (op)
         {
         case OPCODE_LET:
             id = READAS(StringId);
-            NomState_FastLet(state, id, TOP_VALUE());
+            NomState_LetInterned(state, id, TOP_VALUE());
             break;
 
         case OPCODE_SET:
             id = READAS(StringId);
-            NomState_FastSet(state, id, TOP_VALUE());
+            NomState_SetInterned(state, id, TOP_VALUE());
             break;
 
         case OPCODE_GET:
             id = READAS(StringId);
-            result = NomState_FastGet(state, id);
+            result = NomState_GetInterned(state, id);
             PUSH_VALUE(result);
             break;
 
@@ -411,40 +414,62 @@ NomValue NomState_Execute(
             break;
 
         case OPCODE_MAP:
-        {
-            NomValue map = NomMap_Create(state);
-
-            uint32_t itemCount = READAS(uint32_t);
-            for (uint32_t i = 0; i < itemCount; ++i)
+            count = READAS(uint32_t);
+            result = NomMap_Create(state);
+            for (uint32_t i = 0; i < count; ++i)
             {
                 NomValue key = POP_VALUE();
                 NomValue value = POP_VALUE();
 
-                NomMap_InsertOrSet(state, map, key, value);
+                NomMap_InsertOrSet(state, result, key, value);
             }
-
-            PUSH_VALUE(map);
-        } break;
+            PUSH_VALUE(result);
+            break;
 
         case OPCODE_FUNCTION:
-        {
-            uint32_t ip = READAS(uint32_t);
+            ip = READAS(uint32_t);
+            count = READAS(uint32_t);
             result = NomFunction_Create(state, ip);
+            for (uint32_t i = 0; i < count; ++i)
+            {
+                StringId parameter = READAS(StringId);
+                NomFunction_AddParameter(state, result, parameter);
+            }
             PUSH_VALUE(result);
-        } break;
+            break;
 
         case OPCODE_GOTO:
-        {
-            uint32_t ip = READAS(uint32_t);
+            ip = READAS(uint32_t);
             state->ip = ip;
-        } break;
+            break;
 
         case OPCODE_INVOKE:
+            count = READAS(uint32_t);
             result = POP_VALUE();
             if (NomFunction_Check(result))
             {
                 PUSH_FRAME(state->ip, NomMap_Create(state));
                 state->ip = NomFunction_GetInstructionPointer(state, result);
+                size_t paramCount = NomFunction_GetParameterCount(state, result);
+                if (count <= paramCount)
+                {
+                    size_t i = paramCount;
+                    while (i > 0)
+                    {
+                        --i;
+                        NomValue arg = NomValue_Nil();
+                        if (i < count)
+                        {
+                            arg = POP_VALUE();
+                        }
+                        StringId param = NomFunction_GetParameter(state, result, i);
+                        NomState_LetInterned(state, param, arg);
+                    }
+                }
+                else
+                {
+                    NomState_SetError(state, "Too many arguments given (expected %u)", paramCount);
+                }
             }
             else
             {
@@ -454,7 +479,7 @@ NomValue NomState_Execute(
         }
     }
         
-    NomValue result = NomValue_Nil();
+    result = NomValue_Nil();
     if (!state->errorFlag && state->sp > 0)
     {
         result = POP_VALUE();
@@ -516,13 +541,30 @@ void NomState_DumpByteCode(
         case OPCODE_FUNCTION:
         {
             uint32_t ip = READAS(uint32_t);
-            printf("0x%08x", ip);
+            uint32_t paramCount = READAS(uint32_t);
+            printf("0x%x %u ", ip, paramCount);
+            for (uint32_t i = 0; i < paramCount; ++i)
+            {
+                StringId id = READAS(StringId);
+                const char* param = StringPool_Find(state->stringPool, id);
+                printf("%s", param);
+                if (i < paramCount - 1)
+                {
+                    printf(" ");
+                }
+            }
         } break;
 
         case OPCODE_GOTO:
         {
             uint32_t ip = READAS(uint32_t);
-            printf("0x%08x", ip);
+            printf("0x%x", ip);
+        } break;
+
+        case OPCODE_INVOKE:
+        {
+            uint32_t argCount = READAS(uint32_t);
+            printf("%u", argCount);
         } break;
 
         default:
