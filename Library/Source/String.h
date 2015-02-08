@@ -28,13 +28,7 @@
 
 #include "StringPool.h"
 
-///
-/// \brief Creates an interned string from a string ID.
-///
-/// \param id
-///     The string ID.
-///
-/// \returns The new Nominal string.
+// Creates an interned string from a string ID
 NomValue String_NewInterned(
     StringId    id
     );

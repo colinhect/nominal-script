@@ -26,8 +26,7 @@
 
 #include "StringPool.h"
 
-///
-/// \brief A Nominal binary/unary operator
+// A binary/unary operator
 typedef enum
 {
     OP_LET,
@@ -50,16 +49,13 @@ typedef enum
     OP_RET
 } Operator;
 
-///
-/// \brief The precedence of each operator.
+// The precedence of each operator
 extern const int OP_PREC[];
 
-///
-/// \brief The string value of each operator.
+// The string value of each operator
 extern const char* const OP_STR[];
 
-///
-/// \brief A type of AST node.
+// A type of abstract syntax node
 typedef enum
 {
     NODE_NUMBER,
@@ -74,8 +70,7 @@ typedef enum
     NODE_INVOCATION
 } NodeType;
 
-///
-/// \brief An AST node.
+// An abstract syntax node
 typedef struct Node
 {
     NodeType type;
@@ -153,22 +148,12 @@ typedef struct Node
     } data;
 } Node;
 
-///
-/// \brief Creates a new AST node.
-///
-/// \param type
-///     The node type.
-///
-/// \returns The new node.
+// Creates a new abstract syntax node
 Node* Node_New(
     NodeType    type
     );
 
-///
-/// \brief Frees an AST node.
-///
-/// \param node
-///     The node to free.
+// Frees an abstract syntax node
 void Node_Free(
     Node*   node
     );

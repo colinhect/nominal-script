@@ -32,13 +32,10 @@
 typedef enum
 {
     TOK_SYMBOL,
-
     TOK_OPERATOR,
     TOK_IDENT,
-
     TOK_STRING,
     TOK_NUMBER,
-
     TOK_EOI
 } TokenType;
 
@@ -68,119 +65,64 @@ bool Lexer_Next(
     Lexer*  lexer
     );
 
-// Returns whether the current token is of a given type
+// Returns whether the current token is of a specified type
 bool Lexer_IsTokenType(
     Lexer*      lexer,
     TokenType   type
     );
 
-///
-/// \brief Returns whether the current token has a given ID.
-///
-/// \param lexer
-///     The lexer.
-/// \param id
-///     The token ID to compare.
-///
-/// \returns True if the token has the ID; false otherwise.
+// Returns whether the current token has a specified ID
 bool Lexer_IsTokenId(
     Lexer*      lexer,
     unsigned    id
     );
 
-///
-/// \brief Returns whether the current token is of a given type and has a
-/// given ID.
-///
-/// \param lexer
-///     The lexer.
-/// \param type
-///     The token type to compare.
-/// \param id
-///     The token ID to compare.
-///
-/// \returns True if the token is of the type and has the ID; false otherwise.
+// Returns whether the current token is of a specified type and has a
+// specified ID
 bool Lexer_IsTokenTypeAndId(
     Lexer*      lexer,
     TokenType   type,
     unsigned    id
     );
 
-///
-/// \brief Returns the type of the current token.
-///
-/// \param lexer
-///     The lexer.
+// Returns the type of the current token
 TokenType Lexer_GetTokenType(
     Lexer*  lexer
     );
 
-///
-/// \brief Returns the ID of the current token.
-///
-/// \param lexer
-///     The lexer.
+// Returns the ID of the current token
 unsigned Lexer_GetTokenId(
     Lexer*  lexer
     );
 
-///
-/// \brief Returns whether the lexer skipped whitespace when it moved to the
-/// current token.
-///
-/// \param lexer
-///     The lexer.
+// Returns whether the lexer skipped whitespace when it moved to the current
+// token
 bool Lexer_SkippedWhitespace(
     Lexer*  lexer
     );
 
-///
-/// \brief Returns the length of the current token.
-///
-/// \param lexer
-///     The lexer.
+// Returns the length of the current token
 size_t Lexer_GetTokenLength(
     Lexer*  lexer
     );
 
-///
-/// \brief Returns a pointer to where the current token starts in the source
-///
-/// \remarks Not null terminated.
-///
-/// \param lexer
-///     The lexer.
+// Returns a pointer to where the current token starts in the source (the
+// string is not NULL terminated)
 const char* Lexer_GetTokenString(
     Lexer*  lexer
     );
 
-///
-/// \brief Returns the value of the token as a number.
-///
-/// \param lexer
-///     The lexer.
+// Returns the value of the token as a number
 double Lexer_GetTokenAsNumber(
     Lexer*  lexer
     );
 
-///
-/// \brief Saves the state of a lexer.
-///
-/// \param lexer
-///     The lexer.
-///
-/// \returns The state of the lexer.
+// Saves the state of a lexer
 LexerState Lexer_SaveState(
     Lexer*  lexer
     );
 
-///
-/// \brief Restores the state of a lexer.
-///
-/// \param lexer
-///     The lexer.
-/// \param state
-///     The state to restore.
+// Restores the state of a lexer
 void Lexer_RestoreState(
     Lexer*      lexer,
     LexerState  state

@@ -26,8 +26,7 @@
 
 #include "Nominal/Value.h"
 
-///
-/// \brief Enumeration of each type a value can be.
+// Enumeration of each type a value can be
 typedef enum
 {
     TYPE_NIL,

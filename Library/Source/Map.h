@@ -26,54 +26,23 @@
 
 #include "Nominal/Map.h"
 
-///
-/// \brief Returns whether the keys in a Nominal map are contiguous natural
-/// numbers starting at zero.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map.
-///
-/// \returns True if the map has contiguous keys; false otherwise.
+// Returns whether the keys in a map are contiguous natural numbers starting
+// at zero
 bool Map_IsContiguous(
     NomState*   state,
     NomValue    map
     );
 
-///
-/// \brief Moves to the next key/value pair in a Nominal map.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map.
-/// \param iterator
-///     The iterator.  If initialized to zero then it will be intialized and
-///     moved to the first pair in the map.
-///
-/// \returns True if the next pair was moved to; false if there were no more
-/// pairs in the map.
+// Moves to the next key/value pair in a map (moves to the first pair if the
+// iterator is initialized to zero)
 bool Map_MoveNext(
     NomState*       state,
     NomValue        map,
     NomIterator*    iterator
     );
 
-///
-/// \brief Inserts a new key/value in a Nominal map.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map to insert the value in.
-/// \param key
-///     The key.
-/// \param value
-///     The new value.
-///
-/// \returns True if the key/value was inserted; false if a value already
-/// exists for the key.
+// Inserts a new key/value in a map, returning true if the key/value was
+// inserted or false if a value already exists for the key
 bool Map_Insert(
     NomState*   state,
     NomValue    map,
@@ -81,20 +50,8 @@ bool Map_Insert(
     NomValue    value
     );
 
-///
-/// \brief Sets the value for a key in a Nominal map.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map to set the value in.
-/// \param key
-///     The key.
-/// \param value
-///     The new value.
-///
-/// \returns True if the set was successful; false if no value exists for the
-/// given key.
+// Sets the value for a key in a map, returning true if the set was successful
+// or false if no value exists for the specified key
 bool Map_Set(
     NomState*   state,
     NomValue    map,
@@ -102,20 +59,8 @@ bool Map_Set(
     NomValue    value
     );
 
-///
-/// \brief Inserts a new value or sets an existing value in a Nominal map.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map to insert or set the value in.
-/// \param key
-///     The key.
-/// \param value
-///     The new value.
-///
-/// \returns True if a new value was inserted; false if an existing value was
-/// changed.
+// Inserts a new value or sets an existing value in a map, returning true if a
+// new value was inserted or false if an existing value was changed
 bool Map_InsertOrSet(
     NomState*   state,
     NomValue    map,
@@ -123,37 +68,16 @@ bool Map_InsertOrSet(
     NomValue    value
     );
 
-///
-/// \brief Gets the value for a key in a Nominal map.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map to get the value from.
-/// \param key
-///     The key.
-///
-/// \returns The value for the given key; nil if no value is set for the given
-/// key.
+// Gets the value for a key in a map, returning nil no value is set for the
+// specified key
 NomValue Map_Get(
     NomState*   state,
     NomValue    map,
     NomValue    key
     );
 
-///
-/// \brief Tries to get the value for a key in a Nominal map.
-///
-/// \param state
-///     The state.
-/// \param map
-///     The map to get the value from.
-/// \param key
-///     The key.
-/// \param value
-///     The value (nil if no value is set for the given key).
-///
-/// \returns True if the value was found; false otherwise.
+// Tries to get the value for a key in a map, returning true if the value was
+// found or false otherwise
 bool Map_TryGet(
     NomState*   state,
     NomValue    map,

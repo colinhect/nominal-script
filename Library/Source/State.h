@@ -31,95 +31,49 @@
 #define STATE_MAX_CALLSTACK_SIZE    (32)
 #define STATE_MAX_BYTE_CODE         (8096)
 
-///
-/// \brief Returns the heap used by the specified state.
-///
-/// \param state
-///     The state.
-///
-/// \returns The heap used by the state.
+// Returns the heap used by the specified state
 Heap* State_GetHeap(
     NomState*   state
     );
 
-///
-/// \brief Returns the string pool used by the specified state.
-///
-/// \param state
-///     The state.
-///
-/// \returns The string pool used by the state.
+// Returns the string pool used by the specified state
 StringPool* State_GetStringPool(
     NomState*   state
     );
 
-///
-/// \brief Declares the value of a variable given an interned string ID based
-/// on the current scope.
-///
-/// \warning The call may have encountered an error.  Check
-/// Nom_ErrorOccurred() directly after invoking this function.
-///
-/// \param state
-///     The state.
-/// \param id
-///     The interned string ID.
-/// \param value
-///     The value.
-///
-/// \returns The value.
+// Declares the value of a variable given an interned string ID based
+// on the current scope
+//
+// The call may have encountered an error; check
+// Nom_ErrorOccurred() directly after invoking this function
 void State_LetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
     );
 
-///
-/// \brief Sets the value of a variable given an interned string ID based
-/// on the current scope.
-///
-/// \warning The call may have encountered an error.  Check
-/// Nom_ErrorOccurred() directly after invoking this function.
-///
-/// \param state
-///     The state.
-/// \param id
-///     The interned string ID.
-/// \param value
-///     The value.
-///
-/// \returns The value.
+// Sets the value of a variable given an interned string ID based
+// on the current scope
+//
+// The call may have encountered an error; check
+// Nom_ErrorOccurred() directly after invoking this function
 void State_SetInterned(
     NomState*   state,
     StringId    id,
     NomValue    value
     );
 
-///
-/// \brief Returns the value of a variable given an interned string ID based
-/// on the current scope.
-///
-/// \warning The call may have encountered an error.  Check
-/// Nom_ErrorOccurred() directly after invoking this function.
-///
-/// \param state
-///     The state.
-/// \param id
-///     The interned string ID.
-///
-/// \returns The value.
+// Returns the value of a variable given an interned string ID based
+// on the current scope
+//
+// The call may have encountered an error; check
+// Nom_ErrorOccurred() directly after invoking this function
 NomValue State_GetInterned(
     NomState*   state,
     StringId    id
     );
 
-///
-/// \brief Sets the error message of the state.
-///
-/// \param state
-///     The state.
-/// \param fmt
-///     The error message format.
+// Sets the error message of the state
 void State_SetError(
     NomState*   state,
     const char* fmt,

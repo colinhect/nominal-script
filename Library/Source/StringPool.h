@@ -32,80 +32,39 @@ typedef uint32_t StringId;
 
 typedef struct StringPool StringPool;
 
-///
-/// \brief Creates a new string pool.
-///
-/// \param stringCount
-///     The maximum number of string the pool can contain.
-/// 
-/// \returns The new string pool.
+// Creates a new string pool
 StringPool* StringPool_New(
     size_t  stringCount
     );
 
-///
-/// \brief Frees a string pool.
-///
-/// \param stringPool
-///     The string pool to free.
+// Frees a string pool
 void StringPool_Free(
     StringPool* stringPool
     );
 
-///
-/// \brief Inserts a new string or gets the ID of an existing string.
-///
-/// \param stringPool
-///     The string pool.
-/// \param string
-///     The string.
-///
-/// \returns The string ID associated with the given string.
+// Inserts a new string or gets the ID of an existing string, returning the ID
+// associated with the specified string
 StringId StringPool_InsertOrFind(
     StringPool* stringPool,
     const char* string
     );
 
-///
-/// \brief Inserts a new string or gets the ID of an existing string.
-///
-/// \param stringPool
-///     The string pool.
-/// \param string
-///     The string
-/// \param length
-///     The number of characters to include from the string.
-///
-/// \returns The string ID associated with the given string.
+// Inserts a new string or gets the ID of an existing string, returning the ID
+// associated with the specified string
 StringId StringPool_InsertOrFindSubString(
     StringPool* stringPool,
     const char* string,
     size_t      length
     );
 
-///
-/// \brief Gets the string value from a string ID.
-///
-/// \param stringPool
-///     The string pool.
-/// \param id
-///     The ID of the string to get the value for.
-///
-/// \returns The string value; NULL if no string exists of the given ID.
+// Returns the string value from a string ID (NULL if no string exists of the
+// given ID)
 const char* StringPool_Find(
     StringPool* stringPool,
     StringId    id
     );
 
-///
-/// \brief Returns the hash from a string ID.
-///
-/// \param stringPool
-///     The string pool.
-/// \param id
-///     The ID of the string to get the hash for.
-///
-/// \returns The hash.
+// Returns the hash from a string ID
 Hash StringPool_Hash(
     StringPool* stringPool,
     StringId    id

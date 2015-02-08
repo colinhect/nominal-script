@@ -28,158 +28,75 @@
 #include "StringPool.h"
 #include "Lexer.h"
 
-///
-/// \brief A parser.
+// A parser
 typedef struct Parser Parser;
 
-///
-/// \brief Creates a new parser.
-///
-/// \param source
-///     The Nominal source code to parse.
-/// \param stringPool
-///     The string pool to use.
-///
-/// \returns The parser.
+// Creates a new parser
 Parser* Parser_New(
     const char* source,
     StringPool* stringPool
     );
 
-///
-/// \brief Frees a parser.
-///
-/// \param parser
-///     The parser to free.
+// Frees a parser
 void Parser_Free(
     Parser* parser
     );
 
-///
-/// \brief Sets the error message of a parser.
-///
-/// \param parser
-///     The parser.
-/// \param fmt
-///     The error message format.
+// Sets the error message of a parser
 void Parser_SetError(
     Parser*     parser,
     const char* fmt,
     ...
     );
 
-///
-/// \brief Returns the error message of a parser.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The error message.
+// Returns the error message of a parser
 const char* Parser_GetError(
     Parser* parser
     );
 
-///
-/// \brief Parses a sequence of expressions.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a sequence of expressions (returns NULL if a parse error occurred)
 Node* Parser_Exprs(
     Parser* parser
     );
 
-///
-/// \brief Parses an expression.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses an expression (returns NULL if a parse error occurred)
 Node* Parser_Expr(
     Parser* parser
     );
 
-///
-/// \brief Parses a primary expression.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a primary expression (returns NULL if a parse error occurred)
 Node* Parser_PrimaryExpr(
     Parser* parser
     );
 
-///
-/// \brief Parses a secondary expression.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a secondary expression (returns NULL if a parse error occurred)
 Node* Parser_SecondaryExpr(
     Parser* parser
     );
 
-///
-/// \brief Parses an expression in parenthesis.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses an expression in parenthesis (returns NULL if a parse error occurred)
 Node* Parser_ParenExpr(
     Parser* parser
     );
 
-///
-/// \brief Parses a binary expression.
-///
-/// \param parser
-///     The parser.
-/// \param prec
-///     The current precedence
-/// \param leftExpr
-///     The left-hand expression
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a binary expression (returns NULL if a parse error occurred)
 Node* Parser_BinExpr(
     Parser* parser,
     int     prec,
     Node*   leftExpr
     );
 
-///
-/// \brief Parses a map.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a map (returns NULL if a parse error occurred)
 Node* Parser_Map(
     Parser* parser
     );
 
-///
-/// \brief Parses a function.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a function (returns NULL if a parse error occurred)
 Node* Parser_Function(
     Parser* parser
     );
 
-///
-/// \brief Parses a string or identifier.
-///
-/// \param parser
-///     The parser.
-///
-/// \returns The parsed AST node; NULL if a parse error occurred.
+// Parses a string or identifier (returns NULL if a parse error occurred)
 Node* Parser_StringOrIdent(
     Parser* parser
     );
