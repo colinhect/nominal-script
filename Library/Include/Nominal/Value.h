@@ -70,19 +70,19 @@ typedef struct
 
 ///
 /// \brief Returns the value representing nil.
-NOMINAL_EXPORT NomValue Nom_Nil(
+NOMINAL_EXPORT NomValue nom_nil(
     void
     );
 
 ///
 /// \brief Returns the value representing true.
-NOMINAL_EXPORT NomValue Nom_True(
+NOMINAL_EXPORT NomValue nom_true(
     void
     );
 
 ///
-/// \brief Returns the value representing true.
-NOMINAL_EXPORT NomValue Nom_False(
+/// \brief Returns the value representing false.
+NOMINAL_EXPORT NomValue nom_false(
     void
     );
 
@@ -97,7 +97,7 @@ NOMINAL_EXPORT NomValue Nom_False(
 ///     The other value to compare.
 ///
 /// \returns True if they are equal; false otherwise.
-NOMINAL_EXPORT bool Nom_Equals(
+NOMINAL_EXPORT bool nom_equals(
     NomState*   state,
     NomValue    value,
     NomValue    other
@@ -112,7 +112,7 @@ NOMINAL_EXPORT bool Nom_Equals(
 ///     The value to hash.
 ///
 /// \returns The hash of the value.
-NOMINAL_EXPORT long long Nom_Hash(
+NOMINAL_EXPORT long long nom_hash(
     NomState*   state,
     NomValue    value
     );
@@ -124,16 +124,16 @@ NOMINAL_EXPORT long long Nom_Hash(
 ///     The state.
 /// \param buffer
 ///     The destination string to copy to.
-/// \param bufferSize
+/// \param buffersize
 ///     The size of the buffer.
 /// \param value
 ///     The value.
 ///
 /// \returns The number of characters written to the buffer.
-NOMINAL_EXPORT size_t Nom_AsString(
+NOMINAL_EXPORT size_t nom_tostring(
     NomState*   state,
     char*       buffer,
-    size_t      bufferSize,
+    size_t      buffersize,
     NomValue    value
     );
 
@@ -148,7 +148,7 @@ NOMINAL_EXPORT size_t Nom_AsString(
 ///     The other value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue Nom_Add(
+NOMINAL_EXPORT NomValue nom_add(
     NomState*   state,
     NomValue    value,
     NomValue    other
@@ -165,7 +165,7 @@ NOMINAL_EXPORT NomValue Nom_Add(
 ///     The other value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue Nom_Subtract(
+NOMINAL_EXPORT NomValue nom_subtract(
     NomState*   state,
     NomValue    value,
     NomValue    other
@@ -182,7 +182,7 @@ NOMINAL_EXPORT NomValue Nom_Subtract(
 ///     The other value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue Nom_Multiply(
+NOMINAL_EXPORT NomValue nom_multiply(
     NomState*   state,
     NomValue    value,
     NomValue    other
@@ -199,7 +199,7 @@ NOMINAL_EXPORT NomValue Nom_Multiply(
 ///     The other value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue Nom_Divide(
+NOMINAL_EXPORT NomValue nom_divide(
     NomState*   state,
     NomValue    value,
     NomValue    other
@@ -214,7 +214,7 @@ NOMINAL_EXPORT NomValue Nom_Divide(
 ///     The value to negate.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue Nom_Negate(
+NOMINAL_EXPORT NomValue nom_negate(
     NomState*   state,
     NomValue    value
     );
@@ -228,7 +228,7 @@ NOMINAL_EXPORT NomValue Nom_Negate(
 ///     The value.
 ///
 /// \returns True if the value can be iterated over; false otherwise.
-NOMINAL_EXPORT bool Nom_IsIterable(
+NOMINAL_EXPORT bool nom_isiterable(
     NomState*   state,
     NomValue    value
     );
@@ -246,7 +246,7 @@ NOMINAL_EXPORT bool Nom_IsIterable(
 ///
 /// \returns True if the next pair was moved to; false if there were no more
 /// pairs in the value or if the value is not iterable.
-NOMINAL_EXPORT bool Nom_MoveNext(
+NOMINAL_EXPORT bool nom_next(
     NomState*       state,
     NomValue        value,
     NomIterator*    iterator
@@ -261,17 +261,17 @@ NOMINAL_EXPORT bool Nom_MoveNext(
 ///     The value to insert into.
 /// \param key
 ///     The key to insert the value for.
-/// \param newValue
+/// \param keyvalue
 ///     The value to insert for the key.
 ///
 /// \returns True if the value was inserted for they key; false if a value
 /// already exists for the key or the value does not support settings values
 /// for keys.
-NOMINAL_EXPORT bool Nom_Insert(
+NOMINAL_EXPORT bool nom_insert(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue    keyValue
+    NomValue    keyvalue
     );
 
 ///
@@ -283,17 +283,17 @@ NOMINAL_EXPORT bool Nom_Insert(
 ///     The value.
 /// \param key
 ///     The key to set the value for.
-/// \param newValue
+/// \param keyvalue
 ///     The value to set for the key.
 ///
 /// \returns True if the value was set for they key; false if a value does
 /// not exist for the key or the value does not support setting values for
 /// keys.
-NOMINAL_EXPORT bool Nom_Set(
+NOMINAL_EXPORT bool nom_set(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue    keyValue
+    NomValue    keyvalue
     );
 
 ///
@@ -305,16 +305,16 @@ NOMINAL_EXPORT bool Nom_Set(
 ///     The value.
 /// \param key
 ///     The key to insert or set the value for.
-/// \param newValue
+/// \param keyvalue
 ///     The value to insert or set for the key.
 ///
 /// \returns True if the value was inserted for they key; false if a value
 /// already exists for the key.
-NOMINAL_EXPORT bool Nom_InsertOrSet(
+NOMINAL_EXPORT bool nom_insertorset(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue    keyValue
+    NomValue    keyvalue
     );
 
 ///
@@ -328,7 +328,7 @@ NOMINAL_EXPORT bool Nom_InsertOrSet(
 ///     The key to get the value for.
 ///
 /// \returns The value for the key; nil of no value exists for the key.
-NOMINAL_EXPORT NomValue Nom_Get(
+NOMINAL_EXPORT NomValue nom_get(
     NomState*   state,
     NomValue    value,
     NomValue    key
@@ -343,16 +343,16 @@ NOMINAL_EXPORT NomValue Nom_Get(
 ///     The value.
 /// \param key
 ///     The key to get the value for.
-/// \param keyValue
+/// \param keyvalue
 ///     Returns the found value for the key; nil if no value exists for the
 ///     key.
 ///
 /// \returns True if the value was found for the key; false otherwise.
-NOMINAL_EXPORT bool Nom_TryGet(
+NOMINAL_EXPORT bool nom_tryget(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue*   keyValue
+    NomValue*   keyvalue
     );
 
 #endif

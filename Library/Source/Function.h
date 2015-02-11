@@ -30,39 +30,39 @@
 #include <stddef.h>
 
 // Returns whether a value is a function
-bool Function_Check(
+bool function_check(
     NomValue    value
     );
 
 // Creates a new function
-NomValue Function_New(
+NomValue function_new(
     NomState*   state,
     uint32_t    ip
     );
 
 // Adds a parameter to a function
-void Function_AddParameter(
+void function_addparam(
     NomState*   state,
     NomValue    function,
-    StringId    parameter
+    StringId    param
     );
 
 // Returns the number of parameters a function has
-size_t Function_GetParameterCount(
+size_t function_getparamcount(
     NomState*   state,
     NomValue    function
     );
 
-// Returns thh ID of the interned string representing the name of the
+// Returns the ID of the interned string representing the name of the
 // parameter at the specified index in a function
-StringId Function_GetParameter(
+StringId function_getparam(
     NomState*   state,
     NomValue    function,
     size_t      index
     );
 
 // Gets the instruction pointer of a function
-uint32_t Function_GetInstructionPointer(
+uint32_t function_getip(
     NomState*   state,
     NomValue    function
     );

@@ -39,7 +39,7 @@
 ///     The value in question.
 ///
 /// \returns True if the value is a number; false otherwise.
-NOMINAL_EXPORT bool Nom_IsNumber(
+NOMINAL_EXPORT bool nom_isnumber(
     NomValue    value
     );
 
@@ -50,7 +50,7 @@ NOMINAL_EXPORT bool Nom_IsNumber(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromInt(
+NOMINAL_EXPORT NomValue nom_fromint(
     int             value
     );
 
@@ -61,7 +61,7 @@ NOMINAL_EXPORT NomValue Nom_FromInt(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromUnsignedInt(
+NOMINAL_EXPORT NomValue nom_fromunsignedint(
     unsigned int    value
     );
 
@@ -72,7 +72,7 @@ NOMINAL_EXPORT NomValue Nom_FromUnsignedInt(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromLong(
+NOMINAL_EXPORT NomValue nom_fromlong(
     long            value
     );
 
@@ -83,7 +83,7 @@ NOMINAL_EXPORT NomValue Nom_FromLong(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromUnsignedLong(
+NOMINAL_EXPORT NomValue nom_fromunsignedlong(
     unsigned long   value
     );
 
@@ -94,8 +94,8 @@ NOMINAL_EXPORT NomValue Nom_FromUnsignedLong(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromLongLong(
-    long long           value
+NOMINAL_EXPORT NomValue nom_fromlonglong(
+    long long       value
     );
 
 ///
@@ -105,7 +105,7 @@ NOMINAL_EXPORT NomValue Nom_FromLongLong(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromUnsignedLongLong(
+NOMINAL_EXPORT NomValue nom_fromunsignedlonglong(
     unsigned long long  value
     );
 
@@ -116,7 +116,7 @@ NOMINAL_EXPORT NomValue Nom_FromUnsignedLongLong(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromSize(
+NOMINAL_EXPORT NomValue nom_fromsize(
     size_t  value
     );
 
@@ -127,7 +127,7 @@ NOMINAL_EXPORT NomValue Nom_FromSize(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromFloat(
+NOMINAL_EXPORT NomValue nom_fromfloat(
     float       value
     );
 
@@ -138,7 +138,7 @@ NOMINAL_EXPORT NomValue Nom_FromFloat(
 ///     The value.
 ///
 /// \returns The Nominal value.
-NOMINAL_EXPORT NomValue Nom_FromDouble(
+NOMINAL_EXPORT NomValue nom_fromdouble(
     double      value
     );
 
@@ -149,7 +149,7 @@ NOMINAL_EXPORT NomValue Nom_FromDouble(
 ///     The number value.
 ///
 /// \returns The resulting value (INT_MAX if the value is not a number).
-NOMINAL_EXPORT int Nom_AsInt(
+NOMINAL_EXPORT int nom_toint(
     NomValue    value
     );
 
@@ -160,7 +160,7 @@ NOMINAL_EXPORT int Nom_AsInt(
 ///     The number value.
 ///
 /// \returns The resulting value (UINT_MAX if the value is not a number).
-NOMINAL_EXPORT unsigned int Nom_AsUnsignedInt(
+NOMINAL_EXPORT unsigned int nom_tounsignedint(
     NomValue    value
     );
 
@@ -171,7 +171,7 @@ NOMINAL_EXPORT unsigned int Nom_AsUnsignedInt(
 ///     The number value.
 ///
 /// \returns The resulting value (LONG_MAX if the value is not a number).
-NOMINAL_EXPORT long Nom_AsLong(
+NOMINAL_EXPORT long nom_tolong(
     NomValue    value
     );
 
@@ -182,7 +182,7 @@ NOMINAL_EXPORT long Nom_AsLong(
 ///     The number value.
 ///
 /// \returns The resulting value (ULONG_MAX if the value is not a number).
-NOMINAL_EXPORT unsigned long Nom_AsUnsignedLong(
+NOMINAL_EXPORT unsigned long nom_tounsignedlong(
     NomValue    value
     );
 
@@ -193,7 +193,7 @@ NOMINAL_EXPORT unsigned long Nom_AsUnsignedLong(
 ///     The number value.
 ///
 /// \returns The resulting value (LLONG_MAX if the value is not a number).
-NOMINAL_EXPORT long long Nom_AsLongLong(
+NOMINAL_EXPORT long long nom_tolonglong(
     NomValue    value
     );
 
@@ -204,7 +204,7 @@ NOMINAL_EXPORT long long Nom_AsLongLong(
 ///     The number value.
 ///
 /// \returns The resulting value (ULLONG_MAX if the value is not a number).
-NOMINAL_EXPORT unsigned long long Nom_AsUnsignedLongLong(
+NOMINAL_EXPORT unsigned long long nom_tounsignedlonglong(
     NomValue    value
     );
 
@@ -215,7 +215,7 @@ NOMINAL_EXPORT unsigned long long Nom_AsUnsignedLongLong(
 ///     The number value.
 ///
 /// \returns The resulting value ((size_t)-1 if the value is not a number).
-NOMINAL_EXPORT size_t Nom_AsSize(
+NOMINAL_EXPORT size_t nom_tosize(
     NomValue    value
     );
 
@@ -226,7 +226,7 @@ NOMINAL_EXPORT size_t Nom_AsSize(
 ///     The number value.
 ///
 /// \returns The resulting value (NAN if the value is not a number).
-NOMINAL_EXPORT float Nom_AsFloat(
+NOMINAL_EXPORT float nom_tofloat(
     NomValue    value
     );
 
@@ -237,7 +237,7 @@ NOMINAL_EXPORT float Nom_AsFloat(
 ///     The number value.
 ///
 /// \returns The resulting value (NAN if the value is not a number).
-NOMINAL_EXPORT double Nom_AsDouble(
+NOMINAL_EXPORT double nom_todouble(
     NomValue    value
     );
 

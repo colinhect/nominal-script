@@ -79,7 +79,7 @@ bool StartsWith(
     return strLength < preLength ? false : strncmp(pre, str, preLength) == 0;
 }
 
-Lexer* Lexer_New(
+Lexer* lexer_new(
     const char* source
     )
 {
@@ -92,11 +92,11 @@ Lexer* Lexer_New(
     return lexer;
 }
 
-bool Lexer_Next(
+bool lexer_next(
     Lexer*  lexer
     )
 {
-    lexer->state.skippedWhitespace = false;
+    lexer->state.skippedwhitespace = false;
 
     // Skip whitespace
     char c;
@@ -109,12 +109,12 @@ bool Lexer_Next(
         }
         if (isspace(c))
         {
-            lexer->state.skippedWhitespace = true;
+            lexer->state.skippedwhitespace = true;
         }
     } while (isspace(c));
 
     // Keep the token's start index and assume it is at least length 1
-    lexer->state.startIndex = lexer->state.index - 1;
+    lexer->state.startindex = lexer->state.index - 1;
     lexer->state.length = 1;
 
     // Operator
@@ -279,7 +279,7 @@ bool Lexer_Next(
         ReadNext(lexer);
 
         --lexer->state.length;
-        ++lexer->state.startIndex;
+        ++lexer->state.startindex;
 
         lexer->state.type = TOK_STRING;
         return true;
@@ -292,7 +292,7 @@ bool Lexer_Next(
     return true;
 }
 
-bool Lexer_IsTokenType(
+bool lexer_istokentype(
     Lexer*      lexer,
     TokenType   type
     )
@@ -300,7 +300,7 @@ bool Lexer_IsTokenType(
     return lexer->state.type == type;
 }
 
-bool Lexer_IsTokenId(
+bool lexer_istokenid(
     Lexer*      lexer,
     unsigned    id
     )
@@ -308,65 +308,65 @@ bool Lexer_IsTokenId(
     return lexer->state.id == id;
 }
 
-bool Lexer_IsTokenTypeAndId(
+bool lexer_istokentypeandid(
     Lexer*      lexer,
     TokenType   type,
     unsigned    id
     )
 {
-    return Lexer_IsTokenType(lexer, type) && Lexer_IsTokenId(lexer, id);
+    return lexer_istokentype(lexer, type) && lexer_istokenid(lexer, id);
 }
 
-TokenType Lexer_GetTokenType(
+TokenType lexer_gettokentype(
     Lexer*  lexer
     )
 {
     return lexer->state.type;
 }
 
-unsigned Lexer_GetTokenId(
+unsigned lexer_gettokenid(
     Lexer*  lexer
     )
 {
     return lexer->state.id;
 }
 
-bool Lexer_SkippedWhitespace(
+bool lexer_skippedwhitespace(
     Lexer*  lexer
     )
 {
-    return lexer->state.skippedWhitespace;
+    return lexer->state.skippedwhitespace;
 }
 
-size_t Lexer_GetTokenLength(
+size_t lexer_gettokenlength(
     Lexer*  lexer
     )
 {
     return lexer->state.length;
 }
 
-const char* Lexer_GetTokenString(
+const char* lexer_gettokenstring(
     Lexer*  lexer
     )
 {
-    return &lexer->source[lexer->state.startIndex];
+    return &lexer->source[lexer->state.startindex];
 }
 
-double Lexer_GetTokenAsNumber(
+double lexer_gettokenasnumber(
     Lexer*  lexer
     )
 {
-    return atof(Lexer_GetTokenString(lexer));
+    return atof(lexer_gettokenstring(lexer));
 }
 
-LexerState Lexer_SaveState(
+LexerState lexer_savestate(
     Lexer*  lexer
     )
 {
     return lexer->state;
 }
 
-void Lexer_RestoreState(
+void lexer_restorestate(
     Lexer*      lexer,
     LexerState  state
     )

@@ -31,133 +31,133 @@
 #define FROM_NUMBER(v)      NomValue nv; nv.number = v; return nv
 #define AS_NUMBER(v, t, e)  return IS_NUMBER(v) ? (t)v.number : e
 
-bool Nom_IsNumber(
+bool nom_isnumber(
     NomValue    value
     )
 {
     return IS_NUMBER(value);
 }
 
-NomValue Nom_FromInt(
+NomValue nom_fromint(
     int             value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromUnsignedInt(
+NomValue nom_fromunsignedint(
     unsigned int    value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromLong(
+NomValue nom_fromlong(
     long            value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromUnsignedLong(
+NomValue nom_fromunsignedlong(
     unsigned long   value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromLongLong(
+NomValue nom_fromlonglong(
     long long           value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromUnsignedLongLong(
+NomValue nom_fromunsignedlonglong(
     unsigned long long  value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromSize(
+NomValue nom_fromsize(
     size_t  value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromFloat(
+NomValue nom_fromfloat(
     float       value
     )
 {
     FROM_NUMBER((double)value);
 }
 
-NomValue Nom_FromDouble(
+NomValue nom_fromdouble(
     double      value
     )
 {
     FROM_NUMBER(value);
 }
 
-int Nom_AsInt(
+int nom_toint(
     NomValue    value
     )
 {
     AS_NUMBER(value, int, INT_MAX);
 }
 
-unsigned int Nom_AsUnsignedInt(
+unsigned int nom_tounsignedint(
     NomValue    value
     )
 {
     AS_NUMBER(value, unsigned int, UINT_MAX);
 }
 
-long Nom_AsLong(
+long nom_tolong(
     NomValue    value
     )
 {
     AS_NUMBER(value, long, LONG_MAX);
 }
 
-unsigned long Nom_AsUnsignedLong(
+unsigned long nom_tounsignedlong(
     NomValue    value
     )
 {
     AS_NUMBER(value, unsigned long, ULONG_MAX);
 }
 
-long long Nom_AsLongLong(
+long long nom_tolonglong(
     NomValue    value
     )
 {
     AS_NUMBER(value, long long, LLONG_MAX);
 }
 
-unsigned long long Nom_AsUnsignedLongLong(
+unsigned long long nom_tounsignedlonglong(
     NomValue    value
     )
 {
     AS_NUMBER(value, unsigned long long, ULLONG_MAX);
 }
 
-size_t Nom_AsSize(
+size_t nom_tosize(
     NomValue    value
     )
 {
     AS_NUMBER(value, size_t, (size_t)-1);
 }
 
-float Nom_AsFloat(
+float nom_tofloat(
     NomValue    value
     )
 {
     AS_NUMBER(value, float, NAN);
 }
 
-double Nom_AsDouble(
+double nom_todouble(
     NomValue    value
     )
 {

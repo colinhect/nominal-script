@@ -35,77 +35,77 @@
 typedef struct
 {
     uint32_t    ip;
-    StringId    parameters[MAX_FUNCTION_PARAMS];
-    size_t      parameterCount;
+    StringId    params[MAX_FUNCTION_PARAMS];
+    size_t      paramcount;
 } FunctionData;
 
-bool Function_Check(
+bool function_check(
     NomValue value
     )
 {
     return GET_TYPE(value) == TYPE_FUNCTION;
 }
 
-NomValue Function_New(
+NomValue function_new(
     NomState*   state,
     uint32_t    ip
     )
 {
     assert(state);
 
-    NomValue function = Nom_Nil();
+    NomValue function = nom_nil();
     SET_TYPE(function, TYPE_FUNCTION);
 
-    Heap* heap = State_GetHeap(state);
-    ObjectId id = Heap_Alloc(heap, sizeof(FunctionData), free);
-    FunctionData* data = Heap_GetData(heap, id);
+    Heap* heap = state_getheap(state);
+    ObjectId id = heap_alloc(heap, sizeof(FunctionData), free);
+    FunctionData* data = heap_getdata(heap, id);
     data->ip = ip;
-    data->parameterCount = 0;
+    data->paramcount = 0;
 
     SET_ID(function, id);
     return function;
 }
 
-void Function_AddParameter(
+void function_addparam(
     NomState*   state,
     NomValue    function,
-    StringId    parameter
+    StringId    param
     )
 {
     assert(state);
 
-    if (!Function_Check(function))
+    if (!function_check(function))
     {
         return;
     }
 
     ObjectId id = GET_ID(function);
-    Heap* heap = State_GetHeap(state);
-    FunctionData* data = Heap_GetData(heap, id);
+    Heap* heap = state_getheap(state);
+    FunctionData* data = heap_getdata(heap, id);
 
-    data->parameters[data->parameterCount++] = parameter;
+    data->params[data->paramcount++] = param;
 }
 
-size_t Function_GetParameterCount(
+size_t function_getparamcount(
     NomState*   state,
     NomValue    function
     )
 {
     assert(state);
 
-    if (!Function_Check(function))
+    if (!function_check(function))
     {
         return 0;
     }
 
     ObjectId id = GET_ID(function);
-    Heap* heap = State_GetHeap(state);
-    FunctionData* data = Heap_GetData(heap, id);
+    Heap* heap = state_getheap(state);
+    FunctionData* data = heap_getdata(heap, id);
 
-    return data->parameterCount;
+    return data->paramcount;
 }
 
-StringId Function_GetParameter(
+StringId function_getparam(
     NomState*   state,
     NomValue    function,
     size_t      index
@@ -113,33 +113,33 @@ StringId Function_GetParameter(
 {
     assert(state);
 
-    if (!Function_Check(function))
+    if (!function_check(function))
     {
         return (StringId)-1;
     }
 
     ObjectId id = GET_ID(function);
-    Heap* heap = State_GetHeap(state);
-    FunctionData* data = Heap_GetData(heap, id);
+    Heap* heap = state_getheap(state);
+    FunctionData* data = heap_getdata(heap, id);
 
-    return data->parameters[index];
+    return data->params[index];
 }
 
-uint32_t Function_GetInstructionPointer(
+uint32_t function_getip(
     NomState*   state,
     NomValue    function
     )
 {
     assert(state);
 
-    if (!Function_Check(function))
+    if (!function_check(function))
     {
         return (uint32_t)-1;
     }
 
     ObjectId id = GET_ID(function);
-    Heap* heap = State_GetHeap(state);
-    FunctionData* data = Heap_GetData(heap, id);
+    Heap* heap = state_getheap(state);
+    FunctionData* data = heap_getdata(heap, id);
 
     return data->ip;
 }

@@ -34,25 +34,25 @@ typedef struct Heap Heap;
 typedef uint32_t ObjectId;
 
 // Creates a new heap
-Heap* Heap_New(
+Heap* heap_new(
     void
     );
 
 // Frees a heap
-void Heap_Free(
+void heap_free(
     Heap*   heap
     );
 
 // Allocates a new object in the heap given the size (in bytes) of the data to
 // allocate and the function used to free the object when it is collected
-ObjectId Heap_Alloc(
+ObjectId heap_alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
     );
 
 // Returns a pointer to the data of an object on the heap
-void* Heap_GetData(
+void* heap_getdata(
     Heap*       heap,
     ObjectId    id
     );

@@ -33,7 +33,7 @@ struct HashTable
     CompareFunction compare;
     UserData        context;
     BucketNode**    buckets;
-    size_t          bucketCount;
+    size_t          bucketcount;
 };
 
 struct BucketNode
@@ -45,26 +45,26 @@ struct BucketNode
 
 // Gets a node for a specific key with the option of creating a new node if it
 // is not found
-bool FindNode(
-    HashTable*      hashTable,
+static bool findnode(
+    HashTable*      hashtable,
     UserData        key,
     bool            createNew,
     BucketNode**    node
     )
 {
     // Hash the key
-    Hash hash = hashTable->hash(key, hashTable->context);
-    hash = hash % hashTable->bucketCount;
+    Hash hash = hashtable->hash(key, hashtable->context);
+    hash = hash % hashtable->bucketcount;
 
     // Find the first node of the bucket for the hash
-    BucketNode* curr = hashTable->buckets[hash];
+    BucketNode* curr = hashtable->buckets[hash];
     BucketNode* prev = NULL;
 
     // Iterate through each node in the bucket
     while (curr)
     {
         // Check if this is the right node
-        if (hashTable->compare(curr->key, key, hashTable->context))
+        if (hashtable->compare(curr->key, key, hashtable->context))
         {
             // Found the node
             *node = curr;
@@ -98,7 +98,7 @@ bool FindNode(
         else
         {
             // Set as first node in a new bucket
-            hashTable->buckets[hash] = curr;
+            hashtable->buckets[hash] = curr;
         }
 
         // Return the value
@@ -112,58 +112,58 @@ bool FindNode(
     return false;
 }
 
-HashTable* HashTable_New(
+HashTable* hashtable_new(
     HashFunction    hash,
     CompareFunction compare,
     UserData        context,
-    size_t          bucketCount
+    size_t          bucketcount
     )
 {
-    HashTable* hashTable = (HashTable*)malloc(sizeof(HashTable));
-    assert(hashTable);
+    HashTable* hashtable = (HashTable*)malloc(sizeof(HashTable));
+    assert(hashtable);
 
-    hashTable->hash = hash;
-    hashTable->compare = compare;
-    hashTable->context = context;
-    hashTable->buckets = (BucketNode**)malloc(sizeof(BucketNode*) * bucketCount);
-    assert(hashTable->buckets);
+    hashtable->hash = hash;
+    hashtable->compare = compare;
+    hashtable->context = context;
+    hashtable->buckets = (BucketNode**)malloc(sizeof(BucketNode*) * bucketcount);
+    assert(hashtable->buckets);
 
-    memset(hashTable->buckets, 0, sizeof(BucketNode*) * bucketCount);
-    hashTable->bucketCount = bucketCount;
+    memset(hashtable->buckets, 0, sizeof(BucketNode*) * bucketcount);
+    hashtable->bucketcount = bucketcount;
 
-    return hashTable;
+    return hashtable;
 }
 
-void HashTable_Free(
-    HashTable*  hashTable,
-    void        (*freeKey)(void*),
-    void        (*freeValue)(void*)
+void hashtable_free(
+    HashTable*  hashtable,
+    void        (*freekey)(void*),
+    void        (*freevalue)(void*)
     )
 {
-    assert(hashTable);
+    assert(hashtable);
 
     // Free each bucket
-    if (hashTable->buckets)
+    if (hashtable->buckets)
     {
-        for (size_t i = 0; i < hashTable->bucketCount; ++i)
+        for (size_t i = 0; i < hashtable->bucketcount; ++i)
         {
             // For each node in the bucket
-            BucketNode* n = hashTable->buckets[i];
+            BucketNode* n = hashtable->buckets[i];
             while (n)
             {
                 BucketNode* t = n;
                 n = n->next;
 
                 // Free the key if needed
-                if (freeKey && t->key)
+                if (freekey && t->key)
                 {
-                    freeKey((void*)t->key);
+                    freekey((void*)t->key);
                 }
 
                 // Free the value if needed
-                if (freeValue && t->value)
+                if (freevalue && t->value)
                 {
-                    freeValue((void*)t->value);
+                    freevalue((void*)t->value);
                 }
 
                 free(t);
@@ -172,60 +172,60 @@ void HashTable_Free(
     }
 
     // Free the array of buckets
-    free(hashTable->buckets);
+    free(hashtable->buckets);
 
-    free(hashTable);
+    free(hashtable);
 }
 
-bool HashTable_MoveNext(
-    HashTable*          hashTable,
+bool hashtable_next(
+    HashTable*          hashtable,
     HashTableIterator*  iterator
     )
 {
-    if (!iterator->hashTable)
+    if (!iterator->hashtable)
     {
         // Initialize the iterator
-        iterator->hashTable = hashTable;
+        iterator->hashtable = hashtable;
         iterator->index = 0;
-        iterator->bucketNode = hashTable->buckets[0];
+        iterator->bucketnode = hashtable->buckets[0];
     }
-    else if (iterator->hashTable != hashTable)
+    else if (iterator->hashtable != hashtable)
     {
         // Iterator does not correspond to this hash table
         return false;
     }
-    else if (iterator->bucketNode)
+    else if (iterator->bucketnode)
     {
         // Move to the next node if possible
-        iterator->bucketNode = iterator->bucketNode->next;
+        iterator->bucketnode = iterator->bucketnode->next;
     }
 
     // Find the next bucket node
-    while (!iterator->bucketNode)
+    while (!iterator->bucketnode)
     {
         ++iterator->index;
-        if (iterator->index >= hashTable->bucketCount)
+        if (iterator->index >= hashtable->bucketcount)
         {
             return false;
         }
 
-        iterator->bucketNode = hashTable->buckets[iterator->index];
+        iterator->bucketnode = hashtable->buckets[iterator->index];
     }
 
-    iterator->key = iterator->bucketNode->key;
-    iterator->value = iterator->bucketNode->value;
+    iterator->key = iterator->bucketnode->key;
+    iterator->value = iterator->bucketnode->value;
 
     return true;
 }
 
-bool HashTable_Insert(
-    HashTable*  hashTable,
+bool hashtable_insert(
+    HashTable*  hashtable,
     UserData    key,
     UserData    value
     )
 {
     BucketNode* node = NULL;
-    if (FindNode(hashTable, key, true, &node))
+    if (findnode(hashtable, key, true, &node))
     {
         node->value = value;
         return true;
@@ -234,14 +234,14 @@ bool HashTable_Insert(
     return false;
 }
 
-bool HashTable_Set(
-    HashTable*  hashTable,
+bool hashtable_set(
+    HashTable*  hashtable,
     UserData    key,
     UserData    value
     )
 {
     BucketNode* node = NULL;
-    if (FindNode(hashTable, key, false, &node))
+    if (findnode(hashtable, key, false, &node))
     {
         node->value = value;
         return true;
@@ -251,25 +251,25 @@ bool HashTable_Set(
 }
 
 bool HashTable_InsertOrSet(
-    HashTable*  hashTable,
+    HashTable*  hashtable,
     UserData    key,
     UserData    value
     )
 {
     BucketNode* node = NULL;
-    bool result = FindNode(hashTable, key, true, &node);
+    bool result = findnode(hashtable, key, true, &node);
     node->value = value;
     return result;
 }
 
-bool HashTable_Get(
-    HashTable*  hashTable,
+bool hashtable_get(
+    HashTable*  hashtable,
     UserData    key,
     UserData*   value
     )
 {
     BucketNode* node = NULL;
-    if (FindNode(hashTable, key, false, &node))
+    if (findnode(hashtable, key, false, &node))
     {
         *value = node->value;
         return true;
@@ -278,24 +278,24 @@ bool HashTable_Get(
     return false;
 }
 
-bool HashTable_InsertOrGet(
-    HashTable*  hashTable,
+bool hashtable_insertorget(
+    HashTable*  hashtable,
     UserData    key,
     UserData    value,
-    UserData*   existingValue
+    UserData*   existingvalue
     )
 {
     BucketNode* node = NULL;
-    if (!FindNode(hashTable, key, true, &node))
+    if (!findnode(hashtable, key, true, &node))
     {
-        *existingValue = node->value;
+        *existingvalue = node->value;
         return true;
     }
     node->value = value;
     return false;
 }
 
-Hash HashString(
+Hash hashstring(
     UserData    key,
     UserData    context
     )
@@ -314,7 +314,7 @@ Hash HashString(
     return hash;
 }
 
-bool CompareString(
+bool comparestring(
     UserData    left,
     UserData    right,
     UserData    context
@@ -324,7 +324,7 @@ bool CompareString(
     return strcmp((const char*)left, (const char*)right) == 0;
 }
 
-Hash HashIdentity(
+Hash hashidentity(
     UserData    key,
     UserData    context
     )
@@ -333,7 +333,7 @@ Hash HashIdentity(
     return (Hash)key;
 }
 
-bool CompareIdentity(
+bool compareidentity(
     UserData    left,
     UserData    right,
     UserData    context

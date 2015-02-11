@@ -54,15 +54,15 @@ struct NomState
     StackFrame      callstack[STATE_MAX_CALLSTACK_SIZE];
     uint32_t        cp;
 
-    unsigned char   byteCode[STATE_MAX_BYTE_CODE];
+    unsigned char   bytecode[STATE_MAX_BYTE_CODE];
     uint32_t        ip;
     uint32_t        end;
 
     Heap*           heap;
-    StringPool*     stringPool;
+    StringPool*     stringpool;
 
     char            error[2048];
-    bool            errorFlag;
+    bool            errorflag;
 };
 
 // Pops a stack frame from the callstack and returns the return instruction
@@ -94,34 +94,34 @@ struct NomState
 
 // Reads the a typed value from the byte code at the current instruction
 #define READAS(t)\
-    *(t*)&state->byteCode[state->ip]; state->ip += sizeof(t)
+    *(t*)&state->bytecode[state->ip]; state->ip += sizeof(t)
 
-void CompileAndAppendByteCode(
+static void compile(
     NomState*   state,
     const char* source)
 {
     assert(state);
     assert(source);
 
-    state->errorFlag = false;
+    state->errorflag = false;
 
-    Parser* p = Parser_New(source, state->stringPool);
-    Node* node = Parser_Exprs(p);
+    Parser* p = parser_new(source, state->stringpool);
+    Node* node = parser_exprs(p);
 
     if (!node)
     {
-        State_SetError(state, Parser_GetError(p));
+        state_seterror(state, parser_geterror(p));
     }
     else
     {
-        state->end = GenerateCode(state, node, state->byteCode, state->ip);
-        Node_Free(node);
+        state->end = generatecode(state, node, state->bytecode, state->ip);
+        node_free(node);
     }
 
-    Parser_Free(p);
+    parser_free(p);
 }
 
-NomState* Nom_NewState(
+NomState* nom_newstate(
     void
     )
 {
@@ -130,45 +130,45 @@ NomState* Nom_NewState(
 
     memset(state, 0, sizeof(NomState));
 
-    state->heap = Heap_New();
-    state->stringPool = StringPool_New(STRING_POOL_STRING_COUNT);
+    state->heap = heap_new();
+    state->stringpool = stringpool_new(STRING_POOL_STRING_COUNT);
 
     // Global scope
-    PUSH_FRAME(0, Nom_NewMap(state));
+    PUSH_FRAME(0, nom_newmap(state));
 
     // Declare intrinsic globals
-    StringId id = StringPool_InsertOrFind(state->stringPool, "nil");
-    State_LetInterned(state, id, Nom_Nil());
-    id = StringPool_InsertOrFind(state->stringPool, "true");
-    State_LetInterned(state, id, Nom_True());
-    id = StringPool_InsertOrFind(state->stringPool, "false");
-    State_LetInterned(state, id, Nom_False());
+    StringId id = stringpool_getid(state->stringpool, "nil");
+    state_letinterned(state, id, nom_nil());
+    id = stringpool_getid(state->stringpool, "true");
+    state_letinterned(state, id, nom_true());
+    id = stringpool_getid(state->stringpool, "false");
+    state_letinterned(state, id, nom_false());
 
     return state;
 }
 
-void Nom_FreeState(
+void nom_freestate(
     NomState*   state
     )
 {
     assert(state);
 
     // Free the string pool
-    if (state->stringPool)
+    if (state->stringpool)
     {
-        StringPool_Free(state->stringPool);
+        stringpool_free(state->stringpool);
     }
 
     // Free the heap
     if (state->heap)
     {
-        Heap_Free(state->heap);
+        heap_free(state->heap);
     }
 
     free(state);
 }
 
-Heap* State_GetHeap(
+Heap* state_getheap(
     NomState*   state
     )
 {
@@ -176,15 +176,15 @@ Heap* State_GetHeap(
     return state->heap;
 }
 
-StringPool* State_GetStringPool(
+StringPool* state_getstringpool(
     NomState*   state
     )
 {
     assert(state);
-    return state->stringPool;
+    return state->stringpool;
 }
 
-void State_LetInterned(
+void state_letinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -192,17 +192,17 @@ void State_LetInterned(
 {
     assert(state);
 
-    NomValue string = String_NewInterned(id);
+    NomValue string = string_newinterned(id);
 
     // Attempt to define the variable at the top-most scope
     NomValue scope = TOP_FRAME().scope;
-    if (!Map_Insert(state, scope, string, value))
+    if (!map_insert(state, scope, string, value))
     {
-        State_SetError(state, "Variable '%s' already exists", StringPool_Find(state->stringPool, id));
+        state_seterror(state, "Variable '%s' already exists", stringpool_find(state->stringpool, id));
     }
 }
 
-void State_SetInterned(
+void state_setinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -210,7 +210,7 @@ void State_SetInterned(
 {
     assert(state);
 
-    NomValue string = String_NewInterned(id);
+    NomValue string = string_newinterned(id);
 
     bool success = false;
 
@@ -219,7 +219,7 @@ void State_SetInterned(
     {
         // Try to set the variable
         NomValue scope = state->callstack[i].scope;
-        if (Map_Set(state, scope, string, value))
+        if (map_set(state, scope, string, value))
         {
             success = true;
             break;
@@ -228,19 +228,19 @@ void State_SetInterned(
 
     if (!success)
     {
-        State_SetError(state, "No variable '%s'", StringPool_Find(state->stringPool, id));
+        state_seterror(state, "No variable '%s'", stringpool_find(state->stringpool, id));
     }
 }
 
-NomValue State_GetInterned(
+NomValue state_getinterned(
     NomState*   state,
     StringId    id
     )
 {
     assert(state);
 
-    NomValue result = Nom_Nil();
-    NomValue string = String_NewInterned(id);
+    NomValue result = nom_nil();
+    NomValue string = string_newinterned(id);
 
     bool success = false;
 
@@ -249,7 +249,7 @@ NomValue State_GetInterned(
     {
         // Try to get the variable value
         NomValue scope = state->callstack[i].scope;
-        if (Map_TryGet(state, scope, string, &result))
+        if (map_tryget(state, scope, string, &result))
         {
             success = true;
             break;
@@ -258,13 +258,13 @@ NomValue State_GetInterned(
 
     if (!success)
     {
-        State_SetError(state, "No variable '%s' in scope", StringPool_Find(state->stringPool, id));
+        state_seterror(state, "No variable '%s' in scope", stringpool_find(state->stringpool, id));
     }
 
     return result;
 }
 
-void State_SetError(
+void state_seterror(
     NomState*   state,
     const char* fmt,
     ...
@@ -274,73 +274,73 @@ void State_SetError(
     va_start(args, fmt);
     vsprintf(state->error, fmt, args);
     va_end(args);
-    state->errorFlag = true;
+    state->errorflag = true;
 }
 
-NomValue Nom_Execute(
+NomValue nom_execute(
     NomState*   state,
     const char* source
     )
 {
-    CompileAndAppendByteCode(state, source);
+    compile(state, source);
 
     StringId id;
     NomValue l, r, result;
     OpCode op;
     uint32_t count, ip;
 
-    while (state->ip < state->end && !state->errorFlag)
+    while (state->ip < state->end && !state->errorflag)
     {
-        op = (OpCode)state->byteCode[state->ip++];
+        op = (OpCode)state->bytecode[state->ip++];
         switch (op)
         {
         case OPCODE_LET:
             id = READAS(StringId);
-            State_LetInterned(state, id, TOP_VALUE());
+            state_letinterned(state, id, TOP_VALUE());
             break;
 
         case OPCODE_SET:
             id = READAS(StringId);
-            State_SetInterned(state, id, TOP_VALUE());
+            state_setinterned(state, id, TOP_VALUE());
             break;
 
         case OPCODE_GET:
             id = READAS(StringId);
-            result = State_GetInterned(state, id);
+            result = state_getinterned(state, id);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_ADD:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = Nom_Add(state, l, r);
+            result = nom_add(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_SUB:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = Nom_Subtract(state, l, r);
+            result = nom_subtract(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_MUL:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = Nom_Multiply(state, l, r);
+            result = nom_multiply(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_DIV:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = Nom_Divide(state, l, r);
+            result = nom_divide(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_NEG:
             l = POP_VALUE();
-            result = Nom_Negate(state, l);
+            result = nom_negate(state, l);
             PUSH_VALUE(result);
             break;
 
@@ -363,27 +363,27 @@ NomValue Nom_Execute(
         case OPCODE_VALUE_LET:
             l = POP_VALUE();
             r = POP_VALUE();
-            if (!Nom_Insert(state, r, l, TOP_VALUE()))
+            if (!nom_insert(state, r, l, TOP_VALUE()))
             {
-                State_SetError(state, "Value for key '%s' already exists", Nom_AsRawString(state, l));
+                state_seterror(state, "Value for key '%s' already exists", nom_getstring(state, l));
             }
             break;
 
         case OPCODE_VALUE_SET:
             l = POP_VALUE();
             r = POP_VALUE();
-            if (!Nom_Set(state, r, l, TOP_VALUE()))
+            if (!nom_set(state, r, l, TOP_VALUE()))
             {
-                State_SetError(state, "No value for key '%s'", Nom_AsRawString(state, l));
+                state_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
             break;
 
         case OPCODE_VALUE_GET:
             l = POP_VALUE();
             r = POP_VALUE();
-            if (!Nom_TryGet(state, r, l, &result))
+            if (!nom_tryget(state, r, l, &result))
             {
-                State_SetError(state, "No value for key '%s'", Nom_AsRawString(state, l));
+                state_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
             else
             {
@@ -394,13 +394,13 @@ NomValue Nom_Execute(
         case OPCODE_BRACKET_SET:
             l = POP_VALUE();
             r = POP_VALUE();
-            Nom_InsertOrSet(state, r, l, TOP_VALUE());
+            nom_insertorset(state, r, l, TOP_VALUE());
             break;
 
         case OPCODE_BRACKET_GET:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = Nom_Get(state, r, l);
+            result = nom_get(state, r, l);
             PUSH_VALUE(result);
             break;
 
@@ -415,13 +415,13 @@ NomValue Nom_Execute(
 
         case OPCODE_MAP:
             count = READAS(uint32_t);
-            result = Nom_NewMap(state);
+            result = nom_newmap(state);
             for (uint32_t i = 0; i < count; ++i)
             {
                 NomValue key = POP_VALUE();
                 NomValue value = POP_VALUE();
 
-                Map_InsertOrSet(state, result, key, value);
+                map_insertorset(state, result, key, value);
             }
             PUSH_VALUE(result);
             break;
@@ -429,11 +429,11 @@ NomValue Nom_Execute(
         case OPCODE_FUNCTION:
             ip = READAS(uint32_t);
             count = READAS(uint32_t);
-            result = Function_New(state, ip);
+            result = function_new(state, ip);
             for (uint32_t i = 0; i < count; ++i)
             {
                 StringId parameter = READAS(StringId);
-                Function_AddParameter(state, result, parameter);
+                function_addparam(state, result, parameter);
             }
             PUSH_VALUE(result);
             break;
@@ -446,41 +446,41 @@ NomValue Nom_Execute(
         case OPCODE_INVOKE:
             count = READAS(uint32_t);
             result = POP_VALUE();
-            if (Function_Check(result))
+            if (function_check(result))
             {
-                PUSH_FRAME(state->ip, Nom_NewMap(state));
-                state->ip = Function_GetInstructionPointer(state, result);
-                size_t paramCount = Function_GetParameterCount(state, result);
-                if (count <= paramCount)
+                PUSH_FRAME(state->ip, nom_newmap(state));
+                state->ip = function_getip(state, result);
+                size_t paramcount = function_getparamcount(state, result);
+                if (count <= paramcount)
                 {
-                    size_t i = paramCount;
+                    size_t i = paramcount;
                     while (i > 0)
                     {
                         --i;
-                        NomValue arg = Nom_Nil();
+                        NomValue arg = nom_nil();
                         if (i < count)
                         {
                             arg = POP_VALUE();
                         }
-                        StringId param = Function_GetParameter(state, result, i);
-                        State_LetInterned(state, param, arg);
+                        StringId param = function_getparam(state, result, i);
+                        state_letinterned(state, param, arg);
                     }
                 }
                 else
                 {
-                    State_SetError(state, "Too many arguments given (expected %u)", paramCount);
+                    state_seterror(state, "Too many arguments given (expected %u)", paramcount);
                 }
             }
             else
             {
-                State_SetError(state, "Value cannot be invoked");
+                state_seterror(state, "Value cannot be invoked");
             }
             break;
         }
     }
         
-    result = Nom_Nil();
-    if (!state->errorFlag && state->sp > 0)
+    result = nom_nil();
+    if (!state->errorflag && state->sp > 0)
     {
         result = POP_VALUE();
     }
@@ -492,7 +492,7 @@ NomValue Nom_Execute(
     return result;
 }
 
-void Nom_DumpByteCode(
+void nom_dumpbytecode(
     NomState*   state,
     const char* source
     )
@@ -501,7 +501,7 @@ void Nom_DumpByteCode(
 
     if (source)
     {
-        CompileAndAppendByteCode(state, source);
+        compile(state, source);
     }
     else
     {
@@ -510,7 +510,7 @@ void Nom_DumpByteCode(
 
     while (state->ip < state->end)
     {
-        OpCode op = (OpCode)state->byteCode[state->ip++];
+        OpCode op = (OpCode)state->bytecode[state->ip++];
         printf("0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
 
         switch (op)
@@ -520,7 +520,7 @@ void Nom_DumpByteCode(
         case OPCODE_SET:
         {
             StringId id = READAS(StringId);
-            const char* string = StringPool_Find(state->stringPool, id);
+            const char* string = stringpool_find(state->stringpool, id);
             printf("\t%s", string);
         } break;
 
@@ -528,7 +528,7 @@ void Nom_DumpByteCode(
         {
             NomValue value = READAS(NomValue);
             char buffer[256];
-            Nom_AsString(state, buffer, 256, value);
+            nom_tostring(state, buffer, 256, value);
             printf("%s", buffer);
         } break;
 
@@ -541,14 +541,14 @@ void Nom_DumpByteCode(
         case OPCODE_FUNCTION:
         {
             uint32_t ip = READAS(uint32_t);
-            uint32_t paramCount = READAS(uint32_t);
-            printf("0x%x %u ", ip, paramCount);
-            for (uint32_t i = 0; i < paramCount; ++i)
+            uint32_t paramcount = READAS(uint32_t);
+            printf("0x%x %u ", ip, paramcount);
+            for (uint32_t i = 0; i < paramcount; ++i)
             {
                 StringId id = READAS(StringId);
-                const char* param = StringPool_Find(state->stringPool, id);
+                const char* param = stringpool_find(state->stringpool, id);
                 printf("%s", param);
-                if (i < paramCount - 1)
+                if (i < paramcount - 1)
                 {
                     printf(" ");
                 }
@@ -563,8 +563,8 @@ void Nom_DumpByteCode(
 
         case OPCODE_INVOKE:
         {
-            uint32_t argCount = READAS(uint32_t);
-            printf("%u", argCount);
+            uint32_t argcount = READAS(uint32_t);
+            printf("%u", argcount);
         } break;
 
         default:
@@ -577,19 +577,19 @@ void Nom_DumpByteCode(
     state->ip = state->end;
 }
 
-bool Nom_ErrorOccurred(
+bool nom_error(
     NomState*   state
     )
 {
     assert(state);
-    return state->errorFlag;
+    return state->errorflag;
 }
 
-const char* Nom_GetError(
+const char* nom_geterror(
     NomState*   state
     )
 {
     assert(state);
-    state->errorFlag = false;
+    state->errorflag = false;
     return state->error;
 }

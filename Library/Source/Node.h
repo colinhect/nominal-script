@@ -106,8 +106,8 @@ typedef struct Node
         struct
         {
             Operator op;
-            struct Node* leftExpr;
-            struct Node* rightExpr;
+            struct Node* leftexpr;
+            struct Node* rightexpr;
         } binary;
 
         // A unary operation applied to an expression
@@ -149,12 +149,12 @@ typedef struct Node
 } Node;
 
 // Creates a new abstract syntax node
-Node* Node_New(
+Node* node_new(
     NodeType    type
     );
 
 // Frees an abstract syntax node
-void Node_Free(
+void node_free(
     Node*   node
     );
 

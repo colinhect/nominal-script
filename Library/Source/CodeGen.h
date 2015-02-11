@@ -70,10 +70,10 @@ extern const char* const OPCODE_NAMES[];
 
 // Generates byte code from an AST, returning the index where the generated
 // byte code ends
-uint32_t GenerateCode(
+uint32_t generatecode(
     NomState*       state,
     Node*           node,
-    unsigned char*  byteCode,
+    unsigned char*  bytecode,
     uint32_t        index
     );
 

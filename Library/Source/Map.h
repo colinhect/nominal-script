@@ -28,14 +28,14 @@
 
 // Returns whether the keys in a map are contiguous natural numbers starting
 // at zero
-bool Map_IsContiguous(
+bool map_iscontiguous(
     NomState*   state,
     NomValue    map
     );
 
 // Moves to the next key/value pair in a map (moves to the first pair if the
 // iterator is initialized to zero)
-bool Map_MoveNext(
+bool map_next(
     NomState*       state,
     NomValue        map,
     NomIterator*    iterator
@@ -43,7 +43,7 @@ bool Map_MoveNext(
 
 // Inserts a new key/value in a map, returning true if the key/value was
 // inserted or false if a value already exists for the key
-bool Map_Insert(
+bool map_insert(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -52,7 +52,7 @@ bool Map_Insert(
 
 // Sets the value for a key in a map, returning true if the set was successful
 // or false if no value exists for the specified key
-bool Map_Set(
+bool map_set(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -61,7 +61,7 @@ bool Map_Set(
 
 // Inserts a new value or sets an existing value in a map, returning true if a
 // new value was inserted or false if an existing value was changed
-bool Map_InsertOrSet(
+bool map_insertorset(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -70,7 +70,7 @@ bool Map_InsertOrSet(
 
 // Gets the value for a key in a map, returning nil no value is set for the
 // specified key
-NomValue Map_Get(
+NomValue map_get(
     NomState*   state,
     NomValue    map,
     NomValue    key
@@ -78,7 +78,7 @@ NomValue Map_Get(
 
 // Tries to get the value for a key in a map, returning true if the value was
 // found or false otherwise
-bool Map_TryGet(
+bool map_tryget(
     NomState*   state,
     NomValue    map,
     NomValue    key,

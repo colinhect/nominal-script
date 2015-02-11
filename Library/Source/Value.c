@@ -81,7 +81,7 @@ int c99_snprintf(
 
 #endif
 
-NomValue Nom_Nil(
+NomValue nom_nil(
     void
     )
 {
@@ -89,7 +89,7 @@ NomValue Nom_Nil(
     return value;
 }
 
-NomValue Nom_True(
+NomValue nom_true(
     void
     )
 {
@@ -97,7 +97,7 @@ NomValue Nom_True(
     return value;
 }
 
-NomValue Nom_False(
+NomValue nom_false(
     void
     )
 {
@@ -105,7 +105,7 @@ NomValue Nom_False(
     return value;
 }
 
-bool Nom_Equals(
+bool nom_equals(
     NomState*   state,
     NomValue    value,
     NomValue    other
@@ -115,44 +115,44 @@ bool Nom_Equals(
     {
         return value.number == other.number;
     }
-    else if (Nom_IsString(value) && Nom_IsString(other))
+    else if (nom_isstring(value) && nom_isstring(other))
     {
         // If one of the strings is not interned
         if (GET_TYPE(value) != TYPE_INTERNED_STRING ||
             GET_TYPE(other) != TYPE_INTERNED_STRING)
         {
-            return strcmp(Nom_AsRawString(state, value), Nom_AsRawString(state, other)) == 0;
+            return strcmp(nom_getstring(state, value), nom_getstring(state, other)) == 0;
         }
     }
 
     return value.raw == other.raw;
 }
 
-long long Nom_Hash(
+long long nom_hash(
     NomState*   state,
     NomValue    value
     )
 {
-    StringPool* stringPool = State_GetStringPool(state);
+    StringPool* stringpool = state_getstringpool(state);
 
     long long hash = value.raw;
     switch (GET_TYPE(value))
     {
     case TYPE_STRING:
-        hash = HashString((UserData)Nom_AsRawString(state, value), (UserData)state);
+        hash = hashstring((UserData)nom_getstring(state, value), (UserData)state);
         break;
     case TYPE_INTERNED_STRING:
-        hash = StringPool_Hash(stringPool, GET_ID(value));
+        hash = stringpool_hash(stringpool, GET_ID(value));
         break;
     }
 
     return (Hash)hash;
 }
 
-size_t Nom_AsString(
+size_t nom_tostring(
     NomState*   state,
     char*       buffer,
-    size_t      bufferSize,
+    size_t      buffersize,
     NomValue    value
     )
 {
@@ -163,38 +163,38 @@ size_t Nom_AsString(
     switch (GET_TYPE(value))
     {
     case TYPE_NIL:
-        count += snprintf(buffer, bufferSize, "nil");
+        count += snprintf(buffer, buffersize, "nil");
         break;
     case TYPE_NUMBER:
-        count += snprintf(buffer, bufferSize, "%.256g", Nom_AsDouble(value));
+        count += snprintf(buffer, buffersize, "%.256g", nom_todouble(value));
         break;
     case TYPE_BOOLEAN:
         break;
     case TYPE_STRING:
     case TYPE_INTERNED_STRING:
-        count += snprintf(buffer, bufferSize, "\"%s\"", Nom_AsRawString(state, value));
+        count += snprintf(buffer, buffersize, "\"%s\"", nom_getstring(state, value));
         break;
     case TYPE_MAP:
     {
-        bool contiguous = Map_IsContiguous(state, value);
+        bool contiguous = map_iscontiguous(state, value);
 
         // Opening '{'
-        count += snprintf(buffer, bufferSize, "{");
-        if (count >= bufferSize)
+        count += snprintf(buffer, buffersize, "{");
+        if (count >= buffersize)
         {
             break;
         }
 
         // Iterate over each pair
-        bool printComma = false;
+        bool printcomma = false;
         NomIterator iterator = { 0 };
-        while (Nom_MoveNext(state, value, &iterator))
+        while (nom_next(state, value, &iterator))
         {
-            if (printComma)
+            if (printcomma)
             {
                 // Print ", "
-                count += snprintf(buffer + count, bufferSize - count, ", ");
-                if (count >= bufferSize)
+                count += snprintf(buffer + count, buffersize - count, ", ");
+                if (count >= buffersize)
                 {
                     break;
                 }
@@ -202,8 +202,8 @@ size_t Nom_AsString(
             else
             {
                 // Print " "
-                count += snprintf(buffer + count, bufferSize - count, " ");
-                if (count >= bufferSize)
+                count += snprintf(buffer + count, buffersize - count, " ");
+                if (count >= buffersize)
                 {
                     break;
                 }
@@ -212,44 +212,44 @@ size_t Nom_AsString(
             if (!contiguous)
             {
                 // Print the key
-                count += Nom_AsString(state, buffer + count, bufferSize - count, iterator.key);
-                if (count >= bufferSize)
+                count += nom_tostring(state, buffer + count, buffersize - count, iterator.key);
+                if (count >= buffersize)
                 {
                     break;
                 }
 
                 // Print " -> "
-                count += snprintf(buffer + count, bufferSize - count, " -> ");
-                if (count >= bufferSize)
+                count += snprintf(buffer + count, buffersize - count, " -> ");
+                if (count >= buffersize)
                 {
                     break;
                 }
             }
 
             // Print the value
-            count += Nom_AsString(state, buffer + count, bufferSize - count, iterator.value);
-            if (count >= bufferSize)
+            count += nom_tostring(state, buffer + count, buffersize - count, iterator.value);
+            if (count >= buffersize)
             {
                 break;
             }
 
-            if (!printComma)
+            if (!printcomma)
             {
-                printComma = true;
+                printcomma = true;
             }
         }
 
         // Closing '}'
-        count += snprintf(buffer + count, bufferSize - count, " }");
+        count += snprintf(buffer + count, buffersize - count, " }");
     } break;
     case TYPE_FUNCTION:
     {
         ObjectId id = GET_ID(value);
-        count += snprintf(buffer, bufferSize, "<function with ID 0x%08x>", id);
+        count += snprintf(buffer, buffersize, "<function with ID 0x%08x>", id);
         break;
     }
     default:
-        count += snprintf(buffer, bufferSize, "<unknown>");
+        count += snprintf(buffer, buffersize, "<unknown>");
         break;
     }
 
@@ -259,172 +259,172 @@ size_t Nom_AsString(
 #define ARITH(l, r, op, name)\
     if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
-        State_SetError(state, "Cannot %s non-numeric values", name);\
+        state_seterror(state, "Cannot %s non-numeric values", name);\
     }\
     else\
     {\
         result.number = l.number op r.number;\
     }
 
-NomValue Nom_Add(
+NomValue nom_add(
     NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomValue result = Nom_Nil();
+    NomValue result = nom_nil();
     ARITH(value, other, +, "add");
     return result;
 }
 
-NomValue Nom_Subtract(
+NomValue nom_subtract(
     NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomValue result = Nom_Nil();
+    NomValue result = nom_nil();
     ARITH(value, other, -, "subtract");
     return result;
 }
 
-NomValue Nom_Multiply(
+NomValue nom_multiply(
     NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomValue result = Nom_Nil();
+    NomValue result = nom_nil();
     ARITH(value, other, *, "multiply");
     return result;
 }
 
-NomValue Nom_Divide(
+NomValue nom_divide(
     NomState*   state,
     NomValue    value,
     NomValue    other
     )
 {
-    NomValue result = Nom_Nil();
+    NomValue result = nom_nil();
     ARITH(value, other, / , "divide");
     return result;
 }
 
-NomValue Nom_Negate(
+NomValue nom_negate(
     NomState*   state,
     NomValue    value
     )
 {
-    NomValue result = Nom_Nil();
+    NomValue result = nom_nil();
 
-    if (!Nom_IsNumber(value))
+    if (!nom_isnumber(value))
     {
-        State_SetError(state, "Cannot negate a non-numeric value");
+        state_seterror(state, "Cannot negate a non-numeric value");
     }
     else
     {
-        result = Nom_FromDouble(-Nom_AsDouble(value));
+        result = nom_fromdouble(-nom_todouble(value));
     }
 
     return result;
 }
 
-bool Nom_IsIterable(
+bool nom_isiterable(
     NomState*   state,
     NomValue    value
     )
 {
     (void)state;
-    return Nom_IsMap(value);
+    return nom_ismap(value);
 }
 
-bool Nom_MoveNext(
+bool nom_next(
     NomState*       state,
     NomValue        value,
     NomIterator*    iterator
     )
 {
     bool result = false;
-    if (Nom_IsMap(value))
+    if (nom_ismap(value))
     {
-        result = Map_MoveNext(state, value, iterator);
+        result = map_next(state, value, iterator);
     }
     return result;
 }
 
-bool Nom_Insert(
+bool nom_insert(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue    keyValue
+    NomValue    keyvalue
     )
 {
     bool result = false;
-    if (Nom_IsMap(value))
+    if (nom_ismap(value))
     {
-        result = Map_Insert(state, value, key, keyValue);
+        result = map_insert(state, value, key, keyvalue);
     }
     return result;
 }
 
-bool Nom_Set(
+bool nom_set(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue    keyValue
+    NomValue    keyvalue
     )
 {
     bool result = false;
-    if (Nom_IsMap(value))
+    if (nom_ismap(value))
     {
-        result = Map_Set(state, value, key, keyValue);
+        result = map_set(state, value, key, keyvalue);
     }
     return result;
 }
 
-bool Nom_InsertOrSet(
+bool nom_insertorset(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue    keyValue
+    NomValue    keyvalue
     )
 {
     bool result = false;
-    if (Nom_IsMap(value))
+    if (nom_ismap(value))
     {
-        result = Map_InsertOrSet(state, value, key, keyValue);
+        result = map_insertorset(state, value, key, keyvalue);
     }
     return result;
 }
 
-NomValue Nom_Get(
+NomValue nom_get(
     NomState*   state,
     NomValue    value,
     NomValue    key
     )
 {
-    NomValue result = Nom_Nil();
-    if (Nom_IsMap(value))
+    NomValue result = nom_nil();
+    if (nom_ismap(value))
     {
-        Map_TryGet(state, value, key, &result);
+        map_tryget(state, value, key, &result);
     }
 
     return result;
 }
 
-bool Nom_TryGet(
+bool nom_tryget(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue*   keyValue
+    NomValue*   keyvalue
     )
 {
-    assert(keyValue);
+    assert(keyvalue);
 
-    *keyValue = Nom_Nil();
-    if (Nom_IsMap(value))
+    *keyvalue = nom_nil();
+    if (nom_ismap(value))
     {
-        return Map_TryGet(state, value, key, keyValue);
+        return map_tryget(state, value, key, keyvalue);
     }
 
     return false;

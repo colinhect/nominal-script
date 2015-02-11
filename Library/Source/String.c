@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-bool Nom_IsString(
+bool nom_isstring(
     NomValue    value
     )
 {
@@ -39,28 +39,27 @@ bool Nom_IsString(
         || type == TYPE_INTERNED_STRING;
 }
 
-NomValue Nom_NewString(
+NomValue nom_newstring(
     NomState*   state,
     const char* value,
     bool        interned
     )
 {
-    NomValue string = Nom_Nil();
-
+    NomValue string = nom_nil();
 
     if (interned)
     {
-        StringPool* stringPool = State_GetStringPool(state);
-        StringId id = StringPool_InsertOrFind(stringPool, value);
+        StringPool* stringpool = state_getstringpool(state);
+        StringId id = stringpool_getid(stringpool, value);
 
         SET_TYPE(string, TYPE_INTERNED_STRING);
         SET_ID(string, id);
     }
     else
     {
-        Heap* heap = State_GetHeap(state);
-        ObjectId id = Heap_Alloc(heap, strlen(value) + 1, free);
-        strcpy((char*)Heap_GetData(heap, id), value);
+        Heap* heap = state_getheap(state);
+        ObjectId id = heap_alloc(heap, strlen(value) + 1, free);
+        strcpy((char*)heap_getdata(heap, id), value);
 
         SET_TYPE(string, TYPE_STRING);
         SET_ID(string, id);
@@ -69,30 +68,30 @@ NomValue Nom_NewString(
     return string;
 }
 
-const char* Nom_AsRawString(
+const char* nom_getstring(
     NomState*   state,
     NomValue    value
     )
 {
-    Heap* heap = State_GetHeap(state);
-    StringPool* stringPool = State_GetStringPool(state);
+    Heap* heap = state_getheap(state);
+    StringPool* stringpool = state_getstringpool(state);
 
     switch (GET_TYPE(value))
     {
     case TYPE_STRING:
-        return (const char*)Heap_GetData(heap, GET_ID(value));
+        return (const char*)heap_getdata(heap, GET_ID(value));
     case TYPE_INTERNED_STRING:
-        return StringPool_Find(stringPool, GET_ID(value));
+        return stringpool_find(stringpool, GET_ID(value));
     }
 
     return NULL;
 }
 
-NomValue String_NewInterned(
+NomValue string_newinterned(
     StringId    id
     )
 {
-    NomValue string = Nom_Nil();
+    NomValue string = nom_nil();
     SET_TYPE(string, TYPE_INTERNED_STRING);
     SET_ID(string, id);
     return string;

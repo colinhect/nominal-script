@@ -33,40 +33,40 @@ typedef uint32_t StringId;
 typedef struct StringPool StringPool;
 
 // Creates a new string pool
-StringPool* StringPool_New(
-    size_t  stringCount
+StringPool* stringpool_new(
+    size_t  stringcount
     );
 
 // Frees a string pool
-void StringPool_Free(
-    StringPool* stringPool
+void stringpool_free(
+    StringPool* stringpool
     );
 
 // Inserts a new string or gets the ID of an existing string, returning the ID
 // associated with the specified string
-StringId StringPool_InsertOrFind(
-    StringPool* stringPool,
+StringId stringpool_getid(
+    StringPool* stringpool,
     const char* string
     );
 
 // Inserts a new string or gets the ID of an existing string, returning the ID
 // associated with the specified string
-StringId StringPool_InsertOrFindSubString(
-    StringPool* stringPool,
+StringId stringpool_getidsubstring(
+    StringPool* stringpool,
     const char* string,
     size_t      length
     );
 
 // Returns the string value from a string ID (NULL if no string exists of the
 // given ID)
-const char* StringPool_Find(
-    StringPool* stringPool,
+const char* stringpool_find(
+    StringPool* stringpool,
     StringId    id
     );
 
 // Returns the hash from a string ID
-Hash StringPool_Hash(
-    StringPool* stringPool,
+Hash stringpool_hash(
+    StringPool* stringpool,
     StringId    id
     );
 

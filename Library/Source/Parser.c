@@ -35,40 +35,40 @@
 struct Parser
 {
     Lexer*      lexer;
-    StringPool* stringPool;
+    StringPool* stringpool;
     char        error[MAX_PARSER_ERROR_LENGTH];
 };
 
-void SetUnexpectedTokenError(
+static void unexpectedtokenerror(
     Parser*     parser
     )
 {
     char buffer[MAX_PARSER_ERROR_LENGTH];
-    size_t length = Lexer_GetTokenLength(parser->lexer);
-    const char* string = Lexer_GetTokenString(parser->lexer);
+    size_t length = lexer_gettokenlength(parser->lexer);
+    const char* string = lexer_gettokenstring(parser->lexer);
     memcpy(buffer, string, length);
     buffer[length] = '\0';
-    Parser_SetError(parser, "Unexpected token '%s'", buffer);
+    parser_seterror(parser, "Unexpected token '%s'", buffer);
 }
 
-Parser* Parser_New(
+Parser* parser_new(
     const char* source,
-    StringPool* stringPool
+    StringPool* stringpool
     )
 {
     Parser* parser = (Parser*)malloc(sizeof(Parser));
     assert(parser);
 
-    parser->lexer = Lexer_New(source);
-    parser->stringPool = stringPool;
+    parser->lexer = lexer_new(source);
+    parser->stringpool = stringpool;
 
     // Move to the first token
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
     return parser;
 }
 
-void Parser_Free(
+void parser_free(
     Parser* parser
     )
 {
@@ -83,7 +83,7 @@ void Parser_Free(
     free(parser);
 }
 
-void Parser_SetError(
+void parser_seterror(
     Parser*     parser,
     const char* fmt,
     ...
@@ -95,19 +95,19 @@ void Parser_SetError(
     va_end(args);
 }
 
-const char* Parser_GetError(
+const char* parser_geterror(
     Parser* parser
     )
 {
     return parser->error;
 }
 
-Node* Parser_Exprs(
+Node* parser_exprs(
     Parser* parser
     )
 {
     // Parse an expression
-    Node* expr = Parser_Expr(parser);
+    Node* expr = parser_expr(parser);
     if (!expr)
     {
         return NULL;
@@ -116,40 +116,40 @@ Node* Parser_Exprs(
     // If there is a trailing comma then recursively parse another expression
     // sequence
     Node* exprs = NULL;
-    if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ','))
+    if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ','))
     {
-        Lexer_Next(parser->lexer);
-        exprs = Parser_Exprs(parser);
+        lexer_next(parser->lexer);
+        exprs = parser_exprs(parser);
         if (!exprs)
         {
-            Node_Free(expr);
+            node_free(expr);
             return NULL;
         }
     }
 
     // Create a sequence node for this expression and the potential expressions
     // after it
-    Node* sequence = Node_New(NODE_SEQUENCE);
+    Node* sequence = node_new(NODE_SEQUENCE);
     sequence->data.sequence.expr = expr;
     sequence->data.sequence.next = exprs;
     return sequence;
 }
 
-Node* Parser_Expr(
+Node* parser_expr(
     Parser* parser
     )
 {
-    return Parser_BinExpr(parser, 0, Parser_PrimaryExpr(parser));
+    return parser_binexpr(parser, 0, parser_primaryexpr(parser));
 }
 
-Node* Parser_PrimaryExpr(
+Node* parser_primaryexpr(
     Parser* parser
     )
 {
     // Unary operator
-    if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
+    if (lexer_istokentype(parser->lexer, TOK_OPERATOR))
     {
-        Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
+        Operator op = (Operator)lexer_gettokenid(parser->lexer);
         if (op == OP_SUB)
         {
             op = OP_NEG;
@@ -157,42 +157,42 @@ Node* Parser_PrimaryExpr(
 
         if (op != OP_NOT && op != OP_NEG)
         {
-            Parser_SetError(parser, "Operator '%s' is not unary", OP_STR[op]);
+            parser_seterror(parser, "Operator '%s' is not unary", OP_STR[op]);
             return NULL;
         }
 
-        Lexer_Next(parser->lexer);
+        lexer_next(parser->lexer);
 
-        if (Lexer_SkippedWhitespace(parser->lexer))
+        if (lexer_skippedwhitespace(parser->lexer))
         {
-            Parser_SetError(parser, "Unary operator '%s' cannot have trailing whitespace", OP_STR[op]);
+            parser_seterror(parser, "Unary operator '%s' cannot have trailing whitespace", OP_STR[op]);
             return NULL;
         }
 
-        Node* expr = Parser_PrimaryExpr(parser);
+        Node* expr = parser_primaryexpr(parser);
         if (!expr)
         {
             return NULL;
         }
 
         // Create the unary node around the expression
-        Node* unary = Node_New(NODE_UNARY);
+        Node* unary = node_new(NODE_UNARY);
         unary->data.unary.op = op;
         unary->data.unary.expr = expr;
         return unary;
     }
     else
     {
-        return Parser_SecondaryExpr(parser);
+        return parser_secondaryexpr(parser);
     }
 }
 
-Node* Parser_SecondaryExpr(
+Node* parser_secondaryexpr(
     Parser* parser
     )
 {
-    TokenType type = Lexer_GetTokenType(parser->lexer);
-    unsigned id = Lexer_GetTokenId(parser->lexer);
+    TokenType type = lexer_gettokentype(parser->lexer);
+    unsigned id = lexer_gettokenid(parser->lexer);
 
     Node* node = NULL;
     switch (type)
@@ -202,77 +202,77 @@ Node* Parser_SecondaryExpr(
         // Paren expression
         if (id == '(')
         {
-            node = Parser_ParenExpr(parser);
+            node = parser_parenexpr(parser);
             break;
         }
 
         // Map literal
         else if (id == '{')
         {
-            node = Parser_Map(parser);
+            node = parser_map(parser);
             break;
         }
 
         // Function literal
         else if (id == '[')
         {
-            node = Parser_Function(parser);
+            node = parser_function(parser);
             break;
         }
 
         else
         {
-            SetUnexpectedTokenError(parser);
+            unexpectedtokenerror(parser);
             break;
         }
 
         // Number literal
     case TOK_NUMBER:
-        node = Node_New(NODE_NUMBER);
-        node->data.number.value = Lexer_GetTokenAsNumber(parser->lexer);
-        Lexer_Next(parser->lexer);
+        node = node_new(NODE_NUMBER);
+        node->data.number.value = lexer_gettokenasnumber(parser->lexer);
+        lexer_next(parser->lexer);
         break;
 
         // String literal or identifier
     case TOK_STRING:
     case TOK_IDENT:
-        node = Parser_StringOrIdent(parser);
+        node = parser_stringorident(parser);
         break;
 
     default:
-        SetUnexpectedTokenError(parser);
+        unexpectedtokenerror(parser);
     }
 
-    if (node && !Lexer_SkippedWhitespace(parser->lexer))
+    if (node && !lexer_skippedwhitespace(parser->lexer))
     {
         // Parse and trailing indexing operations
         for (;;)
         {
             // Check for bracket index
-            if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
+            if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '['))
             {
-                Lexer_Next(parser->lexer);
+                lexer_next(parser->lexer);
 
                 // Parse the expression in the brackets
-                Node* key = Parser_Expr(parser);
+                Node* key = parser_expr(parser);
                 if (!key)
                 {
-                    Node_Free(node);
+                    node_free(node);
                     return NULL;
                 }
 
                 // Expect a closing bracket
-                if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
+                if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ']'))
                 {
-                    Parser_SetError(parser, "Expected closing ']'");
-                    Node_Free(key);
-                    Node_Free(node);
+                    parser_seterror(parser, "Expected closing ']'");
+                    node_free(key);
+                    node_free(node);
                     return NULL;
                 }
-                Lexer_Next(parser->lexer);
+                lexer_next(parser->lexer);
 
                 // Create the index node
-                Node* index = Node_New(NODE_INDEX);
+                Node* index = node_new(NODE_INDEX);
                 index->data.index.bracket = true;
                 index->data.index.expr = node;
                 index->data.index.key = key;
@@ -281,23 +281,23 @@ Node* Parser_SecondaryExpr(
             }
 
             // Check for dot index
-            else if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '.'))
+            else if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '.'))
             {
-                Lexer_Next(parser->lexer);
+                lexer_next(parser->lexer);
 
                 // Expect an identifier
-                if (!Lexer_IsTokenType(parser->lexer, TOK_IDENT))
+                if (!lexer_istokentype(parser->lexer, TOK_IDENT))
                 {
-                    Parser_SetError(parser, "Right side of '.' operation must be an identifier");
-                    Node_Free(node);
+                    parser_seterror(parser, "Right side of '.' operation must be an identifier");
+                    node_free(node);
                     return NULL;
                 }
 
                 // Parse the identifier
-                Node* key = Parser_StringOrIdent(parser);
+                Node* key = parser_stringorident(parser);
                 if (!key)
                 {
-                    Node_Free(node);
+                    node_free(node);
                     return NULL;
                 }
 
@@ -305,7 +305,7 @@ Node* Parser_SecondaryExpr(
                 key->type = NODE_STRING;
 
                 // Create the index node
-                Node* index = Node_New(NODE_INDEX);
+                Node* index = node_new(NODE_INDEX);
                 index->data.index.bracket = false;
                 index->data.index.expr = node;
                 index->data.index.key = key;
@@ -314,28 +314,28 @@ Node* Parser_SecondaryExpr(
             }
 
             // Check for invocation
-            else if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ':'))
+            else if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ':'))
             {
-                Lexer_Next(parser->lexer);
+                lexer_next(parser->lexer);
 
                 Node* expr = node;
-                Node* args = Node_New(NODE_SEQUENCE);
+                Node* args = node_new(NODE_SEQUENCE);
 
                 // Create the invocation node
-                node = Node_New(NODE_INVOCATION);
+                node = node_new(NODE_INVOCATION);
                 node->data.invocation.expr = expr;
                 node->data.invocation.args = args;
 
                 // Parse the argments
-                if (Lexer_SkippedWhitespace(parser->lexer))
+                if (lexer_skippedwhitespace(parser->lexer))
                 {
                     for (;;)
                     {
                         // Save the parser state
-                        LexerState state = Lexer_SaveState(parser->lexer);
+                        LexerState state = lexer_savestate(parser->lexer);
 
                         // Try to parse an argument
-                        Node* arg = Parser_PrimaryExpr(parser);
+                        Node* arg = parser_primaryexpr(parser);
                         if (arg)
                         {
                             // Append the argument to the end of the invocation node's
@@ -343,7 +343,7 @@ Node* Parser_SecondaryExpr(
                             args->data.sequence.expr = arg;
 
                             // Create the next node
-                            Node* next = Node_New(NODE_SEQUENCE);
+                            Node* next = node_new(NODE_SEQUENCE);
                             args->data.sequence.next = next;
 
                             // Move to the next node
@@ -355,7 +355,7 @@ Node* Parser_SecondaryExpr(
                             // argument list
 
                             // Restore the parser state
-                            Lexer_RestoreState(parser->lexer, state);
+                            lexer_restorestate(parser->lexer, state);
 
                             break;
                         }
@@ -372,153 +372,153 @@ Node* Parser_SecondaryExpr(
     return node;
 }
 
-Node* Parser_ParenExpr(
+Node* parser_parenexpr(
     Parser* parser
     )
 {
-    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '('))
+    if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '('))
     {
-        Parser_SetError(parser, "Expected opening '('");
+        parser_seterror(parser, "Expected opening '('");
         return NULL;
     }
 
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
-    Node* expr = Parser_Expr(parser);
+    Node* expr = parser_expr(parser);
     if (!expr)
     {
         return NULL;
     }
 
-    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ')'))
+    if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ')'))
     {
-        Parser_SetError(parser, "Expected closing ')'");
-        Node_Free(expr);
+        parser_seterror(parser, "Expected closing ')'");
+        node_free(expr);
         return NULL;
     }
 
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
     return expr;
 }
 
-Node* Parser_BinExpr(
+Node* parser_binexpr(
     Parser* parser,
     int     prec,
-    Node*   leftExpr
+    Node*   leftexpr
     )
 {
-    if (!leftExpr)
+    if (!leftexpr)
     {
         return NULL;
     }
 
     for (;;)
     {
-        Operator op = (Operator)Lexer_GetTokenId(parser->lexer);
+        Operator op = (Operator)lexer_gettokenid(parser->lexer);
 
         // Check that the current token is an operator
-        if (!Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
+        if (!lexer_istokentype(parser->lexer, TOK_OPERATOR))
         {
-            return leftExpr; // The current token is not an operator
+            return leftexpr; // The current token is not an operator
         }
 
         // Get operator precedence and move to next token
-        int opPrec = OP_PREC[Lexer_GetTokenId(parser->lexer)];
+        int opprec = OP_PREC[lexer_gettokenid(parser->lexer)];
 
         // This operator has less precedence
-        if (opPrec < prec)
+        if (opprec < prec)
         {
-            return leftExpr;
+            return leftexpr;
         }
 
         // Move past the operator
-        Lexer_Next(parser->lexer);
+        lexer_next(parser->lexer);
 
         // Parse the right-hand expression
-        Node* rightExpr = Parser_PrimaryExpr(parser);
-        if (!rightExpr)
+        Node* rightexpr = parser_primaryexpr(parser);
+        if (!rightexpr)
         {
-            Node_Free(leftExpr);
+            node_free(leftexpr);
             return NULL;
         }
 
         // Check if the token past the right-hand expression is an operator
-        if (Lexer_IsTokenType(parser->lexer, TOK_OPERATOR))
+        if (lexer_istokentype(parser->lexer, TOK_OPERATOR))
         {
-            int nextOpPrec = OP_PREC[Lexer_GetTokenId(parser->lexer)];
+            int nextopprec = OP_PREC[lexer_gettokenid(parser->lexer)];
 
             // If the current operator is of less precedence then parse the
             // next binary expression first
-            if (opPrec < nextOpPrec)
+            if (opprec < nextopprec)
             {
-                rightExpr = Parser_BinExpr(parser, opPrec + 1, rightExpr);
-                if (!rightExpr)
+                rightexpr = parser_binexpr(parser, opprec + 1, rightexpr);
+                if (!rightexpr)
                 {
-                    Node_Free(leftExpr);
+                    node_free(leftexpr);
                     return NULL;
                 }
             }
         }
 
         // Verify the binary operation is valid
-        if (op == OP_LET && leftExpr->type != NODE_IDENT && !(leftExpr->type == NODE_INDEX && leftExpr->data.index.bracket == false))
+        if (op == OP_LET && leftexpr->type != NODE_IDENT && !(leftexpr->type == NODE_INDEX && leftexpr->data.index.bracket == false))
         {
-            Parser_SetError(parser, "The left side of a ':=' expression must be an identifier");
-            Node_Free(leftExpr);
-            Node_Free(rightExpr);
+            parser_seterror(parser, "The left side of a ':=' expression must be an identifier");
+            node_free(leftexpr);
+            node_free(rightexpr);
             return NULL;
         }
 
         // Create the binary operation node
-        Node* binary = Node_New(NODE_BINARY);
+        Node* binary = node_new(NODE_BINARY);
         binary->data.binary.op = op;
-        binary->data.binary.leftExpr = leftExpr;
-        binary->data.binary.rightExpr = rightExpr;
+        binary->data.binary.leftexpr = leftexpr;
+        binary->data.binary.rightexpr = rightexpr;
 
-        leftExpr = binary;
+        leftexpr = binary;
     }
 }
 
-Node* Parser_Map(
+Node* parser_map(
     Parser* parser
     )
 {
-    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '{'))
+    if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '{'))
     {
-        Parser_SetError(parser, "Expected opening '{'");
+        parser_seterror(parser, "Expected opening '{'");
         return NULL;
     }
 
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
-    Node* mapRoot = Node_New(NODE_MAP);
-    if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
+    Node* maproot = node_new(NODE_MAP);
+    if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '}'))
     {
-        Lexer_Next(parser->lexer);
+        lexer_next(parser->lexer);
 
         // An empty map
-        return mapRoot;
+        return maproot;
     }
 
     // Parse the expressions in the map
-    Node* exprs = Parser_Exprs(parser);
+    Node* exprs = parser_exprs(parser);
     if (!exprs)
     {
         return NULL;
     }
-    else if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '}'))
+    else if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '}'))
     {
-        Parser_SetError(parser, "Expected closing '}'");
-        Node_Free(mapRoot);
-        Node_Free(exprs);
+        parser_seterror(parser, "Expected closing '}'");
+        node_free(maproot);
+        node_free(exprs);
         return NULL;
     }
 
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
     size_t i = 0;
-    Node* map = mapRoot;
+    Node* map = maproot;
     Node* expr = exprs;
     while (expr)
     {
@@ -530,20 +530,20 @@ Node* Parser_Map(
         if (item->type == NODE_BINARY && item->data.binary.op == OP_LET)
         {
             item->data.binary.op = OP_ASSOC;
-            item->data.binary.leftExpr->type = NODE_STRING;
+            item->data.binary.leftexpr->type = NODE_STRING;
         }
 
         // Infer the key if it is not an association operation
         if (item->type != NODE_BINARY && item->data.binary.op != OP_ASSOC)
         {
-            Node* key = Node_New(NODE_NUMBER);
+            Node* key = node_new(NODE_NUMBER);
             key->data.number.value = (double)i;
 
             // Create an association operation
-            Node* assoc = Node_New(NODE_BINARY);
+            Node* assoc = node_new(NODE_BINARY);
             assoc->data.binary.op = OP_ASSOC;
-            assoc->data.binary.leftExpr = key;
-            assoc->data.binary.rightExpr = item;
+            assoc->data.binary.leftexpr = key;
+            assoc->data.binary.rightexpr = item;
 
             item = assoc;
         }
@@ -553,47 +553,47 @@ Node* Parser_Map(
         expr = expr->data.sequence.next;
         if (expr)
         {
-            Node* nextMap = Node_New(NODE_MAP);
-            nextMap->data.map.prev = map;
-            map->data.map.next = nextMap;
-            map = nextMap;
+            Node* nextmap = node_new(NODE_MAP);
+            nextmap->data.map.prev = map;
+            map->data.map.next = nextmap;
+            map = nextmap;
         }
 
         ++i;
     }
 
-    Node_Free(exprs);
-    return mapRoot;
+    node_free(exprs);
+    return maproot;
 }
 
-Node* Parser_Function(
+Node* parser_function(
     Parser* parser
     )
 {
-    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '['))
+    if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '['))
     {
-        Parser_SetError(parser, "Expected opening '['");
+        parser_seterror(parser, "Expected opening '['");
         return NULL;
     }
 
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
-    LexerState state = Lexer_SaveState(parser->lexer);
+    LexerState state = lexer_savestate(parser->lexer);
 
-    Node* params = Node_New(NODE_SEQUENCE);
+    Node* params = node_new(NODE_SEQUENCE);
     Node* param = params;
     for (;;)
     {
-        Node* ident = Parser_StringOrIdent(parser);
+        Node* ident = parser_stringorident(parser);
         if (!ident || ident->type != NODE_IDENT)
         {
             if (ident)
             {
-                Node_Free(ident);
+                node_free(ident);
                 ident = NULL;
             }
 
-            Node_Free(params);
+            node_free(params);
             params = NULL;
 
             // Failed to parse the parametesr
@@ -602,68 +602,68 @@ Node* Parser_Function(
 
         param->data.sequence.expr = ident;
 
-        if (Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, '|'))
+        if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '|'))
         {
-            Lexer_Next(parser->lexer);
+            lexer_next(parser->lexer);
             break;
         }
 
-        param->data.sequence.next = Node_New(NODE_SEQUENCE);
+        param->data.sequence.next = node_new(NODE_SEQUENCE);
         param = param->data.sequence.next;
     }
 
     // Restart at the beginning if the parameter parsing failed
     if (!params)
     {
-        Lexer_RestoreState(parser->lexer, state);
+        lexer_restorestate(parser->lexer, state);
     }
 
     // Parse the body of the function
-    Node* exprs = Parser_Exprs(parser);
+    Node* exprs = parser_exprs(parser);
     if (!exprs)
     {
         return NULL;
     }
 
-    if (!Lexer_IsTokenTypeAndId(parser->lexer, TOK_SYMBOL, ']'))
+    if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ']'))
     {
-        Parser_SetError(parser, "Expected closing ']'");
-        Node_Free(exprs);
+        parser_seterror(parser, "Expected closing ']'");
+        node_free(exprs);
         return NULL;
     }
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
-    Node* function = Node_New(NODE_FUNCTION);
+    Node* function = node_new(NODE_FUNCTION);
     function->data.function.params = params;
     function->data.function.exprs = exprs;
     return function;
 }
 
-Node* Parser_StringOrIdent(
+Node* parser_stringorident(
     Parser* parser
     )
 {
     Node* node;
-    if (Lexer_IsTokenType(parser->lexer, TOK_STRING))
+    if (lexer_istokentype(parser->lexer, TOK_STRING))
     {
-        node = Node_New(NODE_STRING);
+        node = node_new(NODE_STRING);
     }
-    else if (Lexer_IsTokenType(parser->lexer, TOK_IDENT))
+    else if (lexer_istokentype(parser->lexer, TOK_IDENT))
     {
-        node = Node_New(NODE_IDENT);
+        node = node_new(NODE_IDENT);
     }
     else
     {
-        Parser_SetError(parser, "Expected a string or identifier");
+        parser_seterror(parser, "Expected a string or identifier");
         return NULL;
     }
 
-    size_t length = Lexer_GetTokenLength(parser->lexer);
-    const char* string = Lexer_GetTokenString(parser->lexer);
-    StringId id = StringPool_InsertOrFindSubString(parser->stringPool, string, length);
+    size_t length = lexer_gettokenlength(parser->lexer);
+    const char* string = lexer_gettokenstring(parser->lexer);
+    StringId id = stringpool_getidsubstring(parser->stringpool, string, length);
     node->data.string.id = id;
 
-    Lexer_Next(parser->lexer);
+    lexer_next(parser->lexer);
 
     return node;
 }

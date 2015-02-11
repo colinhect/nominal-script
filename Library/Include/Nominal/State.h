@@ -33,7 +33,7 @@
 /// \brief Creates a new state.
 ///
 /// \returns The new state.
-NOMINAL_EXPORT NomState* Nom_NewState(
+NOMINAL_EXPORT NomState* nom_newstate(
     void
     );
 
@@ -42,7 +42,7 @@ NOMINAL_EXPORT NomState* Nom_NewState(
 ///
 /// \param state
 ///     The state to free.
-NOMINAL_EXPORT void Nom_FreeState(
+NOMINAL_EXPORT void nom_freestate(
     NomState*   state
     );
 
@@ -50,7 +50,7 @@ NOMINAL_EXPORT void Nom_FreeState(
 /// \brief Executes a snippet of Nominal source code and returns the value.
 ///
 /// \warning The execution could have encountered an error.  Check
-/// Nom_ErrorOccurred() directly after invoking this function.
+/// nom_error() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -58,7 +58,7 @@ NOMINAL_EXPORT void Nom_FreeState(
 ///     The Nominal source code.
 ///
 /// \returns The result of the executed code.
-NOMINAL_EXPORT NomValue Nom_Execute(
+NOMINAL_EXPORT NomValue nom_execute(
     NomState*   state,
     const char* source
     );
@@ -68,7 +68,7 @@ NOMINAL_EXPORT NomValue Nom_Execute(
 /// code to stdout.
 ///
 /// \warning The source code could have failed to parse.  Check
-/// Nom_ErrorOccurred() directly after invoking this function.
+/// nom_error() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -77,7 +77,7 @@ NOMINAL_EXPORT NomValue Nom_Execute(
 ///     is printed.
 ///
 /// \returns The result of the executed code.
-NOMINAL_EXPORT void Nom_DumpByteCode(
+NOMINAL_EXPORT void nom_dumpbytecode(
     NomState*   state,
     const char* source
     );
@@ -87,7 +87,7 @@ NOMINAL_EXPORT void Nom_DumpByteCode(
 ///
 /// \param state
 ///     The state.
-NOMINAL_EXPORT bool Nom_ErrorOccurred(
+NOMINAL_EXPORT bool nom_error(
     NomState*   state
     );
 
@@ -96,7 +96,7 @@ NOMINAL_EXPORT bool Nom_ErrorOccurred(
 ///
 /// \param state
 ///     The state.
-NOMINAL_EXPORT const char* Nom_GetError(
+NOMINAL_EXPORT const char* nom_geterror(
     NomState*   state
     );
 

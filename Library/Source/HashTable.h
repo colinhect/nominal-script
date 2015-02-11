@@ -56,48 +56,48 @@ typedef struct BucketNode BucketNode;
 // An iterator of a hash table
 typedef struct
 {
-    HashTable*  hashTable;
+    HashTable*  hashtable;
     size_t      index;
     UserData    key;
     UserData    value;
-    BucketNode* bucketNode;
+    BucketNode* bucketnode;
 } HashTableIterator;
 
 // Creates a new hash table given the hash/compare functions and the context
 // used for those functions
-HashTable* HashTable_New(
+HashTable* hashtable_new(
     HashFunction    hash,
     CompareFunction compare,
     UserData        context,
-    size_t          bucketCount
+    size_t          bucketcount
     );
 
 // Frees a hash table using the specified functions to free each key and value
 // (both functions can be NULL)
-void HashTable_Free(
-    HashTable*  hashTable,
-    void        (*freeKey)(void*),
-    void        (*freeValue)(void*)
+void hashtable_free(
+    HashTable*  hashtable,
+    void        (*freekey)(void*),
+    void        (*freevalue)(void*)
     );
 
 // Moves to the next pair in the hash table
-bool HashTable_MoveNext(
-    HashTable*          hashTable,
+bool hashtable_next(
+    HashTable*          hashtable,
     HashTableIterator*  iterator
     );
 
 // Inserts a new value in the hash table, returning true if the insertion was
 // successful or false if a value already exists for the specified key
-bool HashTable_Insert(
-    HashTable*  hashTable,
+bool hashtable_insert(
+    HashTable*  hashtable,
     UserData    key,
     UserData    value
     );
 
 // Sets an existing value in the hash table, returning true if the set was
 // successful or false if no value exists for the specified key
-bool HashTable_Set(
-    HashTable*  hashTable,
+bool hashtable_set(
+    HashTable*  hashtable,
     UserData    key,
     UserData    value
     );
@@ -105,15 +105,15 @@ bool HashTable_Set(
 // Inserts a new value or sets an existing value in the hash table, returning
 // true if a new value was inserted or false if an existing value was changed
 bool HashTable_InsertOrSet(
-    HashTable*  hashTable,
+    HashTable*  hashtable,
     UserData    key,
     UserData    value
     );
 
 // Gets the value for a key, returning true if a value was found for the
 // specified key and false if no value was found for the specified key
-bool HashTable_Get(
-    HashTable*  hashTable,
+bool hashtable_get(
+    HashTable*  hashtable,
     UserData    key,
     UserData*   value
     );
@@ -121,35 +121,35 @@ bool HashTable_Get(
 // Either inserts a new value or get an existing value, returning true if a
 // value was found for the given key or false if no value was found for the
 // specified and a new value was inserted
-bool HashTable_InsertOrGet(
-    HashTable*  hashTable,
+bool hashtable_insertorget(
+    HashTable*  hashtable,
     UserData    key,
     UserData    value,
-    UserData*   existingValue
+    UserData*   existingvalue
     );
 
 // Hashes a string
-Hash HashString(
+Hash hashstring(
     UserData    key,
     UserData    context
     );
 
 // Compares strings, returning true if the strings are equal or false otherwise
-bool CompareString(
+bool comparestring(
     UserData    left,
     UserData    right,
     UserData    context
     );
 
 // Returns the literal value of the key as the hash
-Hash HashIdentity(
+Hash hashidentity(
     UserData    key,
     UserData    context
     );
 
 // Compares the literal value of the key, returning true if the keys are equal
 // or false otherwise
-bool CompareIdentity(
+bool compareidentity(
     UserData    left,
     UserData    right,
     UserData    context

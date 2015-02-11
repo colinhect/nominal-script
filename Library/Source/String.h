@@ -29,7 +29,7 @@
 #include "StringPool.h"
 
 // Creates an interned string from a string ID
-NomValue String_NewInterned(
+NomValue string_newinterned(
     StringId    id
     );
 

@@ -32,553 +32,553 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 {
     SECTION("Creating from int")
     {
-        NomValue value = Nom_FromInt(4);
+        NomValue value = nom_fromint(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from unsigned int")
     {
-        NomValue value = Nom_FromUnsignedInt(4);
+        NomValue value = nom_fromunsignedint(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from long")
     {
-        NomValue value = Nom_FromLong(4);
+        NomValue value = nom_fromlong(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from unsigned long")
     {
-        NomValue value = Nom_FromUnsignedLong(4);
+        NomValue value = nom_fromunsignedlong(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from long long")
     {
-        NomValue value = Nom_FromLongLong(4);
+        NomValue value = nom_fromlonglong(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from unsigned long long")
     {
-        NomValue value = Nom_FromUnsignedLongLong(4);
+        NomValue value = nom_fromunsignedlonglong(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from size")
     {
-        NomValue value = Nom_FromSize(4);
+        NomValue value = nom_fromsize(4);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.0f);
+            CHECK(nom_tofloat(value) == 4.0f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.0);
+            CHECK(nom_todouble(value) == 4.0);
         }
     }
 
     SECTION("Creating from float")
     {
-        NomValue value = Nom_FromFloat(4.321f);
+        NomValue value = nom_fromfloat(4.321f);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.321f);
+            CHECK(nom_tofloat(value) == 4.321f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == (double)4.321f);
+            CHECK(nom_todouble(value) == (double)4.321f);
         }
     }
 
     SECTION("Creating from double")
     {
-        NomValue value = Nom_FromDouble(4.321);
+        NomValue value = nom_fromdouble(4.321);
 
-        CHECK(Nom_IsNumber(value) == true);
+        CHECK(nom_isnumber(value) == true);
 
         SECTION("Converting to int")
         {
-            CHECK(Nom_AsInt(value) == 4);
+            CHECK(nom_toint(value) == 4);
         }
 
         SECTION("Converting to unsigned int")
         {
-            CHECK(Nom_AsUnsignedInt(value) == 4);
+            CHECK(nom_tounsignedint(value) == 4);
         }
 
         SECTION("Converting to long")
         {
-            CHECK(Nom_AsLong(value) == 4);
+            CHECK(nom_tolong(value) == 4);
         }
 
         SECTION("Converting to unsigned long")
         {
-            CHECK(Nom_AsUnsignedLong(value) == 4);
+            CHECK(nom_tounsignedlong(value) == 4);
         }
 
         SECTION("Converting to long long")
         {
-            CHECK(Nom_AsLongLong(value) == 4);
+            CHECK(nom_tolonglong(value) == 4);
         }
 
         SECTION("Converting to unsigned long long")
         {
-            CHECK(Nom_AsUnsignedLongLong(value) == 4);
+            CHECK(nom_tounsignedlonglong(value) == 4);
         }
 
         SECTION("Converting to size_t")
         {
-            CHECK(Nom_AsSize(value) == 4);
+            CHECK(nom_tosize(value) == 4);
         }
 
         SECTION("Converting to float")
         {
-            CHECK(Nom_AsFloat(value) == 4.321f);
+            CHECK(nom_tofloat(value) == 4.321f);
         }
 
         SECTION("Converting to double")
         {
-            CHECK(Nom_AsDouble(value) == 4.321);
+            CHECK(nom_todouble(value) == 4.321);
         }
     }
 }
 
-TEST_CASE("Calling Nom_IsNumber() on non-number Nominal values", "[Number]")
+TEST_CASE("Calling nom_isnumber() on non-number Nominal values", "[Number]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
     SECTION("Checking nil")
     {
-        NomValue value = Nom_Nil();
-        CHECK(Nom_IsNumber(value) == false);
+        NomValue value = nom_nil();
+        CHECK(nom_isnumber(value) == false);
     }
 
     SECTION("Checking string")
     {
-        NomValue value = Nom_NewString(state, "Testing...", false);
-        CHECK(Nom_IsNumber(value) == false);
+        NomValue value = nom_newstring(state, "Testing...", false);
+        CHECK(nom_isnumber(value) == false);
     }
 
     SECTION("Checking interned string")
     {
-        NomValue value = Nom_NewString(state, "Testing...", true);
-        CHECK(Nom_IsNumber(value) == false);
+        NomValue value = nom_newstring(state, "Testing...", true);
+        CHECK(nom_isnumber(value) == false);
     }
 
     SECTION("Checking map")
     {
-        NomValue value = Nom_NewMap(state);
-        CHECK(Nom_IsNumber(value) == false);
+        NomValue value = nom_newmap(state);
+        CHECK(nom_isnumber(value) == false);
     }
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
     SECTION("Addition")
     {
-        NomValue a = Nom_FromInt(3);
-        NomValue b = Nom_FromInt(2);
-        NomValue c = Nom_Add(state, a, b);
-        CHECK(Nom_IsNumber(c) == true);
-        CHECK(Nom_AsDouble(c) == 5.0);
+        NomValue a = nom_fromint(3);
+        NomValue b = nom_fromint(2);
+        NomValue c = nom_add(state, a, b);
+        CHECK(nom_isnumber(c) == true);
+        CHECK(nom_todouble(c) == 5.0);
     }
 
     SECTION("Subtraction")
     {
-        NomValue a = Nom_FromInt(3);
-        NomValue b = Nom_FromInt(2);
-        NomValue c = Nom_Subtract(state, a, b);
-        CHECK(Nom_IsNumber(c) == true);
-        CHECK(Nom_AsDouble(c) == 1.0);
+        NomValue a = nom_fromint(3);
+        NomValue b = nom_fromint(2);
+        NomValue c = nom_subtract(state, a, b);
+        CHECK(nom_isnumber(c) == true);
+        CHECK(nom_todouble(c) == 1.0);
     }
 
     SECTION("Multiplication")
     {
-        NomValue a = Nom_FromInt(3);
-        NomValue b = Nom_FromInt(2);
-        NomValue c = Nom_Multiply(state, a, b);
-        CHECK(Nom_IsNumber(c) == true);
-        CHECK(Nom_AsDouble(c) == 6.0);
+        NomValue a = nom_fromint(3);
+        NomValue b = nom_fromint(2);
+        NomValue c = nom_multiply(state, a, b);
+        CHECK(nom_isnumber(c) == true);
+        CHECK(nom_todouble(c) == 6.0);
     }
 
     SECTION("Division")
     {
-        NomValue a = Nom_FromInt(6);
-        NomValue b = Nom_FromInt(2);
-        NomValue c = Nom_Divide(state, a, b);
-        CHECK(Nom_IsNumber(c) == true);
-        CHECK(Nom_AsDouble(c) == 3.0);
+        NomValue a = nom_fromint(6);
+        NomValue b = nom_fromint(2);
+        NomValue c = nom_divide(state, a, b);
+        CHECK(nom_isnumber(c) == true);
+        CHECK(nom_todouble(c) == 3.0);
     }
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
-TEST_CASE("Calling Nom_IsIterable() a Nominal number", "[Number]")
+TEST_CASE("Calling nom_isiterable() a Nominal number", "[Number]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue number = Nom_FromDouble(1.0);
-    CHECK(Nom_IsIterable(state, number) == false);
+    NomValue number = nom_fromdouble(1.0);
+    CHECK(nom_isiterable(state, number) == false);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }

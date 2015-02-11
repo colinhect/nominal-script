@@ -31,146 +31,146 @@ extern "C"
 #define TEST_EXPR(expr, expected)\
 {\
     CHECK(state != NULL); \
-    NomValue value = Nom_Execute(state, expr); \
-    CHECK(Nom_ErrorOccurred(state) == false); \
-    CHECK(Nom_Equals(state, value, expected) == true); \
+    NomValue value = nom_execute(state, expr); \
+    CHECK(nom_error(state) == false); \
+    CHECK(nom_equals(state, value, expected) == true); \
 }
 
 #define TEST_EXPR_ERROR(expr)\
 {\
     CHECK(state != NULL); \
-    Nom_Execute(state, expr); \
-    CHECK(Nom_ErrorOccurred(state) == true); \
+    nom_execute(state, expr); \
+    CHECK(nom_error(state) == true); \
 }
 
 TEST_CASE("Performing arithmetic operations", "[State]")
 {
-    NomState* state = Nom_NewState();
-    TEST_EXPR("2 + 3", Nom_FromInt(5));
-    TEST_EXPR("2 - 3", Nom_FromInt(-1));
-    TEST_EXPR("2 * 3", Nom_FromInt(6));
-    TEST_EXPR("2 * 3 + 1", Nom_FromInt(7));
-    TEST_EXPR("2 * (3 + 1)", Nom_FromInt(8));
-    TEST_EXPR("6 / 3", Nom_FromInt(2));
-    TEST_EXPR("2 + 3.0", Nom_FromDouble(5.0));
-    TEST_EXPR("2.0 + 3.0", Nom_FromDouble(5.0));
-    TEST_EXPR("2.0 + 3", Nom_FromDouble(5.0));
-    TEST_EXPR("2 - 3.0", Nom_FromDouble(-1.0));
-    TEST_EXPR("2.0 - 3", Nom_FromDouble(-1.0));
-    TEST_EXPR("2.0 - 3.0", Nom_FromDouble(-1.0));
-    TEST_EXPR("2 * 3.0", Nom_FromDouble(6.0));
-    TEST_EXPR("2.0 * 3", Nom_FromDouble(6.0));
-    TEST_EXPR("2 * 3.0", Nom_FromDouble(6.0));
-    TEST_EXPR("6 / 3.0", Nom_FromDouble(2.0));
-    TEST_EXPR("6.0 / 3", Nom_FromDouble(2.0));
-    TEST_EXPR("6 / 3.0", Nom_FromDouble(2.0));
-    TEST_EXPR("6.0 / 4.0", Nom_FromDouble(6.0 / 4.0));
-    TEST_EXPR("6.53 / 4.23", Nom_FromDouble(6.53 / 4.23));
-    Nom_FreeState(state);
+    NomState* state = nom_newstate();
+    TEST_EXPR("2 + 3", nom_fromint(5));
+    TEST_EXPR("2 - 3", nom_fromint(-1));
+    TEST_EXPR("2 * 3", nom_fromint(6));
+    TEST_EXPR("2 * 3 + 1", nom_fromint(7));
+    TEST_EXPR("2 * (3 + 1)", nom_fromint(8));
+    TEST_EXPR("6 / 3", nom_fromint(2));
+    TEST_EXPR("2 + 3.0", nom_fromdouble(5.0));
+    TEST_EXPR("2.0 + 3.0", nom_fromdouble(5.0));
+    TEST_EXPR("2.0 + 3", nom_fromdouble(5.0));
+    TEST_EXPR("2 - 3.0", nom_fromdouble(-1.0));
+    TEST_EXPR("2.0 - 3", nom_fromdouble(-1.0));
+    TEST_EXPR("2.0 - 3.0", nom_fromdouble(-1.0));
+    TEST_EXPR("2 * 3.0", nom_fromdouble(6.0));
+    TEST_EXPR("2.0 * 3", nom_fromdouble(6.0));
+    TEST_EXPR("2 * 3.0", nom_fromdouble(6.0));
+    TEST_EXPR("6 / 3.0", nom_fromdouble(2.0));
+    TEST_EXPR("6.0 / 3", nom_fromdouble(2.0));
+    TEST_EXPR("6 / 3.0", nom_fromdouble(2.0));
+    TEST_EXPR("6.0 / 4.0", nom_fromdouble(6.0 / 4.0));
+    TEST_EXPR("6.53 / 4.23", nom_fromdouble(6.53 / 4.23));
+    nom_freestate(state);
 }
 
 TEST_CASE("Setting global variables", "[State]")
 {
-    NomState* state = Nom_NewState();
-    TEST_EXPR("a := 1, b := 2, a + b", Nom_FromInt(3));
-    Nom_FreeState(state);
+    NomState* state = nom_newstate();
+    TEST_EXPR("a := 1, b := 2, a + b", nom_fromint(3));
+    nom_freestate(state);
 }
 
 TEST_CASE("Creating a map with implicit keys", "[State]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_Execute(state, "{ 0, 1, 2, 3 }");
-    CHECK(Nom_ErrorOccurred(state) == false);
-    CHECK(Nom_IsMap(map) == true);
+    NomValue map = nom_execute(state, "{ 0, 1, 2, 3 }");
+    CHECK(nom_error(state) == false);
+    CHECK(nom_ismap(map) == true);
 
     NomValue result;
 
     for (int i = 0; i < 4; ++i)
     {
-        result = Nom_Get(state, map, Nom_FromInt(i));
-        CHECK(Nom_Equals(state, result, Nom_FromInt(i)));
+        result = nom_get(state, map, nom_fromint(i));
+        CHECK(nom_equals(state, result, nom_fromint(i)));
     }
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Creating a map with explicit keys", "[State]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_Execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
-    CHECK(Nom_ErrorOccurred(state) == false);
-    CHECK(Nom_IsMap(map));
+    NomValue map = nom_execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
+    CHECK(nom_error(state) == false);
+    CHECK(nom_ismap(map));
 
     NomValue result;
-    result = Nom_Get(state, map, Nom_NewString(state, "zero", false));
-    CHECK(Nom_Equals(state, result, Nom_FromInt(0)) == true);
-    result = Nom_Get(state, map, Nom_NewString(state, "one", false));
-    CHECK(Nom_Equals(state, result, Nom_FromInt(1)) == true);
-    result = Nom_Get(state, map, Nom_NewString(state, "two", false));
-    CHECK(Nom_Equals(state, result, Nom_FromInt(2)) == true);
+    result = nom_get(state, map, nom_newstring(state, "zero", false));
+    CHECK(nom_equals(state, result, nom_fromint(0)) == true);
+    result = nom_get(state, map, nom_newstring(state, "one", false));
+    CHECK(nom_equals(state, result, nom_fromint(1)) == true);
+    result = nom_get(state, map, nom_newstring(state, "two", false));
+    CHECK(nom_equals(state, result, nom_fromint(2)) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Indexing maps", "[State]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    TEST_EXPR("{ 5 }[0]", Nom_FromInt(5));
-    TEST_EXPR("{ 2, 3, 4, 5 }[2]", Nom_FromInt(4));
-    TEST_EXPR("{ one := 1 }.one", Nom_FromInt(1));
-    TEST_EXPR("{ two := { one := 1 } }[\"two\"][\"one\"]", Nom_FromInt(1));
-    TEST_EXPR("{ two := { one := 1 } }.two.one", Nom_FromInt(1));
-    TEST_EXPR("({ two := { one := 1 } }.two).one", Nom_FromInt(1));
-    TEST_EXPR("{ two := { one := 1 } }[{ }]", Nom_Nil());
-    TEST_EXPR("{ two := { one := 1 } }[{ one := \"two\" }.one].one", Nom_FromInt(1));
-    TEST_EXPR("({ two := { one := 1 } })[{ one := \"two\" }.one].one", Nom_FromInt(1));
-    TEST_EXPR("({ two := { one := 1 } })[({ one := \"two\" }.one)].one", Nom_FromInt(1));
-    TEST_EXPR("one := { 0 }, two := { one -> 1 }, two[one]", Nom_FromInt(1));
-    TEST_EXPR("a := { }, a.b := 1, a.b", Nom_FromInt(1));
-    TEST_EXPR("b := { }, b[\"c\"] = 1, b.c", Nom_FromInt(1));
-    TEST_EXPR("d := { }, d.e := 1, d.e", Nom_FromInt(1));
+    TEST_EXPR("{ 5 }[0]", nom_fromint(5));
+    TEST_EXPR("{ 2, 3, 4, 5 }[2]", nom_fromint(4));
+    TEST_EXPR("{ one := 1 }.one", nom_fromint(1));
+    TEST_EXPR("{ two := { one := 1 } }[\"two\"][\"one\"]", nom_fromint(1));
+    TEST_EXPR("{ two := { one := 1 } }.two.one", nom_fromint(1));
+    TEST_EXPR("({ two := { one := 1 } }.two).one", nom_fromint(1));
+    TEST_EXPR("{ two := { one := 1 } }[{ }]", nom_nil());
+    TEST_EXPR("{ two := { one := 1 } }[{ one := \"two\" }.one].one", nom_fromint(1));
+    TEST_EXPR("({ two := { one := 1 } })[{ one := \"two\" }.one].one", nom_fromint(1));
+    TEST_EXPR("({ two := { one := 1 } })[({ one := \"two\" }.one)].one", nom_fromint(1));
+    TEST_EXPR("one := { 0 }, two := { one -> 1 }, two[one]", nom_fromint(1));
+    TEST_EXPR("a := { }, a.b := 1, a.b", nom_fromint(1));
+    TEST_EXPR("b := { }, b[\"c\"] = 1, b.c", nom_fromint(1));
+    TEST_EXPR("d := { }, d.e := 1, d.e", nom_fromint(1));
 
     TEST_EXPR_ERROR("f := { }, f.g");
     TEST_EXPR_ERROR("f.g = 1");
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Creating and invoking trivial functions", "[State]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    TEST_EXPR("[ 1 ]:", Nom_FromInt(1));
-    TEST_EXPR("([ 1 ]):", Nom_FromInt(1));
-    TEST_EXPR("[ 1, 2, 3 ]:", Nom_FromInt(3));
-    TEST_EXPR("[ 1, 2, 3, { 4, 5 } ]:[1]", Nom_FromInt(5));
-    TEST_EXPR("([ 1, 2, 3, { 4, 5 } ]:)[1]", Nom_FromInt(5));
-    TEST_EXPR("-[[[[42]]]]::::", Nom_FromInt(-42));
-    TEST_EXPR("a := [ 0, 1, 2 ], b := a:, b", Nom_FromInt(2));
-    TEST_EXPR("f := [ 2 ], g := [ f: + 3 ], g:", Nom_FromInt(5));
-    TEST_EXPR("c := { f := [ 23 ], g := [ 19 ] }, c.f: + c.g:", Nom_FromInt(42));
-    TEST_EXPR("e := { f := [ [ 23 ] ] }, e.f::", Nom_FromInt(23));
-    TEST_EXPR("[ { 0, 1, [ 7 + 3 ] } ]:[2]:", Nom_FromInt(10));
-    TEST_EXPR("[ { zero := 0, one := 1, two := 2 } ]:.one", Nom_FromInt(1));
-    TEST_EXPR("x := 1, y := 3, w := [ x := 4, x + y ]:, w + x", Nom_FromInt(8));
+    TEST_EXPR("[ 1 ]:", nom_fromint(1));
+    TEST_EXPR("([ 1 ]):", nom_fromint(1));
+    TEST_EXPR("[ 1, 2, 3 ]:", nom_fromint(3));
+    TEST_EXPR("[ 1, 2, 3, { 4, 5 } ]:[1]", nom_fromint(5));
+    TEST_EXPR("([ 1, 2, 3, { 4, 5 } ]:)[1]", nom_fromint(5));
+    TEST_EXPR("-[[[[42]]]]::::", nom_fromint(-42));
+    TEST_EXPR("a := [ 0, 1, 2 ], b := a:, b", nom_fromint(2));
+    TEST_EXPR("f := [ 2 ], g := [ f: + 3 ], g:", nom_fromint(5));
+    TEST_EXPR("c := { f := [ 23 ], g := [ 19 ] }, c.f: + c.g:", nom_fromint(42));
+    TEST_EXPR("e := { f := [ [ 23 ] ] }, e.f::", nom_fromint(23));
+    TEST_EXPR("[ { 0, 1, [ 7 + 3 ] } ]:[2]:", nom_fromint(10));
+    TEST_EXPR("[ { zero := 0, one := 1, two := 2 } ]:.one", nom_fromint(1));
+    TEST_EXPR("x := 1, y := 3, w := [ x := 4, x + y ]:, w + x", nom_fromint(8));
 
     TEST_EXPR_ERROR("z := { }, z:");
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Creating and invoking functions with parameters", "[State]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    TEST_EXPR("[ a b | a + b ]: 2 3", Nom_FromInt(5));
-    TEST_EXPR("id := [ a | a ], id: 2", Nom_FromInt(2));
-    TEST_EXPR("id:", Nom_Nil());
+    TEST_EXPR("[ a b | a + b ]: 2 3", nom_fromint(5));
+    TEST_EXPR("id := [ a | a ], id: 2", nom_fromint(2));
+    TEST_EXPR("id:", nom_nil());
 
     TEST_EXPR_ERROR("z := [ a b c | a + b + c ], z: 1 2 3 4");
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }

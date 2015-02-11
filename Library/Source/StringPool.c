@@ -29,122 +29,122 @@
 
 struct StringPool
 {
-    HashTable*  hashTable;
+    HashTable*  hashtable;
     char**      strings;
     Hash*       hashes;
-    size_t      stringCount;
-    StringId    nextStringId;
+    size_t      stringcount;
+    StringId    nextid;
 };
 
-StringPool* StringPool_New(
-    size_t  stringCount
+StringPool* stringpool_new(
+    size_t  stringcount
     )
 {
-    StringPool* stringPool = (StringPool*)malloc(sizeof(StringPool));
-    assert(stringPool);
-    stringPool->hashTable = HashTable_New(HashString, CompareString, 0, stringCount * 2);
+    StringPool* stringpool = (StringPool*)malloc(sizeof(StringPool));
+    assert(stringpool);
+    stringpool->hashtable = hashtable_new(hashstring, comparestring, 0, stringcount * 2);
 
-    stringPool->strings = (char**)malloc(sizeof(char*)* stringCount);
-    assert(stringPool->strings);
-    memset(stringPool->strings, 0, sizeof(char*) * stringCount);
+    stringpool->strings = (char**)malloc(sizeof(char*)* stringcount);
+    assert(stringpool->strings);
+    memset(stringpool->strings, 0, sizeof(char*) * stringcount);
 
-    stringPool->hashes = (Hash*)malloc(sizeof(Hash) * stringCount);
-    assert(stringPool->hashes);
-    memset(stringPool->hashes, 0, sizeof(Hash)* stringCount);
+    stringpool->hashes = (Hash*)malloc(sizeof(Hash) * stringcount);
+    assert(stringpool->hashes);
+    memset(stringpool->hashes, 0, sizeof(Hash)* stringcount);
 
-    stringPool->stringCount = stringCount;
-    stringPool->nextStringId = 0;
-    return stringPool;
+    stringpool->stringcount = stringcount;
+    stringpool->nextid = 0;
+    return stringpool;
 }
 
-void StringPool_Free(
-    StringPool* stringPool
+void stringpool_free(
+    StringPool* stringpool
     )
 {
-    assert(stringPool);
+    assert(stringpool);
 
     // Free the string hashes
-    if (stringPool->hashes)
+    if (stringpool->hashes)
     {
-        free(stringPool->hashes);
+        free(stringpool->hashes);
     }
 
     // Free the individual strings
-    if (stringPool->strings)
+    if (stringpool->strings)
     {
         StringId i;
-        for (i = 0; i < stringPool->stringCount; ++i)
+        for (i = 0; i < stringpool->stringcount; ++i)
         {
-            if (stringPool->strings[i])
+            if (stringpool->strings[i])
             {
-                free(stringPool->strings[i]);
+                free(stringpool->strings[i]);
             }
         }
     }
 
     // Free the strings array
-    if (stringPool->strings)
+    if (stringpool->strings)
     {
-        free(stringPool->strings);
+        free(stringpool->strings);
     }
 
     // Free the hash table of strings
-    if (stringPool->hashTable)
+    if (stringpool->hashtable)
     {
-        HashTable_Free(stringPool->hashTable, NULL, NULL);
+        hashtable_free(stringpool->hashtable, NULL, NULL);
     }
 
-    free(stringPool);
+    free(stringpool);
 }
 
-StringId StringPool_InsertOrFind(
-    StringPool* stringPool,
+StringId stringpool_getid(
+    StringPool* stringpool,
     const char* string
     )
 {
-    return StringPool_InsertOrFindSubString(stringPool, string, strlen(string));
+    return stringpool_getidsubstring(stringpool, string, strlen(string));
 }
 
-StringId StringPool_InsertOrFindSubString(
-    StringPool* stringPool,
+StringId stringpool_getidsubstring(
+    StringPool* stringpool,
     const char* string,
     size_t      length)
 {
-    char* newString = (char*)malloc(sizeof(char) * (length + 1));
-    assert(newString);
+    char* newstring = (char*)malloc(sizeof(char) * (length + 1));
+    assert(newstring);
 
-    memcpy(newString, string, length);
-    newString[length] = '\0';
+    memcpy(newstring, string, length);
+    newstring[length] = '\0';
 
     StringId id;
     UserData outputId = 0;
-    if (!HashTable_InsertOrGet(stringPool->hashTable, (UserData)newString, (UserData)stringPool->nextStringId, &outputId))
+    if (!hashtable_insertorget(stringpool->hashtable, (UserData)newstring, (UserData)stringpool->nextid, &outputId))
     {
-        id = stringPool->nextStringId;
-        stringPool->strings[id] = newString;
-        stringPool->hashes[id] = HashString((UserData)newString, 0);
-        ++stringPool->nextStringId;
+        id = stringpool->nextid;
+        stringpool->strings[id] = newstring;
+        stringpool->hashes[id] = hashstring((UserData)newstring, 0);
+        ++stringpool->nextid;
     }
     else
     {
         id = (StringId)outputId;
-        free(newString);
+        free(newstring);
     }
     return id;
 }
 
-const char* StringPool_Find(
-    StringPool* stringPool,
+const char* stringpool_find(
+    StringPool* stringpool,
     StringId    id
     )
 {
-    return stringPool->strings[id];
+    return stringpool->strings[id];
 }
 
-Hash StringPool_Hash(
-    StringPool* stringPool,
+Hash stringpool_hash(
+    StringPool* stringpool,
     StringId    id
     )
 {
-    return stringPool->hashes[id];
+    return stringpool->hashes[id];
 }

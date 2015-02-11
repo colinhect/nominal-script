@@ -36,32 +36,32 @@ typedef struct
 struct Heap
 {
     HeapObject* objects;
-    size_t      objectCapacity;
+    size_t      capacity;
     ObjectId    nextId;
 };
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
 
-Heap* Heap_New(
+Heap* heap_new(
     void
     )
 {
     Heap* heap = (Heap*)malloc(sizeof(Heap));
     assert(heap);
 
-    size_t  objectsSize = sizeof(HeapObject) * INITIAL_HEAP_SIZE;
-    heap->objects = (HeapObject*)malloc(objectsSize);
+    size_t  objectssize = sizeof(HeapObject) * INITIAL_HEAP_SIZE;
+    heap->objects = (HeapObject*)malloc(objectssize);
     assert(heap->objects);
 
-    memset(heap->objects, 0, objectsSize);
+    memset(heap->objects, 0, objectssize);
 
-    heap->objectCapacity = INITIAL_HEAP_SIZE;
+    heap->capacity = INITIAL_HEAP_SIZE;
     heap->nextId = 0;
 
     return heap;
 }
 
-void Heap_Free(
+void heap_free(
     Heap*   heap
     )
 {
@@ -71,7 +71,7 @@ void Heap_Free(
     if (heap->objects)
     {
         // For each (potential) object
-        for (ObjectId i = 0; i < heap->objectCapacity; ++i)
+        for (ObjectId i = 0; i < heap->capacity; ++i)
         {
             HeapObject* object = &heap->objects[i];
 
@@ -89,7 +89,7 @@ void Heap_Free(
     free(heap);
 }
 
-ObjectId Heap_Alloc(
+ObjectId heap_alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
@@ -104,7 +104,7 @@ ObjectId Heap_Alloc(
     return id;
 }
 
-void* Heap_GetData(
+void* heap_getdata(
     Heap*       heap,
     ObjectId    id
     )

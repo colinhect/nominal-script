@@ -32,12 +32,12 @@
 #define STATE_MAX_BYTE_CODE         (8096)
 
 // Returns the heap used by the specified state
-Heap* State_GetHeap(
+Heap* state_getheap(
     NomState*   state
     );
 
 // Returns the string pool used by the specified state
-StringPool* State_GetStringPool(
+StringPool* state_getstringpool(
     NomState*   state
     );
 
@@ -45,8 +45,8 @@ StringPool* State_GetStringPool(
 // on the current scope
 //
 // The call may have encountered an error; check
-// Nom_ErrorOccurred() directly after invoking this function
-void State_LetInterned(
+// nom_error() directly after invoking this function
+void state_letinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -56,8 +56,8 @@ void State_LetInterned(
 // on the current scope
 //
 // The call may have encountered an error; check
-// Nom_ErrorOccurred() directly after invoking this function
-void State_SetInterned(
+// nom_error() directly after invoking this function
+void state_setinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
@@ -67,14 +67,14 @@ void State_SetInterned(
 // on the current scope
 //
 // The call may have encountered an error; check
-// Nom_ErrorOccurred() directly after invoking this function
-NomValue State_GetInterned(
+// nom_error() directly after invoking this function
+NomValue state_getinterned(
     NomState*   state,
     StringId    id
     );
 
 // Sets the error message of the state
-void State_SetError(
+void state_seterror(
     NomState*   state,
     const char* fmt,
     ...

@@ -30,256 +30,256 @@ extern "C"
 
 TEST_CASE("Creating and identifying an empty Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
-    CHECK(Nom_IsMap(map) == true);
+    NomValue map = nom_newmap(state);
+    CHECK(nom_ismap(map) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
-TEST_CASE("Calling Nom_IsMap() on non-map Nominal values", "[Map]")
+TEST_CASE("Calling nom_ismap() on non-map Nominal values", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
     SECTION("Checking nil")
     {
-        NomValue value = Nom_Nil();
-        CHECK(Nom_IsMap(value) == false);
+        NomValue value = nom_nil();
+        CHECK(nom_ismap(value) == false);
     }
 
     SECTION("Checking number")
     {
-        NomValue value = Nom_FromDouble(1.0);
-        CHECK(Nom_IsMap(value) == false);
+        NomValue value = nom_fromdouble(1.0);
+        CHECK(nom_ismap(value) == false);
     }
 
     SECTION("Checking string")
     {
-        NomValue value = Nom_NewString(state, "Testing...", false);
-        CHECK(Nom_IsMap(value) == false);
+        NomValue value = nom_newstring(state, "Testing...", false);
+        CHECK(nom_ismap(value) == false);
     }
 
     SECTION("Checking interned string")
     {
-        NomValue value = Nom_NewString(state, "Testing...", true);
-        CHECK(Nom_IsMap(value) == false);
+        NomValue value = nom_newstring(state, "Testing...", true);
+        CHECK(nom_ismap(value) == false);
     }
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
     
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
     SECTION("Using number keys")
     {
-        NomValue key = Nom_FromInt(5);
-        NomValue value = Nom_FromInt(10);
-        CHECK(Nom_Insert(state, map, key, value) == true);
-        NomValue result = Nom_Get(state, map, key);
-        CHECK(Nom_Equals(state, result, value) == true);
+        NomValue key = nom_fromint(5);
+        NomValue value = nom_fromint(10);
+        CHECK(nom_insert(state, map, key, value) == true);
+        NomValue result = nom_get(state, map, key);
+        CHECK(nom_equals(state, result, value) == true);
     }
 
     SECTION("Using string keys")
     {
-        NomValue key = Nom_NewString(state, "Key", false);
-        NomValue value = Nom_FromInt(10);
-        CHECK(Nom_Insert(state, map, key, value) == true);
-        NomValue result = Nom_Get(state, map, key);
-        CHECK(Nom_Equals(state, result, value) == true);
+        NomValue key = nom_newstring(state, "Key", false);
+        NomValue value = nom_fromint(10);
+        CHECK(nom_insert(state, map, key, value) == true);
+        NomValue result = nom_get(state, map, key);
+        CHECK(nom_equals(state, result, value) == true);
     }
 
     SECTION("Using interned string keys")
     {
-        NomValue key = Nom_NewString(state, "Key", true);
-        NomValue value = Nom_FromInt(10);
-        CHECK(Nom_Insert(state, map, key, value) == true);
-        NomValue result = Nom_Get(state, map, key);
-        CHECK(Nom_Equals(state, result, value) == true);
+        NomValue key = nom_newstring(state, "Key", true);
+        NomValue value = nom_fromint(10);
+        CHECK(nom_insert(state, map, key, value) == true);
+        NomValue result = nom_get(state, map, key);
+        CHECK(nom_equals(state, result, value) == true);
     }
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Setting a value in a Nominal map after it is inserted", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue key = Nom_FromInt(5);
-    NomValue value = Nom_FromInt(10);
-    NomValue newValue = Nom_FromInt(25);
-    CHECK(Nom_Insert(state, map, key, value) == true);
-    CHECK(Nom_Set(state, map, key, newValue) == true);
+    NomValue key = nom_fromint(5);
+    NomValue value = nom_fromint(10);
+    NomValue newvalue = nom_fromint(25);
+    CHECK(nom_insert(state, map, key, value) == true);
+    CHECK(nom_set(state, map, key, newvalue) == true);
 
-    NomValue result = Nom_Get(state, map, key);
-    CHECK(Nom_Equals(state, result, newValue) == true);
+    NomValue result = nom_get(state, map, key);
+    CHECK(nom_equals(state, result, newvalue) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
-TEST_CASE("Calling Nom_TryGet() for a key that exists", "[Map]")
+TEST_CASE("Calling nom_tryget() for a key that exists", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue key = Nom_FromInt(5);
-    NomValue value = Nom_FromInt(10);
-    CHECK(Nom_Insert(state, map, key, value) == true);
+    NomValue key = nom_fromint(5);
+    NomValue value = nom_fromint(10);
+    CHECK(nom_insert(state, map, key, value) == true);
 
     NomValue result;
-    CHECK(Nom_TryGet(state, map, key, &result) == true);
-    CHECK(Nom_Equals(state, result, value) == true);
+    CHECK(nom_tryget(state, map, key, &result) == true);
+    CHECK(nom_equals(state, result, value) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
-TEST_CASE("Calling Nom_TryGet() for a key that does not exist in a Nominal map", "[Map]")
+TEST_CASE("Calling nom_tryget() for a key that does not exist in a Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue key = Nom_FromInt(5);
-    NomValue value = Nom_FromInt(10);
-    CHECK(Nom_Insert(state, map, key, value) == true);
+    NomValue key = nom_fromint(5);
+    NomValue value = nom_fromint(10);
+    CHECK(nom_insert(state, map, key, value) == true);
 
     NomValue result;
-    CHECK(Nom_TryGet(state, map, value, &result) == false);
+    CHECK(nom_tryget(state, map, value, &result) == false);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Inserting and retrieving multiple values keyed from strings in a Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue a = Nom_NewString(state, "a", false);
-    NomValue b = Nom_NewString(state, "b", false);
-    NomValue c = Nom_NewString(state, "c", false);
-    NomValue d = Nom_NewString(state, "d", false);
-    NomValue e = Nom_NewString(state, "e", false);
+    NomValue a = nom_newstring(state, "a", false);
+    NomValue b = nom_newstring(state, "b", false);
+    NomValue c = nom_newstring(state, "c", false);
+    NomValue d = nom_newstring(state, "d", false);
+    NomValue e = nom_newstring(state, "e", false);
 
-    CHECK(Nom_Insert(state, map, a, b) == true);
-    CHECK(Nom_Insert(state, map, b, c) == true);
-    CHECK(Nom_Insert(state, map, c, d) == true);
-    CHECK(Nom_Insert(state, map, d, e) == true);
-    CHECK(Nom_Insert(state, map, e, a) == true);
+    CHECK(nom_insert(state, map, a, b) == true);
+    CHECK(nom_insert(state, map, b, c) == true);
+    CHECK(nom_insert(state, map, c, d) == true);
+    CHECK(nom_insert(state, map, d, e) == true);
+    CHECK(nom_insert(state, map, e, a) == true);
 
     NomValue result;
-    result = Nom_Get(state, map, a);
-    CHECK(Nom_Equals(state, result, b) == true);
-    result = Nom_Get(state, map, b);
-    CHECK(Nom_Equals(state, result, c) == true);
-    result = Nom_Get(state, map, c);
-    CHECK(Nom_Equals(state, result, d) == true);
-    result = Nom_Get(state, map, e);
-    CHECK(Nom_Equals(state, result, a) == true);
+    result = nom_get(state, map, a);
+    CHECK(nom_equals(state, result, b) == true);
+    result = nom_get(state, map, b);
+    CHECK(nom_equals(state, result, c) == true);
+    result = nom_get(state, map, c);
+    CHECK(nom_equals(state, result, d) == true);
+    result = nom_get(state, map, e);
+    CHECK(nom_equals(state, result, a) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Inserting and retrieving multiple values keyed from interned strings in a Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue a = Nom_NewString(state, "a", true);
-    NomValue b = Nom_NewString(state, "b", true);
-    NomValue c = Nom_NewString(state, "c", true);
-    NomValue d = Nom_NewString(state, "d", true);
-    NomValue e = Nom_NewString(state, "e", true);
+    NomValue a = nom_newstring(state, "a", true);
+    NomValue b = nom_newstring(state, "b", true);
+    NomValue c = nom_newstring(state, "c", true);
+    NomValue d = nom_newstring(state, "d", true);
+    NomValue e = nom_newstring(state, "e", true);
 
-    CHECK(Nom_Insert(state, map, a, b) == true);
-    CHECK(Nom_Insert(state, map, b, c) == true);
-    CHECK(Nom_Insert(state, map, c, d) == true);
-    CHECK(Nom_Insert(state, map, d, e) == true);
-    CHECK(Nom_Insert(state, map, e, a) == true);
+    CHECK(nom_insert(state, map, a, b) == true);
+    CHECK(nom_insert(state, map, b, c) == true);
+    CHECK(nom_insert(state, map, c, d) == true);
+    CHECK(nom_insert(state, map, d, e) == true);
+    CHECK(nom_insert(state, map, e, a) == true);
 
     NomValue result;
-    result = Nom_Get(state, map, a);
-    CHECK(Nom_Equals(state, result, b) == true);
-    result = Nom_Get(state, map, b);
-    CHECK(Nom_Equals(state, result, c) == true);
-    result = Nom_Get(state, map, c);
-    CHECK(Nom_Equals(state, result, d) == true);
-    result = Nom_Get(state, map, e);
-    CHECK(Nom_Equals(state, result, a) == true);
+    result = nom_get(state, map, a);
+    CHECK(nom_equals(state, result, b) == true);
+    result = nom_get(state, map, b);
+    CHECK(nom_equals(state, result, c) == true);
+    result = nom_get(state, map, c);
+    CHECK(nom_equals(state, result, d) == true);
+    result = nom_get(state, map, e);
+    CHECK(nom_equals(state, result, a) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Inserting values keyed from mixed interned/non-interned strings into a Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue a = Nom_NewString(state, "a", true);
-    NomValue b = Nom_NewString(state, "b", true);
+    NomValue a = nom_newstring(state, "a", true);
+    NomValue b = nom_newstring(state, "b", true);
 
-    CHECK(Nom_Insert(state, map, a, b) == true);
+    CHECK(nom_insert(state, map, a, b) == true);
 
-    NomValue a2 = Nom_NewString(state, "a", false);
+    NomValue a2 = nom_newstring(state, "a", false);
 
     NomValue result;
-    result = Nom_Get(state, map, a2);
-    CHECK(Nom_Equals(state, result, b) == true);
+    result = nom_get(state, map, a2);
+    CHECK(nom_equals(state, result, b) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
-TEST_CASE("Calling Nom_IsIterable() a Nominal map", "[Map]")
+TEST_CASE("Calling nom_isiterable() a Nominal map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
-    CHECK(Nom_IsIterable(state, map) == true);
+    NomValue map = nom_newmap(state);
+    CHECK(nom_isiterable(state, map) == true);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }
 
 TEST_CASE("Iterating over a map", "[Map]")
 {
-    NomState* state = Nom_NewState();
+    NomState* state = nom_newstate();
 
-    NomValue map = Nom_NewMap(state);
+    NomValue map = nom_newmap(state);
 
-    NomValue a = Nom_FromInt(0);
-    NomValue b = Nom_FromInt(1);
-    NomValue c = Nom_FromInt(2);
-    NomValue d = Nom_FromInt(3);
-    NomValue e = Nom_FromInt(4);
-    NomValue f = Nom_FromInt(5);
+    NomValue a = nom_fromint(0);
+    NomValue b = nom_fromint(1);
+    NomValue c = nom_fromint(2);
+    NomValue d = nom_fromint(3);
+    NomValue e = nom_fromint(4);
+    NomValue f = nom_fromint(5);
 
-    CHECK(Nom_Insert(state, map, a, a) == true);
-    CHECK(Nom_Insert(state, map, b, c) == true);
-    CHECK(Nom_Insert(state, map, c, e) == true);
-    CHECK(Nom_Insert(state, map, d, f) == true);
+    CHECK(nom_insert(state, map, a, a) == true);
+    CHECK(nom_insert(state, map, b, c) == true);
+    CHECK(nom_insert(state, map, c, e) == true);
+    CHECK(nom_insert(state, map, d, f) == true);
 
     NomIterator iterator = { 0 };
-    CHECK(Nom_MoveNext(state, map, &iterator) == true);
-    CHECK(Nom_Equals(state, iterator.key, a) == true);
-    CHECK(Nom_Equals(state, iterator.value, a) == true);
-    CHECK(Nom_MoveNext(state, map, &iterator) == true);
-    CHECK(Nom_Equals(state, iterator.key, b) == true);
-    CHECK(Nom_Equals(state, iterator.value, c) == true);
-    CHECK(Nom_MoveNext(state, map, &iterator) == true);
-    CHECK(Nom_Equals(state, iterator.key, c) == true);
-    CHECK(Nom_Equals(state, iterator.value, e) == true);
-    CHECK(Nom_MoveNext(state, map, &iterator) == true);
-    CHECK(Nom_Equals(state, iterator.key, d) == true);
-    CHECK(Nom_Equals(state, iterator.value, f) == true);
-    CHECK(Nom_MoveNext(state, map, &iterator) == false);
+    CHECK(nom_next(state, map, &iterator) == true);
+    CHECK(nom_equals(state, iterator.key, a) == true);
+    CHECK(nom_equals(state, iterator.value, a) == true);
+    CHECK(nom_next(state, map, &iterator) == true);
+    CHECK(nom_equals(state, iterator.key, b) == true);
+    CHECK(nom_equals(state, iterator.value, c) == true);
+    CHECK(nom_next(state, map, &iterator) == true);
+    CHECK(nom_equals(state, iterator.key, c) == true);
+    CHECK(nom_equals(state, iterator.value, e) == true);
+    CHECK(nom_next(state, map, &iterator) == true);
+    CHECK(nom_equals(state, iterator.key, d) == true);
+    CHECK(nom_equals(state, iterator.value, f) == true);
+    CHECK(nom_next(state, map, &iterator) == false);
 
-    Nom_FreeState(state);
+    nom_freestate(state);
 }

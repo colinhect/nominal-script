@@ -26,7 +26,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-Node* Node_New(
+Node* node_new(
     NodeType    type
     )
 {
@@ -38,7 +38,7 @@ Node* Node_New(
     return node;
 }
 
-void Node_Free(
+void node_free(
     Node*   node
     )
 {
@@ -52,69 +52,69 @@ void Node_Free(
     case NODE_MAP:
         if (node->data.map.assoc)
         {
-            Node_Free(node->data.map.assoc);
+            node_free(node->data.map.assoc);
         }
         if (node->data.map.next)
         {
-            Node_Free(node->data.map.next);
+            node_free(node->data.map.next);
         }
         break;
     case NODE_IDENT:
         break;
     case NODE_BINARY:
-        if (node->data.binary.leftExpr)
+        if (node->data.binary.leftexpr)
         {
-            Node_Free(node->data.binary.leftExpr);
+            node_free(node->data.binary.leftexpr);
         }
-        if (node->data.binary.rightExpr)
+        if (node->data.binary.rightexpr)
         {
-            Node_Free(node->data.binary.rightExpr);
+            node_free(node->data.binary.rightexpr);
         }
         break;
     case NODE_UNARY:
         if (node->data.unary.expr)
         {
-            Node_Free(node->data.unary.expr);
+            node_free(node->data.unary.expr);
         }
         break;
     case NODE_INDEX:
         if (node->data.index.expr)
         {
-            Node_Free(node->data.index.expr);
+            node_free(node->data.index.expr);
         }
         if (node->data.index.key)
         {
-            Node_Free(node->data.index.key);
+            node_free(node->data.index.key);
         }
         break;
     case NODE_SEQUENCE:
         if (node->data.sequence.expr)
         {
-            Node_Free(node->data.sequence.expr);
+            node_free(node->data.sequence.expr);
         }
         if (node->data.sequence.next)
         {
-            Node_Free(node->data.sequence.next);
+            node_free(node->data.sequence.next);
         }
         break;
     case NODE_FUNCTION:
         if (node->data.function.params)
         {
-            Node_Free(node->data.function.params);
+            node_free(node->data.function.params);
         }
         if (node->data.function.exprs)
         {
-            Node_Free(node->data.function.exprs);
+            node_free(node->data.function.exprs);
         }
         break;
     case NODE_INVOCATION:
         if (node->data.invocation.expr)
         {
-            Node_Free(node->data.invocation.expr);
+            node_free(node->data.invocation.expr);
         }
         if (node->data.invocation.args)
         {
-            Node_Free(node->data.invocation.args);
+            node_free(node->data.invocation.args);
         }
         break;
     }

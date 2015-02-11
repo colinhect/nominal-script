@@ -32,72 +32,72 @@
 typedef struct Parser Parser;
 
 // Creates a new parser
-Parser* Parser_New(
+Parser* parser_new(
     const char* source,
-    StringPool* stringPool
+    StringPool* stringpool
     );
 
 // Frees a parser
-void Parser_Free(
+void parser_free(
     Parser* parser
     );
 
 // Sets the error message of a parser
-void Parser_SetError(
+void parser_seterror(
     Parser*     parser,
     const char* fmt,
     ...
     );
 
 // Returns the error message of a parser
-const char* Parser_GetError(
+const char* parser_geterror(
     Parser* parser
     );
 
 // Parses a sequence of expressions (returns NULL if a parse error occurred)
-Node* Parser_Exprs(
+Node* parser_exprs(
     Parser* parser
     );
 
 // Parses an expression (returns NULL if a parse error occurred)
-Node* Parser_Expr(
+Node* parser_expr(
     Parser* parser
     );
 
 // Parses a primary expression (returns NULL if a parse error occurred)
-Node* Parser_PrimaryExpr(
+Node* parser_primaryexpr(
     Parser* parser
     );
 
 // Parses a secondary expression (returns NULL if a parse error occurred)
-Node* Parser_SecondaryExpr(
+Node* parser_secondaryexpr(
     Parser* parser
     );
 
 // Parses an expression in parenthesis (returns NULL if a parse error occurred)
-Node* Parser_ParenExpr(
+Node* parser_parenexpr(
     Parser* parser
     );
 
 // Parses a binary expression (returns NULL if a parse error occurred)
-Node* Parser_BinExpr(
+Node* parser_binexpr(
     Parser* parser,
     int     prec,
-    Node*   leftExpr
+    Node*   leftexpr
     );
 
 // Parses a map (returns NULL if a parse error occurred)
-Node* Parser_Map(
+Node* parser_map(
     Parser* parser
     );
 
 // Parses a function (returns NULL if a parse error occurred)
-Node* Parser_Function(
+Node* parser_function(
     Parser* parser
     );
 
 // Parses a string or identifier (returns NULL if a parse error occurred)
-Node* Parser_StringOrIdent(
+Node* parser_stringorident(
     Parser* parser
     );
 
