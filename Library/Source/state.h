@@ -24,8 +24,10 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include "Heap.h"
-#include "StringPool.h"
+#include "heap.h"
+#include "stringpool.h"
+
+#include <nominal.h>
 
 #define STATE_MAX_STACK_SIZE        (128)
 #define STATE_MAX_CALLSTACK_SIZE    (32)

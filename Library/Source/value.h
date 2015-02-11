@@ -24,7 +24,7 @@
 #ifndef VALUE_H
 #define VALUE_H
 
-#include "Nominal/Value.h"
+#include <nominal.h>
 
 // Enumeration of each type a value can be
 typedef enum

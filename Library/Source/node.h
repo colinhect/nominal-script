@@ -24,7 +24,7 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include "StringPool.h"
+#include "stringpool.h"
 
 // A binary/unary operator
 typedef enum

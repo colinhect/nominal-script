@@ -24,7 +24,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "Nominal/Map.h"
+#include <nominal.h>
 
 // Returns whether the keys in a map are contiguous natural numbers starting
 // at zero

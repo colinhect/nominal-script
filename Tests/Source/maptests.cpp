@@ -25,7 +25,7 @@
 
 extern "C"
 {
-#include <Nominal.h>
+#include <nominal.h>
 }
 
 TEST_CASE("Creating and identifying an empty Nominal map", "[Map]")

@@ -21,11 +21,12 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Value.h"
-#include "Function.h"
-#include "Map.h"
-#include "State.h"
-#include "Heap.h"
+#include "function.h"
+
+#include "value.h"
+#include "map.h"
+#include "state.h"
+#include "heap.h"
 
 #include <assert.h>
 #include <stdlib.h>

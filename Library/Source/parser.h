@@ -24,9 +24,9 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-#include "Node.h"
-#include "StringPool.h"
-#include "Lexer.h"
+#include "node.h"
+#include "stringpool.h"
+#include "lexer.h"
 
 // A parser
 typedef struct Parser Parser;

@@ -26,10 +26,10 @@
 #ifndef NOMINAL_H
 #define NOMINAL_H
 
-#include "Nominal/State.h"
-#include "Nominal/Value.h"
-#include "Nominal/Number.h"
-#include "Nominal/Map.h"
-#include "Nominal/String.h"
+#include "nominal/state.h"
+#include "nominal/value.h"
+#include "nominal/number.h"
+#include "nominal/map.h"
+#include "nominal/string.h"
 
 #endif

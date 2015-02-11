@@ -21,11 +21,11 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "String.h"
-#include "StringPool.h"
-#include "State.h"
-#include "Heap.h"
-#include "Value.h"
+#include "string.h"
+
+#include "state.h"
+#include "heap.h"
+#include "value.h"
 
 #include <stdlib.h>
 #include <string.h>

@@ -21,11 +21,9 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Nominal/Value.h"
-#include "Nominal/Number.h"
+#include "value.h"
 
-#include "Value.h"
-
+#include <nominal.h>
 #include <math.h>
 
 #define FROM_NUMBER(v)      NomValue nv; nv.number = v; return nv

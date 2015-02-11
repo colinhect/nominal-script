@@ -24,9 +24,9 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include "Nominal/String.h"
+#include "stringpool.h"
 
-#include "StringPool.h"
+#include <nominal.h>
 
 // Creates an interned string from a string ID
 NomValue string_newinterned(

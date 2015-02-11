@@ -26,8 +26,8 @@
 #ifndef NOMINAL_STRING_H
 #define NOMINAL_STRING_H
 
-#include "Nominal/Export.h"
-#include "Nominal/Value.h"
+#include "nominal/export.h"
+#include "nominal/value.h"
 
 ///
 /// \brief Checks if a value is a string.

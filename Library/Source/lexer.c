@@ -21,8 +21,8 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Lexer.h"
-#include "Node.h"
+#include "lexer.h"
+#include "node.h"
 
 #include <assert.h>
 #include <stdlib.h>

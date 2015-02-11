@@ -26,8 +26,8 @@
 #ifndef NOMINAL_MAP_H
 #define NOMINAL_MAP_H
 
-#include "Nominal/Export.h"
-#include "Nominal/Value.h"
+#include "nominal/export.h"
+#include "nominal/value.h"
 
 #include <stddef.h>
 

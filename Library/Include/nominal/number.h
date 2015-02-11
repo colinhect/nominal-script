@@ -26,8 +26,8 @@
 #ifndef NOMINAL_NUMBER_H
 #define NOMINAL_NUMBER_H
 
-#include "Nominal/Export.h"
-#include "Nominal/Value.h"
+#include "nominal/export.h"
+#include "nominal/value.h"
 
 #include <stddef.h>
 #include <limits.h>

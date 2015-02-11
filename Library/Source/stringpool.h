@@ -24,7 +24,7 @@
 #ifndef STRINGPOOL_H
 #define STRINGPOOL_H
 
-#include "HashTable.h"
+#include "hashtable.h"
 
 #include <string.h>
 

@@ -26,8 +26,8 @@
 #ifndef NOMINAL_STATE_H
 #define NOMINAL_STATE_H
 
-#include "Nominal/Export.h"
-#include "Nominal/Value.h"
+#include "nominal/export.h"
+#include "nominal/value.h"
 
 ///
 /// \brief Creates a new state.

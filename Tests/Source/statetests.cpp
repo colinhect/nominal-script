@@ -25,7 +25,7 @@
 
 extern "C"
 {
-#include <Nominal.h>
+#include <nominal.h>
 }
 
 #define TEST_EXPR(expr, expected)\

@@ -21,13 +21,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Nominal.h"
-
-#include "CodeGen.h"
-#include "Node.h"
-#include "State.h"
-#include "String.h"
-#include "StringPool.h"
+#include "codegen.h"
 
 // Maps operators to their op code
 const OpCode OP_OPCODE[] =

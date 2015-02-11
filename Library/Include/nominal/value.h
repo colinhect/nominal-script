@@ -30,7 +30,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "Nominal/Export.h"
+#include "nominal/export.h"
 
 ///
 /// \brief A Nominal state.

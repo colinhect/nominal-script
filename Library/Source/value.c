@@ -21,16 +21,13 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include "Nominal/Value.h"
-#include "Nominal/String.h"
-#include "Nominal/Number.h"
-#include "Nominal/Map.h"
+#include "value.h"
 
-#include "Value.h"
-#include "Map.h"
-#include "Function.h"
-#include "State.h"
+#include "map.h"
+#include "function.h"
+#include "state.h"
 
+#include <nominal.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>

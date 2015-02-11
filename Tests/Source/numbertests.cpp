@@ -25,7 +25,7 @@
 
 extern "C"
 {
-#include <Nominal.h>
+#include <nominal.h>
 }
 
 TEST_CASE("Creating/converting a Nominal number from/to all supported numeric types", "[Number]")

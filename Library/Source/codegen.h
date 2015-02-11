@@ -24,11 +24,13 @@
 #ifndef CODEGEN_H
 #define CODEGEN_H
 
-#include <string.h>
+#include "node.h"
+#include "state.h"
+#include "string.h"
+#include "stringpool.h"
 
-#include "Node.h"
-#include "State.h"
-#include "StringPool.h"
+#include <nominal.h>
+#include <string.h>
 
 // A byte code operation
 typedef enum

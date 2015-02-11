@@ -24,9 +24,9 @@
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
-#include "Nominal/Value.h"
-#include "StringPool.h"
+#include "stringpool.h"
 
+#include <nominal.h>
 #include <stddef.h>
 
 // Returns whether a value is a function

@@ -23,7 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "Config.h"
+#include "config.h"
 
 #ifdef NOMINAL_SHARED
  #ifdef NOMINAL_WINDOWS_BUILD
