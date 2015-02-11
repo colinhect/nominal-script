@@ -547,7 +547,7 @@ TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]
     {
         NomValue a = nom_fromint(3);
         NomValue b = nom_fromint(2);
-        NomValue c = nom_subtract(state, a, b);
+        NomValue c = nom_sub(state, a, b);
         CHECK(nom_isnumber(c) == true);
         CHECK(nom_todouble(c) == 1.0);
     }
@@ -556,7 +556,7 @@ TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]
     {
         NomValue a = nom_fromint(3);
         NomValue b = nom_fromint(2);
-        NomValue c = nom_multiply(state, a, b);
+        NomValue c = nom_mul(state, a, b);
         CHECK(nom_isnumber(c) == true);
         CHECK(nom_todouble(c) == 6.0);
     }
@@ -565,7 +565,7 @@ TEST_CASE("Performing arithmetic operations on Nominal number values", "[Number]
     {
         NomValue a = nom_fromint(6);
         NomValue b = nom_fromint(2);
-        NomValue c = nom_divide(state, a, b);
+        NomValue c = nom_div(state, a, b);
         CHECK(nom_isnumber(c) == true);
         CHECK(nom_todouble(c) == 3.0);
     }

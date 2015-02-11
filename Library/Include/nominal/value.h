@@ -91,16 +91,16 @@ NOMINAL_EXPORT NomValue nom_false(
 ///
 /// \param state
 ///     The state.
-/// \param value
-///     The value to compare.
-/// \param other
-///     The other value to compare.
+/// \param left
+///     The left value to compare.
+/// \param right
+///     The right value to compare.
 ///
 /// \returns True if they are equal; false otherwise.
 NOMINAL_EXPORT bool nom_equals(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     );
 
 ///
@@ -142,16 +142,16 @@ NOMINAL_EXPORT size_t nom_tostring(
 ///
 /// \param state
 ///     The state.
-/// \param value
-///     The value to add to.
-/// \param other
-///     The other value.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
 ///
 /// \returns The resulting value.
 NOMINAL_EXPORT NomValue nom_add(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     );
 
 ///
@@ -159,16 +159,16 @@ NOMINAL_EXPORT NomValue nom_add(
 ///
 /// \param state
 ///     The state.
-/// \param value
-///     The value to subtract from.
-/// \param other
-///     The other value.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue nom_subtract(
+NOMINAL_EXPORT NomValue nom_sub(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     );
 
 ///
@@ -176,16 +176,16 @@ NOMINAL_EXPORT NomValue nom_subtract(
 ///
 /// \param state
 ///     The state.
-/// \param value
-///     The value to multiply.
-/// \param other
-///     The other value.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue nom_multiply(
+NOMINAL_EXPORT NomValue nom_mul(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     );
 
 ///
@@ -193,16 +193,16 @@ NOMINAL_EXPORT NomValue nom_multiply(
 ///
 /// \param state
 ///     The state.
-/// \param value
-///     The value to divide.
-/// \param other
-///     The other value.
+/// \param left
+///     The left value.
+/// \param right
+///     The right value.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue nom_divide(
+NOMINAL_EXPORT NomValue nom_div(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     );
 
 ///
@@ -214,7 +214,7 @@ NOMINAL_EXPORT NomValue nom_divide(
 ///     The value to negate.
 ///
 /// \returns The resulting value.
-NOMINAL_EXPORT NomValue nom_negate(
+NOMINAL_EXPORT NomValue nom_neg(
     NomState*   state,
     NomValue    value
     );

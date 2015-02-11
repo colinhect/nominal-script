@@ -104,25 +104,25 @@ NomValue nom_false(
 
 bool nom_equals(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     )
 {
-    if (IS_NUMBER(value))
+    if (IS_NUMBER(left))
     {
-        return value.number == other.number;
+        return left.number == right.number;
     }
-    else if (nom_isstring(value) && nom_isstring(other))
+    else if (nom_isstring(left) && nom_isstring(right))
     {
         // If one of the strings is not interned
-        if (GET_TYPE(value) != TYPE_INTERNED_STRING ||
-            GET_TYPE(other) != TYPE_INTERNED_STRING)
+        if (GET_TYPE(left) != TYPE_INTERNED_STRING ||
+            GET_TYPE(right) != TYPE_INTERNED_STRING)
         {
-            return strcmp(nom_getstring(state, value), nom_getstring(state, other)) == 0;
+            return strcmp(nom_getstring(state, right), nom_getstring(state, right)) == 0;
         }
     }
 
-    return value.raw == other.raw;
+    return left.raw == right.raw;
 }
 
 long long nom_hash(
@@ -265,49 +265,49 @@ size_t nom_tostring(
 
 NomValue nom_add(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     )
 {
     NomValue result = nom_nil();
-    ARITH(value, other, +, "add");
+    ARITH(left, right, +, "add");
     return result;
 }
 
-NomValue nom_subtract(
+NomValue nom_sub(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     )
 {
     NomValue result = nom_nil();
-    ARITH(value, other, -, "subtract");
+    ARITH(left, right, -, "subtract");
     return result;
 }
 
-NomValue nom_multiply(
+NomValue nom_mul(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     )
 {
     NomValue result = nom_nil();
-    ARITH(value, other, *, "multiply");
+    ARITH(left, right, *, "multiply");
     return result;
 }
 
-NomValue nom_divide(
+NomValue nom_div(
     NomState*   state,
-    NomValue    value,
-    NomValue    other
+    NomValue    left,
+    NomValue    right
     )
 {
     NomValue result = nom_nil();
-    ARITH(value, other, / , "divide");
+    ARITH(left, right, / , "divide");
     return result;
 }
 
-NomValue nom_negate(
+NomValue nom_neg(
     NomState*   state,
     NomValue    value
     )

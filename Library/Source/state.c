@@ -320,27 +320,27 @@ NomValue nom_execute(
         case OPCODE_SUB:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = nom_subtract(state, l, r);
+            result = nom_sub(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_MUL:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = nom_multiply(state, l, r);
+            result = nom_mul(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_DIV:
             l = POP_VALUE();
             r = POP_VALUE();
-            result = nom_divide(state, l, r);
+            result = nom_div(state, l, r);
             PUSH_VALUE(result);
             break;
 
         case OPCODE_NEG:
             l = POP_VALUE();
-            result = nom_negate(state, l);
+            result = nom_neg(state, l);
             PUSH_VALUE(result);
             break;
 
@@ -420,7 +420,6 @@ NomValue nom_execute(
             {
                 NomValue key = POP_VALUE();
                 NomValue value = POP_VALUE();
-
                 map_insertorset(state, result, key, value);
             }
             PUSH_VALUE(result);
