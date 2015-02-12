@@ -47,6 +47,24 @@ NOM_EXPORT void nom_freestate(
     );
 
 ///
+/// \brief Declares a variable in the current scope.
+///
+/// \warning Ths function could have encountered an error.  Check nom_error()
+/// directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param identifier
+///     The identifier of the variable.
+/// \param value
+///     The value of the variable.
+NOM_EXPORT void nom_letvar(
+    NomState*   state,
+    const char* identifier,
+    NomValue    value
+    );
+
+///
 /// \brief Returns the number of available arguments on the call stack.
 ///
 /// \param state
@@ -115,6 +133,19 @@ NOM_EXPORT void nom_dumpbytecode(
 ///     The state.
 NOM_EXPORT bool nom_error(
     NomState*   state
+    );
+
+///
+/// \brief Sets an error that has occurred.
+///
+/// \param state
+///     The state
+/// \param fmt
+///     The formatted error message.
+NOM_EXPORT void nom_seterror(
+    NomState*   state,
+    const char* fmt,
+    ...
     );
 
 ///

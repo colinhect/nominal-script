@@ -36,15 +36,51 @@
 typedef struct
 {
     uint32_t    ip;
+    NomFunction nativefunction;
     StringId    params[MAX_FUNCTION_PARAMS];
     size_t      paramcount;
 } FunctionData;
 
-bool function_check(
+static NomValue allocfunction(
+        NomState*       state,
+        FunctionData**  data
+    )
+{
+    assert(state);
+    assert(data);
+
+    NomValue value = nom_nil();
+    SET_TYPE(value, TYPE_FUNCTION);
+
+    Heap* heap = state_getheap(state);
+    ObjectId id = heap_alloc(heap, sizeof(FunctionData), free);
+    *data = heap_getdata(heap, id);
+
+    SET_ID(value, id);
+    return value;
+}
+
+bool nom_isfunction(
     NomValue value
     )
 {
     return GET_TYPE(value) == TYPE_FUNCTION;
+}
+
+NomValue nom_newfunction(
+    NomState*   state,
+    NomFunction function
+    )
+{
+    assert(state);
+
+    FunctionData* data;
+    NomValue value = allocfunction(state, &data);
+    data->ip = 0;
+    data->nativefunction = function;
+    data->paramcount = 0;
+
+    return value;
 }
 
 NomValue function_new(
@@ -54,17 +90,13 @@ NomValue function_new(
 {
     assert(state);
 
-    NomValue function = nom_nil();
-    SET_TYPE(function, TYPE_FUNCTION);
-
-    Heap* heap = state_getheap(state);
-    ObjectId id = heap_alloc(heap, sizeof(FunctionData), free);
-    FunctionData* data = heap_getdata(heap, id);
+    FunctionData* data;
+    NomValue value = allocfunction(state, &data);
     data->ip = ip;
+    data->nativefunction = NULL;
     data->paramcount = 0;
 
-    SET_ID(function, id);
-    return function;
+    return value;
 }
 
 void function_addparam(
@@ -75,7 +107,7 @@ void function_addparam(
 {
     assert(state);
 
-    if (!function_check(function))
+    if (!nom_isfunction(function))
     {
         return;
     }
@@ -94,7 +126,7 @@ size_t function_getparamcount(
 {
     assert(state);
 
-    if (!function_check(function))
+    if (!nom_isfunction(function))
     {
         return 0;
     }
@@ -114,7 +146,7 @@ StringId function_getparam(
 {
     assert(state);
 
-    if (!function_check(function))
+    if (!nom_isfunction(function))
     {
         return (StringId)-1;
     }
@@ -126,6 +158,33 @@ StringId function_getparam(
     return data->params[index];
 }
 
+bool function_isnative(
+    NomState*   state,
+    NomValue    function
+    )
+{
+    return function_getnative(state, function) != NULL;
+}
+
+NomFunction function_getnative(
+    NomState*   state,
+    NomValue    function
+    )
+{
+    assert(state);
+
+    if (!nom_isfunction(function))
+    {
+        return NULL;
+    }
+
+    ObjectId id = GET_ID(function);
+    Heap* heap = state_getheap(state);
+    FunctionData* data = heap_getdata(heap, id);
+
+    return data->nativefunction;
+}
+
 uint32_t function_getip(
     NomState*   state,
     NomValue    function
@@ -133,7 +192,7 @@ uint32_t function_getip(
 {
     assert(state);
 
-    if (!function_check(function))
+    if (!nom_isfunction(function))
     {
         return (uint32_t)-1;
     }

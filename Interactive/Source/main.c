@@ -53,7 +53,7 @@ int main()
                 if (!nom_error(state))
                 {
                     nom_tostring(state, resultstring, 8192, result);
-                    printf("%s\n", resultstring);
+                    printf("=> %s\n", resultstring);
                 }
                 else
                 {

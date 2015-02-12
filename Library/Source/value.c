@@ -256,7 +256,7 @@ size_t nom_tostring(
 #define ARITH(l, r, op, name)\
     if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
-        state_seterror(state, "Cannot %s non-numeric values", name);\
+        nom_seterror(state, "Cannot %s non-numeric values", name);\
     }\
     else\
     {\
@@ -316,7 +316,7 @@ NomValue nom_neg(
 
     if (!nom_isnumber(value))
     {
-        state_seterror(state, "Cannot negate a non-numeric value");
+        nom_seterror(state, "Cannot negate a non-numeric value");
     }
     else
     {
@@ -324,6 +324,25 @@ NomValue nom_neg(
     }
 
     return result;
+}
+
+bool nom_isinvokable(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    (void)state;
+    return nom_isfunction(value);
+}
+
+NomValue nom_invoke(
+    NomState*   state,
+    NomValue    value,
+    uint8_t     argcount,
+    NomValue*   args
+    )
+{
+    return state_invoke(state, value, argcount, args);
 }
 
 bool nom_isiterable(

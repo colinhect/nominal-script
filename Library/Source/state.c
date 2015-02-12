@@ -116,7 +116,7 @@ static void compile(
 
     if (!node)
     {
-        state_seterror(state, parser_geterror(p));
+        nom_seterror(state, parser_geterror(p));
     }
     else
     {
@@ -125,6 +125,113 @@ static void compile(
     }
 
     parser_free(p);
+}
+
+static void invoke(
+    NomState*   state,
+    uint8_t      argcount
+    )
+{
+    assert(state);
+
+    NomValue value = POP_VALUE();
+    if (nom_isinvokable(state, value))
+    {
+        PUSH_FRAME(state->ip, argcount, nom_newmap(state));
+
+        if (function_isnative(state, value))
+        {
+            NomFunction function = function_getnative(state, value);
+            value = function(state);
+            PUSH_VALUE(value);
+        }
+        else
+        {
+            size_t paramcount = function_getparamcount(state, value);
+            if (argcount <= paramcount)
+            {
+                size_t i = paramcount;
+                while (i > 0)
+                {
+                    --i;
+                    NomValue arg = nom_getarg(state, i);
+                    StringId param = function_getparam(state, value, i);
+                    state_letinterned(state, param, arg);
+                }
+                state->ip = function_getip(state, value);
+            }
+            else
+            {
+                nom_seterror(state, "Too many arguments given (expected %u)", paramcount);
+            }
+        }
+    }
+    else
+    {
+        nom_seterror(state, "Value cannot be invoked");
+    }
+}
+
+static NomValue prelude_print(
+    NomState*   state)
+{
+    assert(state);
+
+    char string[8192];
+    size_t argcount = nom_getargcount(state);
+    for (size_t i = 0; i < argcount; ++i)
+    {
+        NomValue arg = nom_getarg(state, i);
+        if (nom_isstring(arg))
+        {
+            printf("%s", nom_getstring(state, arg));
+        }
+        else
+        {
+            nom_tostring(state, string, 8192, arg);
+            printf("%s", string);
+        }
+
+        if (i < argcount - 1)
+        {
+            printf(" ");
+        }
+    }
+    printf("\n");
+
+    return nom_nil();
+}
+
+static NomValue prelude_forvalues(
+    NomState*   state)
+{
+    assert(state);
+
+    NomValue values = nom_getarg(state, 0);
+    NomValue function = nom_getarg(state, 1);
+
+    if (nom_isiterable(state, values))
+    {
+        if (nom_isinvokable(state, function))
+        {
+            NomIterator iterator = { 0 };
+            while (nom_next(state, values, &iterator))
+            {
+                NomValue value = iterator.value;
+                nom_invoke(state, function, 1, &value);
+            }            
+        }
+        else
+        {
+            nom_seterror(state, "'function' is not invokable");
+        }
+    }
+    else
+    {
+        nom_seterror(state, "'values' is not iterable");
+    }
+
+    return nom_nil();
 }
 
 NomState* nom_newstate(
@@ -142,13 +249,17 @@ NomState* nom_newstate(
     // Global scope
     PUSH_FRAME(0, 0, nom_newmap(state));
 
-    // Declare intrinsic globals
-    StringId id = stringpool_getid(state->stringpool, "nil");
-    state_letinterned(state, id, nom_nil());
-    id = stringpool_getid(state->stringpool, "true");
-    state_letinterned(state, id, nom_true());
-    id = stringpool_getid(state->stringpool, "false");
-    state_letinterned(state, id, nom_false());
+    // Declare intrinsic variables
+    nom_letvar(state, "nil", nom_nil());
+    assert(!nom_error(state));
+    nom_letvar(state, "true", nom_true());
+    assert(!nom_error(state));
+    nom_letvar(state, "false", nom_false());
+    assert(!nom_error(state));
+    nom_letvar(state, "print", nom_newfunction(state, prelude_print));
+    assert(!nom_error(state));
+    nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
+    assert(!nom_error(state));
 
     return state;
 }
@@ -172,6 +283,19 @@ void nom_freestate(
     }
 
     free(state);
+}
+
+void nom_letvar(
+    NomState*   state,
+    const char* identifier,
+    NomValue    value
+    )
+{
+    assert(state);
+    assert(identifier);
+
+    StringId id = stringpool_getid(state->stringpool, identifier);
+    state_letinterned(state, id, value);
 }
 
 size_t nom_getargcount(
@@ -239,7 +363,7 @@ void state_letinterned(
     NomValue scope = frame->scope;
     if (!map_insert(state, scope, string, value))
     {
-        state_seterror(state, "Variable '%s' already exists", stringpool_find(state->stringpool, id));
+        nom_seterror(state, "Variable '%s' already exists", stringpool_find(state->stringpool, id));
     }
 }
 
@@ -269,7 +393,7 @@ void state_setinterned(
 
     if (!success)
     {
-        state_seterror(state, "No variable '%s'", stringpool_find(state->stringpool, id));
+        nom_seterror(state, "No variable '%s'", stringpool_find(state->stringpool, id));
     }
 }
 
@@ -299,31 +423,38 @@ NomValue state_getinterned(
 
     if (!success)
     {
-        state_seterror(state, "No variable '%s' in scope", stringpool_find(state->stringpool, id));
+        nom_seterror(state, "No variable '%s' in scope", stringpool_find(state->stringpool, id));
     }
 
     return result;
 }
 
-void state_seterror(
+NomValue state_invoke(
     NomState*   state,
-    const char* fmt,
-    ...
+    NomValue    value,
+    uint8_t     argcount,
+    NomValue*   args
     )
 {
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(state->error, fmt, args);
-    va_end(args);
-    state->errorflag = true;
+    assert(state);
+
+    for (uint8_t i = 0; i < argcount; ++i)
+    {
+        PUSH_VALUE(args[i]);
+    }
+    PUSH_VALUE(value);
+
+    invoke(state, argcount);
+
+    NomValue result = POP_VALUE();
+    return result;
 }
 
-NomValue nom_execute(
-    NomState*   state,
-    const char* source
+NomValue state_execute(
+    NomState*   state
     )
 {
-    compile(state, source);
+    assert(state);
 
     StringId id;
     NomValue l, r, result;
@@ -415,7 +546,7 @@ NomValue nom_execute(
             r = POP_VALUE();
             if (!nom_insert(state, r, l, TOP_VALUE()))
             {
-                state_seterror(state, "Value for key '%s' already exists", nom_getstring(state, l));
+                nom_seterror(state, "Value for key '%s' already exists", nom_getstring(state, l));
             }
             break;
 
@@ -424,7 +555,7 @@ NomValue nom_execute(
             r = POP_VALUE();
             if (!nom_set(state, r, l, TOP_VALUE()))
             {
-                state_seterror(state, "No value for key '%s'", nom_getstring(state, l));
+                nom_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
             break;
 
@@ -433,7 +564,7 @@ NomValue nom_execute(
             r = POP_VALUE();
             if (!nom_tryget(state, r, l, &result))
             {
-                state_seterror(state, "No value for key '%s'", nom_getstring(state, l));
+                nom_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
             else
             {
@@ -494,36 +625,11 @@ NomValue nom_execute(
 
         case OPCODE_INVOKE:
             count = READAS(uint32_t);
-            result = POP_VALUE();
-            if (function_check(result))
-            {
-                PUSH_FRAME(state->ip, count, nom_newmap(state));
-                state->ip = function_getip(state, result);
-                size_t paramcount = function_getparamcount(state, result);
-                if (count <= paramcount)
-                {
-                    size_t i = paramcount;
-                    while (i > 0)
-                    {
-                        --i;
-                        NomValue arg = nom_getarg(state, i);
-                        StringId param = function_getparam(state, result, i);
-                        state_letinterned(state, param, arg);
-                    }
-                }
-                else
-                {
-                    state_seterror(state, "Too many arguments given (expected %u)", paramcount);
-                }
-            }
-            else
-            {
-                state_seterror(state, "Value cannot be invoked");
-            }
+            invoke(state, count);
             break;
         }
     }
-        
+
     result = nom_nil();
     if (!state->errorflag && state->sp > 0)
     {
@@ -535,6 +641,15 @@ NomValue nom_execute(
     state->ip = state->end;
 
     return result;
+}
+
+NomValue nom_execute(
+    NomState*   state,
+    const char* source
+    )
+{
+    compile(state, source);
+    return state_execute(state);    
 }
 
 void nom_dumpbytecode(
@@ -628,6 +743,21 @@ bool nom_error(
 {
     assert(state);
     return state->errorflag;
+}
+
+void nom_seterror(
+    NomState*   state,
+    const char* fmt,
+    ...
+    )
+{
+    assert(state);
+    assert(fmt);
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(state->error, fmt, args);
+    va_end(args);
+    state->errorflag = true;
 }
 
 const char* nom_geterror(

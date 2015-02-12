@@ -174,3 +174,33 @@ TEST_CASE("Creating and invoking functions with parameters", "[State]")
 
     nom_freestate(state);
 }
+
+NomValue test(NomState* state)
+{
+    CHECK(nom_getargcount(state) == 2);
+
+    NomValue left = nom_getarg(state, 0);
+    NomValue right = nom_getarg(state, 1);
+    NomValue over = nom_getarg(state, 2);
+
+    CHECK(nom_equals(state, left, nom_fromint(2)));
+    CHECK(nom_equals(state, right, nom_fromint(3)));
+    CHECK(nom_equals(state, over, nom_nil()));
+
+    return nom_add(state, left, right);
+}
+
+TEST_CASE("Creating and invoking native functions", "[State]")
+{
+    NomState* state = nom_newstate();
+
+    NomValue function = nom_newfunction(state, test);
+    CHECK(nom_isfunction(function));
+
+    nom_letvar(state, "test", function);
+    CHECK(!nom_error(state));
+
+    TEST_EXPR("test: 2 3", nom_fromint(5));
+
+    nom_freestate(state);
+}

@@ -23,14 +23,41 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// \file
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOM_H
-#define NOM_H
+#ifndef NOM_FUNCTION_H
+#define NOM_FUNCTION_H
 
-#include "nominal/state.h"
+#include "nominal/export.h"
 #include "nominal/value.h"
-#include "nominal/number.h"
-#include "nominal/map.h"
-#include "nominal/string.h"
-#include "nominal/function.h"
+#include "nominal/state.h"
+
+///
+/// \brief A function pointer to a native function invoked in the place of a
+/// Nominal function.
+typedef NomValue(*NomFunction)(NomState* state);
+
+///
+/// \brief Checks if a value is a function.
+///
+/// \param value
+///     The value in question.
+///
+/// \returns True if the value is a function; false otherwise.
+NOM_EXPORT bool nom_isfunction(
+    NomValue    value
+    );
+
+///
+/// \brief Creates a new Nominal function.
+///
+/// \param state
+///     The state to create the value for.
+/// \param function
+///     The native function callback.
+///
+/// \returns The new Nominal function.
+NOM_EXPORT NomValue nom_newfunction(
+    NomState*   state,
+    NomFunction function
+    );
 
 #endif

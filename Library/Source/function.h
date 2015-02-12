@@ -29,11 +29,6 @@
 #include <nominal.h>
 #include <stddef.h>
 
-// Returns whether a value is a function
-bool function_check(
-    NomValue    value
-    );
-
 // Creates a new function
 NomValue function_new(
     NomState*   state,
@@ -59,6 +54,18 @@ StringId function_getparam(
     NomState*   state,
     NomValue    function,
     size_t      index
+    );
+
+// Returns true if the function has a native callback or false otherwise
+bool function_isnative(
+    NomState*   state,
+    NomValue    function
+    );
+
+// Gets the native function pointer of a function
+NomFunction function_getnative(
+    NomState*   state,
+    NomValue    function
     );
 
 // Gets the instruction pointer of a function

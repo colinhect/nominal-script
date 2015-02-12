@@ -46,8 +46,8 @@ StringPool* state_getstringpool(
 // Declares the value of a variable given an interned string ID based
 // on the current scope
 //
-// The call may have encountered an error; check
-// nom_error() directly after invoking this function
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
 void state_letinterned(
     NomState*   state,
     StringId    id,
@@ -57,8 +57,8 @@ void state_letinterned(
 // Sets the value of a variable given an interned string ID based
 // on the current scope
 //
-// The call may have encountered an error; check
-// nom_error() directly after invoking this function
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
 void state_setinterned(
     NomState*   state,
     StringId    id,
@@ -68,18 +68,30 @@ void state_setinterned(
 // Returns the value of a variable given an interned string ID based
 // on the current scope
 //
-// The call may have encountered an error; check
-// nom_error() directly after invoking this function
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
 NomValue state_getinterned(
     NomState*   state,
     StringId    id
     );
 
-// Sets the error message of the state
-void state_seterror(
+// Invokes a function
+//
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
+NomValue state_invoke(
     NomState*   state,
-    const char* fmt,
-    ...
+    NomValue    value,
+    uint8_t     argcount,
+    NomValue*   args
+    );
+
+// Begins execution at the current instruction pointer
+//
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
+NomValue state_execute(
+    NomState*   state
     );
 
 #endif
