@@ -534,7 +534,7 @@ NomValue state_execute(
             result = POP_VALUE();
             for (int i = 0; i < frame->argcount; ++i)
             {
-                POP_VALUE();
+                (void)POP_VALUE();
             }
             state->ip = frame->ip;
             POP_FRAME();
