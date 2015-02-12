@@ -43,6 +43,7 @@
 typedef struct
 {
     uint32_t    ip;
+    uint8_t     argcount;
     NomValue    scope;
 } StackFrame;
 
@@ -68,17 +69,18 @@ struct NomState
 // Pops a stack frame from the callstack and returns the return instruction
 // pointer
 #define POP_FRAME()\
-    state->callstack[--state->cp].ip
+    --state->cp;
 
 // Pushes a stack frame on the callstack given the return instruction pointer
 // and the scope
-#define PUSH_FRAME(v, s)\
-    state->callstack[state->cp].ip = v;\
+#define PUSH_FRAME(i, a, s)\
+    state->callstack[state->cp].ip = i;\
+    state->callstack[state->cp].argcount = a;\
     state->callstack[state->cp++].scope = s
 
 // Returns the top stack frame on the callstack
 #define TOP_FRAME()\
-    state->callstack[state->cp - 1]
+    (&state->callstack[state->cp - 1])
 
 // Pops a value from the value stack and returns it
 #define POP_VALUE()\
@@ -91,6 +93,10 @@ struct NomState
 // Returns the top value in the value stack
 #define TOP_VALUE()\
     state->stack[state->sp - 1]
+
+// Returns the value in the stack at the given offset from the top
+#define PEEK_VALUE(n)\
+    state->stack[state->sp - 1 - (n)]
 
 // Reads the a typed value from the byte code at the current instruction
 #define READAS(t)\
@@ -134,7 +140,7 @@ NomState* nom_newstate(
     state->stringpool = stringpool_new(STRING_POOL_STRING_COUNT);
 
     // Global scope
-    PUSH_FRAME(0, nom_newmap(state));
+    PUSH_FRAME(0, 0, nom_newmap(state));
 
     // Declare intrinsic globals
     StringId id = stringpool_getid(state->stringpool, "nil");
@@ -168,6 +174,40 @@ void nom_freestate(
     free(state);
 }
 
+size_t nom_getargcount(
+    NomState*   state
+    )
+{
+    assert(state);
+    StackFrame* frame = TOP_FRAME();
+    return frame->argcount;
+}
+
+NomValue nom_getarg(
+    NomState*   state,
+    size_t      index
+    )
+{
+    assert(state);
+
+    NomValue value;
+
+    // If the index is within the number of args in the current stack frame
+    size_t argcount = nom_getargcount(state);
+    if (index < argcount)
+    {
+        // Peek at the value on the stack
+        value = PEEK_VALUE(argcount - index - 1);
+    }
+    else
+    {
+        // Otherwise return nil
+        value = nom_nil();
+    }
+
+    return value;
+}
+
 Heap* state_getheap(
     NomState*   state
     )
@@ -192,10 +232,11 @@ void state_letinterned(
 {
     assert(state);
 
+    StackFrame* frame = TOP_FRAME();
     NomValue string = string_newinterned(id);
 
     // Attempt to define the variable at the top-most scope
-    NomValue scope = TOP_FRAME().scope;
+    NomValue scope = frame->scope;
     if (!map_insert(state, scope, string, value))
     {
         state_seterror(state, "Variable '%s' already exists", stringpool_find(state->stringpool, id));
@@ -288,6 +329,7 @@ NomValue nom_execute(
     NomValue l, r, result;
     OpCode op;
     uint32_t count, ip;
+    StackFrame* frame;
 
     while (state->ip < state->end && !state->errorflag)
     {
@@ -357,7 +399,15 @@ NomValue nom_execute(
             break;
 
         case OPCODE_RET:
-            state->ip = POP_FRAME();
+            frame = TOP_FRAME();
+            result = POP_VALUE();
+            for (int i = 0; i < frame->argcount; ++i)
+            {
+                POP_VALUE();
+            }
+            state->ip = frame->ip;
+            POP_FRAME();
+            PUSH_VALUE(result);
             break;
 
         case OPCODE_VALUE_LET:
@@ -447,7 +497,7 @@ NomValue nom_execute(
             result = POP_VALUE();
             if (function_check(result))
             {
-                PUSH_FRAME(state->ip, nom_newmap(state));
+                PUSH_FRAME(state->ip, count, nom_newmap(state));
                 state->ip = function_getip(state, result);
                 size_t paramcount = function_getparamcount(state, result);
                 if (count <= paramcount)
@@ -456,11 +506,7 @@ NomValue nom_execute(
                     while (i > 0)
                     {
                         --i;
-                        NomValue arg = nom_nil();
-                        if (i < count)
-                        {
-                            arg = POP_VALUE();
-                        }
+                        NomValue arg = nom_getarg(state, i);
                         StringId param = function_getparam(state, result, i);
                         state_letinterned(state, param, arg);
                     }

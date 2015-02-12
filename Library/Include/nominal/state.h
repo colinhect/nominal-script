@@ -47,6 +47,32 @@ NOM_EXPORT void nom_freestate(
     );
 
 ///
+/// \brief Returns the number of available arguments on the call stack.
+///
+/// \param state
+///     The state.
+///
+/// \returns The number of arguments.
+NOM_EXPORT size_t nom_getargcount(
+    NomState*   state
+    );
+
+///
+/// \brief Gets the argument at the given index on the call stack.
+///
+/// \param state
+///     The state.
+/// \param index
+///     The index.
+///
+/// \returns The argument; nil if the index is greater than the number of
+/// arguments currently on the call stack.
+NOM_EXPORT NomValue nom_getarg(
+    NomState*   state,
+    size_t      index
+    );
+
+///
 /// \brief Executes a snippet of Nominal source code and returns the value.
 ///
 /// \warning The execution could have encountered an error.  Check
