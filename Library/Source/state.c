@@ -129,7 +129,7 @@ static void compile(
 
 static void invoke(
     NomState*   state,
-    uint8_t      argcount
+    uint8_t     argcount
     )
 {
     assert(state);
@@ -446,6 +446,13 @@ NomValue state_invoke(
 
     invoke(state, argcount);
 
+    // TODO: This is a hack
+    if (!function_isnative(state, value))
+    {
+        NomValue value = state_execute(state);
+        PUSH_VALUE(value);
+    }
+
     NomValue result = POP_VALUE();
     return result;
 }
@@ -455,6 +462,8 @@ NomValue state_execute(
     )
 {
     assert(state);
+
+    uint32_t startcp = state->cp;
 
     StringId id;
     NomValue l, r, result;
@@ -539,6 +548,10 @@ NomValue state_execute(
             state->ip = frame->ip;
             POP_FRAME();
             PUSH_VALUE(result);
+            if (state->cp < startcp)
+            {
+                state->ip = state->end;
+            }
             break;
 
         case OPCODE_VALUE_LET:
@@ -636,8 +649,6 @@ NomValue state_execute(
         result = POP_VALUE();
     }
 
-    state->sp = 0;
-    state->cp = 1;
     state->ip = state->end;
 
     return result;
