@@ -11,8 +11,6 @@ file(
 
 if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS")
-    include(CheckIncludeFiles)
-    check_include_files(vld.h NOMINAL_USE_VLD)
 elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -Werror -pedantic -Wno-missing-braces -Wno-missing-field-initializers")
 endif()

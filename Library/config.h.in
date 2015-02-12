@@ -25,19 +25,19 @@
 
 // Detect build platform and mode
 #ifdef _MSC_VER
- #define NOMINAL_WINDOWS_BUILD
+ #define NOM_WINDOWS_BUILD
  #ifdef _DEBUG
-  #define NOMINAL_DEBUG_BUILD
+  #define NOM_DEBUG_BUILD
  #endif
 #endif
 
 // Use VLD on debug builds if it is available
-#ifdef NOMINAL_DEBUG_BUILD
- #cmakedefine NOMINAL_USE_VLD
+#ifdef NOM_DEBUG_BUILD
+ #cmakedefine NOM_USE_VLD
 
- #ifdef NOMINAL_USE_VLD
+ #ifdef NOM_USE_VLD
   #include <vld.h>
  #endif
 #endif
 
-#define NOMINAL_SHARED
+#define NOM_SHARED

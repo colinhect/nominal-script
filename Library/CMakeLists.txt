@@ -1,8 +1,3 @@
-configure_file(
-    "${PROJECT_SOURCE_DIR}/Library/config.h.in"
-    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/config.h"
-    )
-
 include_directories(
     "${PROJECT_SOURCE_DIR}/Library/Include"
     )
@@ -17,10 +12,17 @@ file(
 )
 
 if(WIN32)
-    add_definitions("/D_CRT_SECURE_NO_WARNINGS /DNOMINAL_EXPORTS")
+    add_definitions("/D_CRT_SECURE_NO_WARNINGS /DNOM_EXPORTS")
+    include(CheckIncludeFiles)
+    check_include_files(vld.h NOM_USE_VLD)
 elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -Werror -pedantic -Wno-missing-braces -Wno-missing-field-initializers")
 endif()
+
+configure_file(
+    "${PROJECT_SOURCE_DIR}/Library/config.h.in"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/config.h"
+    )
 
 add_library(Nominal SHARED ${SOURCE_FILES})
 
@@ -35,6 +37,6 @@ source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
 set_target_properties(Nominal PROPERTIES
     PROJECT_LABEL Library
-    OUTPUT_NAME nominal-${NOMINAL_VERSION}
+    OUTPUT_NAME nominal-${NOM_VERSION}
     LINKER_LANGUAGE C
     )

@@ -23,8 +23,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// \file
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_MAP_H
-#define NOMINAL_MAP_H
+#ifndef NOM_MAP_H
+#define NOM_MAP_H
 
 #include "nominal/export.h"
 #include "nominal/value.h"
@@ -38,7 +38,7 @@
 ///     The value in question.
 ///
 /// \returns True if the value is a map; false otherwise.
-NOMINAL_EXPORT bool nom_ismap(
+NOM_EXPORT bool nom_ismap(
     NomValue    value
     );
 
@@ -49,7 +49,7 @@ NOMINAL_EXPORT bool nom_ismap(
 ///     The state to create the value for.
 ///
 /// \returns The new Nominal map.
-NOMINAL_EXPORT NomValue nom_newmap(
+NOM_EXPORT NomValue nom_newmap(
     NomState*   state
     );
 

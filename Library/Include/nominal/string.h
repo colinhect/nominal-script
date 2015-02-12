@@ -23,8 +23,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// \file
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STRING_H
-#define NOMINAL_STRING_H
+#ifndef NOM_STRING_H
+#define NOM_STRING_H
 
 #include "nominal/export.h"
 #include "nominal/value.h"
@@ -36,7 +36,7 @@
 ///     The value in question.
 ///
 /// \returns True if the value is a string; false otherwise.
-NOMINAL_EXPORT bool nom_isstring(
+NOM_EXPORT bool nom_isstring(
     NomValue    value
     );
 
@@ -51,7 +51,7 @@ NOMINAL_EXPORT bool nom_isstring(
 ///     Whether the string should be interned (normally false).
 ///
 /// \returns The new Nominal value.
-NOMINAL_EXPORT NomValue nom_newstring(
+NOM_EXPORT NomValue nom_newstring(
     NomState*   state,
     const char* value,
     bool        interned
@@ -67,7 +67,7 @@ NOMINAL_EXPORT NomValue nom_newstring(
 ///
 /// \returns A pointer to a NULL terminated string; NULL if the value is not
 /// a string.
-NOMINAL_EXPORT const char* nom_getstring(
+NOM_EXPORT const char* nom_getstring(
     NomState*   state,
     NomValue    value
     );

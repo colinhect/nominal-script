@@ -23,8 +23,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 /// \file
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef NOMINAL_STATE_H
-#define NOMINAL_STATE_H
+#ifndef NOM_STATE_H
+#define NOM_STATE_H
 
 #include "nominal/export.h"
 #include "nominal/value.h"
@@ -33,7 +33,7 @@
 /// \brief Creates a new state.
 ///
 /// \returns The new state.
-NOMINAL_EXPORT NomState* nom_newstate(
+NOM_EXPORT NomState* nom_newstate(
     void
     );
 
@@ -42,7 +42,7 @@ NOMINAL_EXPORT NomState* nom_newstate(
 ///
 /// \param state
 ///     The state to free.
-NOMINAL_EXPORT void nom_freestate(
+NOM_EXPORT void nom_freestate(
     NomState*   state
     );
 
@@ -58,7 +58,7 @@ NOMINAL_EXPORT void nom_freestate(
 ///     The Nominal source code.
 ///
 /// \returns The result of the executed code.
-NOMINAL_EXPORT NomValue nom_execute(
+NOM_EXPORT NomValue nom_execute(
     NomState*   state,
     const char* source
     );
@@ -77,7 +77,7 @@ NOMINAL_EXPORT NomValue nom_execute(
 ///     is printed.
 ///
 /// \returns The result of the executed code.
-NOMINAL_EXPORT void nom_dumpbytecode(
+NOM_EXPORT void nom_dumpbytecode(
     NomState*   state,
     const char* source
     );
@@ -87,7 +87,7 @@ NOMINAL_EXPORT void nom_dumpbytecode(
 ///
 /// \param state
 ///     The state.
-NOMINAL_EXPORT bool nom_error(
+NOM_EXPORT bool nom_error(
     NomState*   state
     );
 
@@ -96,7 +96,7 @@ NOMINAL_EXPORT bool nom_error(
 ///
 /// \param state
 ///     The state.
-NOMINAL_EXPORT const char* nom_geterror(
+NOM_EXPORT const char* nom_geterror(
     NomState*   state
     );
 
