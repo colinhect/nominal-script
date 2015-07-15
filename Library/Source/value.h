@@ -38,7 +38,8 @@ typedef enum
     TYPE_FUNCTION
 } Type;
 
-#define TYPE_MASK       (0x000000FF)
+#define TYPE_MASK       (0x0000000000000007)
+#define ID_MASK         (0xFFFFFFFF00000000)
 #define QNAN_MASK       (0x000000007FFFFF00)
 #define QNAN_VALUE      (0x000000007FF7A500)
 

@@ -40,7 +40,7 @@ typedef struct
     bool        contiguous;
 } MapData;
 
-Hash HashValue(
+Hash hashvalue(
     UserData    key,
     UserData    context
     )
@@ -51,7 +51,7 @@ Hash HashValue(
     return nom_hash((NomState*)context, value);
 }
 
-void FreeMapData(
+void freemapdata(
     void*   data
     )
 {
@@ -74,7 +74,7 @@ void FreeMapData(
     free(mapdata);
 }
 
-bool CompareValue(
+bool comparevalue(
     UserData    left,
     UserData    right,
     UserData    context
@@ -89,7 +89,7 @@ bool CompareValue(
     return nom_equals((NomState*)context, leftvalue, rightvalue);
 }
 
-void InsertKey(
+void insertkey(
     MapData*    data,
     NomValue    key
     )
@@ -140,9 +140,9 @@ NomValue nom_newmap(
     SET_TYPE(map, TYPE_MAP);
 
     Heap* heap = state_getheap(state);
-    ObjectId id = heap_alloc(heap, sizeof(MapData), FreeMapData);
+    ObjectId id = heap_alloc(heap, sizeof(MapData), freemapdata);
     MapData* data = heap_getdata(heap, id);
-    data->hashtable = hashtable_new(HashValue, CompareValue, (UserData)state, 32);
+    data->hashtable = hashtable_new(hashvalue, comparevalue, (UserData)state, 32);
     data->capacity = 32;
     data->count = 0;
     data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
@@ -244,7 +244,7 @@ bool map_insert(
     bool inserted = hashtable_insert(data->hashtable, (UserData)key.raw, (UserData)value.raw);
     if (inserted)
     {
-        InsertKey(data, key);
+        insertkey(data, key);
     }
 
     return inserted;
@@ -287,7 +287,7 @@ bool map_insertorset(
     bool inserted = HashTable_InsertOrSet(data->hashtable, (UserData)key.raw, (UserData)value.raw);
     if (inserted)
     {
-        InsertKey(data, key);
+        insertkey(data, key);
     }
 
     return inserted;

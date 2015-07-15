@@ -90,7 +90,10 @@ NomValue nom_true(
     void
     )
 {
-    NomValue value = { QNAN_VALUE };
+    NomValue value = nom_nil();
+    SET_TYPE(value, TYPE_BOOLEAN);
+    SET_ID(value, 1);
+
     return value;
 }
 
@@ -98,8 +101,28 @@ NomValue nom_false(
     void
     )
 {
-    NomValue value = { QNAN_VALUE };
+    NomValue value = nom_nil();
+    SET_TYPE(value, TYPE_BOOLEAN);
+    SET_ID(value, 0);
+
     return value;
+}
+
+bool nom_istrue(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    assert(state);
+
+    if (GET_TYPE(value) == TYPE_BOOLEAN)
+    {
+        return GET_ID(value) == 1;
+    }
+    else
+    {
+        return !nom_equals(state, value, nom_nil());
+    }
 }
 
 bool nom_equals(
@@ -166,6 +189,7 @@ size_t nom_tostring(
         count += snprintf(buffer, buffersize, "%.256g", nom_todouble(value));
         break;
     case TYPE_BOOLEAN:
+        count += snprintf(buffer, buffersize, "%s", nom_istrue(state, value) ? "true" : "false");
         break;
     case TYPE_STRING:
     case TYPE_INTERNED_STRING:

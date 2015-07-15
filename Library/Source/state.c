@@ -219,7 +219,7 @@ static NomValue prelude_forvalues(
             {
                 NomValue value = iterator.value;
                 nom_invoke(state, function, 1, &value);
-            }            
+            }
         }
         else
         {
@@ -229,6 +229,84 @@ static NomValue prelude_forvalues(
     else
     {
         nom_seterror(state, "'values' is not iterable");
+    }
+
+    return nom_nil();
+}
+
+static NomValue prelude_forkeys(
+    NomState*   state)
+{
+    assert(state);
+
+    NomValue keys = nom_getarg(state, 0);
+    NomValue function = nom_getarg(state, 1);
+
+    if (nom_isiterable(state, keys))
+    {
+        if (nom_isinvokable(state, function))
+        {
+            NomIterator iterator = { 0 };
+            while (nom_next(state, keys, &iterator))
+            {
+                NomValue key = iterator.key;
+                nom_invoke(state, function, 1, &key);
+            }
+        }
+        else
+        {
+            nom_seterror(state, "'function' is not invokable");
+        }
+    }
+    else
+    {
+        nom_seterror(state, "'keys' is not iterable");
+    }
+
+    return nom_nil();
+}
+
+static NomValue prelude_if(
+    NomState*   state)
+{
+    assert(state);
+
+    NomValue condition = nom_getarg(state, 0);
+    NomValue thenFunction = nom_getarg(state, 1);
+    NomValue elseFunction = nom_getarg(state, 2);
+
+    if (nom_isinvokable(state, condition))
+    {
+        NomValue result = nom_invoke(state, condition, 0, NULL);
+        if (!nom_error(state))
+        {
+            if (nom_istrue(state, result) && !nom_equals(state, thenFunction, nom_nil()))
+            {
+                if (nom_isinvokable(state, thenFunction))
+                {
+                    return nom_invoke(state, thenFunction, 0, NULL);
+                }
+                else
+                {
+                    nom_seterror(state, "'then' is not invokable");
+                }
+            }
+            else if (!nom_istrue(state, result) && !nom_equals(state, elseFunction, nom_nil()))
+            {
+                if (nom_isinvokable(state, elseFunction))
+                {
+                    return nom_invoke(state, elseFunction, 0, NULL);
+                }
+                else
+                {
+                    nom_seterror(state, "'else' is not invokable");
+                }
+            }
+        }
+    }
+    else
+    {
+        nom_seterror(state, "'condition' is not invokable");
     }
 
     return nom_nil();
@@ -258,7 +336,11 @@ NomState* nom_newstate(
     assert(!nom_error(state));
     nom_letvar(state, "print", nom_newfunction(state, prelude_print));
     assert(!nom_error(state));
+    nom_letvar(state, "if", nom_newfunction(state, prelude_if));
+    assert(!nom_error(state));
     nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
+    assert(!nom_error(state));
+    nom_letvar(state, "forKeys", nom_newfunction(state, prelude_forkeys));
     assert(!nom_error(state));
 
     return state;
@@ -527,14 +609,67 @@ NomValue state_execute(
             break;
 
         case OPCODE_EQ:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_equals(state, l, r) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_NE:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = !nom_equals(state, l, r) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_GT:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_todouble(l) > nom_todouble(r) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_GTE:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_todouble(l) >= nom_todouble(r) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_LT:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_todouble(l) < nom_todouble(r) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_LTE:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_todouble(l) <= nom_todouble(r) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_AND:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = (nom_istrue(state, l) && nom_istrue(state, r)) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_OR:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = (nom_istrue(state, l) || nom_istrue(state, r)) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_NOT:
+            l = POP_VALUE();
+            result = !nom_istrue(state, l) ? nom_true() : nom_false();
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_ASSOC:
             break;
 
@@ -660,7 +795,7 @@ NomValue nom_execute(
     )
 {
     compile(state, source);
-    return state_execute(state);    
+    return state_execute(state);
 }
 
 void nom_dumpbytecode(

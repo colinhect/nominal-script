@@ -87,6 +87,20 @@ NOM_EXPORT NomValue nom_false(
     );
 
 ///
+/// \brief Returns whether a Nominal value is true
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value in question.
+///
+/// \returns True if the value is true; false otherwise.
+NOM_EXPORT bool nom_istrue(
+    NomState*   state,
+    NomValue    value
+    );
+
+///
 /// \brief Returns whether a value is equal to another.
 ///
 /// \param state
