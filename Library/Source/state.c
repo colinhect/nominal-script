@@ -835,6 +835,45 @@ NomValue nom_execute(
     return state_execute(state);
 }
 
+void nom_dofile(
+    NomState*   state,
+    const char* path
+    )
+{
+    assert(state);
+    assert(path);
+
+    FILE* fp = fopen(path, "r");
+    if (fp)
+    {
+        fseek(fp, 0L, SEEK_END);
+        long length = ftell(fp);
+        fseek(fp, 0L, SEEK_SET);
+        
+        char* source = malloc(length + 1);
+        
+        size_t bytesRead = fread(source, sizeof(char), 32768, fp);
+        if (bytesRead > 0)
+        {
+            source[bytesRead + 1] = '\0';
+        }
+        else
+        {
+            nom_seterror(state, "Failed to read file '%s'", path);
+        }
+
+        fclose(fp);
+
+        nom_execute(state, source);
+        
+        free(source);
+    }
+    else
+    {
+        nom_seterror(state, "Failed to open file '%s'", path);
+    }
+}
+
 void nom_dumpbytecode(
     NomState*   state,
     const char* source
@@ -918,40 +957,6 @@ void nom_dumpbytecode(
     }
 
     state->ip = state->end;
-}
-
-void nom_dofile(
-    NomState*   state,
-    const char* path
-    )
-{
-    assert(state);
-    assert(path);
-
-    NomValue result = nom_nil();
-
-    char source[32768];
-    FILE* fp = fopen(path, "r");
-    if (fp)
-    {
-        size_t length = fread(source, sizeof(char), 32768, fp);
-        if (length > 0)
-        {
-            source[length++] = '\0';
-        }
-        else
-        {
-            nom_seterror(state, "Failed to read file '%s'", path);
-        }
-
-        fclose(fp);
-
-        nom_execute(state, source);
-    }
-    else
-    {
-        nom_seterror(state, "Failed to open file '%s'", path);
-    }
 }
 
 bool nom_error(
