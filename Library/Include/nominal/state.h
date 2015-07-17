@@ -108,6 +108,21 @@ NOM_EXPORT NomValue nom_execute(
     );
 
 ///
+/// \brief Executes a file containing Nominal source code.
+///
+/// \warning The execution could have encountered an error.  Check
+/// nom_error() directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param path
+///     The path to the Nominal source code file.
+NOM_EXPORT void nom_dofile(
+    NomState*   state,
+    const char* path
+    );
+
+///
 /// \brief Prints the byte code resulting from a snippet of Nominal source
 /// code to stdout.
 ///

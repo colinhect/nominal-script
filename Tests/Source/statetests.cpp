@@ -204,3 +204,44 @@ TEST_CASE("Creating and invoking native functions", "[State]")
 
     nom_freestate(state);
 }
+
+TEST_CASE("Invoking the 'if' function", "[State]")
+{
+    NomState* state = nom_newstate();
+
+    TEST_EXPR("if: true [ 1 ] [ 0 ]", nom_fromint(1));
+    TEST_EXPR("if: false [ 1 ] [ 0 ]", nom_fromint(0));
+    TEST_EXPR("if: (1 < 10) [ 1 ] [ 0 ]", nom_fromint(1));
+    TEST_EXPR("if: [ 1 < 10 ] [ 1 ] [ 0 ]", nom_fromint(1));
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Invoking the 'assert' function", "[State]")
+{
+    NomState* state = nom_newstate();
+
+    TEST_EXPR("assert: \"Chicken\" \"Chicken\"", nom_nil());
+    TEST_EXPR_ERROR("assert: \"Chicken\" \"Egg\"");
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Creating and invoking a fibonacci function", "[State]")
+{
+    NomState* state = nom_newstate();
+    
+    nom_execute(state, "f := [ n | if: [ n < 2 ] [ n ] [ f: (n - 1) + f: (n - 2) ] ]");
+    CHECK(!nom_error(state));
+
+    TEST_EXPR("f: 1", nom_fromint(1));
+    TEST_EXPR("f: 2", nom_fromint(2));
+    TEST_EXPR("f: 3", nom_fromint(3));
+    TEST_EXPR("f: 4", nom_fromint(5));
+    TEST_EXPR("f: 5", nom_fromint(8));
+    TEST_EXPR("f: 6", nom_fromint(13));
+    TEST_EXPR("f: 7", nom_fromint(21));
+    TEST_EXPR("f: 8", nom_fromint(34));
+
+    nom_freestate(state);
+}

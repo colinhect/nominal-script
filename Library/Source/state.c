@@ -127,9 +127,30 @@ static void compile(
     parser_free(p);
 }
 
+static void ret(
+    NomState*   state
+    )
+{
+    assert(state);
+
+    StackFrame* frame = TOP_FRAME();
+    NomValue result = POP_VALUE();
+
+    for (int i = 0; i < frame->argcount; ++i)
+    {
+        (void)POP_VALUE();
+    }
+
+    state->ip = frame->ip;
+
+    POP_FRAME();
+    PUSH_VALUE(result);
+}
+
 static void invoke(
     NomState*   state,
-    uint8_t     argcount
+    uint8_t     argcount,
+    bool        execute
     )
 {
     assert(state);
@@ -144,6 +165,7 @@ static void invoke(
             NomFunction function = function_getnative(state, value);
             value = function(state);
             PUSH_VALUE(value);
+            ret(state);
         }
         else
         {
@@ -159,6 +181,12 @@ static void invoke(
                     state_letinterned(state, param, arg);
                 }
                 state->ip = function_getip(state, value);
+
+                if (execute)
+                {
+                    NomValue value = state_execute(state);
+                    PUSH_VALUE(value);
+                }
             }
             else
             {
@@ -275,38 +303,61 @@ static NomValue prelude_if(
     NomValue thenFunction = nom_getarg(state, 1);
     NomValue elseFunction = nom_getarg(state, 2);
 
+    NomValue result;
     if (nom_isinvokable(state, condition))
     {
-        NomValue result = nom_invoke(state, condition, 0, NULL);
-        if (!nom_error(state))
-        {
-            if (nom_istrue(state, result) && !nom_equals(state, thenFunction, nom_nil()))
-            {
-                if (nom_isinvokable(state, thenFunction))
-                {
-                    return nom_invoke(state, thenFunction, 0, NULL);
-                }
-                else
-                {
-                    nom_seterror(state, "'then' is not invokable");
-                }
-            }
-            else if (!nom_istrue(state, result) && !nom_equals(state, elseFunction, nom_nil()))
-            {
-                if (nom_isinvokable(state, elseFunction))
-                {
-                    return nom_invoke(state, elseFunction, 0, NULL);
-                }
-                else
-                {
-                    nom_seterror(state, "'else' is not invokable");
-                }
-            }
-        }
+        result = nom_invoke(state, condition, 0, NULL);
     }
     else
     {
-        nom_seterror(state, "'condition' is not invokable");
+        result = condition;
+    }
+
+    if (!nom_error(state))
+    {
+        if (nom_istrue(state, result) && nom_istrue(state, thenFunction))
+        {
+            if (nom_isinvokable(state, thenFunction))
+            {
+                return nom_invoke(state, thenFunction, 0, NULL);
+            }
+            else
+            {
+                nom_seterror(state, "'then' is not invokable");
+            }
+        }
+        else if (!nom_istrue(state, result) && nom_istrue(state, elseFunction))
+        {
+            if (nom_isinvokable(state, elseFunction))
+            {
+                return nom_invoke(state, elseFunction, 0, NULL);
+            }
+            else
+            {
+                nom_seterror(state, "'else' is not invokable");
+            }
+        }
+    }
+
+    return nom_nil();
+}
+
+static NomValue prelude_assert(
+    NomState*   state)
+{
+    assert(state);
+
+    NomValue actual = nom_getarg(state, 0);
+    NomValue expected = nom_getarg(state, 1);
+
+    if (!nom_equals(state, actual, expected))
+    {
+        char actualBuffer[128];
+        nom_tostring(state, actualBuffer, 128, actual);
+        char expectedBuffer[128];
+        nom_tostring(state, expectedBuffer, 128, expected);
+
+        nom_seterror(state, "Failed assertion: %s != %s", actualBuffer, expectedBuffer);
     }
 
     return nom_nil();
@@ -337,6 +388,8 @@ NomState* nom_newstate(
     nom_letvar(state, "print", nom_newfunction(state, prelude_print));
     assert(!nom_error(state));
     nom_letvar(state, "if", nom_newfunction(state, prelude_if));
+    assert(!nom_error(state));
+    nom_letvar(state, "assert", nom_newfunction(state, prelude_assert));
     assert(!nom_error(state));
     nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
     assert(!nom_error(state));
@@ -526,14 +579,7 @@ NomValue state_invoke(
     }
     PUSH_VALUE(value);
 
-    invoke(state, argcount);
-
-    // TODO: This is a hack
-    if (!function_isnative(state, value))
-    {
-        NomValue value = state_execute(state);
-        PUSH_VALUE(value);
-    }
+    invoke(state, argcount, true);
 
     NomValue result = POP_VALUE();
     return result;
@@ -551,7 +597,6 @@ NomValue state_execute(
     NomValue l, r, result;
     OpCode op;
     uint32_t count, ip;
-    StackFrame* frame;
 
     while (state->ip < state->end && !state->errorflag)
     {
@@ -674,15 +719,7 @@ NomValue state_execute(
             break;
 
         case OPCODE_RET:
-            frame = TOP_FRAME();
-            result = POP_VALUE();
-            for (int i = 0; i < frame->argcount; ++i)
-            {
-                (void)POP_VALUE();
-            }
-            state->ip = frame->ip;
-            POP_FRAME();
-            PUSH_VALUE(result);
+            ret(state);
             if (state->cp < startcp)
             {
                 state->ip = state->end;
@@ -773,7 +810,7 @@ NomValue state_execute(
 
         case OPCODE_INVOKE:
             count = READAS(uint32_t);
-            invoke(state, count);
+            invoke(state, count, false);
             break;
         }
     }
@@ -881,6 +918,40 @@ void nom_dumpbytecode(
     }
 
     state->ip = state->end;
+}
+
+void nom_dofile(
+    NomState*   state,
+    const char* path
+    )
+{
+    assert(state);
+    assert(path);
+
+    NomValue result = nom_nil();
+
+    char source[32768];
+    FILE* fp = fopen(path, "r");
+    if (fp)
+    {
+        size_t length = fread(source, sizeof(char), 32768, fp);
+        if (length > 0)
+        {
+            source[length++] = '\0';
+        }
+        else
+        {
+            nom_seterror(state, "Failed to read file '%s'", path);
+        }
+
+        fclose(fp);
+
+        nom_execute(state, source);
+    }
+    else
+    {
+        nom_seterror(state, "Failed to open file '%s'", path);
+    }
 }
 
 bool nom_error(

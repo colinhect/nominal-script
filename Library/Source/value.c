@@ -141,7 +141,7 @@ bool nom_equals(
         if (GET_TYPE(left) != TYPE_INTERNED_STRING ||
             GET_TYPE(right) != TYPE_INTERNED_STRING)
         {
-            return strcmp(nom_getstring(state, right), nom_getstring(state, right)) == 0;
+            return strcmp(nom_getstring(state, left), nom_getstring(state, right)) == 0;
         }
     }
 
