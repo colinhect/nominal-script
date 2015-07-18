@@ -852,7 +852,7 @@ void nom_dofile(
         
         char* source = malloc(length + 1);
         
-        size_t bytesRead = fread(source, sizeof(char), 32768, fp);
+        size_t bytesRead = fread(source, sizeof(char), length, fp);
         if (bytesRead > 0)
         {
             source[bytesRead] = '\0';
@@ -864,7 +864,10 @@ void nom_dofile(
 
         fclose(fp);
 
-        nom_execute(state, source);
+        if (!nom_error(state))
+        {
+            nom_execute(state, source);
+        }
         
         free(source);
     }

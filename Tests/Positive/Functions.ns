@@ -1,0 +1,52 @@
+f := [
+  a := [ 0, 1, 2 ],
+  b := a:,
+  b
+],
+assertEqual: (f:) 2,
+
+f = [
+  f := [ 2 ],
+  g := [ f: + 3 ],
+  g:
+],
+assertEqual: (f:) 5,
+
+f = [
+  c := {
+    f := [ 23 ],
+    g := [ 19 ]
+  },
+  c.f: + c.g:
+],
+assertEqual: (f:) 42,
+
+f = [
+  e := {
+    f := [
+      [ 23 ]
+    ]
+  },
+  e.f::
+],
+assertEqual: (f:) 23,
+
+f = [
+  x := 1,
+  y := 3,
+  w := [
+    x := 4,
+    x + y
+  ]:,
+  w + x
+],
+assertEqual: (f:) 8,
+
+assertEqual: ([ 1 ]:) 1,
+assertEqual: (([ 1 ]):) 1,
+assertEqual: ([ 1, 2, 3 ]:) 3,
+assertEqual: ([ 1, 2, 3, { 4, 5 } ]:[1]) 5,
+assertEqual: (([ 1, 2, 3, { 4, 5 } ]:)[1]) 5,
+assertEqual: (-[[[[42]]]]::::) -42,
+assertEqual: ([ { 0, 1, [ 7 + 3 ] } ]:[2]:) 10,
+assertEqual: ([ { zero := 0, one := 1, two := 2 } ]:.one) 1

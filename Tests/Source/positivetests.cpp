@@ -42,4 +42,8 @@ extern "C"
         nom_freestate(state);\
     }
 
+TEST_FILE("Tests/Positive/Arithmetic.ns")
 TEST_FILE("Tests/Positive/Fibonacci.ns")
+TEST_FILE("Tests/Positive/Functions.ns")
+TEST_FILE("Tests/Positive/Map.ns")
+TEST_FILE("Tests/Positive/If.ns")
