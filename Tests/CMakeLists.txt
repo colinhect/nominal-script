@@ -27,3 +27,7 @@ set_target_properties(NominalTests PROPERTIES
     OUTPUT_NAME nominaltests
     LINKER_LANGUAGE CXX
     )
+
+add_custom_command(TARGET NominalTests PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${PROJECT_SOURCE_DIR}/Tests/Positive ${OUTPUT_DIR}/Tests/Positive)

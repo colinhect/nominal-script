@@ -217,12 +217,12 @@ TEST_CASE("Invoking the 'if' function", "[State]")
     nom_freestate(state);
 }
 
-TEST_CASE("Invoking the 'assert' function", "[State]")
+TEST_CASE("Invoking the 'assertEqual' function", "[State]")
 {
     NomState* state = nom_newstate();
 
-    TEST_EXPR("assert: \"Chicken\" \"Chicken\"", nom_nil());
-    TEST_EXPR_ERROR("assert: \"Chicken\" \"Egg\"");
+    TEST_EXPR("assertEqual: \"Chicken\" \"Chicken\"", nom_nil());
+    TEST_EXPR_ERROR("assertEqual: \"Chicken\" \"Egg\"");
 
     nom_freestate(state);
 }

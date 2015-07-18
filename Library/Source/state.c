@@ -342,7 +342,7 @@ static NomValue prelude_if(
     return nom_nil();
 }
 
-static NomValue prelude_assert(
+static NomValue prelude_assertequal(
     NomState*   state)
 {
     assert(state);
@@ -389,7 +389,7 @@ NomState* nom_newstate(
     assert(!nom_error(state));
     nom_letvar(state, "if", nom_newfunction(state, prelude_if));
     assert(!nom_error(state));
-    nom_letvar(state, "assert", nom_newfunction(state, prelude_assert));
+    nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
     assert(!nom_error(state));
     nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
     assert(!nom_error(state));
@@ -855,7 +855,7 @@ void nom_dofile(
         size_t bytesRead = fread(source, sizeof(char), 32768, fp);
         if (bytesRead > 0)
         {
-            source[bytesRead + 1] = '\0';
+            source[bytesRead] = '\0';
         }
         else
         {
