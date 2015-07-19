@@ -283,3 +283,54 @@ TEST_CASE("Iterating over a map", "[Map]")
 
     nom_freestate(state);
 }
+
+TEST_CASE("Creating a map with implicit keys", "[Map]")
+{
+    NomState* state = nom_newstate();
+
+    NomValue map = nom_execute(state, "{ 0, 1, 2, 3 }");
+    CHECK(nom_error(state) == false);
+    CHECK(nom_ismap(map) == true);
+
+    NomValue result;
+
+    for (int i = 0; i < 4; ++i)
+    {
+        result = nom_get(state, map, nom_fromint(i));
+        CHECK(nom_equals(state, result, nom_fromint(i)));
+    }
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Creating a map with explicit keys", "[Map]")
+{
+    NomState* state = nom_newstate();
+
+    NomValue map = nom_execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
+    CHECK(nom_error(state) == false);
+    CHECK(nom_ismap(map));
+
+    NomValue result;
+    result = nom_get(state, map, nom_newstring(state, "zero", false));
+    CHECK(nom_equals(state, result, nom_fromint(0)) == true);
+    result = nom_get(state, map, nom_newstring(state, "one", false));
+    CHECK(nom_equals(state, result, nom_fromint(1)) == true);
+    result = nom_get(state, map, nom_newstring(state, "two", false));
+    CHECK(nom_equals(state, result, nom_fromint(2)) == true);
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Indexing maps", "[Map]")
+{
+    NomState* state = nom_newstate();
+
+    nom_execute(state, "f := { }, f.g");
+    CHECK(nom_error(state) == true);
+
+    nom_execute(state, "f.g = 1");
+    CHECK(nom_error(state) == true);
+
+    nom_freestate(state);
+}

@@ -28,9 +28,15 @@ extern "C"
 #include <nominal.h>
 }
 
-TEST_CASE("Create and free a Nominal state", "[State]")
-{
-    NomState* state = nom_newstate();
-    CHECK(state);
-    nom_freestate(state);
-}
+#define TEST_FILE(path, failure) \
+    TEST_CASE(#path, "[Negative]")\
+    {\
+        NomState* state = nom_newstate();\
+        nom_dofile(state, path);\
+        CHECK(nom_error(state));\
+        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
+        nom_freestate(state);\
+    }
+
+TEST_FILE("Tests/Negative/InvokeUninvokable.ns", "Value cannot be invoked")
+TEST_FILE("Tests/Negative/TooManyArguments.ns", "Too many arguments given (expected 3)")
