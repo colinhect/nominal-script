@@ -24,7 +24,7 @@
 #include "prelude.h"
 
 #include <assert.h>
-
+#include <stdio.h>
 
 static NomValue prelude_print(
     NomState*   state)
