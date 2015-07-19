@@ -1,2 +1,2 @@
-f := [ a b c | a + b + c ],
+f := [ a b c | a + b + c ]
 x := f: 1 2 3 4

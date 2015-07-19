@@ -49,6 +49,7 @@ typedef struct
     unsigned    length;
     unsigned    id;
     bool        skippedwhitespace;
+    bool        skippednewline;
 } LexerState;
 
 // A lexer
@@ -98,6 +99,12 @@ unsigned lexer_gettokenid(
 // Returns whether the lexer skipped whitespace when it moved to the current
 // token
 bool lexer_skippedwhitespace(
+    Lexer*  lexer
+    );
+
+// Returns whether the lexer skipped a new line when it moved to the current
+// token
+bool lexer_skippednewline(
     Lexer*  lexer
     );
 

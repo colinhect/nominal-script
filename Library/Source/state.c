@@ -113,7 +113,7 @@ static void compile(
     state->errorflag = false;
 
     Parser* p = parser_new(source, state->stringpool);
-    Node* node = parser_exprs(p);
+    Node* node = parser_exprs(p, true);
 
     if (!node)
     {

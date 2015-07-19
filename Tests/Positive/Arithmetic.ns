@@ -1,18 +1,18 @@
-assertEqual: (2 + 3) 5,
-assertEqual: (2 - 3) -1,
-assertEqual: (2 * 3) 6,
-assertEqual: (2 * 3 + 1) 7,
-assertEqual: (2 * (3 + 1)) 8,
-assertEqual: (6 / 3) 2,
-assertEqual: (2 + 3.0) 5.0,
-assertEqual: (2.0 + 3.0) 5.0,
-assertEqual: (2.0 + 3) 5.0,
+assertEqual: (2 + 3) 5
+assertEqual: (2 - 3) -1
+assertEqual: (2 * 3) 6
+assertEqual: (2 * 3 + 1) 7
+assertEqual: (2 * (3 + 1)) 8
+assertEqual: (6 / 3) 2
+assertEqual: (2 + 3.0) 5.0
+assertEqual: (2.0 + 3.0) 5.0
+assertEqual: (2.0 + 3) 5.0
 assertEqual: (2 - 3.0) -1.0
-assertEqual: (2.0 - 3) -1.0,
-assertEqual: (2.0 - 3.0) -1.0,
-assertEqual: (2 * 3.0) 6.0,
-assertEqual: (2.0 * 3) 6.0,
-assertEqual: (2 * 3.0) 6.0,
-assertEqual: (6 / 3.0) 2.0,
-assertEqual: (6.0 / 3) 2.0,
+assertEqual: (2.0 - 3) -1.0
+assertEqual: (2.0 - 3.0) -1.0
+assertEqual: (2 * 3.0) 6.0
+assertEqual: (2.0 * 3) 6.0
+assertEqual: (2 * 3.0) 6.0
+assertEqual: (6 / 3.0) 2.0
+assertEqual: (6.0 / 3) 2.0
 assertEqual: (6 / 3.0) 2.0

@@ -1,26 +1,26 @@
-assertEqual: { 5 }[0] 5,
-assertEqual: { 2, 3, 4, 5 }[2] 4,
-assertEqual: { one := 1 }.one 1,
-assertEqual: { two := { one := 1 } }["two"]["one"] 1,
-assertEqual: { two := { one := 1 } }.two.one 1,
-assertEqual: ({ two := { one := 1 } }.two).one 1,
-assertEqual: { two := { one := 1 } }[{ }] nil,
-assertEqual: { two := { one := 1 } }[{ one := "two" }.one].one 1,
-assertEqual: ({ two := { one := 1 } })[{ one := "two" }.one].one 1,
-assertEqual: ({ two := { one := 1 } })[({ one := "two" }.one)].one 1,
+assertEqual: { 5 }[0] 5
+assertEqual: { 2, 3, 4, 5 }[2] 4
+assertEqual: { one := 1 }.one 1
+assertEqual: { two := { one := 1 } }["two"]["one"] 1
+assertEqual: { two := { one := 1 } }.two.one 1
+assertEqual: ({ two := { one := 1 } }.two).one 1
+assertEqual: { two := { one := 1 } }[{ }] nil
+assertEqual: { two := { one := 1 } }[{ one := "two" }.one].one 1
+assertEqual: ({ two := { one := 1 } })[{ one := "two" }.one].one 1
+assertEqual: ({ two := { one := 1 } })[({ one := "two" }.one)].one 1
 
-one := { 0 },
-two := { one -> 1 },
-assertEqual: two[one] 1,
+one := { 0 }
+two := { one -> 1 }
+assertEqual: two[one] 1
 
-a := { },
-a.b := 1,
-assertEqual: a.b 1,
+a := { }
+a.b := 1
+assertEqual: a.b 1
 
-b := { },
-b["c"] = 1,
-assertEqual: b.c 1,
+b := { }
+b["c"] = 1
+assertEqual: b.c 1
 
-d := { },
-d.e := 1,
+d := { }
+d.e := 1
 assertEqual: d.e 1

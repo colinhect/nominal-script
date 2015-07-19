@@ -97,19 +97,29 @@ bool lexer_next(
     )
 {
     lexer->state.skippedwhitespace = false;
+    lexer->state.skippednewline = false;
 
     // Skip whitespace
     char c;
     do
     {
         c = ReadNext(lexer);
+
         if (c == '\0')
         {
+            lexer->state.skippedwhitespace = false;
+            lexer->state.skippednewline = false;
             return false;
         }
+
         if (isspace(c))
         {
             lexer->state.skippedwhitespace = true;
+        }
+
+        if (c == '\n')
+        {
+            lexer->state.skippednewline = true;
         }
     } while (isspace(c));
 
@@ -336,6 +346,13 @@ bool lexer_skippedwhitespace(
     )
 {
     return lexer->state.skippedwhitespace;
+}
+
+bool lexer_skippednewline(
+    Lexer*  lexer
+    )
+{
+    return lexer->state.skippednewline;
 }
 
 size_t lexer_gettokenlength(

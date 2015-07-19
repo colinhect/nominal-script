@@ -4,9 +4,9 @@ fib := [ n |
   ] [
     fib: (n - 1) + fib: (n - 2)
   ]
-],
+]
 
-expected := { 0, 1, 2, 3, 5, 8, 13, 21 },
+expected := { 0, 1, 2, 3, 5, 8, 13, 21 }
 
 forKeys: expected [ n |
   assertEqual: (fib: n) expected[n]

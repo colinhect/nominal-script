@@ -56,7 +56,8 @@ const char* parser_geterror(
 
 // Parses a sequence of expressions (returns NULL if a parse error occurred)
 Node* parser_exprs(
-    Parser* parser
+    Parser* parser,
+    bool    newlines
     );
 
 // Parses an expression (returns NULL if a parse error occurred)

@@ -30,13 +30,14 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#define MAX_PARSER_ERROR_LENGTH (256)
+#define MAX_PARSER_ERROR_LENGTH (1024)
 
 struct Parser
 {
     Lexer*      lexer;
     StringPool* stringpool;
     char        error[MAX_PARSER_ERROR_LENGTH];
+    char        fullerror[MAX_PARSER_ERROR_LENGTH];
 };
 
 static void unexpectedtokenerror(
@@ -93,17 +94,21 @@ void parser_seterror(
     va_start(args, fmt);
     vsprintf(parser->error, fmt, args);
     va_end(args);
+
+    LexerState state = lexer_savestate(parser->lexer);
+    sprintf(parser->fullerror, "%s on line %i", parser->error, state.line);
 }
 
 const char* parser_geterror(
     Parser* parser
     )
 {
-    return parser->error;
+    return parser->fullerror;
 }
 
 Node* parser_exprs(
-    Parser* parser
+    Parser* parser,
+    bool    newlines
     )
 {
     // Parse an expression
@@ -113,13 +118,20 @@ Node* parser_exprs(
         return NULL;
     }
 
-    // If there is a trailing comma then recursively parse another expression
-    // sequence
+    // If there is a trailing comma or a new line, then recursively parse
+    // another expression sequence
     Node* exprs = NULL;
-    if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ','))
+    if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ',') ||
+        (newlines && lexer_skippednewline(parser->lexer) &&
+            !lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ']') &&
+            !lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '}')))
     {
-        lexer_next(parser->lexer);
-        exprs = parser_exprs(parser);
+        if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ','))
+        {
+            lexer_next(parser->lexer);
+        }
+
+        exprs = parser_exprs(parser, newlines);
         if (!exprs)
         {
             node_free(expr);
@@ -329,7 +341,7 @@ Node* parser_secondaryexpr(
                 // Parse the argments
                 if (lexer_skippedwhitespace(parser->lexer))
                 {
-                    for (;;)
+                    while (!lexer_skippednewline(parser->lexer))
                     {
                         // Save the parser state
                         LexerState state = lexer_savestate(parser->lexer);
@@ -502,7 +514,7 @@ Node* parser_map(
     }
 
     // Parse the expressions in the map
-    Node* exprs = parser_exprs(parser);
+    Node* exprs = parser_exprs(parser, false);
     if (!exprs)
     {
         return NULL;
@@ -619,7 +631,7 @@ Node* parser_function(
     }
 
     // Parse the body of the function
-    Node* exprs = parser_exprs(parser);
+    Node* exprs = parser_exprs(parser, true);
     if (!exprs)
     {
         return NULL;
