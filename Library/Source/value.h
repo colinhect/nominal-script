@@ -38,17 +38,10 @@ typedef enum
     TYPE_FUNCTION
 } Type;
 
-// Enumeration of each value flag
-typedef enum
-{
-} Flag;
-
 #define TYPE_MASK           (0x0000000000000007)
 #define ID_MASK             (0xFFFFFFFF00000000)
 #define QNAN_MASK           (0x000000007FFFFF00)
 #define QNAN_VALUE          (0x000000007FF7A500)
-
-#define FLAG_BIT(i)         (1 << ((uint32_t)i + 3))
 
 #define IS_NUMBER(v)        ((v.raw & QNAN_MASK) != QNAN_VALUE)
 #define IS_HEAP_OBJECT(v)   (GET_TYPE(v) > TYPE_INTERNED_STRING)
@@ -57,8 +50,5 @@ typedef enum
 #define GET_TYPE(v)         (IS_NUMBER(v) ? TYPE_NUMBER : (Type)(TYPE_MASK & v.data.lower))      
 #define SET_ID(v, i)        (v.data.upper = (uint32_t)i)
 #define GET_ID(v)           (v.data.upper)
-
-#define SET_FLAG(v, f, i)   (v.data.lower = (FLAG_BIT(f) & (i ? 0xFFFFFFFF : 0)) | (~FLAG_BIT(f) & v.data.lower))
-#define GET_FLAG(v)         (v.data.lower & FLAG_BIT(f) == FLAG_BIT(f))
 
 #endif

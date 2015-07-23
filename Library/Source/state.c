@@ -399,6 +399,7 @@ NomValue state_invoke(
     {
         PUSH_VALUE(args[i]);
     }
+
     PUSH_VALUE(value);
 
     invoke(state, argcount, true);

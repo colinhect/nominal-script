@@ -61,19 +61,19 @@ HeapObjectId heap_alloc(
 
 // Deallocates an object in the heap
 void heap_dealloc(
-    Heap*       heap,
+    Heap*           heap,
     HeapObjectId    id
     );
 
 // Returns a pointer to an object on the heap
 HeapObject* heap_getobject(
-    Heap*       heap,
+    Heap*           heap,
     HeapObjectId    id
     );
 
 // Returns a pointer to the data of an object on the heap
 void* heap_getdata(
-    Heap*       heap,
+    Heap*           heap,
     HeapObjectId    id
     );
 

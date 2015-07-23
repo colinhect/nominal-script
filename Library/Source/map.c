@@ -33,7 +33,6 @@
 
 typedef struct
 {
-    NomState*   state;
     HashTable*  hashtable;
     size_t      capacity;
     size_t      count;
@@ -58,17 +57,6 @@ void freemapdata(
     assert(data);
 
     MapData* mapdata = (MapData*)data;
-
-    // Release the references to all keys and values in the map
-    HashTableIterator iterator = { 0 };
-    while (hashtable_next(mapdata->hashtable, &iterator))
-    {
-        NomValue key = { iterator.key };
-        NomValue value = { iterator.key };
-
-        nom_release(mapdata->state, key);
-        nom_release(mapdata->state, value);
-    }
     
     // Free the hash table
     if (mapdata->hashtable)
@@ -152,7 +140,6 @@ NomValue nom_newmap(
     Heap* heap = state_getheap(state);
     HeapObjectId id = heap_alloc(heap, sizeof(MapData), freemapdata);
     MapData* data = heap_getdata(heap, id);
-    data->state = state;
     data->hashtable = hashtable_new(hashvalue, comparevalue, (UserData)state, 32);
     data->capacity = 32;
     data->count = 0;
@@ -261,9 +248,6 @@ bool map_insert(
     bool inserted = hashtable_insert(data->hashtable, (UserData)key.raw, (UserData)value.raw);
     if (inserted)
     {
-        nom_acquire(state, key);
-        nom_acquire(state, value);
-
         insertkey(data, key);
     }
 
@@ -288,13 +272,7 @@ bool map_set(
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
 
-    NomValue oldvalue;
-    bool result = hashtable_set(data->hashtable, (UserData)key.raw, (UserData)value.raw, (UserData*)&oldvalue);
-    if (result)
-    {
-        nom_release(state, oldvalue);
-    }
-
+    bool result = hashtable_set(data->hashtable, (UserData)key.raw, (UserData)value.raw);
     return result;
 }
 
@@ -314,18 +292,10 @@ bool map_insertorset(
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
 
-    NomValue oldvalue;
-    bool inserted = hashtable_insertorset(data->hashtable, (UserData)key.raw, (UserData)value.raw, (UserData*)&oldvalue);
+    bool inserted = hashtable_insertorset(data->hashtable, (UserData)key.raw, (UserData)value.raw);
     if (inserted)
     {
-        nom_acquire(state, key);
-        nom_acquire(state, value);
-
         insertkey(data, key);
-    }
-    else
-    {
-        nom_release(state, oldvalue);
     }
 
     return inserted;

@@ -525,7 +525,6 @@ TEST_CASE("Calling nom_isnumber() on non-number Nominal values", "[Number]")
     {
         NomValue value = nom_newmap(state);
         CHECK(nom_isnumber(value) == false);
-        nom_release(state, value);
     }
 
     nom_freestate(state);

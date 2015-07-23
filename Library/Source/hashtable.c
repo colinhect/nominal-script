@@ -229,57 +229,43 @@ bool hashtable_insert(
     assert(hashtable);
 
     BucketNode* node = NULL;
-    if (findnode(hashtable, key, true, &node))
+    bool result = findnode(hashtable, key, true, &node);
+    if (result)
     {
         node->value = value;
-        return true;
     }
 
-    return false;
+    return result;
 }
 
 bool hashtable_set(
     HashTable*  hashtable,
     UserData    key,
-    UserData    value,
-    UserData*   oldvalue
+    UserData    value
     )
 {
     assert(hashtable);
 
     BucketNode* node = NULL;
-    if (findnode(hashtable, key, false, &node))
+    bool result = findnode(hashtable, key, false, &node);
+    if (result)
     {
-        if (oldvalue)
-        {
-            *oldvalue = node->value;
-        }
-
         node->value = value;
-        return true;
     }
 
-    return false;
+    return result;
 }
 
 bool hashtable_insertorset(
     HashTable*  hashtable,
     UserData    key,
-    UserData    value,
-    UserData*   oldvalue
+    UserData    value
     )
 {
     assert(hashtable);
 
     BucketNode* node = NULL;
     bool result = findnode(hashtable, key, true, &node);
-    if (!result)
-    {
-        if (oldvalue)
-        {
-            *oldvalue = node->value;
-        }
-    }
 
     node->value = value;
     return result;
@@ -292,13 +278,13 @@ bool hashtable_get(
     )
 {
     BucketNode* node = NULL;
-    if (findnode(hashtable, key, false, &node))
+    bool result = findnode(hashtable, key, false, &node);
+    if (result)
     {
         *value = node->value;
-        return true;
     }
 
-    return false;
+    return result;
 }
 
 bool hashtable_insertorget(
@@ -309,13 +295,18 @@ bool hashtable_insertorget(
     )
 {
     BucketNode* node = NULL;
-    if (!findnode(hashtable, key, true, &node))
+
+    bool result = !findnode(hashtable, key, true, &node);
+    if (result)
     {
         *existingvalue = node->value;
-        return true;
     }
-    node->value = value;
-    return false;
+    else
+    {
+        node->value = value;
+    }
+
+    return result;
 }
 
 Hash hashstring(

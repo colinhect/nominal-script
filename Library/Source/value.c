@@ -192,8 +192,8 @@ size_t nom_tostring(
     case TYPE_BOOLEAN:
         count += snprintf(buffer, buffersize, "%s", nom_istrue(state, value) ? "true" : "false");
         break;
-    case TYPE_STRING:
     case TYPE_INTERNED_STRING:
+    case TYPE_STRING:
         count += snprintf(buffer, buffersize, "\"%s\"", nom_getstring(state, value));
         break;
     case TYPE_MAP:
@@ -502,10 +502,5 @@ void nom_release(
         HeapObjectId id = GET_ID(value);
         HeapObject* object = heap_getobject(heap, id);
         --object->refcount;
-
-        if (object->refcount <= 0)
-        {
-            heap_dealloc(heap, id);
-        }
     }
 }

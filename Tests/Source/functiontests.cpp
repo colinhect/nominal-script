@@ -77,7 +77,6 @@ TEST_CASE("Creating and invoking native functions", "[Function]")
     CHECK(nom_isfunction(function));
 
     nom_letvar(state, "test", function);
-    nom_release(state, function);
 
     CHECK(!nom_error(state));
 

@@ -101,7 +101,7 @@ HeapObjectId heap_alloc(
 }
 
 void heap_dealloc(
-    Heap*       heap,
+    Heap*           heap,
     HeapObjectId    id
     )
 {
@@ -119,7 +119,7 @@ void heap_dealloc(
 }
 
 HeapObject* heap_getobject(
-    Heap*       heap,
+    Heap*           heap,
     HeapObjectId    id
     )
 {
@@ -131,7 +131,7 @@ HeapObject* heap_getobject(
 }
 
 void* heap_getdata(
-    Heap*       heap,
+    Heap*           heap,
     HeapObjectId    id
     )
 {
