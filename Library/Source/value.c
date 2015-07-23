@@ -25,6 +25,7 @@
 
 #include "map.h"
 #include "function.h"
+#include "heap.h"
 #include "state.h"
 
 #include <nominal.h>
@@ -265,7 +266,7 @@ size_t nom_tostring(
     } break;
     case TYPE_FUNCTION:
     {
-        ObjectId id = GET_ID(value);
+        HeapObjectId id = GET_ID(value);
         count += snprintf(buffer, buffersize, "<function with ID 0x%08x>", id);
         break;
     }
@@ -468,4 +469,55 @@ bool nom_tryget(
     }
 
     return false;
+}
+
+void nom_acquire(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    assert(state);
+
+    Type type = GET_TYPE(value);
+    switch (type)
+    {
+    case TYPE_STRING:
+    case TYPE_MAP:
+    case TYPE_FUNCTION:
+    {
+        Heap* heap = state_getheap(state);
+
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        ++object->refcount;
+    } break;
+    }
+}
+
+void nom_release(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    assert(state);
+
+    Type type = GET_TYPE(value);
+    switch (type)
+    {
+    case TYPE_STRING:
+    case TYPE_MAP:
+    case TYPE_FUNCTION:
+    {
+        Heap* heap = state_getheap(state);
+
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        --object->refcount;
+
+        if (object->refcount <= 0)
+        {
+            heap_dealloc(heap, id);
+        }
+    } break;
+    }
 }

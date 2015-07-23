@@ -53,7 +53,7 @@ static NomValue allocfunction(
     SET_TYPE(value, TYPE_FUNCTION);
 
     Heap* heap = state_getheap(state);
-    ObjectId id = heap_alloc(heap, sizeof(FunctionData), free);
+    HeapObjectId id = heap_alloc(heap, sizeof(FunctionData), free);
     *data = heap_getdata(heap, id);
 
     SET_ID(value, id);
@@ -112,7 +112,7 @@ void function_addparam(
         return;
     }
 
-    ObjectId id = GET_ID(function);
+    HeapObjectId id = GET_ID(function);
     Heap* heap = state_getheap(state);
     FunctionData* data = heap_getdata(heap, id);
 
@@ -131,7 +131,7 @@ size_t function_getparamcount(
         return 0;
     }
 
-    ObjectId id = GET_ID(function);
+    HeapObjectId id = GET_ID(function);
     Heap* heap = state_getheap(state);
     FunctionData* data = heap_getdata(heap, id);
 
@@ -151,7 +151,7 @@ StringId function_getparam(
         return (StringId)-1;
     }
 
-    ObjectId id = GET_ID(function);
+    HeapObjectId id = GET_ID(function);
     Heap* heap = state_getheap(state);
     FunctionData* data = heap_getdata(heap, id);
 
@@ -178,7 +178,7 @@ NomFunction function_getnative(
         return NULL;
     }
 
-    ObjectId id = GET_ID(function);
+    HeapObjectId id = GET_ID(function);
     Heap* heap = state_getheap(state);
     FunctionData* data = heap_getdata(heap, id);
 
@@ -197,7 +197,7 @@ uint32_t function_getip(
         return (uint32_t)-1;
     }
 
-    ObjectId id = GET_ID(function);
+    HeapObjectId id = GET_ID(function);
     Heap* heap = state_getheap(state);
     FunctionData* data = heap_getdata(heap, id);
 

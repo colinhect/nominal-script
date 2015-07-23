@@ -27,17 +27,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct
-{
-    void*   data;
-    void    (*free)(void*);
-} HeapObject;
-
 struct Heap
 {
-    HeapObject* objects;
-    size_t      capacity;
-    ObjectId    nextId;
+    HeapObject*     objects;
+    size_t          capacity;
+    HeapObjectId    nextid;
 };
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
@@ -49,14 +43,14 @@ Heap* heap_new(
     Heap* heap = (Heap*)malloc(sizeof(Heap));
     assert(heap);
 
-    size_t  objectssize = sizeof(HeapObject) * INITIAL_HEAP_SIZE;
+    size_t objectssize = sizeof(HeapObject) * INITIAL_HEAP_SIZE;
     heap->objects = (HeapObject*)malloc(objectssize);
     assert(heap->objects);
 
     memset(heap->objects, 0, objectssize);
 
     heap->capacity = INITIAL_HEAP_SIZE;
-    heap->nextId = 0;
+    heap->nextid = 0;
 
     return heap;
 }
@@ -71,15 +65,9 @@ void heap_free(
     if (heap->objects)
     {
         // For each (potential) object
-        for (ObjectId i = 0; i < heap->capacity; ++i)
+        for (HeapObjectId id = 0; id < heap->capacity; ++id)
         {
-            HeapObject* object = &heap->objects[i];
-
-            // If the object has data and a free function then free it
-            if (object->data && object->free)
-            {
-                object->free(object->data);
-            }
+            heap_dealloc(heap, id);
         }
     }
 
@@ -89,26 +77,66 @@ void heap_free(
     free(heap);
 }
 
-ObjectId heap_alloc(
+HeapObjectId heap_alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
     )
 {
-    ObjectId id = heap->nextId++;
+    assert(heap);
 
-    HeapObject* object = &heap->objects[id];
+    HeapObjectId id = heap->nextid++;
+    assert(id < heap->capacity);
+
+    HeapObject* object = heap_getobject(heap, id);
+    assert(!object->data);
+
     object->data = malloc(size);
+    assert(object->data);
+
     object->free = free;
+    object->refcount = 1;
 
     return id;
 }
 
-void* heap_getdata(
+void heap_dealloc(
     Heap*       heap,
-    ObjectId    id
+    HeapObjectId    id
     )
 {
+    assert(heap);
+
+    HeapObject* object = heap_getobject(heap, id);
+
+    // If the object has data and a free function then free it
+    if (object->data && object->free)
+    {
+        object->free(object->data);
+        object->data = NULL;
+        object->refcount = 0;
+    }
+}
+
+HeapObject* heap_getobject(
+    Heap*       heap,
+    HeapObjectId    id
+    )
+{
+    assert(heap);
+    assert(id < heap->capacity);
+
     HeapObject* object = &heap->objects[id];
+    return object;
+}
+
+void* heap_getdata(
+    Heap*       heap,
+    HeapObjectId    id
+    )
+{
+    assert(heap);
+
+    HeapObject* object = heap_getobject(heap, id);
     return object->data;
 }

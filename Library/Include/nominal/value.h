@@ -403,4 +403,30 @@ NOM_EXPORT bool nom_tryget(
     NomValue*   keyvalue
     );
 
+///
+/// \brief Acquires a reference to a Nominal value, assuring that the value
+/// will not be garbage collected until after it is released.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value.
+NOM_EXPORT void nom_acquire(
+    NomState*   state,
+    NomValue    value
+    );
+
+///
+/// \brief Releases a reference to a Nominal value, allowing the value to be
+/// garbage collected.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value.
+NOM_EXPORT void nom_release(
+    NomState*   state,
+    NomValue    value
+    );
+
 #endif

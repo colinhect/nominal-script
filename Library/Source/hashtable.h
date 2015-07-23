@@ -99,15 +99,17 @@ bool hashtable_insert(
 bool hashtable_set(
     HashTable*  hashtable,
     UserData    key,
-    UserData    value
+    UserData    value,
+    UserData*   oldvalue
     );
 
 // Inserts a new value or sets an existing value in the hash table, returning
 // true if a new value was inserted or false if an existing value was changed
-bool HashTable_InsertOrSet(
+bool hashtable_insertorset(
     HashTable*  hashtable,
     UserData    key,
-    UserData    value
+    UserData    value,
+    UserData*   oldvalue
     );
 
 // Gets the value for a key, returning true if a value was found for the

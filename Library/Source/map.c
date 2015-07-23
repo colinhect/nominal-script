@@ -33,6 +33,7 @@
 
 typedef struct
 {
+    NomState*   state;
     HashTable*  hashtable;
     size_t      capacity;
     size_t      count;
@@ -59,6 +60,17 @@ void freemapdata(
 
     MapData* mapdata = (MapData*)data;
 
+    // Release the references to all keys and values in the map
+    HashTableIterator iterator = { 0 };
+    while (hashtable_next(mapdata->hashtable, &iterator))
+    {
+        NomValue key = { .raw = iterator.key };
+        NomValue value = { .raw = iterator.value };
+
+        nom_release(mapdata->state, key);
+        nom_release(mapdata->state, value);
+    }
+    
     // Free the hash table
     if (mapdata->hashtable)
     {
@@ -136,12 +148,15 @@ NomValue nom_newmap(
     NomState*   state
     )
 {
+    assert(state);
+
     NomValue map = nom_nil();
     SET_TYPE(map, TYPE_MAP);
 
     Heap* heap = state_getheap(state);
-    ObjectId id = heap_alloc(heap, sizeof(MapData), freemapdata);
+    HeapObjectId id = heap_alloc(heap, sizeof(MapData), freemapdata);
     MapData* data = heap_getdata(heap, id);
+    data->state = state;
     data->hashtable = hashtable_new(hashvalue, comparevalue, (UserData)state, 32);
     data->capacity = 32;
     data->count = 0;
@@ -157,12 +172,14 @@ bool map_iscontiguous(
     NomValue    map
     )
 {
+    assert(state);
+
     if (!nom_ismap(map))
     {
         return false;
     }
 
-    ObjectId id = GET_ID(map);
+    HeapObjectId id = GET_ID(map);
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
 
@@ -175,12 +192,14 @@ bool map_next(
     NomIterator*    iterator
     )
 {
+    assert(state);
+
     if (!nom_ismap(map))
     {
         return false;
     }
 
-    ObjectId id = GET_ID(map);
+    HeapObjectId id = GET_ID(map);
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
 
@@ -232,18 +251,23 @@ bool map_insert(
     NomValue    value
     )
 {
+    assert(state);
+
     if (!nom_ismap(map))
     {
         return false;
     }
 
-    ObjectId id = GET_ID(map);
+    HeapObjectId id = GET_ID(map);
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
 
     bool inserted = hashtable_insert(data->hashtable, (UserData)key.raw, (UserData)value.raw);
     if (inserted)
     {
+        nom_acquire(state, key);
+        nom_acquire(state, value);
+
         insertkey(data, key);
     }
 
@@ -257,15 +281,25 @@ bool map_set(
     NomValue    value
     )
 {
+    assert(state);
+
     if (!nom_ismap(map))
     {
         return false;
     }
 
-    ObjectId id = GET_ID(map);
+    HeapObjectId id = GET_ID(map);
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
-    return hashtable_set(data->hashtable, (UserData)key.raw, (UserData)value.raw);
+
+    NomValue oldvalue;
+    bool result = hashtable_set(data->hashtable, (UserData)key.raw, (UserData)value.raw, (UserData*)&oldvalue);
+    if (result)
+    {
+        nom_release(state, oldvalue);
+    }
+
+    return result;
 }
 
 bool map_insertorset(
@@ -280,14 +314,22 @@ bool map_insertorset(
         return false;
     }
 
-    ObjectId id = GET_ID(map);
+    HeapObjectId id = GET_ID(map);
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
 
-    bool inserted = HashTable_InsertOrSet(data->hashtable, (UserData)key.raw, (UserData)value.raw);
+    NomValue oldvalue;
+    bool inserted = hashtable_insertorset(data->hashtable, (UserData)key.raw, (UserData)value.raw, (UserData*)&oldvalue);
     if (inserted)
     {
+        nom_acquire(state, key);
+        nom_acquire(state, value);
+
         insertkey(data, key);
+    }
+    else
+    {
+        nom_release(state, oldvalue);
     }
 
     return inserted;
@@ -316,7 +358,7 @@ bool map_tryget(
         return false;
     }
 
-    ObjectId id = GET_ID(map);
+    HeapObjectId id = GET_ID(map);
     Heap* heap = state_getheap(state);
     MapData* data = heap_getdata(heap, id);
     return hashtable_get(data->hashtable, (UserData)key.raw, (UserData*)&value->data);

@@ -182,6 +182,8 @@ bool hashtable_next(
     HashTableIterator*  iterator
     )
 {
+    assert(hashtable);
+
     if (!iterator->hashtable)
     {
         // Initialize the iterator
@@ -224,6 +226,8 @@ bool hashtable_insert(
     UserData    value
     )
 {
+    assert(hashtable);
+
     BucketNode* node = NULL;
     if (findnode(hashtable, key, true, &node))
     {
@@ -237,12 +241,20 @@ bool hashtable_insert(
 bool hashtable_set(
     HashTable*  hashtable,
     UserData    key,
-    UserData    value
+    UserData    value,
+    UserData*   oldvalue
     )
 {
+    assert(hashtable);
+
     BucketNode* node = NULL;
     if (findnode(hashtable, key, false, &node))
     {
+        if (oldvalue)
+        {
+            *oldvalue = node->value;
+        }
+
         node->value = value;
         return true;
     }
@@ -250,14 +262,25 @@ bool hashtable_set(
     return false;
 }
 
-bool HashTable_InsertOrSet(
+bool hashtable_insertorset(
     HashTable*  hashtable,
     UserData    key,
-    UserData    value
+    UserData    value,
+    UserData*   oldvalue
     )
 {
+    assert(hashtable);
+
     BucketNode* node = NULL;
     bool result = findnode(hashtable, key, true, &node);
+    if (!result)
+    {
+        if (oldvalue)
+        {
+            *oldvalue = node->value;
+        }
+    }
+
     node->value = value;
     return result;
 }

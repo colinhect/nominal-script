@@ -31,7 +31,15 @@
 typedef struct Heap Heap;
 
 // A handle to a GC object (specific to a certain heap)
-typedef uint32_t ObjectId;
+typedef uint32_t HeapObjectId;
+
+// A GC object on the heap
+typedef struct
+{
+    void*   data;
+    void    (*free)(void*);
+    int32_t refcount;
+} HeapObject;
 
 // Creates a new heap
 Heap* heap_new(
@@ -45,16 +53,28 @@ void heap_free(
 
 // Allocates a new object in the heap given the size (in bytes) of the data to
 // allocate and the function used to free the object when it is collected
-ObjectId heap_alloc(
+HeapObjectId heap_alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
     );
 
+// Deallocates an object in the heap
+void heap_dealloc(
+    Heap*       heap,
+    HeapObjectId    id
+    );
+
+// Returns a pointer to an object on the heap
+HeapObject* heap_getobject(
+    Heap*       heap,
+    HeapObjectId    id
+    );
+
 // Returns a pointer to the data of an object on the heap
 void* heap_getdata(
     Heap*       heap,
-    ObjectId    id
+    HeapObjectId    id
     );
 
 #endif

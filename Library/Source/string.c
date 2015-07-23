@@ -45,7 +45,7 @@ NomValue nom_newstring(
     )
 {
     Heap* heap = state_getheap(state);
-    ObjectId id = heap_alloc(heap, strlen(value) + 1, free);
+    HeapObjectId id = heap_alloc(heap, strlen(value) + 1, free);
     strcpy((char*)heap_getdata(heap, id), value);
 
     NomValue string = nom_nil();

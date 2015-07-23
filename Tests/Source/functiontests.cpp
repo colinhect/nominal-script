@@ -43,7 +43,6 @@ extern "C"
     CHECK(nom_error(state) == true); \
 }
 
-
 TEST_CASE("Creating and invoking functions with parameters", "[Function]")
 {
     NomState* state = nom_newstate();
@@ -78,6 +77,8 @@ TEST_CASE("Creating and invoking native functions", "[Function]")
     CHECK(nom_isfunction(function));
 
     nom_letvar(state, "test", function);
+    nom_release(state, function);
+
     CHECK(!nom_error(state));
 
     TEST_EXPR("test: 2 3", nom_fromint(5));
