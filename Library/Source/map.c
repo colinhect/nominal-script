@@ -46,8 +46,7 @@ Hash hashvalue(
     UserData    context
     )
 {
-    NomValue value;
-    value.raw = key;
+    NomValue value = { key };
 
     return nom_hash((NomState*)context, value);
 }
@@ -64,8 +63,8 @@ void freemapdata(
     HashTableIterator iterator = { 0 };
     while (hashtable_next(mapdata->hashtable, &iterator))
     {
-        NomValue key = { .raw = iterator.key };
-        NomValue value = { .raw = iterator.value };
+        NomValue key = { iterator.key };
+        NomValue value = { iterator.key };
 
         nom_release(mapdata->state, key);
         nom_release(mapdata->state, value);
@@ -92,11 +91,8 @@ bool comparevalue(
     UserData    context
     )
 {
-    NomValue leftvalue;
-    leftvalue.raw = left;
-
-    NomValue rightvalue;
-    rightvalue.raw = right;
+    NomValue leftvalue = { left };
+    NomValue rightvalue = { right };
 
     return nom_equals((NomState*)context, leftvalue, rightvalue);
 }

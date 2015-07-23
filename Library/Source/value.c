@@ -478,19 +478,13 @@ void nom_acquire(
 {
     assert(state);
 
-    Type type = GET_TYPE(value);
-    switch (type)
-    {
-    case TYPE_STRING:
-    case TYPE_MAP:
-    case TYPE_FUNCTION:
+    if (IS_HEAP_OBJECT(value))
     {
         Heap* heap = state_getheap(state);
 
         HeapObjectId id = GET_ID(value);
         HeapObject* object = heap_getobject(heap, id);
         ++object->refcount;
-    } break;
     }
 }
 
@@ -501,12 +495,7 @@ void nom_release(
 {
     assert(state);
 
-    Type type = GET_TYPE(value);
-    switch (type)
-    {
-    case TYPE_STRING:
-    case TYPE_MAP:
-    case TYPE_FUNCTION:
+    if (IS_HEAP_OBJECT(value))
     {
         Heap* heap = state_getheap(state);
 
@@ -518,6 +507,5 @@ void nom_release(
         {
             heap_dealloc(heap, id);
         }
-    } break;
     }
 }
