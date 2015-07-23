@@ -511,13 +511,13 @@ TEST_CASE("Calling nom_isnumber() on non-number Nominal values", "[Number]")
 
     SECTION("Checking string")
     {
-        NomValue value = nom_newstring(state, "Testing...", false);
+        NomValue value = nom_newstring(state, "Testing...");
         CHECK(nom_isnumber(value) == false);
     }
 
     SECTION("Checking interned string")
     {
-        NomValue value = nom_newstring(state, "Testing...", true);
+        NomValue value = nom_newinternedstring(state, "Testing...");
         CHECK(nom_isnumber(value) == false);
     }
 

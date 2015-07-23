@@ -41,29 +41,31 @@ bool nom_isstring(
 
 NomValue nom_newstring(
     NomState*   state,
-    const char* value,
-    bool        interned
+    const char* value
     )
 {
+    Heap* heap = state_getheap(state);
+    ObjectId id = heap_alloc(heap, strlen(value) + 1, free);
+    strcpy((char*)heap_getdata(heap, id), value);
+
     NomValue string = nom_nil();
+    SET_TYPE(string, TYPE_STRING);
+    SET_ID(string, id);
 
-    if (interned)
-    {
-        StringPool* stringpool = state_getstringpool(state);
-        StringId id = stringpool_getid(stringpool, value);
+    return string;
+}
 
-        SET_TYPE(string, TYPE_INTERNED_STRING);
-        SET_ID(string, id);
-    }
-    else
-    {
-        Heap* heap = state_getheap(state);
-        ObjectId id = heap_alloc(heap, strlen(value) + 1, free);
-        strcpy((char*)heap_getdata(heap, id), value);
+NomValue nom_newinternedstring(
+    NomState*   state,
+    const char* value
+    )
+{
+    StringPool* stringpool = state_getstringpool(state);
+    StringId id = stringpool_getid(stringpool, value);
 
-        SET_TYPE(string, TYPE_STRING);
-        SET_ID(string, id);
-    }
+    NomValue string = nom_nil();
+    SET_TYPE(string, TYPE_INTERNED_STRING);
+    SET_ID(string, id);
 
     return string;
 }

@@ -48,7 +48,7 @@ NOM_EXPORT bool nom_ismap(
 /// \param state
 ///     The state to create the value for.
 ///
-/// \returns The new Nominal map.
+/// \returns The new Nominal map (must be released).
 NOM_EXPORT NomValue nom_newmap(
     NomState*   state
     );

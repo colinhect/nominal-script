@@ -56,13 +56,13 @@ TEST_CASE("Calling nom_ismap() on non-map Nominal values", "[Map]")
 
     SECTION("Checking string")
     {
-        NomValue value = nom_newstring(state, "Testing...", false);
+        NomValue value = nom_newstring(state, "Testing...");
         CHECK(nom_ismap(value) == false);
     }
 
     SECTION("Checking interned string")
     {
-        NomValue value = nom_newstring(state, "Testing...", true);
+        NomValue value = nom_newinternedstring(state, "Testing...");
         CHECK(nom_ismap(value) == false);
     }
 
@@ -86,7 +86,7 @@ TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
 
     SECTION("Using string keys")
     {
-        NomValue key = nom_newstring(state, "Key", false);
+        NomValue key = nom_newstring(state, "Key");
         NomValue value = nom_fromint(10);
         CHECK(nom_insert(state, map, key, value) == true);
         NomValue result = nom_get(state, map, key);
@@ -95,7 +95,7 @@ TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
 
     SECTION("Using interned string keys")
     {
-        NomValue key = nom_newstring(state, "Key", true);
+        NomValue key = nom_newinternedstring(state, "Key");
         NomValue value = nom_fromint(10);
         CHECK(nom_insert(state, map, key, value) == true);
         NomValue result = nom_get(state, map, key);
@@ -162,11 +162,11 @@ TEST_CASE("Inserting and retrieving multiple values keyed from strings in a Nomi
 
     NomValue map = nom_newmap(state);
 
-    NomValue a = nom_newstring(state, "a", false);
-    NomValue b = nom_newstring(state, "b", false);
-    NomValue c = nom_newstring(state, "c", false);
-    NomValue d = nom_newstring(state, "d", false);
-    NomValue e = nom_newstring(state, "e", false);
+    NomValue a = nom_newstring(state, "a");
+    NomValue b = nom_newstring(state, "b");
+    NomValue c = nom_newstring(state, "c");
+    NomValue d = nom_newstring(state, "d");
+    NomValue e = nom_newstring(state, "e");
 
     CHECK(nom_insert(state, map, a, b) == true);
     CHECK(nom_insert(state, map, b, c) == true);
@@ -193,11 +193,11 @@ TEST_CASE("Inserting and retrieving multiple values keyed from interned strings 
 
     NomValue map = nom_newmap(state);
 
-    NomValue a = nom_newstring(state, "a", true);
-    NomValue b = nom_newstring(state, "b", true);
-    NomValue c = nom_newstring(state, "c", true);
-    NomValue d = nom_newstring(state, "d", true);
-    NomValue e = nom_newstring(state, "e", true);
+    NomValue a = nom_newinternedstring(state, "a");
+    NomValue b = nom_newinternedstring(state, "b");
+    NomValue c = nom_newinternedstring(state, "c");
+    NomValue d = nom_newinternedstring(state, "d");
+    NomValue e = nom_newinternedstring(state, "e");
 
     CHECK(nom_insert(state, map, a, b) == true);
     CHECK(nom_insert(state, map, b, c) == true);
@@ -224,12 +224,12 @@ TEST_CASE("Inserting values keyed from mixed interned/non-interned strings into 
 
     NomValue map = nom_newmap(state);
 
-    NomValue a = nom_newstring(state, "a", true);
-    NomValue b = nom_newstring(state, "b", true);
+    NomValue a = nom_newinternedstring(state, "a");
+    NomValue b = nom_newinternedstring(state, "b");
 
     CHECK(nom_insert(state, map, a, b) == true);
 
-    NomValue a2 = nom_newstring(state, "a", false);
+    NomValue a2 = nom_newstring(state, "a");
 
     NomValue result;
     result = nom_get(state, map, a2);
@@ -312,11 +312,11 @@ TEST_CASE("Creating a map with explicit keys", "[Map]")
     CHECK(nom_ismap(map));
 
     NomValue result;
-    result = nom_get(state, map, nom_newstring(state, "zero", false));
+    result = nom_get(state, map, nom_newstring(state, "zero"));
     CHECK(nom_equals(state, result, nom_fromint(0)) == true);
-    result = nom_get(state, map, nom_newstring(state, "one", false));
+    result = nom_get(state, map, nom_newstring(state, "one"));
     CHECK(nom_equals(state, result, nom_fromint(1)) == true);
-    result = nom_get(state, map, nom_newstring(state, "two", false));
+    result = nom_get(state, map, nom_newstring(state, "two"));
     CHECK(nom_equals(state, result, nom_fromint(2)) == true);
 
     nom_freestate(state);

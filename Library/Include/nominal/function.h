@@ -54,7 +54,7 @@ NOM_EXPORT bool nom_isfunction(
 /// \param function
 ///     The native function callback.
 ///
-/// \returns The new Nominal function.
+/// \returns The new Nominal function (must be released).
 NOM_EXPORT NomValue nom_newfunction(
     NomState*   state,
     NomFunction function

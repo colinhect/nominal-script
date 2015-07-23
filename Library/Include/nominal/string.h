@@ -47,14 +47,25 @@ NOM_EXPORT bool nom_isstring(
 ///     The state to create the value for.
 /// \param value
 ///     The NULL-terminated string value.
-/// \param interned
-///     Whether the string should be interned (normally false).
 ///
-/// \returns The new Nominal value.
+/// \returns The new Nominal value (must be released).
 NOM_EXPORT NomValue nom_newstring(
     NomState*   state,
-    const char* value,
-    bool        interned
+    const char* value
+    );
+
+///
+/// \brief Creates an interned Nominal string value from a string.
+///
+/// \param state
+///     The state to create the value for.
+/// \param value
+///     The NULL-terminated string value.
+///
+/// \returns The new Nominal value.
+NOM_EXPORT NomValue nom_newinternedstring(
+    NomState*   state,
+    const char* value
     );
 
 ///
