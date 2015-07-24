@@ -27,7 +27,8 @@
 #include <stdio.h>
 
 static NomValue prelude_print(
-    NomState*   state)
+    NomState*   state
+    )
 {
     assert(state);
 
@@ -57,7 +58,8 @@ static NomValue prelude_print(
 }
 
 static NomValue prelude_forvalues(
-    NomState*   state)
+    NomState*   state
+    )
 {
     assert(state);
 
@@ -89,7 +91,8 @@ static NomValue prelude_forvalues(
 }
 
 static NomValue prelude_forkeys(
-    NomState*   state)
+    NomState*   state
+    )
 {
     assert(state);
 
@@ -121,13 +124,14 @@ static NomValue prelude_forkeys(
 }
 
 static NomValue prelude_if(
-    NomState*   state)
+    NomState*   state
+    )
 {
     assert(state);
 
     NomValue condition = nom_getarg(state, 0);
-    NomValue thenFunction = nom_getarg(state, 1);
-    NomValue elseFunction = nom_getarg(state, 2);
+    NomValue thenBody = nom_getarg(state, 1);
+    NomValue elseBody = nom_getarg(state, 2);
 
     NomValue result;
     if (nom_isinvokable(state, condition))
@@ -141,22 +145,22 @@ static NomValue prelude_if(
 
     if (!nom_error(state))
     {
-        if (nom_istrue(state, result) && nom_istrue(state, thenFunction))
+        if (nom_istrue(state, result) && nom_istrue(state, thenBody))
         {
-            if (nom_isinvokable(state, thenFunction))
+            if (nom_isinvokable(state, thenBody))
             {
-                return nom_invoke(state, thenFunction, 0, NULL);
+                return nom_invoke(state, thenBody, 0, NULL);
             }
             else
             {
                 nom_seterror(state, "'then' is not invokable");
             }
         }
-        else if (!nom_istrue(state, result) && nom_istrue(state, elseFunction))
+        else if (!nom_istrue(state, result) && nom_istrue(state, elseBody))
         {
-            if (nom_isinvokable(state, elseFunction))
+            if (nom_isinvokable(state, elseBody))
             {
-                return nom_invoke(state, elseFunction, 0, NULL);
+                return nom_invoke(state, elseBody, 0, NULL);
             }
             else
             {
@@ -168,8 +172,47 @@ static NomValue prelude_if(
     return nom_nil();
 }
 
+static NomValue prelude_while(
+    NomState*   state
+    )
+{
+    assert(state);
+
+    NomValue condition = nom_getarg(state, 0);
+    NomValue body = nom_getarg(state, 1);
+
+    NomValue result = nom_nil();
+    if (nom_isinvokable(state, condition))
+    {
+        if (nom_isinvokable(state, body))
+        {
+            for (;;)
+            {
+                NomValue value = nom_invoke(state, condition, 0, NULL);
+                if (nom_error(state) || !nom_istrue(state, value))
+                {
+                    break;
+                }
+
+                result = nom_invoke(state, body, 0, NULL);
+            }
+        }
+        else
+        {
+            nom_seterror(state, "'body' is not invokable");
+        }
+    }
+    else
+    {
+        nom_seterror(state, "'condition' is not invokable");
+    }
+
+    return result;
+}
+
 static NomValue prelude_assertequal(
-    NomState*   state)
+    NomState*   state
+    )
 {
     assert(state);
 
@@ -204,6 +247,8 @@ void import_prelude(
     nom_letvar(state, "print", nom_newfunction(state, prelude_print));
     assert(!nom_error(state));
     nom_letvar(state, "if", nom_newfunction(state, prelude_if));
+    assert(!nom_error(state));
+    nom_letvar(state, "while", nom_newfunction(state, prelude_while));
     assert(!nom_error(state));
     nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
     assert(!nom_error(state));

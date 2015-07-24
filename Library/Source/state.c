@@ -105,7 +105,8 @@ struct NomState
 
 static void compile(
     NomState*   state,
-    const char* source)
+    const char* source
+    )
 {
     assert(state);
     assert(source);
