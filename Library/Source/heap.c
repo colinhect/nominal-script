@@ -176,13 +176,13 @@ void heap_mark(
     }
 }
 
-unsigned heap_sweep(
+unsigned int heap_sweep(
     Heap*   heap
     )
 {
     assert(heap);
 
-    unsigned count = 0;
+    unsigned int count = 0;
     uint32_t newmaxid = 0;
 
     // For each potential heap object

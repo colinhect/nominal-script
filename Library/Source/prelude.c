@@ -232,6 +232,18 @@ static NomValue prelude_assertequal(
     return nom_nil();
 }
 
+static NomValue prelude_collectgarbage(
+    NomState*   state
+    )
+{
+    assert(state);
+
+    unsigned int count = nom_collectgarbage(state);
+
+    NomValue result = nom_fromunsignedint(count);
+    return result;
+}
+
 void import_prelude(
     NomState*   state
     )
@@ -250,10 +262,12 @@ void import_prelude(
     assert(!nom_error(state));
     nom_letvar(state, "while", nom_newfunction(state, prelude_while));
     assert(!nom_error(state));
-    nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
-    assert(!nom_error(state));
     nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
     assert(!nom_error(state));
     nom_letvar(state, "forKeys", nom_newfunction(state, prelude_forkeys));
+    assert(!nom_error(state));
+    nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
+    assert(!nom_error(state));
+    nom_letvar(state, "collectGarbage", nom_newfunction(state, prelude_collectgarbage));
     assert(!nom_error(state));
 }

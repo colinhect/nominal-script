@@ -850,7 +850,7 @@ static void mark(
     }
 }
 
-unsigned nom_collectgarbage(
+unsigned int nom_collectgarbage(
     NomState*   state
     )
 {
@@ -869,7 +869,7 @@ unsigned nom_collectgarbage(
     }
 
     // Sweep
-    unsigned count = heap_sweep(state->heap);
+    unsigned int count = heap_sweep(state->heap);
 
     return count;
 }
