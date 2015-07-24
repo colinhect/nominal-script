@@ -9,7 +9,7 @@ file(
     "${PROJECT_SOURCE_DIR}/Library/Include/nominal/*.h"
     "${PROJECT_SOURCE_DIR}/Library/Source/*.h"
     "${PROJECT_SOURCE_DIR}/Library/Source/*.c"
-)
+    )
 
 if(WIN32)
     add_definitions("/D_CRT_SECURE_NO_WARNINGS /DNOM_EXPORTS")
