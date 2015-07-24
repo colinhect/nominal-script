@@ -44,15 +44,7 @@ Heap* heap_new(
     Heap* heap = (Heap*)malloc(sizeof(Heap));
     assert(heap);
 
-    size_t objectssize = sizeof(HeapObject) * INITIAL_HEAP_SIZE;
-    heap->objects = (HeapObject*)malloc(objectssize);
-    assert(heap->objects);
-
-    memset(heap->objects, 0, objectssize);
-
-    heap->capacity = INITIAL_HEAP_SIZE;
-    heap->nextid = 0;
-    heap->maxid = 0;
+    memset(heap, 0, sizeof(Heap));
 
     return heap;
 }
@@ -87,7 +79,34 @@ HeapObjectId heap_alloc(
     assert(heap);
 
     HeapObjectId id = heap->nextid++;
-    assert(id < heap->capacity);
+
+    // If the id exceeds the capacity
+    if (id >= heap->capacity)
+    {
+        // Compute the new capacity
+        heap->capacity = heap->capacity == 0 ? INITIAL_HEAP_SIZE : heap->capacity * 2;
+        
+        // Allocate the new array of objects
+        size_t size = sizeof(HeapObject) * heap->capacity;
+        HeapObject* objects = (HeapObject*)malloc(size);
+        assert(objects);
+
+        // If the heap already had objects
+        if (heap->objects)
+        {
+            size_t halfsize = size / 2;
+
+            // Copy over the first half of the objects
+            memcpy(objects, heap->objects, halfsize);
+
+            // Zero out the latter half of the objects
+            memset(objects + halfsize, 0, halfsize);
+
+            free(heap->objects);
+        }
+
+        heap->objects = objects;
+    }
 
     heap->maxid = max(heap->maxid, id);
 

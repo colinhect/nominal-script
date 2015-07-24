@@ -39,7 +39,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#define STRING_POOL_STRING_COUNT    (256)
+#define STRING_POOL_STRING_COUNT    (512)
 
 typedef struct
 {
@@ -74,10 +74,10 @@ struct NomState
 
 // Pushes a stack frame on the callstack given the return instruction pointer
 // and the scope
-#define PUSH_FRAME(i, a, s)\
+#define PUSH_FRAME(i, a)\
     state->callstack[state->cp].ip = i;\
     state->callstack[state->cp].argcount = a;\
-    state->callstack[state->cp++].scope = s
+    state->callstack[state->cp++].scope = nom_nil();
 
 // Returns the top stack frame on the callstack
 #define TOP_FRAME()\
@@ -160,7 +160,7 @@ static void invoke(
     NomValue value = POP_VALUE();
     if (nom_isinvokable(state, value))
     {
-        PUSH_FRAME(state->ip, argcount, nom_newmap(state));
+        PUSH_FRAME(state->ip, argcount);
 
         if (function_isnative(state, value))
         {
@@ -211,11 +211,9 @@ NomState* nom_newstate(
 
     memset(state, 0, sizeof(NomState));
 
+    state->cp = 1;
     state->heap = heap_new();
     state->stringpool = stringpool_new(STRING_POOL_STRING_COUNT);
-
-    // Global scope
-    PUSH_FRAME(0, 0, nom_newmap(state));
 
     import_prelude(state);
 
@@ -329,6 +327,13 @@ void state_letinterned(
 
     StackFrame* frame = TOP_FRAME();
     NomValue string = string_newinterned(id);
+
+    // Create a new map for the scope if this is the first variable declared
+    // in this scope
+    if (!nom_ismap(frame->scope))
+    {
+        frame->scope = nom_newmap(state);
+    }
 
     // Attempt to define the variable at the top-most scope
     NomValue scope = frame->scope;
