@@ -19,6 +19,10 @@ endforeach()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+include_directories(
+    SYSTEM "${PROJECT_SOURCE_DIR}/Dependencies/Catch"
+    )
+
 add_subdirectory("${PROJECT_SOURCE_DIR}/Interactive")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Library")
 add_subdirectory("${PROJECT_SOURCE_DIR}/Tests")
