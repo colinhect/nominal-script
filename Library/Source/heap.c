@@ -83,7 +83,7 @@ HeapObjectId heap_alloc(
     // If the id exceeds the capacity
     if (id >= heap->capacity)
     {
-        assert(heap->capacity < (1 << (sizeof(HeapObjectId) * 8 - 1)));
+        assert(heap->capacity < (1u << (sizeof(HeapObjectId) * 8u - 1u)));
 
         // Compute the new capacity
         heap->capacity = heap->capacity == 0 ? INITIAL_HEAP_SIZE : heap->capacity * 2;
