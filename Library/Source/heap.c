@@ -30,8 +30,9 @@
 struct Heap
 {
     HeapObject*     objects;
-    size_t          capacity;
+    uint32_t        capacity;
     HeapObjectId    nextid;
+    HeapObjectId    maxid;
 };
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
@@ -51,6 +52,7 @@ Heap* heap_new(
 
     heap->capacity = INITIAL_HEAP_SIZE;
     heap->nextid = 0;
+    heap->maxid = 0;
 
     return heap;
 }
@@ -64,8 +66,7 @@ void heap_free(
     // Free all objects
     if (heap->objects)
     {
-        // For each (potential) object
-        for (HeapObjectId id = 0; id < heap->capacity; ++id)
+        for (HeapObjectId id = 0; id <= heap->maxid; ++id)
         {
             heap_dealloc(heap, id);
         }
@@ -88,14 +89,15 @@ HeapObjectId heap_alloc(
     HeapObjectId id = heap->nextid++;
     assert(id < heap->capacity);
 
+    heap->maxid = max(heap->maxid, id);
+
     HeapObject* object = heap_getobject(heap, id);
-    assert(!object->data);
+    memset(object, 0, sizeof(HeapObject));
 
     object->data = malloc(size);
     assert(object->data);
 
     object->free = free;
-    object->refcount = 1;
 
     return id;
 }
@@ -139,4 +141,56 @@ void* heap_getdata(
 
     HeapObject* object = heap_getobject(heap, id);
     return object->data;
+}
+
+void heap_mark(
+    Heap*           heap,
+    HeapObjectId    id
+    )
+{
+    assert(heap);
+
+    HeapObject* object = heap_getobject(heap, id);
+    if (object->data)
+    {
+        object->marked = true;
+    }
+}
+
+unsigned heap_sweep(
+    Heap*   heap
+    )
+{
+    assert(heap);
+
+    unsigned count = 0;
+    uint32_t newmaxid = 0;
+
+    // For each potential heap object
+    for (HeapObjectId id = 0; id <= heap->maxid; ++id)
+    {
+        HeapObject* object = heap_getobject(heap, id);
+
+        // If the object is allocated
+        if (object->data)
+        {
+            newmaxid = max(newmaxid, id);
+
+            // Either unmark the object or free it
+            if (object->marked)
+            {
+                object->marked = false;
+            }
+            else if (object->refcount <= 0)
+            {
+                heap_dealloc(heap, id);
+                ++count;
+            }
+        }
+    }
+
+    // Establish a new upper bound of the largest object ID
+    heap->maxid = newmaxid;
+
+    return count;
 }

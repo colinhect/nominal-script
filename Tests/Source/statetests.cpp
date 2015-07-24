@@ -34,3 +34,32 @@ TEST_CASE("Create and free a Nominal state", "[State]")
     CHECK(state);
     nom_freestate(state);
 }
+
+TEST_CASE("Collecting garbage when there are no unreferenced objects", "[State]")
+{
+    NomState* state = nom_newstate();
+    CHECK(state);
+
+    nom_letvar(state, "x", nom_newstring(state, "Test"));
+    CHECK(!nom_error(state));
+
+    CHECK(nom_collectgarbage(state) == 0);
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Collecting garbage when there are unreferenced objects", "[State]")
+{
+    NomState* state = nom_newstate();
+    CHECK(state);
+
+    nom_letvar(state, "x", nom_newstring(state, "Test"));
+    CHECK(!nom_error(state));
+
+    nom_setvar(state, "x", nom_nil());
+    CHECK(!nom_error(state));
+
+    CHECK(nom_collectgarbage(state) == 1);    
+
+    nom_freestate(state);
+}

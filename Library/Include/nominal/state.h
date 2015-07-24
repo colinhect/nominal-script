@@ -65,6 +65,24 @@ NOM_EXPORT void nom_letvar(
     );
 
 ///
+/// \brief Sets a variable accessible from the current scope.
+///
+/// \warning Ths function could have encountered an error.  Check nom_error()
+/// directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param identifier
+///     The identifier of the variable.
+/// \param value
+///     The value of the variable.
+NOM_EXPORT void nom_setvar(
+    NomState*   state,
+    const char* identifier,
+    NomValue    value
+    );
+
+///
 /// \brief Returns the number of available arguments on the call stack.
 ///
 /// \param state
@@ -169,6 +187,17 @@ NOM_EXPORT void nom_seterror(
 /// \param state
 ///     The state.
 NOM_EXPORT const char* nom_geterror(
+    NomState*   state
+    );
+
+///
+/// \brief Reclaims all unreferenced objects.
+///
+/// \param state
+///     The state.
+///
+/// \returns The number of objects reclaimed.
+NOM_EXPORT unsigned nom_collectgarbage(
     NomState*   state
     );
 

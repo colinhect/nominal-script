@@ -51,4 +51,17 @@ typedef enum
 #define SET_ID(v, i)        (v.data.upper = (uint32_t)i)
 #define GET_ID(v)           (v.data.upper)
 
+// A function for visiting Nominal values
+typedef void (*ValueVisitor)(
+    NomState*   state,
+    NomValue    value
+    );
+
+// Visits the specified value and all child values
+void value_visit(
+    NomState*       state,
+    NomValue        value,
+    ValueVisitor    visitor
+    );
+
 #endif

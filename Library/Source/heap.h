@@ -24,6 +24,7 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -39,6 +40,7 @@ typedef struct
     void*   data;
     void    (*free)(void*);
     int32_t refcount;
+    bool    marked;
 } HeapObject;
 
 // Creates a new heap
@@ -75,6 +77,18 @@ HeapObject* heap_getobject(
 void* heap_getdata(
     Heap*           heap,
     HeapObjectId    id
+    );
+
+// Marks an object to be deallocated on the next sweep
+void heap_mark(
+    Heap*           heap,
+    HeapObjectId    id
+    );
+
+// Deallocates all unmarked objects in the heap, returning the number of
+// objects collected
+unsigned heap_sweep(
+    Heap*   heap
     );
 
 #endif

@@ -255,6 +255,19 @@ void nom_letvar(
     state_letinterned(state, id, value);
 }
 
+void nom_setvar(
+    NomState*   state,
+    const char* identifier,
+    NomValue    value
+    )
+{
+    assert(state);
+    assert(identifier);
+
+    StringId id = stringpool_getid(state->stringpool, identifier);
+    state_setinterned(state, id, value);
+}
+
 size_t nom_getargcount(
     NomState*   state
     )
@@ -815,4 +828,42 @@ const char* nom_geterror(
     assert(state);
     state->errorflag = false;
     return state->error;
+}
+
+static void mark(
+    NomState*   state,
+    NomValue    value
+    )
+{
+    assert(state);
+
+    if (IS_HEAP_OBJECT(value))
+    {
+        HeapObjectId id = GET_ID(value);
+        heap_mark(state->heap, id);
+    }
+}
+
+unsigned nom_collectgarbage(
+    NomState*   state
+    )
+{
+    assert(state);
+
+    // Mark all values on the stack
+    for (uint32_t i = 0; i < state->sp; ++i)
+    {
+        value_visit(state, state->stack[i], mark);
+    }
+
+    // Mark all scopes on the callstack
+    for (uint32_t i = 0; i < state->cp; ++i)
+    {
+        value_visit(state, state->callstack[i].scope, mark);
+    }
+
+    // Sweep
+    unsigned count = heap_sweep(state->heap);
+
+    return count;
 }

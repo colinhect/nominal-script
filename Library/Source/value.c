@@ -504,3 +504,26 @@ void nom_release(
         --object->refcount;
     }
 }
+
+void value_visit(
+    NomState*       state,
+    NomValue        value,
+    ValueVisitor    visitor
+    )
+{
+    assert(state);
+    assert(visitor);
+
+    visitor(state, value);
+
+    // If the value is a map then visit all keys/values 
+    if (nom_ismap(value))
+    {
+        NomIterator iterator = { 0 };
+        while (nom_next(state, value, &iterator))
+        {
+            value_visit(state, iterator.key, visitor);
+            value_visit(state, iterator.value, visitor);
+        }
+    }
+}
