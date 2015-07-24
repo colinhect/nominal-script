@@ -108,7 +108,7 @@ HeapObjectId heap_alloc(
         heap->objects = objects;
     }
 
-    heap->maxid = max(heap->maxid, id);
+    heap->maxid = id > heap->maxid ? id : heap->maxid;
 
     HeapObject* object = heap_getobject(heap, id);
     memset(object, 0, sizeof(HeapObject));
@@ -193,7 +193,7 @@ unsigned heap_sweep(
         // If the object is allocated
         if (object->data)
         {
-            newmaxid = max(newmaxid, id);
+            newmaxid = id > newmaxid ? id : newmaxid;
 
             // Either unmark the object or free it
             if (object->marked)
