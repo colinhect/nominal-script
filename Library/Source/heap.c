@@ -83,25 +83,24 @@ HeapObjectId heap_alloc(
     // If the id exceeds the capacity
     if (id >= heap->capacity)
     {
+        assert(heap->capacity < (1 << (sizeof(HeapObjectId) * 8 - 1)));
+
         // Compute the new capacity
         heap->capacity = heap->capacity == 0 ? INITIAL_HEAP_SIZE : heap->capacity * 2;
 
         // Allocate the new array of objects
         size_t size = sizeof(HeapObject) * heap->capacity;
         HeapObject* objects = (HeapObject*)malloc(size);
+        memset(objects, 0, size);
         assert(objects);
 
         // If the heap already had objects
         if (heap->objects)
         {
-            size_t halfsize = size / 2;
-
             // Copy over the first half of the objects
-            memcpy(objects, heap->objects, halfsize);
+            memcpy(objects, heap->objects, size / 2);
 
-            // Zero out the latter half of the objects
-            memset(objects + halfsize, 0, halfsize);
-
+            extern void free(void*);
             free(heap->objects);
         }
 
