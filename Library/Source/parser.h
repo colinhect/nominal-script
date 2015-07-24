@@ -35,71 +35,71 @@ typedef struct Parser Parser;
 Parser* parser_new(
     const char* source,
     StringPool* stringpool
-    );
+);
 
 // Frees a parser
 void parser_free(
     Parser* parser
-    );
+);
 
 // Sets the error message of a parser
 void parser_seterror(
     Parser*     parser,
     const char* fmt,
     ...
-    );
+);
 
 // Returns the error message of a parser
 const char* parser_geterror(
     Parser* parser
-    );
+);
 
 // Parses a sequence of expressions (returns NULL if a parse error occurred)
 Node* parser_exprs(
     Parser* parser,
     bool    newlines
-    );
+);
 
 // Parses an expression (returns NULL if a parse error occurred)
 Node* parser_expr(
     Parser* parser
-    );
+);
 
 // Parses a primary expression (returns NULL if a parse error occurred)
 Node* parser_primaryexpr(
     Parser* parser
-    );
+);
 
 // Parses a secondary expression (returns NULL if a parse error occurred)
 Node* parser_secondaryexpr(
     Parser* parser
-    );
+);
 
 // Parses an expression in parenthesis (returns NULL if a parse error occurred)
 Node* parser_parenexpr(
     Parser* parser
-    );
+);
 
 // Parses a binary expression (returns NULL if a parse error occurred)
 Node* parser_binexpr(
     Parser* parser,
     int     prec,
     Node*   leftexpr
-    );
+);
 
 // Parses a map (returns NULL if a parse error occurred)
 Node* parser_map(
     Parser* parser
-    );
+);
 
 // Parses a function (returns NULL if a parse error occurred)
 Node* parser_function(
     Parser* parser
-    );
+);
 
 // Parses a string or identifier (returns NULL if a parse error occurred)
 Node* parser_stringorident(
     Parser* parser
-    );
+);
 
 #endif

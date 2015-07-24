@@ -72,19 +72,19 @@ typedef struct
 /// \brief Returns the value representing nil.
 NOM_EXPORT NomValue nom_nil(
     void
-    );
+);
 
 ///
 /// \brief Returns the value representing true.
 NOM_EXPORT NomValue nom_true(
     void
-    );
+);
 
 ///
 /// \brief Returns the value representing false.
 NOM_EXPORT NomValue nom_false(
     void
-    );
+);
 
 ///
 /// \brief Returns whether a Nominal value is true
@@ -98,7 +98,7 @@ NOM_EXPORT NomValue nom_false(
 NOM_EXPORT bool nom_istrue(
     NomState*   state,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns whether a value is equal to another.
@@ -115,7 +115,7 @@ NOM_EXPORT bool nom_equals(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    );
+);
 
 ///
 /// \brief Returns the hash of a Nominal value.
@@ -129,7 +129,7 @@ NOM_EXPORT bool nom_equals(
 NOM_EXPORT long long nom_hash(
     NomState*   state,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Gets a representation of a value as a string.
@@ -149,7 +149,7 @@ NOM_EXPORT size_t nom_tostring(
     char*       buffer,
     size_t      buffersize,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Adds another value to a Nominal value.
@@ -166,7 +166,7 @@ NOM_EXPORT NomValue nom_add(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    );
+);
 
 ///
 /// \brief Subtracts another value from a Nominal value.
@@ -183,7 +183,7 @@ NOM_EXPORT NomValue nom_sub(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    );
+);
 
 ///
 /// \brief Multiplies a value by another value.
@@ -200,7 +200,7 @@ NOM_EXPORT NomValue nom_mul(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    );
+);
 
 ///
 /// \brief Divides a value by another value.
@@ -217,7 +217,7 @@ NOM_EXPORT NomValue nom_div(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    );
+);
 
 ///
 /// \brief Negates a Nominal value.
@@ -231,7 +231,7 @@ NOM_EXPORT NomValue nom_div(
 NOM_EXPORT NomValue nom_neg(
     NomState*   state,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns whether a Nominal value can be invoked.
@@ -245,7 +245,7 @@ NOM_EXPORT NomValue nom_neg(
 NOM_EXPORT bool nom_isinvokable(
     NomState*   state,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Invokes a Nominal value.
@@ -265,7 +265,7 @@ NOM_EXPORT NomValue nom_invoke(
     NomValue    value,
     uint8_t     argcount,
     NomValue*   args
-    );
+);
 
 ///
 /// \brief Returns whether a Nominal value can be iterated over.
@@ -279,7 +279,7 @@ NOM_EXPORT NomValue nom_invoke(
 NOM_EXPORT bool nom_isiterable(
     NomState*   state,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Moves to the next key/value pair in the Nominal value.
@@ -298,7 +298,7 @@ NOM_EXPORT bool nom_next(
     NomState*       state,
     NomValue        value,
     NomIterator*    iterator
-    );
+);
 
 ///
 /// \brief Inserts a new value into a Nominal value.
@@ -320,7 +320,7 @@ NOM_EXPORT bool nom_insert(
     NomValue    value,
     NomValue    key,
     NomValue    keyvalue
-    );
+);
 
 ///
 /// \brief Sets a value for a key in a Nominal value.
@@ -342,7 +342,7 @@ NOM_EXPORT bool nom_set(
     NomValue    value,
     NomValue    key,
     NomValue    keyvalue
-    );
+);
 
 ///
 /// \brief Inserts or sets a value for a key in a Nominal value.
@@ -363,7 +363,7 @@ NOM_EXPORT bool nom_insertorset(
     NomValue    value,
     NomValue    key,
     NomValue    keyvalue
-    );
+);
 
 ///
 /// \brief Gets the value for a key in a Nominal value.
@@ -380,7 +380,7 @@ NOM_EXPORT NomValue nom_get(
     NomState*   state,
     NomValue    value,
     NomValue    key
-    );
+);
 
 ///
 /// \brief Gets the value for a key in a Nominal value.
@@ -401,7 +401,7 @@ NOM_EXPORT bool nom_tryget(
     NomValue    value,
     NomValue    key,
     NomValue*   keyvalue
-    );
+);
 
 ///
 /// \brief Acquires a reference to a Nominal value, assuring that the value
@@ -414,7 +414,7 @@ NOM_EXPORT bool nom_tryget(
 NOM_EXPORT void nom_acquire(
     NomState*   state,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Releases a reference to a Nominal value, allowing the value to be
@@ -427,6 +427,6 @@ NOM_EXPORT void nom_acquire(
 NOM_EXPORT void nom_release(
     NomState*   state,
     NomValue    value
-    );
+);
 
 #endif

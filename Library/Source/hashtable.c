@@ -50,7 +50,7 @@ static bool findnode(
     UserData        key,
     bool            createNew,
     BucketNode**    node
-    )
+)
 {
     // Hash the key
     Hash hash = hashtable->hash(key, hashtable->context);
@@ -117,7 +117,7 @@ HashTable* hashtable_new(
     CompareFunction compare,
     UserData        context,
     size_t          bucketcount
-    )
+)
 {
     HashTable* hashtable = (HashTable*)malloc(sizeof(HashTable));
     assert(hashtable);
@@ -138,7 +138,7 @@ void hashtable_free(
     HashTable*  hashtable,
     void        (*freekey)(void*),
     void        (*freevalue)(void*)
-    )
+)
 {
     assert(hashtable);
 
@@ -180,7 +180,7 @@ void hashtable_free(
 bool hashtable_next(
     HashTable*          hashtable,
     HashTableIterator*  iterator
-    )
+)
 {
     assert(hashtable);
 
@@ -224,7 +224,7 @@ bool hashtable_insert(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
-    )
+)
 {
     assert(hashtable);
 
@@ -242,7 +242,7 @@ bool hashtable_set(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
-    )
+)
 {
     assert(hashtable);
 
@@ -260,7 +260,7 @@ bool hashtable_insertorset(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
-    )
+)
 {
     assert(hashtable);
 
@@ -275,7 +275,7 @@ bool hashtable_get(
     HashTable*  hashtable,
     UserData    key,
     UserData*   value
-    )
+)
 {
     BucketNode* node = NULL;
     bool result = findnode(hashtable, key, false, &node);
@@ -292,7 +292,7 @@ bool hashtable_insertorget(
     UserData    key,
     UserData    value,
     UserData*   existingvalue
-    )
+)
 {
     BucketNode* node = NULL;
 
@@ -312,7 +312,7 @@ bool hashtable_insertorget(
 Hash hashstring(
     UserData    key,
     UserData    context
-    )
+)
 {
     (void)context;
 
@@ -332,7 +332,7 @@ bool comparestring(
     UserData    left,
     UserData    right,
     UserData    context
-    )
+)
 {
     (void)context;
     return strcmp((const char*)left, (const char*)right) == 0;
@@ -341,7 +341,7 @@ bool comparestring(
 Hash hashidentity(
     UserData    key,
     UserData    context
-    )
+)
 {
     (void)context;
     return (Hash)key;
@@ -351,7 +351,7 @@ bool compareidentity(
     UserData    left,
     UserData    right,
     UserData    context
-    )
+)
 {
     (void)context;
     return left == right;

@@ -38,14 +38,14 @@ typedef uint64_t Hash;
 typedef Hash (*HashFunction)(
     UserData    key,
     UserData    context
-    );
+);
 
 // A comparison function
 typedef bool (*CompareFunction)(
     UserData    left,
     UserData    right,
     UserData    context
-    );
+);
 
 // A hash table
 typedef struct HashTable HashTable;
@@ -70,7 +70,7 @@ HashTable* hashtable_new(
     CompareFunction compare,
     UserData        context,
     size_t          bucketcount
-    );
+);
 
 // Frees a hash table using the specified functions to free each key and value
 // (both functions can be NULL)
@@ -78,13 +78,13 @@ void hashtable_free(
     HashTable*  hashtable,
     void        (*freekey)(void*),
     void        (*freevalue)(void*)
-    );
+);
 
 // Moves to the next pair in the hash table
 bool hashtable_next(
     HashTable*          hashtable,
     HashTableIterator*  iterator
-    );
+);
 
 // Inserts a new value in the hash table, returning true if the insertion was
 // successful or false if a value already exists for the specified key
@@ -92,7 +92,7 @@ bool hashtable_insert(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
-    );
+);
 
 // Sets an existing value in the hash table, returning true if the set was
 // successful or false if no value exists for the specified key
@@ -100,7 +100,7 @@ bool hashtable_set(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
-    );
+);
 
 // Inserts a new value or sets an existing value in the hash table, returning
 // true if a new value was inserted or false if an existing value was changed
@@ -108,7 +108,7 @@ bool hashtable_insertorset(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
-    );
+);
 
 // Gets the value for a key, returning true if a value was found for the
 // specified key and false if no value was found for the specified key
@@ -116,7 +116,7 @@ bool hashtable_get(
     HashTable*  hashtable,
     UserData    key,
     UserData*   value
-    );
+);
 
 // Either inserts a new value or get an existing value, returning true if a
 // value was found for the given key or false if no value was found for the
@@ -126,26 +126,26 @@ bool hashtable_insertorget(
     UserData    key,
     UserData    value,
     UserData*   existingvalue
-    );
+);
 
 // Hashes a string
 Hash hashstring(
     UserData    key,
     UserData    context
-    );
+);
 
 // Compares strings, returning true if the strings are equal or false otherwise
 bool comparestring(
     UserData    left,
     UserData    right,
     UserData    context
-    );
+);
 
 // Returns the literal value of the key as the hash
 Hash hashidentity(
     UserData    key,
     UserData    context
-    );
+);
 
 // Compares the literal value of the key, returning true if the keys are equal
 // or false otherwise
@@ -153,6 +153,6 @@ bool compareidentity(
     UserData    left,
     UserData    right,
     UserData    context
-    );
+);
 
 #endif

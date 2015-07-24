@@ -31,133 +31,133 @@
 
 bool nom_isnumber(
     NomValue    value
-    )
+)
 {
     return IS_NUMBER(value);
 }
 
 NomValue nom_fromint(
     int             value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromunsignedint(
     unsigned int    value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromlong(
     long            value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromunsignedlong(
     unsigned long   value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromlonglong(
     long long           value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromunsignedlonglong(
     unsigned long long  value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromsize(
     size_t  value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromfloat(
     float       value
-    )
+)
 {
     FROM_NUMBER((double)value);
 }
 
 NomValue nom_fromdouble(
     double      value
-    )
+)
 {
     FROM_NUMBER(value);
 }
 
 int nom_toint(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, int, INT_MAX);
 }
 
 unsigned int nom_tounsignedint(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, unsigned int, UINT_MAX);
 }
 
 long nom_tolong(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, long, LONG_MAX);
 }
 
 unsigned long nom_tounsignedlong(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, unsigned long, ULONG_MAX);
 }
 
 long long nom_tolonglong(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, long long, LLONG_MAX);
 }
 
 unsigned long long nom_tounsignedlonglong(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, unsigned long long, ULLONG_MAX);
 }
 
 size_t nom_tosize(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, size_t, (size_t)-1);
 }
 
 float nom_tofloat(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, float, NAN);
 }
 
 double nom_todouble(
     NomValue    value
-    )
+)
 {
     AS_NUMBER(value, double, NAN);
 }

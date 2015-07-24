@@ -42,7 +42,7 @@ struct Parser
 
 static void unexpectedtokenerror(
     Parser*     parser
-    )
+)
 {
     char buffer[MAX_PARSER_ERROR_LENGTH];
     size_t length = lexer_gettokenlength(parser->lexer);
@@ -55,7 +55,7 @@ static void unexpectedtokenerror(
 Parser* parser_new(
     const char* source,
     StringPool* stringpool
-    )
+)
 {
     Parser* parser = (Parser*)malloc(sizeof(Parser));
     assert(parser);
@@ -71,7 +71,7 @@ Parser* parser_new(
 
 void parser_free(
     Parser* parser
-    )
+)
 {
     assert(parser);
 
@@ -88,7 +88,7 @@ void parser_seterror(
     Parser*     parser,
     const char* fmt,
     ...
-    )
+)
 {
     va_list args;
     va_start(args, fmt);
@@ -101,7 +101,7 @@ void parser_seterror(
 
 const char* parser_geterror(
     Parser* parser
-    )
+)
 {
     return parser->fullerror;
 }
@@ -109,7 +109,7 @@ const char* parser_geterror(
 Node* parser_exprs(
     Parser* parser,
     bool    newlines
-    )
+)
 {
     // Parse an expression
     Node* expr = parser_expr(parser);
@@ -122,9 +122,9 @@ Node* parser_exprs(
     // another expression sequence
     Node* exprs = NULL;
     if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ',') ||
-        (newlines && lexer_skippednewline(parser->lexer) &&
-            !lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ']') &&
-            !lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '}')))
+            (newlines && lexer_skippednewline(parser->lexer) &&
+             !lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ']') &&
+             !lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '}')))
     {
         if (lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, ','))
         {
@@ -149,14 +149,14 @@ Node* parser_exprs(
 
 Node* parser_expr(
     Parser* parser
-    )
+)
 {
     return parser_binexpr(parser, 0, parser_primaryexpr(parser));
 }
 
 Node* parser_primaryexpr(
     Parser* parser
-    )
+)
 {
     // Unary operator
     if (lexer_istokentype(parser->lexer, TOK_OPERATOR))
@@ -201,7 +201,7 @@ Node* parser_primaryexpr(
 
 Node* parser_secondaryexpr(
     Parser* parser
-    )
+)
 {
     TokenType type = lexer_gettokentype(parser->lexer);
     unsigned id = lexer_gettokenid(parser->lexer);
@@ -238,14 +238,14 @@ Node* parser_secondaryexpr(
             break;
         }
 
-        // Number literal
+    // Number literal
     case TOK_NUMBER:
         node = node_new(NODE_NUMBER);
         node->data.number.value = lexer_gettokenasnumber(parser->lexer);
         lexer_next(parser->lexer);
         break;
 
-        // String literal or identifier
+    // String literal or identifier
     case TOK_STRING:
     case TOK_IDENT:
         node = parser_stringorident(parser);
@@ -386,7 +386,7 @@ Node* parser_secondaryexpr(
 
 Node* parser_parenexpr(
     Parser* parser
-    )
+)
 {
     if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '('))
     {
@@ -418,7 +418,7 @@ Node* parser_binexpr(
     Parser* parser,
     int     prec,
     Node*   leftexpr
-    )
+)
 {
     if (!leftexpr)
     {
@@ -494,7 +494,7 @@ Node* parser_binexpr(
 
 Node* parser_map(
     Parser* parser
-    )
+)
 {
     if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '{'))
     {
@@ -580,7 +580,7 @@ Node* parser_map(
 
 Node* parser_function(
     Parser* parser
-    )
+)
 {
     if (!lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '['))
     {
@@ -653,7 +653,7 @@ Node* parser_function(
 
 Node* parser_stringorident(
     Parser* parser
-    )
+)
 {
     Node* node;
     if (lexer_istokentype(parser->lexer, TOK_STRING))

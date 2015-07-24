@@ -40,7 +40,7 @@
 /// \returns True if the value is a map; false otherwise.
 NOM_EXPORT bool nom_ismap(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Creates a new Nominal map.
@@ -51,6 +51,6 @@ NOM_EXPORT bool nom_ismap(
 /// \returns The new Nominal map (must be released).
 NOM_EXPORT NomValue nom_newmap(
     NomState*   state
-    );
+);
 
 #endif

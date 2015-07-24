@@ -32,17 +32,17 @@
 
 bool nom_isstring(
     NomValue    value
-    )
+)
 {
     Type type = GET_TYPE(value);
     return type == TYPE_STRING
-        || type == TYPE_INTERNED_STRING;
+           || type == TYPE_INTERNED_STRING;
 }
 
 NomValue nom_newstring(
     NomState*   state,
     const char* value
-    )
+)
 {
     Heap* heap = state_getheap(state);
     HeapObjectId id = heap_alloc(heap, strlen(value) + 1, free);
@@ -58,7 +58,7 @@ NomValue nom_newstring(
 NomValue nom_newinternedstring(
     NomState*   state,
     const char* value
-    )
+)
 {
     StringPool* stringpool = state_getstringpool(state);
     StringId id = stringpool_getid(stringpool, value);
@@ -73,7 +73,7 @@ NomValue nom_newinternedstring(
 const char* nom_getstring(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     Heap* heap = state_getheap(state);
     StringPool* stringpool = state_getstringpool(state);
@@ -91,7 +91,7 @@ const char* nom_getstring(
 
 NomValue string_newinterned(
     StringId    id
-    )
+)
 {
     NomValue string = nom_nil();
     SET_TYPE(string, TYPE_INTERNED_STRING);

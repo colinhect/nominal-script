@@ -106,7 +106,7 @@ struct NomState
 static void compile(
     NomState*   state,
     const char* source
-    )
+)
 {
     assert(state);
     assert(source);
@@ -131,7 +131,7 @@ static void compile(
 
 static void ret(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -153,7 +153,7 @@ static void invoke(
     NomState*   state,
     uint8_t     argcount,
     bool        execute
-    )
+)
 {
     assert(state);
 
@@ -204,7 +204,7 @@ static void invoke(
 
 NomState* nom_newstate(
     void
-    )
+)
 {
     NomState* state = (NomState*)malloc(sizeof(NomState));
     assert(state);
@@ -222,7 +222,7 @@ NomState* nom_newstate(
 
 void nom_freestate(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -245,7 +245,7 @@ void nom_letvar(
     NomState*   state,
     const char* identifier,
     NomValue    value
-    )
+)
 {
     assert(state);
     assert(identifier);
@@ -258,7 +258,7 @@ void nom_setvar(
     NomState*   state,
     const char* identifier,
     NomValue    value
-    )
+)
 {
     assert(state);
     assert(identifier);
@@ -269,7 +269,7 @@ void nom_setvar(
 
 size_t nom_getargcount(
     NomState*   state
-    )
+)
 {
     assert(state);
     StackFrame* frame = TOP_FRAME();
@@ -279,7 +279,7 @@ size_t nom_getargcount(
 NomValue nom_getarg(
     NomState*   state,
     size_t      index
-    )
+)
 {
     assert(state);
 
@@ -303,7 +303,7 @@ NomValue nom_getarg(
 
 Heap* state_getheap(
     NomState*   state
-    )
+)
 {
     assert(state);
     return state->heap;
@@ -311,7 +311,7 @@ Heap* state_getheap(
 
 StringPool* state_getstringpool(
     NomState*   state
-    )
+)
 {
     assert(state);
     return state->stringpool;
@@ -321,7 +321,7 @@ void state_letinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -347,7 +347,7 @@ void state_setinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -376,7 +376,7 @@ void state_setinterned(
 NomValue state_getinterned(
     NomState*   state,
     StringId    id
-    )
+)
 {
     assert(state);
 
@@ -410,7 +410,7 @@ NomValue state_invoke(
     NomValue    value,
     uint8_t     argcount,
     NomValue*   args
-    )
+)
 {
     assert(state);
 
@@ -429,7 +429,7 @@ NomValue state_invoke(
 
 NomValue state_execute(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -671,7 +671,7 @@ NomValue state_execute(
 NomValue nom_execute(
     NomState*   state,
     const char* source
-    )
+)
 {
     compile(state, source);
     return state_execute(state);
@@ -680,7 +680,7 @@ NomValue nom_execute(
 void nom_dofile(
     NomState*   state,
     const char* path
-    )
+)
 {
     assert(state);
     assert(path);
@@ -691,9 +691,9 @@ void nom_dofile(
         fseek(fp, 0L, SEEK_END);
         long length = ftell(fp);
         fseek(fp, 0L, SEEK_SET);
-        
+
         char* source = malloc(length + 1);
-        
+
         size_t bytesRead = fread(source, sizeof(char), length, fp);
         if (bytesRead > 0)
         {
@@ -710,7 +710,7 @@ void nom_dofile(
         {
             nom_execute(state, source);
         }
-        
+
         free(source);
     }
     else
@@ -722,7 +722,7 @@ void nom_dofile(
 void nom_dumpbytecode(
     NomState*   state,
     const char* source
-    )
+)
 {
     assert(state);
 
@@ -749,7 +749,8 @@ void nom_dumpbytecode(
             StringId id = READAS(StringId);
             const char* string = stringpool_find(state->stringpool, id);
             printf("\t%s", string);
-        } break;
+        }
+        break;
 
         case OPCODE_PUSH:
         {
@@ -757,13 +758,15 @@ void nom_dumpbytecode(
             char buffer[256];
             nom_tostring(state, buffer, 256, value);
             printf("%s", buffer);
-        } break;
+        }
+        break;
 
         case OPCODE_MAP:
         {
             uint32_t itemCount = READAS(uint32_t);
             printf("\t%u", itemCount);
-        } break;
+        }
+        break;
 
         case OPCODE_FUNCTION:
         {
@@ -780,19 +783,22 @@ void nom_dumpbytecode(
                     printf(" ");
                 }
             }
-        } break;
+        }
+        break;
 
         case OPCODE_GOTO:
         {
             uint32_t ip = READAS(uint32_t);
             printf("0x%x", ip);
-        } break;
+        }
+        break;
 
         case OPCODE_INVOKE:
         {
             uint32_t argcount = READAS(uint32_t);
             printf("%u", argcount);
-        } break;
+        }
+        break;
 
         default:
             break;
@@ -806,7 +812,7 @@ void nom_dumpbytecode(
 
 bool nom_error(
     NomState*   state
-    )
+)
 {
     assert(state);
     return state->errorflag;
@@ -816,7 +822,7 @@ void nom_seterror(
     NomState*   state,
     const char* fmt,
     ...
-    )
+)
 {
     assert(state);
     assert(fmt);
@@ -829,7 +835,7 @@ void nom_seterror(
 
 const char* nom_geterror(
     NomState*   state
-    )
+)
 {
     assert(state);
     state->errorflag = false;
@@ -839,7 +845,7 @@ const char* nom_geterror(
 static void mark(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -852,7 +858,7 @@ static void mark(
 
 unsigned int nom_collectgarbage(
     NomState*   state
-    )
+)
 {
     assert(state);
 

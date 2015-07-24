@@ -36,12 +36,12 @@
 // Returns the heap used by the specified state
 Heap* state_getheap(
     NomState*   state
-    );
+);
 
 // Returns the string pool used by the specified state
 StringPool* state_getstringpool(
     NomState*   state
-    );
+);
 
 // Declares the value of a variable given an interned string ID based
 // on the current scope
@@ -52,7 +52,7 @@ void state_letinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
-    );
+);
 
 // Sets the value of a variable given an interned string ID based
 // on the current scope
@@ -63,7 +63,7 @@ void state_setinterned(
     NomState*   state,
     StringId    id,
     NomValue    value
-    );
+);
 
 // Returns the value of a variable given an interned string ID based
 // on the current scope
@@ -73,7 +73,7 @@ void state_setinterned(
 NomValue state_getinterned(
     NomState*   state,
     StringId    id
-    );
+);
 
 // Invokes a function
 //
@@ -84,7 +84,7 @@ NomValue state_invoke(
     NomValue    value,
     uint8_t     argcount,
     NomValue*   args
-    );
+);
 
 // Begins execution at the current instruction pointer
 //
@@ -92,6 +92,6 @@ NomValue state_invoke(
 // after invoking this function
 NomValue state_execute(
     NomState*   state
-    );
+);
 
 #endif

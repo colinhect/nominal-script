@@ -35,7 +35,7 @@
 /// \returns The new state.
 NOM_EXPORT NomState* nom_newstate(
     void
-    );
+);
 
 ///
 /// \brief Frees a state
@@ -44,7 +44,7 @@ NOM_EXPORT NomState* nom_newstate(
 ///     The state to free.
 NOM_EXPORT void nom_freestate(
     NomState*   state
-    );
+);
 
 ///
 /// \brief Declares a variable in the current scope.
@@ -62,7 +62,7 @@ NOM_EXPORT void nom_letvar(
     NomState*   state,
     const char* identifier,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Sets a variable accessible from the current scope.
@@ -80,7 +80,7 @@ NOM_EXPORT void nom_setvar(
     NomState*   state,
     const char* identifier,
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the number of available arguments on the call stack.
@@ -91,7 +91,7 @@ NOM_EXPORT void nom_setvar(
 /// \returns The number of arguments.
 NOM_EXPORT size_t nom_getargcount(
     NomState*   state
-    );
+);
 
 ///
 /// \brief Gets the argument at the given index on the call stack.
@@ -106,7 +106,7 @@ NOM_EXPORT size_t nom_getargcount(
 NOM_EXPORT NomValue nom_getarg(
     NomState*   state,
     size_t      index
-    );
+);
 
 ///
 /// \brief Executes a snippet of Nominal source code and returns the value.
@@ -123,7 +123,7 @@ NOM_EXPORT NomValue nom_getarg(
 NOM_EXPORT NomValue nom_execute(
     NomState*   state,
     const char* source
-    );
+);
 
 ///
 /// \brief Executes a file containing Nominal source code.
@@ -138,7 +138,7 @@ NOM_EXPORT NomValue nom_execute(
 NOM_EXPORT void nom_dofile(
     NomState*   state,
     const char* path
-    );
+);
 
 ///
 /// \brief Prints the byte code resulting from a snippet of Nominal source
@@ -157,7 +157,7 @@ NOM_EXPORT void nom_dofile(
 NOM_EXPORT void nom_dumpbytecode(
     NomState*   state,
     const char* source
-    );
+);
 
 ///
 /// \brief Returns whether an error has occurred.
@@ -166,7 +166,7 @@ NOM_EXPORT void nom_dumpbytecode(
 ///     The state.
 NOM_EXPORT bool nom_error(
     NomState*   state
-    );
+);
 
 ///
 /// \brief Sets an error that has occurred.
@@ -179,7 +179,7 @@ NOM_EXPORT void nom_seterror(
     NomState*   state,
     const char* fmt,
     ...
-    );
+);
 
 ///
 /// \brief Returns the error message of the last error.
@@ -188,7 +188,7 @@ NOM_EXPORT void nom_seterror(
 ///     The state.
 NOM_EXPORT const char* nom_geterror(
     NomState*   state
-    );
+);
 
 ///
 /// \brief Reclaims all unreferenced objects.
@@ -199,6 +199,6 @@ NOM_EXPORT const char* nom_geterror(
 /// \returns The number of objects reclaimed.
 NOM_EXPORT unsigned int nom_collectgarbage(
     NomState*   state
-    );
+);
 
 #endif

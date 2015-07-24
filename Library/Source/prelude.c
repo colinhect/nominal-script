@@ -28,7 +28,7 @@
 
 static NomValue prelude_print(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -59,7 +59,7 @@ static NomValue prelude_print(
 
 static NomValue prelude_forvalues(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -92,7 +92,7 @@ static NomValue prelude_forvalues(
 
 static NomValue prelude_forkeys(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -125,7 +125,7 @@ static NomValue prelude_forkeys(
 
 static NomValue prelude_if(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -174,7 +174,7 @@ static NomValue prelude_if(
 
 static NomValue prelude_while(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -212,7 +212,7 @@ static NomValue prelude_while(
 
 static NomValue prelude_assertequal(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -234,7 +234,7 @@ static NomValue prelude_assertequal(
 
 static NomValue prelude_collectgarbage(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -246,7 +246,7 @@ static NomValue prelude_collectgarbage(
 
 void import_prelude(
     NomState*   state
-    )
+)
 {
     assert(state);
 

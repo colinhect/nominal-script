@@ -31,7 +31,7 @@
 bool map_iscontiguous(
     NomState*   state,
     NomValue    map
-    );
+);
 
 // Moves to the next key/value pair in a map (moves to the first pair if the
 // iterator is initialized to zero)
@@ -39,7 +39,7 @@ bool map_next(
     NomState*       state,
     NomValue        map,
     NomIterator*    iterator
-    );
+);
 
 // Inserts a new key/value in a map, returning true if the key/value was
 // inserted or false if a value already exists for the key
@@ -48,7 +48,7 @@ bool map_insert(
     NomValue    map,
     NomValue    key,
     NomValue    value
-    );
+);
 
 // Sets the value for a key in a map, returning true if the set was successful
 // or false if no value exists for the specified key
@@ -57,7 +57,7 @@ bool map_set(
     NomValue    map,
     NomValue    key,
     NomValue    value
-    );
+);
 
 // Inserts a new value or sets an existing value in a map, returning true if a
 // new value was inserted or false if an existing value was changed
@@ -66,7 +66,7 @@ bool map_insertorset(
     NomValue    map,
     NomValue    key,
     NomValue    value
-    );
+);
 
 // Gets the value for a key in a map, returning nil no value is set for the
 // specified key
@@ -74,7 +74,7 @@ NomValue map_get(
     NomState*   state,
     NomValue    map,
     NomValue    key
-    );
+);
 
 // Tries to get the value for a key in a map, returning true if the value was
 // found or false otherwise
@@ -83,6 +83,6 @@ bool map_tryget(
     NomValue    map,
     NomValue    key,
     NomValue*   value
-    );
+);
 
 #endif

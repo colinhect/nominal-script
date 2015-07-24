@@ -39,7 +39,7 @@ struct Heap
 
 Heap* heap_new(
     void
-    )
+)
 {
     Heap* heap = (Heap*)malloc(sizeof(Heap));
     assert(heap);
@@ -51,7 +51,7 @@ Heap* heap_new(
 
 void heap_free(
     Heap*   heap
-    )
+)
 {
     assert(heap);
 
@@ -74,7 +74,7 @@ HeapObjectId heap_alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
-    )
+)
 {
     assert(heap);
 
@@ -85,7 +85,7 @@ HeapObjectId heap_alloc(
     {
         // Compute the new capacity
         heap->capacity = heap->capacity == 0 ? INITIAL_HEAP_SIZE : heap->capacity * 2;
-        
+
         // Allocate the new array of objects
         size_t size = sizeof(HeapObject) * heap->capacity;
         HeapObject* objects = (HeapObject*)malloc(size);
@@ -124,7 +124,7 @@ HeapObjectId heap_alloc(
 void heap_dealloc(
     Heap*           heap,
     HeapObjectId    id
-    )
+)
 {
     assert(heap);
 
@@ -142,7 +142,7 @@ void heap_dealloc(
 HeapObject* heap_getobject(
     Heap*           heap,
     HeapObjectId    id
-    )
+)
 {
     assert(heap);
     assert(id < heap->capacity);
@@ -154,7 +154,7 @@ HeapObject* heap_getobject(
 void* heap_getdata(
     Heap*           heap,
     HeapObjectId    id
-    )
+)
 {
     assert(heap);
 
@@ -165,7 +165,7 @@ void* heap_getdata(
 void heap_mark(
     Heap*           heap,
     HeapObjectId    id
-    )
+)
 {
     assert(heap);
 
@@ -178,7 +178,7 @@ void heap_mark(
 
 unsigned int heap_sweep(
     Heap*   heap
-    )
+)
 {
     assert(heap);
 

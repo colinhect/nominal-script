@@ -29,6 +29,6 @@
 // Imports the Prelude module
 void import_prelude(
     NomState*   state
-    );
+);
 
 #endif

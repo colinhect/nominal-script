@@ -47,7 +47,7 @@ typedef enum
 #define IS_HEAP_OBJECT(v)   (GET_TYPE(v) > TYPE_INTERNED_STRING)
 
 #define SET_TYPE(v, t)      (v.data.lower = (TYPE_MASK & t) | (~TYPE_MASK & v.data.lower))
-#define GET_TYPE(v)         (IS_NUMBER(v) ? TYPE_NUMBER : (Type)(TYPE_MASK & v.data.lower))      
+#define GET_TYPE(v)         (IS_NUMBER(v) ? TYPE_NUMBER : (Type)(TYPE_MASK & v.data.lower))
 #define SET_ID(v, i)        (v.data.upper = (uint32_t)i)
 #define GET_ID(v)           (v.data.upper)
 
@@ -55,13 +55,13 @@ typedef enum
 typedef void (*ValueVisitor)(
     NomState*   state,
     NomValue    value
-    );
+);
 
 // Visits the specified value and all child values
 void value_visit(
     NomState*       state,
     NomValue        value,
     ValueVisitor    visitor
-    );
+);
 
 #endif

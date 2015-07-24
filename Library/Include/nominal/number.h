@@ -41,7 +41,7 @@
 /// \returns True if the value is a number; false otherwise.
 NOM_EXPORT bool nom_isnumber(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from an int.
@@ -52,7 +52,7 @@ NOM_EXPORT bool nom_isnumber(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromint(
     int             value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from an unsigned int.
@@ -63,7 +63,7 @@ NOM_EXPORT NomValue nom_fromint(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromunsignedint(
     unsigned int    value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from an long.
@@ -74,7 +74,7 @@ NOM_EXPORT NomValue nom_fromunsignedint(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromlong(
     long            value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from an unsigned long.
@@ -85,7 +85,7 @@ NOM_EXPORT NomValue nom_fromlong(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromunsignedlong(
     unsigned long   value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from a long long.
@@ -96,7 +96,7 @@ NOM_EXPORT NomValue nom_fromunsignedlong(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromlonglong(
     long long       value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from an unsigned long long.
@@ -107,7 +107,7 @@ NOM_EXPORT NomValue nom_fromlonglong(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromunsignedlonglong(
     unsigned long long  value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from a size.
@@ -118,7 +118,7 @@ NOM_EXPORT NomValue nom_fromunsignedlonglong(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromsize(
     size_t  value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from a float.
@@ -129,7 +129,7 @@ NOM_EXPORT NomValue nom_fromsize(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromfloat(
     float       value
-    );
+);
 
 ///
 /// \brief Creates a Nominal number value from a double.
@@ -140,7 +140,7 @@ NOM_EXPORT NomValue nom_fromfloat(
 /// \returns The Nominal value.
 NOM_EXPORT NomValue nom_fromdouble(
     double      value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as an int.
@@ -151,7 +151,7 @@ NOM_EXPORT NomValue nom_fromdouble(
 /// \returns The resulting value (INT_MAX if the value is not a number).
 NOM_EXPORT int nom_toint(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as an unsigned int.
@@ -162,7 +162,7 @@ NOM_EXPORT int nom_toint(
 /// \returns The resulting value (UINT_MAX if the value is not a number).
 NOM_EXPORT unsigned int nom_tounsignedint(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as a long.
@@ -173,7 +173,7 @@ NOM_EXPORT unsigned int nom_tounsignedint(
 /// \returns The resulting value (LONG_MAX if the value is not a number).
 NOM_EXPORT long nom_tolong(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as an unsigned long.
@@ -184,7 +184,7 @@ NOM_EXPORT long nom_tolong(
 /// \returns The resulting value (ULONG_MAX if the value is not a number).
 NOM_EXPORT unsigned long nom_tounsignedlong(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as a long long.
@@ -195,7 +195,7 @@ NOM_EXPORT unsigned long nom_tounsignedlong(
 /// \returns The resulting value (LLONG_MAX if the value is not a number).
 NOM_EXPORT long long nom_tolonglong(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as an unsigned long long.
@@ -206,7 +206,7 @@ NOM_EXPORT long long nom_tolonglong(
 /// \returns The resulting value (ULLONG_MAX if the value is not a number).
 NOM_EXPORT unsigned long long nom_tounsignedlonglong(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as a size.
@@ -217,7 +217,7 @@ NOM_EXPORT unsigned long long nom_tounsignedlonglong(
 /// \returns The resulting value ((size_t)-1 if the value is not a number).
 NOM_EXPORT size_t nom_tosize(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as a float.
@@ -228,7 +228,7 @@ NOM_EXPORT size_t nom_tosize(
 /// \returns The resulting value (NAN if the value is not a number).
 NOM_EXPORT float nom_tofloat(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Returns the Nominal number as a double.
@@ -239,6 +239,6 @@ NOM_EXPORT float nom_tofloat(
 /// \returns The resulting value (NAN if the value is not a number).
 NOM_EXPORT double nom_todouble(
     NomValue    value
-    );
+);
 
 #endif

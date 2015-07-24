@@ -46,12 +46,12 @@ typedef struct
 // Creates a new heap
 Heap* heap_new(
     void
-    );
+);
 
 // Frees a heap
 void heap_free(
     Heap*   heap
-    );
+);
 
 // Allocates a new object in the heap given the size (in bytes) of the data to
 // allocate and the function used to free the object when it is collected
@@ -59,36 +59,36 @@ HeapObjectId heap_alloc(
     Heap*   heap,
     size_t  size,
     void    (*free)(void*)
-    );
+);
 
 // Deallocates an object in the heap
 void heap_dealloc(
     Heap*           heap,
     HeapObjectId    id
-    );
+);
 
 // Returns a pointer to an object on the heap
 HeapObject* heap_getobject(
     Heap*           heap,
     HeapObjectId    id
-    );
+);
 
 // Returns a pointer to the data of an object on the heap
 void* heap_getdata(
     Heap*           heap,
     HeapObjectId    id
-    );
+);
 
 // Marks an object to be deallocated on the next sweep
 void heap_mark(
     Heap*           heap,
     HeapObjectId    id
-    );
+);
 
 // Deallocates all unmarked objects in the heap, returning the number of
 // objects collected
 unsigned heap_sweep(
     Heap*   heap
-    );
+);
 
 #endif

@@ -26,13 +26,13 @@
 #include "config.h"
 
 #ifdef NOM_SHARED
- #ifdef NOM_WINDOWS_BUILD
-  #ifdef NOM_EXPORTS
-   #define NOM_EXPORT __declspec(dllexport)
-  #else
-   #define NOM_EXPORT __declspec(dllimport)
-  #endif
- #else
-  #define NOM_EXPORT
- #endif
+#ifdef NOM_WINDOWS_BUILD
+#ifdef NOM_EXPORTS
+#define NOM_EXPORT __declspec(dllexport)
+#else
+#define NOM_EXPORT __declspec(dllimport)
+#endif
+#else
+#define NOM_EXPORT
+#endif
 #endif

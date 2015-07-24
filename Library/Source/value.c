@@ -81,7 +81,7 @@ int c99_snprintf(
 
 NomValue nom_nil(
     void
-    )
+)
 {
     NomValue value = { QNAN_VALUE };
     return value;
@@ -89,7 +89,7 @@ NomValue nom_nil(
 
 NomValue nom_true(
     void
-    )
+)
 {
     NomValue value = nom_nil();
     SET_TYPE(value, TYPE_BOOLEAN);
@@ -100,7 +100,7 @@ NomValue nom_true(
 
 NomValue nom_false(
     void
-    )
+)
 {
     NomValue value = nom_nil();
     SET_TYPE(value, TYPE_BOOLEAN);
@@ -112,7 +112,7 @@ NomValue nom_false(
 bool nom_istrue(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -130,7 +130,7 @@ bool nom_equals(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    )
+)
 {
     if (IS_NUMBER(left))
     {
@@ -140,7 +140,7 @@ bool nom_equals(
     {
         // If one of the strings is not interned
         if (GET_TYPE(left) != TYPE_INTERNED_STRING ||
-            GET_TYPE(right) != TYPE_INTERNED_STRING)
+                GET_TYPE(right) != TYPE_INTERNED_STRING)
         {
             return strcmp(nom_getstring(state, left), nom_getstring(state, right)) == 0;
         }
@@ -152,7 +152,7 @@ bool nom_equals(
 long long nom_hash(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     StringPool* stringpool = state_getstringpool(state);
 
@@ -175,7 +175,7 @@ size_t nom_tostring(
     char*       buffer,
     size_t      buffersize,
     NomValue    value
-    )
+)
 {
     assert(buffer);
 
@@ -263,7 +263,8 @@ size_t nom_tostring(
 
         // Closing '}'
         count += snprintf(buffer + count, buffersize - count, " }");
-    } break;
+    }
+    break;
     case TYPE_FUNCTION:
     {
         HeapObjectId id = GET_ID(value);
@@ -292,7 +293,7 @@ NomValue nom_add(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    )
+)
 {
     NomValue result = nom_nil();
     ARITH(left, right, +, "add");
@@ -303,7 +304,7 @@ NomValue nom_sub(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    )
+)
 {
     NomValue result = nom_nil();
     ARITH(left, right, -, "subtract");
@@ -314,7 +315,7 @@ NomValue nom_mul(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    )
+)
 {
     NomValue result = nom_nil();
     ARITH(left, right, *, "multiply");
@@ -325,7 +326,7 @@ NomValue nom_div(
     NomState*   state,
     NomValue    left,
     NomValue    right
-    )
+)
 {
     NomValue result = nom_nil();
     ARITH(left, right, / , "divide");
@@ -335,7 +336,7 @@ NomValue nom_div(
 NomValue nom_neg(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     NomValue result = nom_nil();
 
@@ -354,7 +355,7 @@ NomValue nom_neg(
 bool nom_isinvokable(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     (void)state;
     return nom_isfunction(value);
@@ -365,7 +366,7 @@ NomValue nom_invoke(
     NomValue    value,
     uint8_t     argcount,
     NomValue*   args
-    )
+)
 {
     return state_invoke(state, value, argcount, args);
 }
@@ -373,7 +374,7 @@ NomValue nom_invoke(
 bool nom_isiterable(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     (void)state;
     return nom_ismap(value);
@@ -383,7 +384,7 @@ bool nom_next(
     NomState*       state,
     NomValue        value,
     NomIterator*    iterator
-    )
+)
 {
     bool result = false;
     if (nom_ismap(value))
@@ -398,7 +399,7 @@ bool nom_insert(
     NomValue    value,
     NomValue    key,
     NomValue    keyvalue
-    )
+)
 {
     bool result = false;
     if (nom_ismap(value))
@@ -413,7 +414,7 @@ bool nom_set(
     NomValue    value,
     NomValue    key,
     NomValue    keyvalue
-    )
+)
 {
     bool result = false;
     if (nom_ismap(value))
@@ -428,7 +429,7 @@ bool nom_insertorset(
     NomValue    value,
     NomValue    key,
     NomValue    keyvalue
-    )
+)
 {
     bool result = false;
     if (nom_ismap(value))
@@ -442,7 +443,7 @@ NomValue nom_get(
     NomState*   state,
     NomValue    value,
     NomValue    key
-    )
+)
 {
     NomValue result = nom_nil();
     if (nom_ismap(value))
@@ -458,7 +459,7 @@ bool nom_tryget(
     NomValue    value,
     NomValue    key,
     NomValue*   keyvalue
-    )
+)
 {
     assert(keyvalue);
 
@@ -474,7 +475,7 @@ bool nom_tryget(
 void nom_acquire(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -491,7 +492,7 @@ void nom_acquire(
 void nom_release(
     NomState*   state,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -509,14 +510,14 @@ void value_visit(
     NomState*       state,
     NomValue        value,
     ValueVisitor    visitor
-    )
+)
 {
     assert(state);
     assert(visitor);
 
     visitor(state, value);
 
-    // If the value is a map then visit all keys/values 
+    // If the value is a map then visit all keys/values
     if (nom_ismap(value))
     {
         NomIterator iterator = { 0 };

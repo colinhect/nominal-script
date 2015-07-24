@@ -93,7 +93,7 @@ uint32_t generatecode(
     Node*           node,
     unsigned char*  bytecode,
     uint32_t        index
-    )
+)
 {
     switch (node->type)
     {
@@ -142,7 +142,8 @@ uint32_t generatecode(
         // Create the map
         OPCODE(OPCODE_MAP);
         WRITEAS(uint32_t, itemCount);
-    } break;
+    }
+    break;
     case NODE_IDENT:
         OPCODE(OPCODE_GET);
         WRITEAS(StringId, node->data.ident.id);
@@ -209,7 +210,8 @@ uint32_t generatecode(
             index = generatecode(state, leftexpr, bytecode, index);
             OPCODE(OP_OPCODE[op]);
         }
-    } break;
+    }
+    break;
     case NODE_SEQUENCE:
     {
         while (node)
@@ -224,7 +226,8 @@ uint32_t generatecode(
                 OPCODE(OPCODE_POP);
             }
         }
-    } break;
+    }
+    break;
     case NODE_FUNCTION:
     {
         // Go to the end of the function body
@@ -279,7 +282,8 @@ uint32_t generatecode(
         index = paramCountIndex;
         WRITEAS(uint32_t, paramcount);
         index = endIndex;
-    } break;
+    }
+    break;
     case NODE_INVOCATION:
     {
         uint32_t argcount = 0;
@@ -308,7 +312,8 @@ uint32_t generatecode(
         // Invoke the function
         OPCODE(OPCODE_INVOKE);
         WRITEAS(uint32_t, argcount);
-    } break;
+    }
+    break;
     }
 
     return index;

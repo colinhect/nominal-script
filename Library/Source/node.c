@@ -28,7 +28,7 @@
 
 Node* node_new(
     NodeType    type
-    )
+)
 {
     Node* node = (Node*)malloc(sizeof(Node));
     assert(node);
@@ -40,7 +40,7 @@ Node* node_new(
 
 void node_free(
     Node*   node
-    )
+)
 {
     assert(node);
 

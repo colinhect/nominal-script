@@ -44,7 +44,7 @@ typedef NomValue(*NomFunction)(NomState* state);
 /// \returns True if the value is a function; false otherwise.
 NOM_EXPORT bool nom_isfunction(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Creates a new Nominal function.
@@ -58,6 +58,6 @@ NOM_EXPORT bool nom_isfunction(
 NOM_EXPORT NomValue nom_newfunction(
     NomState*   state,
     NomFunction function
-    );
+);
 
 #endif

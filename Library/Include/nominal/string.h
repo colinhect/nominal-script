@@ -38,7 +38,7 @@
 /// \returns True if the value is a string; false otherwise.
 NOM_EXPORT bool nom_isstring(
     NomValue    value
-    );
+);
 
 ///
 /// \brief Creates a new Nominal string value from a string.
@@ -52,7 +52,7 @@ NOM_EXPORT bool nom_isstring(
 NOM_EXPORT NomValue nom_newstring(
     NomState*   state,
     const char* value
-    );
+);
 
 ///
 /// \brief Creates an interned Nominal string value from a string.
@@ -66,7 +66,7 @@ NOM_EXPORT NomValue nom_newstring(
 NOM_EXPORT NomValue nom_newinternedstring(
     NomState*   state,
     const char* value
-    );
+);
 
 ///
 /// \brief Returns the value of a Nominal string as a string.
@@ -81,6 +81,6 @@ NOM_EXPORT NomValue nom_newinternedstring(
 NOM_EXPORT const char* nom_getstring(
     NomState*   state,
     NomValue    value
-    );
+);
 
 #endif

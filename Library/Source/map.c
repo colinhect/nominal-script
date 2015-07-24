@@ -43,7 +43,7 @@ typedef struct
 Hash hashvalue(
     UserData    key,
     UserData    context
-    )
+)
 {
     NomValue value = { key };
 
@@ -52,12 +52,12 @@ Hash hashvalue(
 
 void freemapdata(
     void*   data
-    )
+)
 {
     assert(data);
 
     MapData* mapdata = (MapData*)data;
-    
+
     // Free the hash table
     if (mapdata->hashtable)
     {
@@ -77,7 +77,7 @@ bool comparevalue(
     UserData    left,
     UserData    right,
     UserData    context
-    )
+)
 {
     NomValue leftvalue = { left };
     NomValue rightvalue = { right };
@@ -88,7 +88,7 @@ bool comparevalue(
 void insertkey(
     MapData*    data,
     NomValue    key
-    )
+)
 {
     // If there is not enough capacity
     if (data->count >= data->capacity)
@@ -123,14 +123,14 @@ void insertkey(
 
 bool nom_ismap(
     NomValue value
-    )
+)
 {
     return GET_TYPE(value) == TYPE_MAP;
 }
 
 NomValue nom_newmap(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -153,7 +153,7 @@ NomValue nom_newmap(
 bool map_iscontiguous(
     NomState*   state,
     NomValue    map
-    )
+)
 {
     assert(state);
 
@@ -173,7 +173,7 @@ bool map_next(
     NomState*       state,
     NomValue        map,
     NomIterator*    iterator
-    )
+)
 {
     assert(state);
 
@@ -232,7 +232,7 @@ bool map_insert(
     NomValue    map,
     NomValue    key,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -259,7 +259,7 @@ bool map_set(
     NomValue    map,
     NomValue    key,
     NomValue    value
-    )
+)
 {
     assert(state);
 
@@ -281,7 +281,7 @@ bool map_insertorset(
     NomValue    map,
     NomValue    key,
     NomValue    value
-    )
+)
 {
     if (!nom_ismap(map))
     {
@@ -305,7 +305,7 @@ NomValue map_get(
     NomState*   state,
     NomValue    map,
     NomValue    key
-    )
+)
 {
     NomValue value = { 0 };
     map_tryget(state, map, key, &value);
@@ -317,7 +317,7 @@ bool map_tryget(
     NomValue    map,
     NomValue    key,
     NomValue*   value
-    )
+)
 {
     if (!nom_ismap(map))
     {

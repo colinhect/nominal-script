@@ -35,19 +35,19 @@ typedef struct StringPool StringPool;
 // Creates a new string pool
 StringPool* stringpool_new(
     size_t  stringcount
-    );
+);
 
 // Frees a string pool
 void stringpool_free(
     StringPool* stringpool
-    );
+);
 
 // Inserts a new string or gets the ID of an existing string, returning the ID
 // associated with the specified string
 StringId stringpool_getid(
     StringPool* stringpool,
     const char* string
-    );
+);
 
 // Inserts a new string or gets the ID of an existing string, returning the ID
 // associated with the specified string
@@ -55,19 +55,19 @@ StringId stringpool_getidsubstring(
     StringPool* stringpool,
     const char* string,
     size_t      length
-    );
+);
 
 // Returns the string value from a string ID (NULL if no string exists of the
 // given ID)
 const char* stringpool_find(
     StringPool* stringpool,
     StringId    id
-    );
+);
 
 // Returns the hash from a string ID
 Hash stringpool_hash(
     StringPool* stringpool,
     StringId    id
-    );
+);
 
 #endif

@@ -42,9 +42,9 @@ typedef struct
 } FunctionData;
 
 static NomValue allocfunction(
-        NomState*       state,
-        FunctionData**  data
-    )
+    NomState*       state,
+    FunctionData**  data
+)
 {
     assert(state);
     assert(data);
@@ -62,7 +62,7 @@ static NomValue allocfunction(
 
 bool nom_isfunction(
     NomValue value
-    )
+)
 {
     return GET_TYPE(value) == TYPE_FUNCTION;
 }
@@ -70,7 +70,7 @@ bool nom_isfunction(
 NomValue nom_newfunction(
     NomState*   state,
     NomFunction function
-    )
+)
 {
     assert(state);
 
@@ -86,7 +86,7 @@ NomValue nom_newfunction(
 NomValue function_new(
     NomState*   state,
     uint32_t    ip
-    )
+)
 {
     assert(state);
 
@@ -103,7 +103,7 @@ void function_addparam(
     NomState*   state,
     NomValue    function,
     StringId    param
-    )
+)
 {
     assert(state);
 
@@ -122,7 +122,7 @@ void function_addparam(
 size_t function_getparamcount(
     NomState*   state,
     NomValue    function
-    )
+)
 {
     assert(state);
 
@@ -142,7 +142,7 @@ StringId function_getparam(
     NomState*   state,
     NomValue    function,
     size_t      index
-    )
+)
 {
     assert(state);
 
@@ -161,7 +161,7 @@ StringId function_getparam(
 bool function_isnative(
     NomState*   state,
     NomValue    function
-    )
+)
 {
     return function_getnative(state, function) != NULL;
 }
@@ -169,7 +169,7 @@ bool function_isnative(
 NomFunction function_getnative(
     NomState*   state,
     NomValue    function
-    )
+)
 {
     assert(state);
 
@@ -188,7 +188,7 @@ NomFunction function_getnative(
 uint32_t function_getip(
     NomState*   state,
     NomValue    function
-    )
+)
 {
     assert(state);
 

@@ -58,25 +58,25 @@ typedef struct Lexer Lexer;
 // Creates a new lexer
 Lexer* lexer_new(
     const char* source
-    );
+);
 
 // Moves to the next token, returning true if there are more tokens to lex or
 // false otherwise
 bool lexer_next(
     Lexer*  lexer
-    );
+);
 
 // Returns whether the current token is of a specified type
 bool lexer_istokentype(
     Lexer*      lexer,
     TokenType   type
-    );
+);
 
 // Returns whether the current token has a specified ID
 bool lexer_istokenid(
     Lexer*      lexer,
     unsigned    id
-    );
+);
 
 // Returns whether the current token is of a specified type and has a
 // specified ID
@@ -84,55 +84,55 @@ bool lexer_istokentypeandid(
     Lexer*      lexer,
     TokenType   type,
     unsigned    id
-    );
+);
 
 // Returns the type of the current token
 TokenType lexer_gettokentype(
     Lexer*  lexer
-    );
+);
 
 // Returns the ID of the current token
 unsigned lexer_gettokenid(
     Lexer*  lexer
-    );
+);
 
 // Returns whether the lexer skipped whitespace when it moved to the current
 // token
 bool lexer_skippedwhitespace(
     Lexer*  lexer
-    );
+);
 
 // Returns whether the lexer skipped a new line when it moved to the current
 // token
 bool lexer_skippednewline(
     Lexer*  lexer
-    );
+);
 
 // Returns the length of the current token
 size_t lexer_gettokenlength(
     Lexer*  lexer
-    );
+);
 
 // Returns a pointer to where the current token starts in the source (the
 // string is not NULL terminated)
 const char* lexer_gettokenstring(
     Lexer*  lexer
-    );
+);
 
 // Returns the value of the token as a number
 double lexer_gettokenasnumber(
     Lexer*  lexer
-    );
+);
 
 // Saves the state of a lexer
 LexerState lexer_savestate(
     Lexer*  lexer
-    );
+);
 
 // Restores the state of a lexer
 void lexer_restorestate(
     Lexer*      lexer,
     LexerState  state
-    );
+);
 
 #endif

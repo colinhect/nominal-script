@@ -33,20 +33,20 @@
 NomValue function_new(
     NomState*   state,
     uint32_t    ip
-    );
+);
 
 // Adds a parameter to a function
 void function_addparam(
     NomState*   state,
     NomValue    function,
     StringId    param
-    );
+);
 
 // Returns the number of parameters a function has
 size_t function_getparamcount(
     NomState*   state,
     NomValue    function
-    );
+);
 
 // Returns the ID of the interned string representing the name of the
 // parameter at the specified index in a function
@@ -54,24 +54,24 @@ StringId function_getparam(
     NomState*   state,
     NomValue    function,
     size_t      index
-    );
+);
 
 // Returns true if the function has a native callback or false otherwise
 bool function_isnative(
     NomState*   state,
     NomValue    function
-    );
+);
 
 // Gets the native function pointer of a function
 NomFunction function_getnative(
     NomState*   state,
     NomValue    function
-    );
+);
 
 // Gets the instruction pointer of a function
 uint32_t function_getip(
     NomState*   state,
     NomValue    function
-    );
+);
 
 #endif

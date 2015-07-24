@@ -77,6 +77,6 @@ uint32_t generatecode(
     Node*           node,
     unsigned char*  bytecode,
     uint32_t        index
-    );
+);
 
 #endif

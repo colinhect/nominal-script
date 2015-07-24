@@ -31,6 +31,6 @@
 // Creates an interned string from a string ID
 NomValue string_newinterned(
     StringId    id
-    );
+);
 
 #endif

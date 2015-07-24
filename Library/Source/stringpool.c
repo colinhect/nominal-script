@@ -38,7 +38,7 @@ struct StringPool
 
 StringPool* stringpool_new(
     size_t  stringcount
-    )
+)
 {
     StringPool* stringpool = (StringPool*)malloc(sizeof(StringPool));
     assert(stringpool);
@@ -59,7 +59,7 @@ StringPool* stringpool_new(
 
 void stringpool_free(
     StringPool* stringpool
-    )
+)
 {
     assert(stringpool);
 
@@ -100,7 +100,7 @@ void stringpool_free(
 StringId stringpool_getid(
     StringPool* stringpool,
     const char* string
-    )
+)
 {
     return stringpool_getidsubstring(stringpool, string, strlen(string));
 }
@@ -136,7 +136,7 @@ StringId stringpool_getidsubstring(
 const char* stringpool_find(
     StringPool* stringpool,
     StringId    id
-    )
+)
 {
     return stringpool->strings[id];
 }
@@ -144,7 +144,7 @@ const char* stringpool_find(
 Hash stringpool_hash(
     StringPool* stringpool,
     StringId    id
-    )
+)
 {
     return stringpool->hashes[id];
 }

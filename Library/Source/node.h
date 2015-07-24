@@ -151,11 +151,11 @@ typedef struct Node
 // Creates a new abstract syntax node
 Node* node_new(
     NodeType    type
-    );
+);
 
 // Frees an abstract syntax node
 void node_free(
     Node*   node
-    );
+);
 
 #endif
