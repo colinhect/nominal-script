@@ -43,7 +43,7 @@ static NomValue prelude_print(
         }
         else
         {
-            nom_tostring(state, string, 8192, arg);
+            nom_tostring(state, string, sizeof(string), arg);
             printf("%s", string);
         }
 
@@ -234,7 +234,7 @@ static NomValue prelude_assertequal(
 
 static NomValue prelude_collectgarbage(
     NomState*   state
-)
+    )
 {
     assert(state);
 
@@ -244,18 +244,36 @@ static NomValue prelude_collectgarbage(
     return result;
 }
 
+static NomValue prelude_panic(
+    NomState*   state
+    )
+{
+    assert(state);
+
+    NomValue message = nom_getarg(state, 0);
+
+    assert(state);
+
+    if (nom_isstring(message))
+    {
+        nom_seterror(state, "%s", nom_getstring(state, message));
+    }
+    else
+    {
+        char string[8192];
+        nom_tostring(state, string, sizeof(string), message);
+        nom_seterror(state, "%s", string);
+    }
+
+    return nom_nil();
+}
+
 void import_prelude(
     NomState*   state
 )
 {
     assert(state);
 
-    nom_letvar(state, "nil", nom_nil());
-    assert(!nom_error(state));
-    nom_letvar(state, "true", nom_true());
-    assert(!nom_error(state));
-    nom_letvar(state, "false", nom_false());
-    assert(!nom_error(state));
     nom_letvar(state, "print", nom_newfunction(state, prelude_print));
     assert(!nom_error(state));
     nom_letvar(state, "if", nom_newfunction(state, prelude_if));
@@ -269,5 +287,7 @@ void import_prelude(
     nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
     assert(!nom_error(state));
     nom_letvar(state, "collectGarbage", nom_newfunction(state, prelude_collectgarbage));
+    assert(!nom_error(state));
+    nom_letvar(state, "panic", nom_newfunction(state, prelude_panic));
     assert(!nom_error(state));
 }

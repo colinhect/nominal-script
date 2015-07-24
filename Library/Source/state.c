@@ -215,6 +215,15 @@ NomState* nom_newstate(
     state->heap = heap_new();
     state->stringpool = stringpool_new(STRING_POOL_STRING_COUNT);
 
+    // Define intrinsic global variables
+    nom_letvar(state, "nil", nom_nil());
+    assert(!nom_error(state));
+    nom_letvar(state, "true", nom_true());
+    assert(!nom_error(state));
+    nom_letvar(state, "false", nom_false());
+    assert(!nom_error(state));
+
+    // Import the prelude library
     import_prelude(state);
 
     return state;
