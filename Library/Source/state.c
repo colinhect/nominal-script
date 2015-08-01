@@ -857,12 +857,7 @@ static void mark(
 )
 {
     assert(state);
-
-    if (GET_TYPE(value) == VALUETYPE_OBJECT)
-    {
-        HeapObjectId id = GET_ID(value);
-        heap_mark(state->heap, id);
-    }
+    heap_mark(state->heap, value);
 }
 
 unsigned int nom_collectgarbage(

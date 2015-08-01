@@ -58,7 +58,7 @@ void heap_free(
 
 // Allocates a new object in the heap given the size (in bytes) of the data to
 // allocate and the function used to free the object when it is collected
-HeapObjectId heap_alloc(
+NomValue heap_alloc(
     Heap*       heap,
     ObjectType  type,
     size_t      size,
@@ -67,26 +67,26 @@ HeapObjectId heap_alloc(
 
 // Deallocates an object in the heap
 void heap_dealloc(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 );
 
 // Returns a pointer to an object on the heap
 HeapObject* heap_getobject(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 );
 
 // Returns a pointer to the data of an object on the heap
 void* heap_getdata(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 );
 
 // Marks an object to be deallocated on the next sweep
 void heap_mark(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 );
 
 // Deallocates all unmarked objects in the heap, returning the number of

@@ -58,9 +58,13 @@ void heap_free(
     // Free all objects
     if (heap->objects)
     {
+        NomValue value = nom_nil();
+        SET_TYPE(value, VALUETYPE_OBJECT);
+
         for (HeapObjectId id = 0; id <= heap->maxid; ++id)
         {
-            heap_dealloc(heap, id);
+            SET_ID(value, id);
+            heap_dealloc(heap, value);
         }
     }
 
@@ -70,7 +74,7 @@ void heap_free(
     free(heap);
 }
 
-HeapObjectId heap_alloc(
+NomValue heap_alloc(
     Heap*       heap,
     ObjectType  type,
     size_t      size,
@@ -110,7 +114,7 @@ HeapObjectId heap_alloc(
 
     heap->maxid = id > heap->maxid ? id : heap->maxid;
 
-    HeapObject* object = heap_getobject(heap, id);
+    HeapObject* object = &heap->objects[id];
     memset(object, 0, sizeof(HeapObject));
 
     object->type = type;
@@ -119,20 +123,24 @@ HeapObjectId heap_alloc(
 
     object->free = free;
 
-    return id;
+    NomValue value = nom_nil();
+    SET_TYPE(value, VALUETYPE_OBJECT);
+    SET_ID(value, id);
+
+    return value;
 }
 
 void heap_dealloc(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 )
 {
     assert(heap);
 
-    HeapObject* object = heap_getobject(heap, id);
+    HeapObject* object = heap_getobject(heap, value);
 
     // If the object has data and a free function then free it
-    if (object->data && object->free)
+    if (object && object->data && object->free)
     {
         object->free(object->data);
         object->data = NULL;
@@ -141,37 +149,53 @@ void heap_dealloc(
 }
 
 HeapObject* heap_getobject(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 )
 {
     assert(heap);
-    assert(id < heap->capacity);
 
-    HeapObject* object = &heap->objects[id];
+    HeapObject* object = NULL;
+
+    ValueType type = GET_TYPE(value);
+    if (type == VALUETYPE_OBJECT)
+    {
+        HeapObjectId id = GET_ID(value);
+        assert(id < heap->capacity);
+
+        object = &heap->objects[id];
+    }
+
     return object;
 }
 
 void* heap_getdata(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 )
 {
     assert(heap);
 
-    HeapObject* object = heap_getobject(heap, id);
-    return object->data;
+    void* data = NULL;
+
+    HeapObject* object = heap_getobject(heap, value);
+    if (object)
+    {
+        data = object->data;
+    }
+
+    return data;
 }
 
 void heap_mark(
-    Heap*           heap,
-    HeapObjectId    id
+    Heap*       heap,
+    NomValue    value
 )
 {
     assert(heap);
 
-    HeapObject* object = heap_getobject(heap, id);
-    if (object->data)
+    HeapObject* object = heap_getobject(heap, value);
+    if (object && object->data)
     {
         object->marked = true;
     }
@@ -189,7 +213,7 @@ unsigned int heap_sweep(
     // For each potential heap object
     for (HeapObjectId id = 0; id <= heap->maxid; ++id)
     {
-        HeapObject* object = heap_getobject(heap, id);
+        HeapObject* object = &heap->objects[id];
 
         // If the object is allocated
         if (object->data)
@@ -203,7 +227,11 @@ unsigned int heap_sweep(
             }
             else if (object->refcount <= 0)
             {
-                heap_dealloc(heap, id);
+                NomValue value = nom_nil();
+                SET_TYPE(value, VALUETYPE_OBJECT);
+                SET_ID(value, id);
+
+                heap_dealloc(heap, value);
                 ++count;
             }
         }

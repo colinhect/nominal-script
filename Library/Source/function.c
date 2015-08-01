@@ -49,14 +49,10 @@ static NomValue allocfunction(
     assert(state);
     assert(data);
 
-    NomValue value = nom_nil();
-    SET_TYPE(value, VALUETYPE_OBJECT);
-
     Heap* heap = state_getheap(state);
-    HeapObjectId id = heap_alloc(heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
-    *data = heap_getdata(heap, id);
+    NomValue value = heap_alloc(heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
+    *data = heap_getdata(heap, value);
 
-    SET_ID(value, id);
     return value;
 }
 
@@ -69,12 +65,11 @@ bool nom_isfunction(
 
     bool result = false;
 
-    if (GET_TYPE(value) == VALUETYPE_OBJECT)
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, value);
+    if (object)
     {
-        Heap* heap = state_getheap(state);
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
-        result = object && object->type == OBJECTTYPE_FUNCTION;
+        result = object->type == OBJECTTYPE_FUNCTION;
     }
 
     return result;
@@ -120,16 +115,16 @@ void function_addparam(
 {
     assert(state);
 
-    if (!nom_isfunction(state, function))
-    {
-        return;
-    }
-
-    HeapObjectId id = GET_ID(function);
     Heap* heap = state_getheap(state);
-    FunctionData* data = heap_getdata(heap, id);
-
-    data->params[data->paramcount++] = param;
+    HeapObject* object = heap_getobject(heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
+    {
+        FunctionData* data = (FunctionData*)object->data;
+        if (data)
+        {
+            data->params[data->paramcount++] = param;
+        }
+    }
 }
 
 size_t function_getparamcount(
@@ -139,16 +134,20 @@ size_t function_getparamcount(
 {
     assert(state);
 
-    if (!nom_isfunction(state, function))
+    size_t paramcount = 0;
+
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
-        return 0;
+        FunctionData* data = (FunctionData*)object->data;
+        if (data)
+        {
+            paramcount = data->paramcount;
+        }
     }
 
-    HeapObjectId id = GET_ID(function);
-    Heap* heap = state_getheap(state);
-    FunctionData* data = heap_getdata(heap, id);
-
-    return data->paramcount;
+    return paramcount;
 }
 
 StringId function_getparam(
@@ -159,16 +158,20 @@ StringId function_getparam(
 {
     assert(state);
 
-    if (!nom_isfunction(state, function))
+    StringId id = (StringId)-1;
+
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
-        return (StringId)-1;
+        FunctionData* data = (FunctionData*)object->data;
+        if (data)
+        {
+            id = data->params[index];
+        }
     }
 
-    HeapObjectId id = GET_ID(function);
-    Heap* heap = state_getheap(state);
-    FunctionData* data = heap_getdata(heap, id);
-
-    return data->params[index];
+    return id;
 }
 
 bool function_isnative(
@@ -186,16 +189,20 @@ NomFunction function_getnative(
 {
     assert(state);
 
-    if (!nom_isfunction(state, function))
+    NomFunction nativefunction = NULL;
+
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
-        return NULL;
+        FunctionData* data = (FunctionData*)object->data;
+        if (data)
+        {
+            nativefunction = data->nativefunction;
+        }
     }
 
-    HeapObjectId id = GET_ID(function);
-    Heap* heap = state_getheap(state);
-    FunctionData* data = heap_getdata(heap, id);
-
-    return data->nativefunction;
+    return nativefunction;
 }
 
 uint32_t function_getip(
@@ -205,14 +212,18 @@ uint32_t function_getip(
 {
     assert(state);
 
-    if (!nom_isfunction(state, function))
+    uint32_t ip = (uint32_t)-1;
+
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
-        return (uint32_t)-1;
+        FunctionData* data = (FunctionData*)object->data;
+        if (data)
+        {
+            ip = data->ip;
+        }
     }
 
-    HeapObjectId id = GET_ID(function);
-    Heap* heap = state_getheap(state);
-    FunctionData* data = heap_getdata(heap, id);
-
-    return data->ip;
+    return ip;
 }

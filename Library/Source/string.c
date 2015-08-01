@@ -45,12 +45,14 @@ bool nom_isstring(
     {
         result = true;
     }
-    else if (type == VALUETYPE_OBJECT)
+    else
     {
         Heap* heap = state_getheap(state);
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
-        result = object && object->type == OBJECTTYPE_STRING;
+        HeapObject* object = heap_getobject(heap, value);
+        if (object)
+        {
+            result = object->type == OBJECTTYPE_STRING;
+        }
     }
 
     return result;
@@ -61,13 +63,14 @@ NomValue nom_newstring(
     const char* value
 )
 {
-    Heap* heap = state_getheap(state);
-    HeapObjectId id = heap_alloc(heap, OBJECTTYPE_STRING, strlen(value) + 1, free);
-    strcpy((char*)heap_getdata(heap, id), value);
+    assert(state);
 
-    NomValue string = nom_nil();
-    SET_TYPE(string, VALUETYPE_OBJECT);
-    SET_ID(string, id);
+    Heap* heap = state_getheap(state);
+    NomValue string = heap_alloc(heap, OBJECTTYPE_STRING, strlen(value) + 1, free);
+
+    // Copy the string to the object's data
+    char* data = heap_getdata(heap, string);
+    strcpy(data, value);
 
     return string;
 }
@@ -77,6 +80,9 @@ NomValue nom_newinternedstring(
     const char* value
 )
 {
+    assert(state);
+    assert(value);
+
     StringPool* stringpool = state_getstringpool(state);
     StringId id = stringpool_getid(stringpool, value);
 
@@ -92,24 +98,24 @@ const char* nom_getstring(
     NomValue    value
 )
 {
-    Heap* heap = state_getheap(state);
+    assert(state);
+
     StringPool* stringpool = state_getstringpool(state);
 
     const char* string = NULL;
     ValueType type = GET_TYPE(value);
-    if (type == VALUETYPE_OBJECT)
-    {
-        Heap* heap = state_getheap(state);
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
-        if (object && object->type == OBJECTTYPE_STRING)
-        {
-            string = (const char*)heap_getdata(heap, GET_ID(value));;
-        }
-    }
-    else if (type == VALUETYPE_INTERNED_STRING)
+    if (type == VALUETYPE_INTERNED_STRING)
     {
         string = stringpool_find(stringpool, GET_ID(value));
+    }
+    else
+    {
+        Heap* heap = state_getheap(state);
+        HeapObject* object = heap_getobject(heap, value);
+        if (object && object->type == OBJECTTYPE_STRING)
+        {
+            string = heap_getdata(heap, value);
+        }
     }
 
     return string;

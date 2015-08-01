@@ -178,8 +178,7 @@ long long nom_hash(
     case VALUETYPE_OBJECT:
     {
         Heap* heap = state_getheap(state);
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
+        HeapObject* object = heap_getobject(heap, value);
         if (object && object->type == OBJECTTYPE_STRING)
         {
             hash = hashstring((UserData)nom_getstring(state, value), (UserData)state);
@@ -220,8 +219,7 @@ size_t nom_tostring(
     case VALUETYPE_OBJECT:
     {
         Heap* heap = state_getheap(state);
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
+        HeapObject* object = heap_getobject(heap, value);
         if (object)
         {
             switch (object->type)
@@ -299,7 +297,7 @@ size_t nom_tostring(
             }
             break;
             case OBJECTTYPE_FUNCTION:
-                count += snprintf(buffer, buffersize, "<function with ID 0x%08x>", id);
+                count += snprintf(buffer, buffersize, "<function with ID 0x%08x>", GET_ID(value));
                 break;
             default:
                 count += snprintf(buffer, buffersize, "<unknown>");
@@ -513,12 +511,10 @@ void nom_acquire(
 {
     assert(state);
 
-    if (GET_TYPE(value) == VALUETYPE_OBJECT)
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, value);
+    if (object)
     {
-        Heap* heap = state_getheap(state);
-
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
         ++object->refcount;
     }
 }
@@ -530,12 +526,10 @@ void nom_release(
 {
     assert(state);
 
-    if (GET_TYPE(value) == VALUETYPE_OBJECT)
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, value);
+    if (object)
     {
-        Heap* heap = state_getheap(state);
-
-        HeapObjectId id = GET_ID(value);
-        HeapObject* object = heap_getobject(heap, id);
         --object->refcount;
     }
 }
