@@ -71,9 +71,10 @@ void heap_free(
 }
 
 HeapObjectId heap_alloc(
-    Heap*   heap,
-    size_t  size,
-    void    (*free)(void*)
+    Heap*       heap,
+    ObjectType  type,
+    size_t      size,
+    void        (*free)(void*)
 )
 {
     assert(heap);
@@ -112,6 +113,7 @@ HeapObjectId heap_alloc(
     HeapObject* object = heap_getobject(heap, id);
     memset(object, 0, sizeof(HeapObject));
 
+    object->type = type;
     object->data = malloc(size);
     assert(object->data);
 

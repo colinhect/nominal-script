@@ -38,11 +38,14 @@ typedef NomValue(*NomFunction)(NomState* state);
 ///
 /// \brief Checks if a value is a function.
 ///
+/// \param state
+///     The state.
 /// \param value
 ///     The value in question.
 ///
 /// \returns True if the value is a function; false otherwise.
 NOM_EXPORT bool nom_isfunction(
+    NomState*   state,
     NomValue    value
 );
 

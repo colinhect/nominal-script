@@ -27,16 +27,33 @@
 #include "heap.h"
 #include "value.h"
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 bool nom_isstring(
+    NomState*   state,
     NomValue    value
 )
 {
-    Type type = GET_TYPE(value);
-    return type == TYPE_STRING
-           || type == TYPE_INTERNED_STRING;
+    assert(state);
+
+    bool result = false;
+
+    ValueType type = GET_TYPE(value);
+    if (type == VALUETYPE_INTERNED_STRING)
+    {
+        result = true;
+    }
+    else if (type == VALUETYPE_OBJECT)
+    {
+        Heap* heap = state_getheap(state);
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        result = object && object->type == OBJECTTYPE_STRING;
+    }
+
+    return result;
 }
 
 NomValue nom_newstring(
@@ -45,11 +62,11 @@ NomValue nom_newstring(
 )
 {
     Heap* heap = state_getheap(state);
-    HeapObjectId id = heap_alloc(heap, strlen(value) + 1, free);
+    HeapObjectId id = heap_alloc(heap, OBJECTTYPE_STRING, strlen(value) + 1, free);
     strcpy((char*)heap_getdata(heap, id), value);
 
     NomValue string = nom_nil();
-    SET_TYPE(string, TYPE_STRING);
+    SET_TYPE(string, VALUETYPE_OBJECT);
     SET_ID(string, id);
 
     return string;
@@ -64,7 +81,7 @@ NomValue nom_newinternedstring(
     StringId id = stringpool_getid(stringpool, value);
 
     NomValue string = nom_nil();
-    SET_TYPE(string, TYPE_INTERNED_STRING);
+    SET_TYPE(string, VALUETYPE_INTERNED_STRING);
     SET_ID(string, id);
 
     return string;
@@ -78,15 +95,24 @@ const char* nom_getstring(
     Heap* heap = state_getheap(state);
     StringPool* stringpool = state_getstringpool(state);
 
-    switch (GET_TYPE(value))
+    const char* string = NULL;
+    ValueType type = GET_TYPE(value);
+    if (type == VALUETYPE_OBJECT)
     {
-    case TYPE_STRING:
-        return (const char*)heap_getdata(heap, GET_ID(value));
-    case TYPE_INTERNED_STRING:
-        return stringpool_find(stringpool, GET_ID(value));
+        Heap* heap = state_getheap(state);
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        if (object && object->type == OBJECTTYPE_STRING)
+        {
+            string = (const char*)heap_getdata(heap, GET_ID(value));;
+        }
+    }
+    else if (type == VALUETYPE_INTERNED_STRING)
+    {
+        string = stringpool_find(stringpool, GET_ID(value));
     }
 
-    return NULL;
+    return string;
 }
 
 NomValue string_newinterned(
@@ -94,7 +120,7 @@ NomValue string_newinterned(
 )
 {
     NomValue string = nom_nil();
-    SET_TYPE(string, TYPE_INTERNED_STRING);
+    SET_TYPE(string, VALUETYPE_INTERNED_STRING);
     SET_ID(string, id);
     return string;
 }

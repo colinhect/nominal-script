@@ -122,10 +122,23 @@ void insertkey(
 }
 
 bool nom_ismap(
-    NomValue value
+    NomState*   state,
+    NomValue    value
 )
 {
-    return GET_TYPE(value) == TYPE_MAP;
+    assert(state);
+
+    bool result = false;
+
+    if (GET_TYPE(value) == VALUETYPE_OBJECT)
+    {
+        Heap* heap = state_getheap(state);
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        result = object && object->type == OBJECTTYPE_MAP;
+    }
+
+    return result;
 }
 
 NomValue nom_newmap(
@@ -135,10 +148,10 @@ NomValue nom_newmap(
     assert(state);
 
     NomValue map = nom_nil();
-    SET_TYPE(map, TYPE_MAP);
+    SET_TYPE(map, VALUETYPE_OBJECT);
 
     Heap* heap = state_getheap(state);
-    HeapObjectId id = heap_alloc(heap, sizeof(MapData), freemapdata);
+    HeapObjectId id = heap_alloc(heap, OBJECTTYPE_MAP, sizeof(MapData), freemapdata);
     MapData* data = heap_getdata(heap, id);
     data->hashtable = hashtable_new(hashvalue, comparevalue, (UserData)state, 32);
     data->capacity = 32;
@@ -157,7 +170,7 @@ bool map_iscontiguous(
 {
     assert(state);
 
-    if (!nom_ismap(map))
+    if (!nom_ismap(state, map))
     {
         return false;
     }
@@ -177,7 +190,7 @@ bool map_next(
 {
     assert(state);
 
-    if (!nom_ismap(map))
+    if (!nom_ismap(state, map))
     {
         return false;
     }
@@ -236,7 +249,7 @@ bool map_insert(
 {
     assert(state);
 
-    if (!nom_ismap(map))
+    if (!nom_ismap(state, map))
     {
         return false;
     }
@@ -263,7 +276,7 @@ bool map_set(
 {
     assert(state);
 
-    if (!nom_ismap(map))
+    if (!nom_ismap(state, map))
     {
         return false;
     }
@@ -283,7 +296,7 @@ bool map_insertorset(
     NomValue    value
 )
 {
-    if (!nom_ismap(map))
+    if (!nom_ismap(state, map))
     {
         return false;
     }
@@ -319,7 +332,7 @@ bool map_tryget(
     NomValue*   value
 )
 {
-    if (!nom_ismap(map))
+    if (!nom_ismap(state, map))
     {
         return false;
     }

@@ -339,7 +339,7 @@ void state_letinterned(
 
     // Create a new map for the scope if this is the first variable declared
     // in this scope
-    if (!nom_ismap(frame->scope))
+    if (!nom_ismap(state, frame->scope))
     {
         frame->scope = nom_newmap(state);
     }
@@ -858,7 +858,7 @@ static void mark(
 {
     assert(state);
 
-    if (IS_HEAP_OBJECT(value))
+    if (GET_TYPE(value) == VALUETYPE_OBJECT)
     {
         HeapObjectId id = GET_ID(value);
         heap_mark(state->heap, id);

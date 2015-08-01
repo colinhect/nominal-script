@@ -37,7 +37,7 @@ static NomValue prelude_print(
     for (size_t i = 0; i < argcount; ++i)
     {
         NomValue arg = nom_getarg(state, i);
-        if (nom_isstring(arg))
+        if (nom_isstring(state, arg))
         {
             printf("%s", nom_getstring(state, arg));
         }
@@ -234,7 +234,7 @@ static NomValue prelude_assertequal(
 
 static NomValue prelude_collectgarbage(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -246,7 +246,7 @@ static NomValue prelude_collectgarbage(
 
 static NomValue prelude_panic(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -254,7 +254,7 @@ static NomValue prelude_panic(
 
     assert(state);
 
-    if (nom_isstring(message))
+    if (nom_isstring(state, message))
     {
         nom_seterror(state, "%s", nom_getstring(state, message));
     }

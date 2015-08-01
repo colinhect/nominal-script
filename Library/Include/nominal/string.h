@@ -32,11 +32,14 @@
 ///
 /// \brief Checks if a value is a string.
 ///
+/// \param state
+///     The state.
 /// \param value
 ///     The value in question.
 ///
 /// \returns True if the value is a string; false otherwise.
 NOM_EXPORT bool nom_isstring(
+    NomState*   state,
     NomValue    value
 );
 

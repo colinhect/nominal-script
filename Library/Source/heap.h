@@ -24,6 +24,8 @@
 #ifndef HEAP_H
 #define HEAP_H
 
+#include "value.h"
+
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -37,10 +39,11 @@ typedef uint32_t HeapObjectId;
 // A GC object on the heap
 typedef struct
 {
-    void*   data;
-    void    (*free)(void*);
-    int32_t refcount;
-    bool    marked;
+    ObjectType  type;
+    void*       data;
+    void        (*free)(void*);
+    int32_t     refcount;
+    bool        marked;
 } HeapObject;
 
 // Creates a new heap
@@ -56,9 +59,10 @@ void heap_free(
 // Allocates a new object in the heap given the size (in bytes) of the data to
 // allocate and the function used to free the object when it is collected
 HeapObjectId heap_alloc(
-    Heap*   heap,
-    size_t  size,
-    void    (*free)(void*)
+    Heap*       heap,
+    ObjectType  type,
+    size_t      size,
+    void        (*free)(void*)
 );
 
 // Deallocates an object in the heap

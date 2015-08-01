@@ -50,10 +50,10 @@ static NomValue allocfunction(
     assert(data);
 
     NomValue value = nom_nil();
-    SET_TYPE(value, TYPE_FUNCTION);
+    SET_TYPE(value, VALUETYPE_OBJECT);
 
     Heap* heap = state_getheap(state);
-    HeapObjectId id = heap_alloc(heap, sizeof(FunctionData), free);
+    HeapObjectId id = heap_alloc(heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
     *data = heap_getdata(heap, id);
 
     SET_ID(value, id);
@@ -61,10 +61,23 @@ static NomValue allocfunction(
 }
 
 bool nom_isfunction(
-    NomValue value
+    NomState*   state,
+    NomValue    value
 )
 {
-    return GET_TYPE(value) == TYPE_FUNCTION;
+    assert(state);
+
+    bool result = false;
+
+    if (GET_TYPE(value) == VALUETYPE_OBJECT)
+    {
+        Heap* heap = state_getheap(state);
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        result = object && object->type == OBJECTTYPE_FUNCTION;
+    }
+
+    return result;
 }
 
 NomValue nom_newfunction(
@@ -107,7 +120,7 @@ void function_addparam(
 {
     assert(state);
 
-    if (!nom_isfunction(function))
+    if (!nom_isfunction(state, function))
     {
         return;
     }
@@ -126,7 +139,7 @@ size_t function_getparamcount(
 {
     assert(state);
 
-    if (!nom_isfunction(function))
+    if (!nom_isfunction(state, function))
     {
         return 0;
     }
@@ -146,7 +159,7 @@ StringId function_getparam(
 {
     assert(state);
 
-    if (!nom_isfunction(function))
+    if (!nom_isfunction(state, function))
     {
         return (StringId)-1;
     }
@@ -173,7 +186,7 @@ NomFunction function_getnative(
 {
     assert(state);
 
-    if (!nom_isfunction(function))
+    if (!nom_isfunction(state, function))
     {
         return NULL;
     }
@@ -192,7 +205,7 @@ uint32_t function_getip(
 {
     assert(state);
 
-    if (!nom_isfunction(function))
+    if (!nom_isfunction(state, function))
     {
         return (uint32_t)-1;
     }

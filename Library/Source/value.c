@@ -92,7 +92,7 @@ NomValue nom_true(
 )
 {
     NomValue value = nom_nil();
-    SET_TYPE(value, TYPE_BOOLEAN);
+    SET_TYPE(value, VALUETYPE_BOOLEAN);
     SET_ID(value, 1);
 
     return value;
@@ -103,10 +103,17 @@ NomValue nom_false(
 )
 {
     NomValue value = nom_nil();
-    SET_TYPE(value, TYPE_BOOLEAN);
+    SET_TYPE(value, VALUETYPE_BOOLEAN);
     SET_ID(value, 0);
 
     return value;
+}
+
+bool nom_isobject(
+    NomValue    value
+)
+{
+    return GET_TYPE(value) == VALUETYPE_OBJECT;
 }
 
 bool nom_istrue(
@@ -116,7 +123,7 @@ bool nom_istrue(
 {
     assert(state);
 
-    if (GET_TYPE(value) == TYPE_BOOLEAN)
+    if (GET_TYPE(value) == VALUETYPE_BOOLEAN)
     {
         return GET_ID(value) == 1;
     }
@@ -136,11 +143,11 @@ bool nom_equals(
     {
         return left.number == right.number;
     }
-    else if (nom_isstring(left) && nom_isstring(right))
+    else if (nom_isstring(state, left) && nom_isstring(state, right))
     {
         // If one of the strings is not interned
-        if (GET_TYPE(left) != TYPE_INTERNED_STRING ||
-                GET_TYPE(right) != TYPE_INTERNED_STRING)
+        if (GET_TYPE(left) != VALUETYPE_INTERNED_STRING ||
+                GET_TYPE(right) != VALUETYPE_INTERNED_STRING)
         {
             return strcmp(nom_getstring(state, left), nom_getstring(state, right)) == 0;
         }
@@ -157,14 +164,28 @@ long long nom_hash(
     StringPool* stringpool = state_getstringpool(state);
 
     long long hash = value.raw;
-    switch (GET_TYPE(value))
+
+    ValueType type = GET_TYPE(value);
+    switch (type)
     {
-    case TYPE_STRING:
-        hash = hashstring((UserData)nom_getstring(state, value), (UserData)state);
+    case VALUETYPE_NIL:
+    case VALUETYPE_NUMBER:
+    case VALUETYPE_BOOLEAN:
         break;
-    case TYPE_INTERNED_STRING:
+    case VALUETYPE_INTERNED_STRING:
         hash = stringpool_hash(stringpool, GET_ID(value));
         break;
+    case VALUETYPE_OBJECT:
+    {
+        Heap* heap = state_getheap(state);
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        if (object && object->type == OBJECTTYPE_STRING)
+        {
+            hash = hashstring((UserData)nom_getstring(state, value), (UserData)state);
+        }
+    }
+    break;
     }
 
     return (Hash)hash;
@@ -181,95 +202,110 @@ size_t nom_tostring(
 
     size_t count = 0;
 
-    switch (GET_TYPE(value))
+    ValueType type = GET_TYPE(value);
+    switch (type)
     {
-    case TYPE_NIL:
+    case VALUETYPE_NIL:
         count += snprintf(buffer, buffersize, "nil");
         break;
-    case TYPE_NUMBER:
+    case VALUETYPE_NUMBER:
         count += snprintf(buffer, buffersize, "%.256g", nom_todouble(value));
         break;
-    case TYPE_BOOLEAN:
+    case VALUETYPE_BOOLEAN:
         count += snprintf(buffer, buffersize, "%s", nom_istrue(state, value) ? "true" : "false");
         break;
-    case TYPE_INTERNED_STRING:
-    case TYPE_STRING:
+    case VALUETYPE_INTERNED_STRING:
         count += snprintf(buffer, buffersize, "\"%s\"", nom_getstring(state, value));
         break;
-    case TYPE_MAP:
+    case VALUETYPE_OBJECT:
     {
-        bool contiguous = map_iscontiguous(state, value);
-
-        // Opening '{'
-        count += snprintf(buffer, buffersize, "{");
-        if (count >= buffersize)
+        Heap* heap = state_getheap(state);
+        HeapObjectId id = GET_ID(value);
+        HeapObject* object = heap_getobject(heap, id);
+        if (object)
         {
+            switch (object->type)
+            {
+            case OBJECTTYPE_STRING:
+                count += snprintf(buffer, buffersize, "\"%s\"", nom_getstring(state, value));
+                break;
+            case OBJECTTYPE_MAP:
+            {
+                bool contiguous = map_iscontiguous(state, value);
+
+                // Opening '{'
+                count += snprintf(buffer, buffersize, "{");
+                if (count >= buffersize)
+                {
+                    break;
+                }
+
+                // Iterate over each pair
+                bool printcomma = false;
+                NomIterator iterator = { 0 };
+                while (nom_next(state, value, &iterator))
+                {
+                    if (printcomma)
+                    {
+                        // Print ", "
+                        count += snprintf(buffer + count, buffersize - count, ", ");
+                        if (count >= buffersize)
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        // Print " "
+                        count += snprintf(buffer + count, buffersize - count, " ");
+                        if (count >= buffersize)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (!contiguous)
+                    {
+                        // Print the key
+                        count += nom_tostring(state, buffer + count, buffersize - count, iterator.key);
+                        if (count >= buffersize)
+                        {
+                            break;
+                        }
+
+                        // Print " -> "
+                        count += snprintf(buffer + count, buffersize - count, " -> ");
+                        if (count >= buffersize)
+                        {
+                            break;
+                        }
+                    }
+
+                    // Print the value
+                    count += nom_tostring(state, buffer + count, buffersize - count, iterator.value);
+                    if (count >= buffersize)
+                    {
+                        break;
+                    }
+
+                    if (!printcomma)
+                    {
+                        printcomma = true;
+                    }
+                }
+
+                // Closing '}'
+                count += snprintf(buffer + count, buffersize - count, " }");
+            }
             break;
-        }
-
-        // Iterate over each pair
-        bool printcomma = false;
-        NomIterator iterator = { 0 };
-        while (nom_next(state, value, &iterator))
-        {
-            if (printcomma)
-            {
-                // Print ", "
-                count += snprintf(buffer + count, buffersize - count, ", ");
-                if (count >= buffersize)
-                {
-                    break;
-                }
-            }
-            else
-            {
-                // Print " "
-                count += snprintf(buffer + count, buffersize - count, " ");
-                if (count >= buffersize)
-                {
-                    break;
-                }
-            }
-
-            if (!contiguous)
-            {
-                // Print the key
-                count += nom_tostring(state, buffer + count, buffersize - count, iterator.key);
-                if (count >= buffersize)
-                {
-                    break;
-                }
-
-                // Print " -> "
-                count += snprintf(buffer + count, buffersize - count, " -> ");
-                if (count >= buffersize)
-                {
-                    break;
-                }
-            }
-
-            // Print the value
-            count += nom_tostring(state, buffer + count, buffersize - count, iterator.value);
-            if (count >= buffersize)
-            {
+            case OBJECTTYPE_FUNCTION:
+                count += snprintf(buffer, buffersize, "<function with ID 0x%08x>", id);
+                break;
+            default:
+                count += snprintf(buffer, buffersize, "<unknown>");
                 break;
             }
-
-            if (!printcomma)
-            {
-                printcomma = true;
-            }
         }
-
-        // Closing '}'
-        count += snprintf(buffer + count, buffersize - count, " }");
-    }
-    break;
-    case TYPE_FUNCTION:
-    {
-        HeapObjectId id = GET_ID(value);
-        count += snprintf(buffer, buffersize, "<function with ID 0x%08x>", id);
-        break;
     }
     default:
         count += snprintf(buffer, buffersize, "<unknown>");
@@ -357,8 +393,7 @@ bool nom_isinvokable(
     NomValue    value
 )
 {
-    (void)state;
-    return nom_isfunction(value);
+    return nom_isfunction(state, value);
 }
 
 NomValue nom_invoke(
@@ -376,8 +411,7 @@ bool nom_isiterable(
     NomValue    value
 )
 {
-    (void)state;
-    return nom_ismap(value);
+    return nom_ismap(state, value);
 }
 
 bool nom_next(
@@ -387,7 +421,7 @@ bool nom_next(
 )
 {
     bool result = false;
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         result = map_next(state, value, iterator);
     }
@@ -402,7 +436,7 @@ bool nom_insert(
 )
 {
     bool result = false;
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         result = map_insert(state, value, key, keyvalue);
     }
@@ -417,7 +451,7 @@ bool nom_set(
 )
 {
     bool result = false;
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         result = map_set(state, value, key, keyvalue);
     }
@@ -432,7 +466,7 @@ bool nom_insertorset(
 )
 {
     bool result = false;
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         result = map_insertorset(state, value, key, keyvalue);
     }
@@ -446,7 +480,7 @@ NomValue nom_get(
 )
 {
     NomValue result = nom_nil();
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         map_tryget(state, value, key, &result);
     }
@@ -464,7 +498,7 @@ bool nom_tryget(
     assert(keyvalue);
 
     *keyvalue = nom_nil();
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         return map_tryget(state, value, key, keyvalue);
     }
@@ -479,7 +513,7 @@ void nom_acquire(
 {
     assert(state);
 
-    if (IS_HEAP_OBJECT(value))
+    if (GET_TYPE(value) == VALUETYPE_OBJECT)
     {
         Heap* heap = state_getheap(state);
 
@@ -496,7 +530,7 @@ void nom_release(
 {
     assert(state);
 
-    if (IS_HEAP_OBJECT(value))
+    if (GET_TYPE(value) == VALUETYPE_OBJECT)
     {
         Heap* heap = state_getheap(state);
 
@@ -518,7 +552,7 @@ void value_visit(
     visitor(state, value);
 
     // If the value is a map then visit all keys/values
-    if (nom_ismap(value))
+    if (nom_ismap(state, value))
     {
         NomIterator iterator = { 0 };
         while (nom_next(state, value, &iterator))

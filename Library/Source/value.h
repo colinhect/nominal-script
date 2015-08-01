@@ -29,27 +29,32 @@
 // Enumeration of each type a value can be
 typedef enum
 {
-    TYPE_NIL,
-    TYPE_NUMBER,
-    TYPE_BOOLEAN,
-    TYPE_INTERNED_STRING,
-    TYPE_STRING,
-    TYPE_MAP,
-    TYPE_FUNCTION
-} Type;
+    VALUETYPE_NIL,
+    VALUETYPE_NUMBER,
+    VALUETYPE_BOOLEAN,
+    VALUETYPE_INTERNED_STRING,
+    VALUETYPE_OBJECT
+} ValueType;
 
-#define TYPE_MASK           (0x0000000000000007)
-#define ID_MASK             (0xFFFFFFFF00000000)
-#define QNAN_MASK           (0x000000007FFFFF00)
-#define QNAN_VALUE          (0x000000007FF7A500)
+// Enumeration of each type an object can be
+typedef enum
+{
+    OBJECTTYPE_STRING,
+    OBJECTTYPE_MAP,
+    OBJECTTYPE_FUNCTION,
+} ObjectType;
 
-#define IS_NUMBER(v)        ((v.raw & QNAN_MASK) != QNAN_VALUE)
-#define IS_HEAP_OBJECT(v)   (GET_TYPE(v) > TYPE_INTERNED_STRING)
+#define TYPE_MASK       (0x0000000000000007)
+#define ID_MASK         (0xFFFFFFFF00000000)
+#define QNAN_MASK       (0x000000007FFFFF00)
+#define QNAN_VALUE      (0x000000007FF7A500)
 
-#define SET_TYPE(v, t)      (v.data.lower = (TYPE_MASK & t) | (~TYPE_MASK & v.data.lower))
-#define GET_TYPE(v)         (IS_NUMBER(v) ? TYPE_NUMBER : (Type)(TYPE_MASK & v.data.lower))
-#define SET_ID(v, i)        (v.data.upper = (uint32_t)i)
-#define GET_ID(v)           (v.data.upper)
+#define IS_NUMBER(v)    ((v.raw & QNAN_MASK) != QNAN_VALUE)
+
+#define SET_TYPE(v, t)  (v.data.lower = (TYPE_MASK & t) | (~TYPE_MASK & v.data.lower))
+#define GET_TYPE(v)     (IS_NUMBER(v) ? VALUETYPE_NUMBER : (ValueType)(TYPE_MASK & v.data.lower))
+#define SET_ID(v, i)    (v.data.upper = (uint32_t)i)
+#define GET_ID(v)       (v.data.upper)
 
 // A function for visiting Nominal values
 typedef void (*ValueVisitor)(

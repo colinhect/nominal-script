@@ -74,7 +74,7 @@ TEST_CASE("Creating and invoking native functions", "[Function]")
     NomState* state = nom_newstate();
 
     NomValue function = nom_newfunction(state, test);
-    CHECK(nom_isfunction(function));
+    CHECK(nom_isfunction(state, function));
 
     nom_letvar(state, "test", function);
 

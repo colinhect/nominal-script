@@ -33,7 +33,7 @@ TEST_CASE("Creating and identifying an empty Nominal map", "[Map]")
     NomState* state = nom_newstate();
 
     NomValue map = nom_newmap(state);
-    CHECK(nom_ismap(map) == true);
+    CHECK(nom_ismap(state, map) == true);
 
     nom_freestate(state);
 }
@@ -45,25 +45,25 @@ TEST_CASE("Calling nom_ismap() on non-map Nominal values", "[Map]")
     SECTION("Checking nil")
     {
         NomValue value = nom_nil();
-        CHECK(nom_ismap(value) == false);
+        CHECK(nom_ismap(state, value) == false);
     }
 
     SECTION("Checking number")
     {
         NomValue value = nom_fromdouble(1.0);
-        CHECK(nom_ismap(value) == false);
+        CHECK(nom_ismap(state, value) == false);
     }
 
     SECTION("Checking string")
     {
         NomValue value = nom_newstring(state, "Testing...");
-        CHECK(nom_ismap(value) == false);
+        CHECK(nom_ismap(state, value) == false);
     }
 
     SECTION("Checking interned string")
     {
         NomValue value = nom_newinternedstring(state, "Testing...");
-        CHECK(nom_ismap(value) == false);
+        CHECK(nom_ismap(state, value) == false);
     }
 
     nom_freestate(state);
@@ -290,7 +290,7 @@ TEST_CASE("Creating a map with implicit keys", "[Map]")
 
     NomValue map = nom_execute(state, "{ 0, 1, 2, 3 }");
     CHECK(nom_error(state) == false);
-    CHECK(nom_ismap(map) == true);
+    CHECK(nom_ismap(state, map) == true);
 
     NomValue result;
 
@@ -309,7 +309,7 @@ TEST_CASE("Creating a map with explicit keys", "[Map]")
 
     NomValue map = nom_execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
     CHECK(nom_error(state) == false);
-    CHECK(nom_ismap(map));
+    CHECK(nom_ismap(state, map));
 
     NomValue result;
     result = nom_get(state, map, nom_newstring(state, "zero"));

@@ -34,11 +34,14 @@
 ///
 /// \brief Checks if a value is a map.
 ///
+/// \param state
+///     The state.
 /// \param value
 ///     The value in question.
 ///
 /// \returns True if the value is a map; false otherwise.
 NOM_EXPORT bool nom_ismap(
+    NomState*   state,
     NomValue    value
 );
 
