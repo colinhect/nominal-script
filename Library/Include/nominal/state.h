@@ -83,6 +83,23 @@ NOM_EXPORT void nom_setvar(
 );
 
 ///
+/// \brief Gets a variable accessible from the current scope.
+///
+/// \warning Ths function could have encountered an error.  Check nom_error()
+/// directly after invoking this function.
+///
+/// \param state
+///     The state.
+/// \param identifier
+///     The identifier of the variable.
+///
+/// \returns The value of the variable.
+NOM_EXPORT NomValue nom_getvar(
+    NomState*   state,
+    const char* identifier
+);
+
+///
 /// \brief Returns the number of available arguments on the call stack.
 ///
 /// \param state

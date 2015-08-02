@@ -305,6 +305,7 @@ size_t nom_tostring(
             }
         }
     }
+    break;
     default:
         count += snprintf(buffer, buffersize, "<unknown>");
         break;
@@ -317,6 +318,28 @@ size_t nom_tostring(
     if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
         nom_seterror(state, "Cannot %s non-numeric values", name);\
+    }\
+    else\
+    {\
+        result.number = l.number op r.number;\
+    }
+
+#define ARITH(l, r, op, name)\
+    if (!IS_NUMBER(l) || !IS_NUMBER(r))\
+    {\
+        NomValue classmap = map_getclass(state, left);\
+        NomValue function = nom_nil();\
+        if (nom_istrue(state, classmap) &&\
+            nom_tryget(state, classmap, nom_newstring(state, name), &function) &&\
+            nom_isfunction(state, function))\
+        {\
+            NomValue args[2] = { { left.raw }, { right.raw } };\
+            result = nom_invoke(state, function, 2, args);\
+        }\
+        else\
+        {\
+            nom_seterror(state, "Cannot %s non-numeric values", name);\
+        }\
     }\
     else\
     {\
@@ -495,13 +518,15 @@ bool nom_tryget(
 {
     assert(keyvalue);
 
+    bool result = false;
+
     *keyvalue = nom_nil();
     if (nom_ismap(state, value))
     {
-        return map_tryget(state, value, key, keyvalue);
+        result = map_tryget(state, value, key, keyvalue);
     }
 
-    return false;
+    return result;
 }
 
 void nom_acquire(

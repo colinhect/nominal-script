@@ -85,4 +85,18 @@ bool map_tryget(
     NomValue*   value
 );
 
+// Sets the maps class
+void map_setclass(
+    NomState*   state,
+    NomValue    map,
+    NomValue    classmap
+);
+
+// Returns a reference to the map's class, returning nil if the map has no
+// class
+NomValue map_getclass(
+    NomState*   state,
+    NomValue    map
+);
+
 #endif

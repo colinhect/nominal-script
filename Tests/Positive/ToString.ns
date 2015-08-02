@@ -1,0 +1,11 @@
+assertions := {
+  toString: nil -> "nil",
+  toString: 1 -> "1",
+  toString: false -> "false",
+  toString: true -> "true",
+  toString: { 1 } -> "{ 1 }"
+}
+
+forKeys: assertions [ key |
+  assertEqual: key assertions[key]
+]

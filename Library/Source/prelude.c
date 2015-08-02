@@ -23,6 +23,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "prelude.h"
 
+#include "map.h"
+#include "string.h"
+#include "value.h"
+
 #include <assert.h>
 #include <stdio.h>
 
@@ -55,6 +59,26 @@ static NomValue prelude_print(
     printf("\n");
 
     return nom_nil();
+}
+
+static NomValue prelude_tostring(
+    NomState*   state
+)
+{
+    assert(state);
+
+    NomValue value = nom_getarg(state, 0);
+
+    NomValue result = nom_nil();
+
+    char string[8192];
+    nom_tostring(state, string, sizeof(string), value);
+    if (!nom_error(state))
+    {
+        result = nom_newstring(state, string);
+    }
+
+    return result;
 }
 
 static NomValue prelude_forvalues(
@@ -268,26 +292,217 @@ static NomValue prelude_panic(
     return nom_nil();
 }
 
+static NomValue prelude_class(
+    NomState*   state
+)
+{
+    assert(state);
+
+    NomValue map = nom_nil();
+
+    NomValue name = nom_getarg(state, 0);
+    if (nom_isstring(state, name))
+    {
+        map = nom_getarg(state, 1);
+        if (!nom_istrue(state, map))
+        {
+            map = nom_newmap(state);
+        }
+
+        map_setclass(state, map, nom_getvar(state, "Class"));
+        map_insertorset(state, map, nom_newstring(state, "name"), name);
+    }
+    else
+    {
+        nom_seterror(state, "'name' is not a String");
+    }
+
+    return map;
+}
+
+static NomValue prelude_classof(
+    NomState*   state
+)
+{
+    assert(state);
+
+    NomValue result = nom_nil();
+
+    NomValue value = nom_getarg(state, 0);
+    ValueType type = GET_TYPE(value);
+
+    switch (type)
+    {
+    case VALUETYPE_NIL:
+        result = nom_getvar(state, "Nil");
+        break;
+    case VALUETYPE_NUMBER:
+        result = nom_getvar(state, "Number");
+        break;
+    case VALUETYPE_BOOLEAN:
+        result = nom_getvar(state, "Boolean");
+        break;
+    case VALUETYPE_INTERNED_STRING:
+        result = nom_getvar(state, "String");
+        break;
+    case VALUETYPE_OBJECT:
+    {
+        result = map_getclass(state, value);
+        if (!nom_istrue(state, result))
+        {
+            Heap* heap = state_getheap(state);
+            HeapObject* object = heap_getobject(heap, value);
+            if (object)
+            {
+                switch (object->type)
+                {
+                case OBJECTTYPE_STRING:
+                    result = nom_getvar(state, "String");
+                    break;
+                case OBJECTTYPE_MAP:
+                    result = nom_getvar(state, "Map");
+                    break;
+                case OBJECTTYPE_FUNCTION:
+                    result = nom_getvar(state, "Function");
+                    break;
+                }
+            }
+        }
+    }
+    break;
+    }
+
+    return result;
+}
+
+static NomValue prelude_object(
+    NomState*   state
+    )
+{
+    assert(state);
+
+    NomValue object = nom_nil();
+
+    NomValue classmap = nom_getarg(state, 0);
+    if (nom_ismap(state, classmap))
+    {
+        object = nom_getarg(state, 1);
+        if (nom_ismap(state, object))
+        {
+            map_setclass(state, object, classmap);
+        }
+        else
+        {
+            object = nom_nil();
+            nom_seterror(state, "'object' is not a Map");
+        }
+    }
+    else
+    {
+        nom_seterror(state, "'class' is not a Map");
+    }
+
+    return object;
+}
+
 void import_prelude(
     NomState*   state
 )
 {
     assert(state);
 
-    nom_letvar(state, "print", nom_newfunction(state, prelude_print));
-    assert(!nom_error(state));
-    nom_letvar(state, "if", nom_newfunction(state, prelude_if));
-    assert(!nom_error(state));
-    nom_letvar(state, "while", nom_newfunction(state, prelude_while));
-    assert(!nom_error(state));
-    nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
-    assert(!nom_error(state));
-    nom_letvar(state, "forKeys", nom_newfunction(state, prelude_forkeys));
-    assert(!nom_error(state));
-    nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
-    assert(!nom_error(state));
-    nom_letvar(state, "collectGarbage", nom_newfunction(state, prelude_collectgarbage));
-    assert(!nom_error(state));
-    nom_letvar(state, "panic", nom_newfunction(state, prelude_panic));
-    assert(!nom_error(state));
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "print", nom_newfunction(state, prelude_print));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "toString", nom_newfunction(state, prelude_tostring));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "if", nom_newfunction(state, prelude_if));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "while", nom_newfunction(state, prelude_while));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "forKeys", nom_newfunction(state, prelude_forkeys));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "collectGarbage", nom_newfunction(state, prelude_collectgarbage));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "panic", nom_newfunction(state, prelude_panic));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "class", nom_newfunction(state, prelude_class));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "classOf", nom_newfunction(state, prelude_classof));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "object", nom_newfunction(state, prelude_object));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "Nil", nom_execute(state, "{ name := \"Nil\" }"));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "Number", nom_execute(state, "{ name := \"Number\" }"));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "Boolean", nom_execute(state, "{ name := \"Boolean\" }"));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "String", nom_execute(state, "{ name := \"String\" }"));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "Map", nom_execute(state, "{ name := \"Map\" }"));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "Function", nom_execute(state, "{ name := \"Function\" }"));
+    }
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "Class", nom_execute(state, "{ name := \"Class\" }"));
+    }
 }

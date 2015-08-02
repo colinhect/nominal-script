@@ -216,15 +216,24 @@ NomState* nom_newstate(
     state->stringpool = stringpool_new(STRING_POOL_STRING_COUNT);
 
     // Define intrinsic global variables
-    nom_letvar(state, "nil", nom_nil());
-    assert(!nom_error(state));
-    nom_letvar(state, "true", nom_true());
-    assert(!nom_error(state));
-    nom_letvar(state, "false", nom_false());
-    assert(!nom_error(state));
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "nil", nom_nil());
+    }
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "true", nom_true());
+    }
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "false", nom_false());
+    }
 
     // Import the prelude library
-    import_prelude(state);
+    if (!nom_error(state))
+    {
+        import_prelude(state);
+    }
 
     return state;
 }
@@ -274,6 +283,19 @@ void nom_setvar(
 
     StringId id = stringpool_getid(state->stringpool, identifier);
     state_setinterned(state, id, value);
+}
+
+NomValue nom_getvar(
+    NomState*   state,
+    const char* identifier
+)
+{
+    assert(state);
+    assert(identifier);
+
+    StringId id = stringpool_getid(state->stringpool, identifier);
+    NomValue result = state_getinterned(state, id);
+    return result;
 }
 
 size_t nom_getargcount(

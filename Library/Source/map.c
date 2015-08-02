@@ -38,6 +38,7 @@ typedef struct
     size_t      count;
     NomValue*   keys;
     bool        contiguous;
+    NomValue    classmap;
 } MapData;
 
 Hash hashvalue(
@@ -45,9 +46,9 @@ Hash hashvalue(
     UserData    context
 )
 {
+    NomState* state = (NomState*)context;
     NomValue value = { key };
-
-    return nom_hash((NomState*)context, value);
+    return nom_hash(state, value);
 }
 
 void freemapdata(
@@ -79,10 +80,11 @@ bool comparevalue(
     UserData    context
 )
 {
+    NomState* state = (NomState*)context;
     NomValue leftvalue = { left };
     NomValue rightvalue = { right };
 
-    return nom_equals((NomState*)context, leftvalue, rightvalue);
+    return nom_equals(state, leftvalue, rightvalue);
 }
 
 void insertkey(
@@ -90,6 +92,8 @@ void insertkey(
     NomValue    key
 )
 {
+    assert(data);
+
     // If there is not enough capacity
     if (data->count >= data->capacity)
     {
@@ -148,12 +152,14 @@ NomValue nom_newmap(
 
     Heap* heap = state_getheap(state);
     NomValue map = heap_alloc(heap, OBJECTTYPE_MAP, sizeof(MapData), freemapdata);
+
     MapData* data = heap_getdata(heap, map);
     data->hashtable = hashtable_new(hashvalue, comparevalue, (UserData)state, 32);
     data->capacity = 32;
     data->count = 0;
     data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
     data->contiguous = true;
+    data->classmap = nom_nil();
 
     return map;
 }
@@ -357,4 +363,41 @@ bool map_tryget(
     }
 
     return result;
+}
+
+void map_setclass(
+    NomState*   state,
+    NomValue    map,
+    NomValue    classmap
+)
+{
+    assert(state);
+
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, map);
+    if (object && object->type == OBJECTTYPE_MAP && object->data)
+    {
+        MapData* data = (MapData*)object->data;
+        data->classmap = classmap;
+    }
+}
+
+NomValue map_getclass(
+    NomState*   state,
+    NomValue    map
+)
+{
+    assert(state);
+
+    NomValue classmap = nom_nil();
+
+    Heap* heap = state_getheap(state);
+    HeapObject* object = heap_getobject(heap, map);
+    if (object && object->type == OBJECTTYPE_MAP && object->data)
+    {
+        MapData* data = (MapData*)object->data;
+        classmap = data->classmap;
+    }
+
+    return classmap;
 }
