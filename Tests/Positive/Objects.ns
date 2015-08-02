@@ -1,0 +1,15 @@
+Cat := class: "Cat"
+
+Cat.new := [ name |
+  object: Cat {
+    name := name
+  }
+]
+
+Cat.meow := [ self |
+  print: self " says meow"
+]
+
+janks := Cat.new: "Janks"
+assertEqual: (classOf: janks) Cat
+assertEqual: janks.name "Janks"
