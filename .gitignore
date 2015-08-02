@@ -1,2 +1,6 @@
 Build/*
 Library/Include/Nominal/Config.h
+
+*.sublime-workspace
+*.pyc
+*~

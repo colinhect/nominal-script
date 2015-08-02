@@ -36,7 +36,7 @@ struct Lexer
     LexerState  state;
 };
 
-char ReadNext(
+char readnext(
     Lexer*  lexer
 )
 {
@@ -58,7 +58,7 @@ char ReadNext(
     return c;
 }
 
-char PeekNext(
+char peaknext(
     Lexer*  lexer
 )
 {
@@ -69,14 +69,14 @@ char PeekNext(
     return lexer->source[lexer->state.index];
 }
 
-bool StartsWith(
+bool startswith(
     const char* str,
     const char* pre
 )
 {
-    size_t preLength = strlen(pre);
-    size_t strLength = strlen(str);
-    return strLength < preLength ? false : strncmp(pre, str, preLength) == 0;
+    size_t prelength = strlen(pre);
+    size_t strlength = strlen(str);
+    return strlength < prelength ? false : strncmp(pre, str, prelength) == 0;
 }
 
 Lexer* lexer_new(
@@ -103,7 +103,7 @@ bool lexer_next(
     char c;
     do
     {
-        c = ReadNext(lexer);
+        c = readnext(lexer);
 
         if (c == '\0')
         {
@@ -121,6 +121,59 @@ bool lexer_next(
         {
             lexer->state.skippednewline = true;
         }
+
+        // Skip single-line comments
+        if (c == '-' && peaknext(lexer) == '-')
+        {
+            lexer->state.skippedwhitespace = true;
+            readnext(lexer);
+
+            do
+            {
+                c = readnext(lexer);
+                if (c == '\0')
+                {
+                    return false;
+                }
+            }
+            while (c != '\n');
+            lexer->state.skippednewline = true;
+
+            c = readnext(lexer);
+            if (c == '\0')
+            {
+                return false;
+            }
+        }
+
+        // Skip mutli-line comments
+        if (c == '{' && peaknext(lexer) == '-')
+        {
+            readnext(lexer);
+
+            do
+            {
+                c = readnext(lexer);
+                if (c == '\0')
+                {
+                    return false;
+                }
+                else if (c == '\n')
+                {
+                    lexer->state.skippednewline = true;
+                }
+            }
+            while ((c != '-' || peaknext(lexer) != '}') && c != '\0');
+
+            readnext(lexer);
+            c = readnext(lexer);
+            if (c == '\0')
+            {
+                return false;
+            }
+
+            lexer->state.skippedwhitespace = true;
+        }
     }
     while (isspace(c));
 
@@ -134,18 +187,18 @@ bool lexer_next(
     switch (c)
     {
     case ':':
-        if (PeekNext(lexer) == '=')
+        if (peaknext(lexer) == '=')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_LET;
             return true;
         }
         break;
     case '=':
-        if (PeekNext(lexer) == '=')
+        if (peaknext(lexer) == '=')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_EQ;
         }
@@ -158,9 +211,9 @@ bool lexer_next(
         lexer->state.id = OP_ADD;
         return true;
     case '-':
-        if (PeekNext(lexer) == '>')
+        if (peaknext(lexer) == '>')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_ASSOC;
         }
@@ -176,9 +229,9 @@ bool lexer_next(
         lexer->state.id = OP_DIV;
         return true;
     case '!':
-        if (PeekNext(lexer) == '=')
+        if (peaknext(lexer) == '=')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_NE;
         }
@@ -188,9 +241,9 @@ bool lexer_next(
         }
         return true;
     case '>':
-        if (PeekNext(lexer) == '=')
+        if (peaknext(lexer) == '=')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_GTE;
         }
@@ -200,15 +253,15 @@ bool lexer_next(
         }
         return true;
     case '<':
-        if (PeekNext(lexer) == '=')
+        if (peaknext(lexer) == '=')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_LT;
         }
-        else if (PeekNext(lexer) == '-')
+        else if (peaknext(lexer) == '-')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_RET;
         }
@@ -218,18 +271,18 @@ bool lexer_next(
         }
         return true;
     case '|':
-        if (PeekNext(lexer) == '|')
+        if (peaknext(lexer) == '|')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_OR;
             return true;
         }
         break;
     case '&':
-        if (PeekNext(lexer) == '&')
+        if (peaknext(lexer) == '&')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_AND;
             return true;
@@ -243,9 +296,9 @@ bool lexer_next(
     // Identifier
     if (isalpha(c))
     {
-        while (isalnum(PeekNext(lexer)))
+        while (isalnum(peaknext(lexer)))
         {
-            ReadNext(lexer);
+            readnext(lexer);
             ++lexer->state.length;
         }
 
@@ -257,20 +310,20 @@ bool lexer_next(
     // Number
     if (isdigit(c))
     {
-        while (isdigit(PeekNext(lexer)))
+        while (isdigit(peaknext(lexer)))
         {
-            ReadNext(lexer);
+            readnext(lexer);
             ++lexer->state.length;
         }
 
-        if (PeekNext(lexer) == '.')
+        if (peaknext(lexer) == '.')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             ++lexer->state.length;
 
-            while (isdigit(PeekNext(lexer)))
+            while (isdigit(peaknext(lexer)))
             {
-                ReadNext(lexer);
+                readnext(lexer);
                 ++lexer->state.length;
             }
         }
@@ -282,12 +335,12 @@ bool lexer_next(
     // String
     if (c == '\"')
     {
-        while (PeekNext(lexer) != '\"')
+        while (peaknext(lexer) != '\"')
         {
-            ReadNext(lexer);
+            readnext(lexer);
             ++lexer->state.length;
         }
-        ReadNext(lexer);
+        readnext(lexer);
 
         --lexer->state.length;
         ++lexer->state.startindex;
