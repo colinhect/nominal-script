@@ -317,16 +317,6 @@ size_t nom_tostring(
 #define ARITH(l, r, op, name)\
     if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
-        nom_seterror(state, "Cannot %s non-numeric values", name);\
-    }\
-    else\
-    {\
-        result.number = l.number op r.number;\
-    }
-
-#define ARITH(l, r, op, name)\
-    if (!IS_NUMBER(l) || !IS_NUMBER(r))\
-    {\
         NomValue classmap = map_getclass(state, left);\
         NomValue function = nom_nil();\
         if (nom_istrue(state, classmap) &&\
