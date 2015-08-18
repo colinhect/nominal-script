@@ -25,6 +25,7 @@
 
 #include "config.h"
 
+// Define export macro for relevant configurations/platforms
 #ifdef NOM_SHARED
 #ifdef NOM_WINDOWS_BUILD
 #ifdef NOM_EXPORTS

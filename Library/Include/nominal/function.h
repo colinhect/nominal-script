@@ -32,18 +32,19 @@
 
 ///
 /// \brief A function pointer to a native function invoked in the place of a
-/// Nominal function.
+///        Nominal function.
 typedef NomValue(*NomFunction)(NomState* state);
 
 ///
-/// \brief Checks if a value is a function.
+/// \brief Checks if a value is a reference to a Nominal function.
 ///
 /// \param state
 ///     The state.
 /// \param value
 ///     The value in question.
 ///
-/// \returns True if the value is a function; false otherwise.
+/// \returns True if the value is a reference to a Nominal function; false
+///          otherwise.
 NOM_EXPORT bool nom_isfunction(
     NomState*   state,
     NomValue    value
@@ -53,11 +54,11 @@ NOM_EXPORT bool nom_isfunction(
 /// \brief Creates a new Nominal function.
 ///
 /// \param state
-///     The state to create the value for.
+///     The state to create the function for.
 /// \param function
 ///     The native function callback.
 ///
-/// \returns The new Nominal function (must be released).
+/// \returns A reference to the new Nominal function.
 NOM_EXPORT NomValue nom_newfunction(
     NomState*   state,
     NomFunction function

@@ -30,42 +30,43 @@
 #include "nominal/value.h"
 
 ///
-/// \brief Checks if a value is a string.
+/// \brief Checks if a value is a reference to a Nominal string.
 ///
 /// \param state
 ///     The state.
 /// \param value
 ///     The value in question.
 ///
-/// \returns True if the value is a string; false otherwise.
+/// \returns True if the value is a reference to a Nominal string; false
+///          otherwise.
 NOM_EXPORT bool nom_isstring(
     NomState*   state,
     NomValue    value
 );
 
 ///
-/// \brief Creates a new Nominal string value from a string.
+/// \brief Creates a new Nominal string from a string.
 ///
 /// \param state
 ///     The state to create the value for.
 /// \param value
 ///     The NULL-terminated string value.
 ///
-/// \returns The new Nominal value (must be released).
+/// \returns A reference to the new Nominal string.
 NOM_EXPORT NomValue nom_newstring(
     NomState*   state,
     const char* value
 );
 
 ///
-/// \brief Creates an interned Nominal string value from a string.
+/// \brief Creates an interned Nominal string from a string.
 ///
 /// \param state
 ///     The state to create the value for.
 /// \param value
 ///     The NULL-terminated string value.
 ///
-/// \returns The new Nominal value.
+/// \returns A reference to the new Nominal string.
 NOM_EXPORT NomValue nom_newinternedstring(
     NomState*   state,
     const char* value
@@ -80,7 +81,7 @@ NOM_EXPORT NomValue nom_newinternedstring(
 ///     The string value.
 ///
 /// \returns A pointer to a NULL terminated string; NULL if the value is not
-/// a string.
+///          a string.
 NOM_EXPORT const char* nom_getstring(
     NomState*   state,
     NomValue    value

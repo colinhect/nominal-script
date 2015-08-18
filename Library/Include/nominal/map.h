@@ -32,14 +32,15 @@
 #include <stddef.h>
 
 ///
-/// \brief Checks if a value is a map.
+/// \brief Checks if a value is a reference to a Nominal map.
 ///
 /// \param state
 ///     The state.
 /// \param value
 ///     The value in question.
 ///
-/// \returns True if the value is a map; false otherwise.
+/// \returns True if the value is a reference to a Nominal map; false
+///          otherwise.
 NOM_EXPORT bool nom_ismap(
     NomState*   state,
     NomValue    value
@@ -49,9 +50,9 @@ NOM_EXPORT bool nom_ismap(
 /// \brief Creates a new Nominal map.
 ///
 /// \param state
-///     The state to create the value for.
+///     The state to create the map for.
 ///
-/// \returns The new Nominal map (must be released).
+/// \returns The reference to the new Nominal map.
 NOM_EXPORT NomValue nom_newmap(
     NomState*   state
 );

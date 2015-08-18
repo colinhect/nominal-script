@@ -143,7 +143,7 @@ NOM_EXPORT long long nom_hash(
 );
 
 ///
-/// \brief Gets a representation of a value as a string.
+/// \brief Gets a representation of a Nominal value as a string.
 ///
 /// \param state
 ///     The state.
@@ -197,7 +197,7 @@ NOM_EXPORT NomValue nom_sub(
 );
 
 ///
-/// \brief Multiplies a value by another value.
+/// \brief Multiplies a Nominal value by another value.
 ///
 /// \param state
 ///     The state.
@@ -214,7 +214,7 @@ NOM_EXPORT NomValue nom_mul(
 );
 
 ///
-/// \brief Divides a value by another value.
+/// \brief Divides a Nominal value by another value.
 ///
 /// \param state
 ///     The state.
@@ -304,7 +304,7 @@ NOM_EXPORT bool nom_isiterable(
 ///     moved to the first pair in the value.
 ///
 /// \returns True if the next pair was moved to; false if there were no more
-/// pairs in the value or if the value is not iterable.
+///          pairs in the value or if the value is not iterable.
 NOM_EXPORT bool nom_next(
     NomState*       state,
     NomValue        value,
@@ -324,8 +324,8 @@ NOM_EXPORT bool nom_next(
 ///     The value to insert for the key.
 ///
 /// \returns True if the value was inserted for they key; false if a value
-/// already exists for the key or the value does not support settings values
-/// for keys.
+///          already exists for the key or the value does not support settings
+///          values for keys.
 NOM_EXPORT bool nom_insert(
     NomState*   state,
     NomValue    value,
@@ -346,8 +346,8 @@ NOM_EXPORT bool nom_insert(
 ///     The value to set for the key.
 ///
 /// \returns True if the value was set for they key; false if a value does
-/// not exist for the key or the value does not support setting values for
-/// keys.
+///          not exist for the key or the value does not support setting values
+///          for keys.
 NOM_EXPORT bool nom_set(
     NomState*   state,
     NomValue    value,
@@ -368,7 +368,7 @@ NOM_EXPORT bool nom_set(
 ///     The value to insert or set for the key.
 ///
 /// \returns True if the value was inserted for they key; false if a value
-/// already exists for the key.
+///          already exists for the key.
 NOM_EXPORT bool nom_insertorset(
     NomState*   state,
     NomValue    value,
@@ -416,7 +416,7 @@ NOM_EXPORT bool nom_tryget(
 
 ///
 /// \brief Acquires a reference to a Nominal value, assuring that the value
-/// will not be garbage collected until after it is released.
+///        will not be garbage collected until after it is released.
 ///
 /// \param state
 ///     The state.
@@ -429,7 +429,7 @@ NOM_EXPORT void nom_acquire(
 
 ///
 /// \brief Releases a reference to a Nominal value, allowing the value to be
-/// garbage collected.
+///        garbage collected.
 ///
 /// \param state
 ///     The state.

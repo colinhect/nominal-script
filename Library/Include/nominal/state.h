@@ -30,18 +30,18 @@
 #include "nominal/value.h"
 
 ///
-/// \brief Creates a new state.
+/// \brief Creates a new Nominal state.
 ///
-/// \returns The new state.
+/// \returns The new Nominal state.
 NOM_EXPORT NomState* nom_newstate(
     void
 );
 
 ///
-/// \brief Frees a state
+/// \brief Frees a Nominal state
 ///
 /// \param state
-///     The state to free.
+///     The Nominal state to free.
 NOM_EXPORT void nom_freestate(
     NomState*   state
 );
@@ -50,7 +50,7 @@ NOM_EXPORT void nom_freestate(
 /// \brief Declares a variable in the current scope.
 ///
 /// \warning Ths function could have encountered an error.  Check nom_error()
-/// directly after invoking this function.
+///          directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -68,7 +68,7 @@ NOM_EXPORT void nom_letvar(
 /// \brief Sets a variable accessible from the current scope.
 ///
 /// \warning Ths function could have encountered an error.  Check nom_error()
-/// directly after invoking this function.
+///          directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -86,7 +86,7 @@ NOM_EXPORT void nom_setvar(
 /// \brief Gets a variable accessible from the current scope.
 ///
 /// \warning Ths function could have encountered an error.  Check nom_error()
-/// directly after invoking this function.
+///          directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -119,7 +119,7 @@ NOM_EXPORT size_t nom_getargcount(
 ///     The index.
 ///
 /// \returns The argument; nil if the index is greater than the number of
-/// arguments currently on the call stack.
+///          arguments currently on the call stack.
 NOM_EXPORT NomValue nom_getarg(
     NomState*   state,
     size_t      index
@@ -129,7 +129,7 @@ NOM_EXPORT NomValue nom_getarg(
 /// \brief Executes a snippet of Nominal source code and returns the value.
 ///
 /// \warning The execution could have encountered an error.  Check
-/// nom_error() directly after invoking this function.
+///          nom_error() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -146,7 +146,7 @@ NOM_EXPORT NomValue nom_execute(
 /// \brief Executes a file containing Nominal source code.
 ///
 /// \warning The execution could have encountered an error.  Check
-/// nom_error() directly after invoking this function.
+///          nom_error() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -162,7 +162,7 @@ NOM_EXPORT void nom_dofile(
 /// code to stdout.
 ///
 /// \warning The source code could have failed to parse.  Check
-/// nom_error() directly after invoking this function.
+///          nom_error() directly after invoking this function.
 ///
 /// \param state
 ///     The state.
