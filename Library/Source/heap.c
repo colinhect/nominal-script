@@ -27,16 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct Heap
-{
-    HeapObject*     objects;
-    uint32_t        capacity;
-    HeapObjectId    nextid;
-    HeapObjectId    maxid;
-};
-
-#define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
-
 Heap* heap_new(
     void
 )

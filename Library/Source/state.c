@@ -39,33 +39,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#define STRING_POOL_STRING_COUNT    (512)
 
-typedef struct
-{
-    uint32_t    ip;
-    uint8_t     argcount;
-    NomValue    scope;
-} StackFrame;
-
-struct NomState
-{
-    NomValue        stack[STATE_MAX_STACK_SIZE];
-    uint32_t        sp;
-
-    StackFrame      callstack[STATE_MAX_CALLSTACK_SIZE];
-    uint32_t        cp;
-
-    unsigned char   bytecode[STATE_MAX_BYTE_CODE];
-    uint32_t        ip;
-    uint32_t        end;
-
-    Heap*           heap;
-    StringPool*     stringpool;
-
-    char            error[2048];
-    bool            errorflag;
-};
 
 // Pops a stack frame from the callstack and returns the return instruction
 // pointer
@@ -213,7 +187,7 @@ NomState* nom_newstate(
 
     state->cp = 1;
     state->heap = heap_new();
-    state->stringpool = stringpool_new(STRING_POOL_STRING_COUNT);
+    state->stringpool = stringpool_new(STATE_STRING_POOL_SIZE);
 
     // Define intrinsic global variables
     if (!nom_error(state))
@@ -227,6 +201,34 @@ NomState* nom_newstate(
     if (!nom_error(state))
     {
         nom_letvar(state, "false", nom_false());
+    }
+    if (!nom_error(state))
+    {
+        state->nilclass = state_newclass(state, "Nil");
+    }
+    if (!nom_error(state))
+    {
+        state->numberclass = state_newclass(state, "Number");
+    }
+    if (!nom_error(state))
+    {
+        state->booleanclass = state_newclass(state, "Boolean");
+    }
+    if (!nom_error(state))
+    {
+        state->stringclass = state_newclass(state, "String");
+    }
+    if (!nom_error(state))
+    {
+        state->mapclass = state_newclass(state, "Map");
+    }
+    if (!nom_error(state))
+    {
+        state->functionclass = state_newclass(state, "Function");
+    }
+    if (!nom_error(state))
+    {
+        state->classclass = state_newclass(state, "Class");
     }
 
     // Import the prelude library
@@ -330,22 +332,6 @@ NomValue nom_getarg(
     }
 
     return value;
-}
-
-Heap* state_getheap(
-    NomState*   state
-)
-{
-    assert(state);
-    return state->heap;
-}
-
-StringPool* state_getstringpool(
-    NomState*   state
-)
-{
-    assert(state);
-    return state->stringpool;
 }
 
 void state_letinterned(
@@ -699,6 +685,24 @@ NomValue state_execute(
     return result;
 }
 
+NomValue state_newclass(
+    NomState*   state,
+    const char* name)
+{
+    assert(state);
+    assert(name);
+
+    NomValue namestring = nom_newinternedstring(state, "name");
+    NomValue classname = nom_newinternedstring(state, name);
+
+    NomValue classvalue = nom_newmap(state);
+    nom_insert(state, classvalue, namestring, classname);
+
+    nom_letvar(state, name, classvalue);
+
+    return classvalue;
+}
+
 NomValue nom_execute(
     NomState*   state,
     const char* source
@@ -882,7 +886,7 @@ static void mark(
     heap_mark(state->heap, value);
 }
 
-unsigned int nom_collectgarbage(
+int nom_collectgarbage(
     NomState*   state
 )
 {

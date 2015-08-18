@@ -27,15 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct StringPool
-{
-    HashTable*  hashtable;
-    char**      strings;
-    Hash*       hashes;
-    size_t      stringcount;
-    StringId    nextid;
-};
-
 StringPool* stringpool_new(
     size_t  stringcount
 )

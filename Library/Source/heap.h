@@ -30,21 +30,29 @@
 #include <stddef.h>
 #include <stdint.h>
 
-// A heap of GC objects
-typedef struct Heap Heap;
+#define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
 
 // A handle to a GC object (specific to a certain heap)
 typedef uint32_t HeapObjectId;
 
 // A GC object on the heap
-typedef struct
+typedef struct HeapObject
 {
     ObjectType  type;
     void*       data;
-    void        (*free)(void*);
+    void(*free)(void*);
     int32_t     refcount;
     bool        marked;
 } HeapObject;
+
+// A heap of GC objects
+typedef struct Heap
+{
+    HeapObject*     objects;
+    uint32_t        capacity;
+    HeapObjectId    nextid;
+    HeapObjectId    maxid;
+} Heap;
 
 // Creates a new heap
 Heap* heap_new(

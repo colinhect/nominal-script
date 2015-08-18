@@ -26,6 +26,18 @@
 
 #include <nominal.h>
 
+#include "hashtable.h"
+
+typedef struct MapData
+{
+    HashTable*  hashtable;
+    size_t      capacity;
+    size_t      count;
+    NomValue*   keys;
+    bool        contiguous;
+    NomValue    classmap;
+} MapData;
+
 // Returns whether the keys in a map are contiguous natural numbers starting
 // at zero
 bool map_iscontiguous(

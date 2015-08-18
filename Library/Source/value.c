@@ -161,8 +161,6 @@ long long nom_hash(
     NomValue    value
 )
 {
-    StringPool* stringpool = state_getstringpool(state);
-
     long long hash = value.raw;
 
     ValueType type = GET_TYPE(value);
@@ -173,12 +171,11 @@ long long nom_hash(
     case VALUETYPE_BOOLEAN:
         break;
     case VALUETYPE_INTERNED_STRING:
-        hash = stringpool_hash(stringpool, GET_ID(value));
+        hash = stringpool_hash(state->stringpool, GET_ID(value));
         break;
     case VALUETYPE_OBJECT:
     {
-        Heap* heap = state_getheap(state);
-        HeapObject* object = heap_getobject(heap, value);
+        HeapObject* object = heap_getobject(state->heap, value);
         if (object && object->type == OBJECTTYPE_STRING)
         {
             hash = hashstring((UserData)nom_getstring(state, value), (UserData)state);
@@ -218,8 +215,7 @@ size_t nom_tostring(
         break;
     case VALUETYPE_OBJECT:
     {
-        Heap* heap = state_getheap(state);
-        HeapObject* object = heap_getobject(heap, value);
+        HeapObject* object = heap_getobject(state->heap, value);
         if (object)
         {
             switch (object->type)
@@ -526,8 +522,7 @@ void nom_acquire(
 {
     assert(state);
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, value);
+    HeapObject* object = heap_getobject(state->heap, value);
     if (object)
     {
         ++object->refcount;
@@ -541,8 +536,7 @@ void nom_release(
 {
     assert(state);
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, value);
+    HeapObject* object = heap_getobject(state->heap, value);
     if (object)
     {
         --object->refcount;

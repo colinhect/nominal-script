@@ -29,6 +29,17 @@
 #include <nominal.h>
 #include <stddef.h>
 
+#define MAX_FUNCTION_PARAMS (16)
+
+// The internal data of a function
+typedef struct FunctionData
+{
+    uint32_t    ip;
+    NomFunction nativefunction;
+    StringId    params[MAX_FUNCTION_PARAMS];
+    size_t      paramcount;
+} FunctionData;
+
 // Creates a new function
 NomValue function_new(
     NomState*   state,

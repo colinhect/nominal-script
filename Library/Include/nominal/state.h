@@ -214,7 +214,7 @@ NOM_EXPORT const char* nom_geterror(
 ///     The state.
 ///
 /// \returns The number of objects reclaimed.
-NOM_EXPORT unsigned int nom_collectgarbage(
+NOM_EXPORT int nom_collectgarbage(
     NomState*   state
 );
 

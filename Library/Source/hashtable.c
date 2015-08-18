@@ -27,22 +27,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-struct HashTable
-{
-    HashFunction    hash;
-    CompareFunction compare;
-    UserData        context;
-    BucketNode**    buckets;
-    size_t          bucketcount;
-};
-
-struct BucketNode
-{
-    UserData            key;
-    UserData            value;
-    struct BucketNode*  next;
-};
-
 // Gets a node for a specific key with the option of creating a new node if it
 // is not found
 static bool findnode(

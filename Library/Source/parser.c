@@ -30,16 +30,6 @@
 #include <ctype.h>
 #include <stdarg.h>
 
-#define MAX_PARSER_ERROR_LENGTH (1024)
-
-struct Parser
-{
-    Lexer*      lexer;
-    StringPool* stringpool;
-    char        error[MAX_PARSER_ERROR_LENGTH];
-    char        fullerror[MAX_PARSER_ERROR_LENGTH];
-};
-
 static void unexpectedtokenerror(
     Parser*     parser
 )

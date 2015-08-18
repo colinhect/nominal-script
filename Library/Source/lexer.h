@@ -40,7 +40,7 @@ typedef enum
 } TokenType;
 
 // Contains the position and state of a lexer
-typedef struct
+typedef struct LexerState
 {
     unsigned    index;
     unsigned    line;
@@ -53,7 +53,11 @@ typedef struct
 } LexerState;
 
 // A lexer
-typedef struct Lexer Lexer;
+typedef struct Lexer
+{
+    const char* source;
+    LexerState  state;
+} Lexer;
 
 // Creates a new lexer
 Lexer* lexer_new(

@@ -47,8 +47,7 @@ bool nom_isstring(
     }
     else
     {
-        Heap* heap = state_getheap(state);
-        HeapObject* object = heap_getobject(heap, value);
+        HeapObject* object = heap_getobject(state->heap, value);
         if (object)
         {
             result = object->type == OBJECTTYPE_STRING;
@@ -65,11 +64,10 @@ NomValue nom_newstring(
 {
     assert(state);
 
-    Heap* heap = state_getheap(state);
-    NomValue string = heap_alloc(heap, OBJECTTYPE_STRING, strlen(value) + 1, free);
+    NomValue string = heap_alloc(state->heap, OBJECTTYPE_STRING, strlen(value) + 1, free);
 
     // Copy the string to the object's data
-    char* data = heap_getdata(heap, string);
+    char* data = heap_getdata(state->heap, string);
     strcpy(data, value);
 
     return string;
@@ -83,8 +81,7 @@ NomValue nom_newinternedstring(
     assert(state);
     assert(value);
 
-    StringPool* stringpool = state_getstringpool(state);
-    StringId id = stringpool_getid(stringpool, value);
+    StringId id = stringpool_getid(state->stringpool, value);
 
     NomValue string = nom_nil();
     SET_TYPE(string, VALUETYPE_INTERNED_STRING);
@@ -100,21 +97,18 @@ const char* nom_getstring(
 {
     assert(state);
 
-    StringPool* stringpool = state_getstringpool(state);
-
     const char* string = NULL;
     ValueType type = GET_TYPE(value);
     if (type == VALUETYPE_INTERNED_STRING)
     {
-        string = stringpool_find(stringpool, GET_ID(value));
+        string = stringpool_find(state->stringpool, GET_ID(value));
     }
     else
     {
-        Heap* heap = state_getheap(state);
-        HeapObject* object = heap_getobject(heap, value);
+        HeapObject* object = heap_getobject(state->heap, value);
         if (object && object->type == OBJECTTYPE_STRING)
         {
-            string = heap_getdata(heap, value);
+            string = heap_getdata(state->heap, value);
         }
     }
 

@@ -47,14 +47,26 @@ typedef bool (*CompareFunction)(
     UserData    context
 );
 
-// A hash table
-typedef struct HashTable HashTable;
-
 // A hash table bucket node
-typedef struct BucketNode BucketNode;
+typedef struct BucketNode
+{
+    UserData            key;
+    UserData            value;
+    struct BucketNode*  next;
+} BucketNode;
+
+// A hash table
+typedef struct HashTable
+{
+    HashFunction    hash;
+    CompareFunction compare;
+    UserData        context;
+    BucketNode**    buckets;
+    size_t          bucketcount;
+} HashTable;
 
 // An iterator of a hash table
-typedef struct
+typedef struct HashTableIterator
 {
     HashTable*  hashtable;
     size_t      index;

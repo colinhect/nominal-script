@@ -28,9 +28,18 @@
 
 #include <string.h>
 
+// A numeric identifier for a string in a string pool
 typedef uint32_t StringId;
 
-typedef struct StringPool StringPool;
+// A pool of strings
+typedef struct StringPool
+{
+    HashTable*  hashtable;
+    char**      strings;
+    Hash*       hashes;
+    size_t      stringcount;
+    StringId    nextid;
+} StringPool;
 
 // Creates a new string pool
 StringPool* stringpool_new(

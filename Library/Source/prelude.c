@@ -24,6 +24,7 @@
 #include "prelude.h"
 
 #include "map.h"
+#include "state.h"
 #include "string.h"
 #include "value.h"
 
@@ -154,46 +155,47 @@ static NomValue prelude_if(
     assert(state);
 
     NomValue condition = nom_getarg(state, 0);
-    NomValue thenBody = nom_getarg(state, 1);
-    NomValue elseBody = nom_getarg(state, 2);
+    NomValue thenbody = nom_getarg(state, 1);
+    NomValue elsebody = nom_getarg(state, 2);
 
-    NomValue result;
+    NomValue conditionresult;
     if (nom_isinvokable(state, condition))
     {
-        result = nom_invoke(state, condition, 0, NULL);
+        conditionresult = nom_invoke(state, condition, 0, NULL);
     }
     else
     {
-        result = condition;
+        conditionresult = condition;
     }
 
+    NomValue result = nom_nil();
     if (!nom_error(state))
     {
-        if (nom_istrue(state, result) && nom_istrue(state, thenBody))
+        if (nom_istrue(state, conditionresult))
         {
-            if (nom_isinvokable(state, thenBody))
+            if (nom_isinvokable(state, thenbody))
             {
-                return nom_invoke(state, thenBody, 0, NULL);
+                result = nom_invoke(state, thenbody, 0, NULL);
             }
-            else
+            else if (nom_istrue(state, thenbody))
             {
                 nom_seterror(state, "'then' is not invokable");
             }
         }
-        else if (!nom_istrue(state, result) && nom_istrue(state, elseBody))
+        else
         {
-            if (nom_isinvokable(state, elseBody))
+            if (nom_isinvokable(state, elsebody))
             {
-                return nom_invoke(state, elseBody, 0, NULL);
+                return nom_invoke(state, elsebody, 0, NULL);
             }
-            else
+            else if (nom_istrue(state, elsebody))
             {
                 nom_seterror(state, "'else' is not invokable");
             }
         }
     }
 
-    return nom_nil();
+    return result;
 }
 
 static NomValue prelude_while(
@@ -262,7 +264,7 @@ static NomValue prelude_collectgarbage(
 {
     assert(state);
 
-    unsigned int count = nom_collectgarbage(state);
+    int count = nom_collectgarbage(state);
 
     NomValue result = nom_fromunsignedint(count);
     return result;
@@ -309,8 +311,10 @@ static NomValue prelude_class(
             map = nom_newmap(state);
         }
 
-        map_setclass(state, map, nom_getvar(state, "Class"));
-        map_insertorset(state, map, nom_newstring(state, "name"), name);
+        map_setclass(state, map, state->classclass);
+
+        NomValue namestring = nom_newinternedstring(state, "name");
+        map_insertorset(state, map, namestring, name);
     }
     else
     {
@@ -334,36 +338,35 @@ static NomValue prelude_classof(
     switch (type)
     {
     case VALUETYPE_NIL:
-        result = nom_getvar(state, "Nil");
+        result = state->nilclass;
         break;
     case VALUETYPE_NUMBER:
-        result = nom_getvar(state, "Number");
+        result = state->numberclass;
         break;
     case VALUETYPE_BOOLEAN:
-        result = nom_getvar(state, "Boolean");
+        result = state->booleanclass;
         break;
     case VALUETYPE_INTERNED_STRING:
-        result = nom_getvar(state, "String");
+        result = state->stringclass;
         break;
     case VALUETYPE_OBJECT:
     {
         result = map_getclass(state, value);
         if (!nom_istrue(state, result))
         {
-            Heap* heap = state_getheap(state);
-            HeapObject* object = heap_getobject(heap, value);
+            HeapObject* object = heap_getobject(state->heap, value);
             if (object)
             {
                 switch (object->type)
                 {
                 case OBJECTTYPE_STRING:
-                    result = nom_getvar(state, "String");
+                    result = state->stringclass;
                     break;
                 case OBJECTTYPE_MAP:
-                    result = nom_getvar(state, "Map");
+                    result = state->mapclass;
                     break;
                 case OBJECTTYPE_FUNCTION:
-                    result = nom_getvar(state, "Function");
+                    result = state->functionclass;
                     break;
                 }
             }
@@ -377,7 +380,7 @@ static NomValue prelude_classof(
 
 static NomValue prelude_object(
     NomState*   state
-    )
+)
 {
     assert(state);
 
@@ -469,40 +472,5 @@ void import_prelude(
     if (!nom_error(state))
     {
         nom_letvar(state, "object", nom_newfunction(state, prelude_object));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "Nil", nom_execute(state, "{ name := \"Nil\" }"));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "Number", nom_execute(state, "{ name := \"Number\" }"));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "Boolean", nom_execute(state, "{ name := \"Boolean\" }"));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "String", nom_execute(state, "{ name := \"String\" }"));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "Map", nom_execute(state, "{ name := \"Map\" }"));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "Function", nom_execute(state, "{ name := \"Function\" }"));
-    }
-
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "Class", nom_execute(state, "{ name := \"Class\" }"));
     }
 }

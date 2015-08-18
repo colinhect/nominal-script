@@ -32,16 +32,41 @@
 #define STATE_MAX_STACK_SIZE        (128)
 #define STATE_MAX_CALLSTACK_SIZE    (32)
 #define STATE_MAX_BYTE_CODE         (8096)
+#define STATE_STRING_POOL_SIZE      (512)
 
-// Returns the heap used by the specified state
-Heap* state_getheap(
-    NomState*   state
-);
+typedef struct StackFrame
+{
+    uint32_t    ip;
+    uint8_t     argcount;
+    NomValue    scope;
+} StackFrame;
 
-// Returns the string pool used by the specified state
-StringPool* state_getstringpool(
-    NomState*   state
-);
+struct NomState
+{
+    NomValue        stack[STATE_MAX_STACK_SIZE];
+    uint32_t        sp;
+
+    StackFrame      callstack[STATE_MAX_CALLSTACK_SIZE];
+    uint32_t        cp;
+
+    unsigned char   bytecode[STATE_MAX_BYTE_CODE];
+    uint32_t        ip;
+    uint32_t        end;
+
+    Heap*           heap;
+    StringPool*     stringpool;
+
+    NomValue        nilclass;
+    NomValue        numberclass;
+    NomValue        booleanclass;
+    NomValue        stringclass;
+    NomValue        mapclass;
+    NomValue        functionclass;
+    NomValue        classclass;
+
+    char            error[2048];
+    bool            errorflag;
+};
 
 // Declares the value of a variable given an interned string ID based
 // on the current scope
@@ -93,5 +118,13 @@ NomValue state_invoke(
 NomValue state_execute(
     NomState*   state
 );
+
+// Creates a new map representing a class
+//
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
+NomValue state_newclass(
+    NomState*   state,
+    const char* name);
 
 #endif

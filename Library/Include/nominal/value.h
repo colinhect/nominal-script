@@ -53,7 +53,7 @@ typedef union
 
 ///
 /// \brief An iterator for a Nominal value.
-typedef struct
+typedef struct NomIterator
 {
     NomValue    source;
     NomValue    key;

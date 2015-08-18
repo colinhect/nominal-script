@@ -28,8 +28,16 @@
 #include "stringpool.h"
 #include "lexer.h"
 
+#define MAX_PARSER_ERROR_LENGTH (1024)
+
 // A parser
-typedef struct Parser Parser;
+typedef struct Parser
+{
+    Lexer*      lexer;
+    StringPool* stringpool;
+    char        error[MAX_PARSER_ERROR_LENGTH];
+    char        fullerror[MAX_PARSER_ERROR_LENGTH];
+} Parser;
 
 // Creates a new parser
 Parser* parser_new(

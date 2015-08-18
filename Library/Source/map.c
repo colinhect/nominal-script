@@ -25,21 +25,10 @@
 
 #include "value.h"
 #include "state.h"
-#include "hashtable.h"
 #include "heap.h"
 
 #include <assert.h>
 #include <stdlib.h>
-
-typedef struct
-{
-    HashTable*  hashtable;
-    size_t      capacity;
-    size_t      count;
-    NomValue*   keys;
-    bool        contiguous;
-    NomValue    classmap;
-} MapData;
 
 Hash hashvalue(
     UserData    key,
@@ -134,8 +123,7 @@ bool nom_ismap(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, value);
+    HeapObject* object = heap_getobject(state->heap, value);
     if (object)
     {
         result = object->type == OBJECTTYPE_MAP;
@@ -150,10 +138,9 @@ NomValue nom_newmap(
 {
     assert(state);
 
-    Heap* heap = state_getheap(state);
-    NomValue map = heap_alloc(heap, OBJECTTYPE_MAP, sizeof(MapData), freemapdata);
+    NomValue map = heap_alloc(state->heap, OBJECTTYPE_MAP, sizeof(MapData), freemapdata);
 
-    MapData* data = heap_getdata(heap, map);
+    MapData* data = heap_getdata(state->heap, map);
     data->hashtable = hashtable_new(hashvalue, comparevalue, (UserData)state, 32);
     data->capacity = 32;
     data->count = 0;
@@ -173,8 +160,7 @@ bool map_iscontiguous(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -197,8 +183,7 @@ bool map_next(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -260,8 +245,7 @@ bool map_insert(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -289,8 +273,7 @@ bool map_set(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -314,8 +297,7 @@ bool map_insertorset(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -354,8 +336,7 @@ bool map_tryget(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -373,8 +354,7 @@ void map_setclass(
 {
     assert(state);
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
@@ -391,8 +371,7 @@ NomValue map_getclass(
 
     NomValue classmap = nom_nil();
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, map);
+    HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;

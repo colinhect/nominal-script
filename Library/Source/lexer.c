@@ -30,12 +30,6 @@
 #include <string.h>
 #include <ctype.h>
 
-struct Lexer
-{
-    const char* source;
-    LexerState  state;
-};
-
 char readnext(
     Lexer*  lexer
 )

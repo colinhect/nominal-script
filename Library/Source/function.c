@@ -31,16 +31,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define MAX_FUNCTION_PARAMS (16)
-
-typedef struct
-{
-    uint32_t    ip;
-    NomFunction nativefunction;
-    StringId    params[MAX_FUNCTION_PARAMS];
-    size_t      paramcount;
-} FunctionData;
-
 static NomValue allocfunction(
     NomState*       state,
     FunctionData**  data
@@ -49,9 +39,8 @@ static NomValue allocfunction(
     assert(state);
     assert(data);
 
-    Heap* heap = state_getheap(state);
-    NomValue value = heap_alloc(heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
-    *data = heap_getdata(heap, value);
+    NomValue value = heap_alloc(state->heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
+    *data = heap_getdata(state->heap, value);
 
     return value;
 }
@@ -65,8 +54,7 @@ bool nom_isfunction(
 
     bool result = false;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, value);
+    HeapObject* object = heap_getobject(state->heap, value);
     if (object)
     {
         result = object->type == OBJECTTYPE_FUNCTION;
@@ -115,8 +103,7 @@ void function_addparam(
 {
     assert(state);
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, function);
+    HeapObject* object = heap_getobject(state->heap, function);
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
         FunctionData* data = (FunctionData*)object->data;
@@ -136,8 +123,7 @@ size_t function_getparamcount(
 
     size_t paramcount = 0;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, function);
+    HeapObject* object = heap_getobject(state->heap, function);
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
         FunctionData* data = (FunctionData*)object->data;
@@ -160,8 +146,7 @@ StringId function_getparam(
 
     StringId id = (StringId)-1;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, function);
+    HeapObject* object = heap_getobject(state->heap, function);
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
         FunctionData* data = (FunctionData*)object->data;
@@ -191,8 +176,7 @@ NomFunction function_getnative(
 
     NomFunction nativefunction = NULL;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, function);
+    HeapObject* object = heap_getobject(state->heap, function);
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
         FunctionData* data = (FunctionData*)object->data;
@@ -214,8 +198,7 @@ uint32_t function_getip(
 
     uint32_t ip = (uint32_t)-1;
 
-    Heap* heap = state_getheap(state);
-    HeapObject* object = heap_getobject(heap, function);
+    HeapObject* object = heap_getobject(state->heap, function);
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
         FunctionData* data = (FunctionData*)object->data;
