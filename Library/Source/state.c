@@ -204,31 +204,31 @@ NomState* nom_newstate(
     }
     if (!nom_error(state))
     {
-        state->nilclass = state_newclass(state, "Nil");
+        state->classes.nil = state_newclass(state, "Nil");
     }
     if (!nom_error(state))
     {
-        state->numberclass = state_newclass(state, "Number");
+        state->classes.number = state_newclass(state, "Number");
     }
     if (!nom_error(state))
     {
-        state->booleanclass = state_newclass(state, "Boolean");
+        state->classes.boolean = state_newclass(state, "Boolean");
     }
     if (!nom_error(state))
     {
-        state->stringclass = state_newclass(state, "String");
+        state->classes.string = state_newclass(state, "String");
     }
     if (!nom_error(state))
     {
-        state->mapclass = state_newclass(state, "Map");
+        state->classes.map = state_newclass(state, "Map");
     }
     if (!nom_error(state))
     {
-        state->functionclass = state_newclass(state, "Function");
+        state->classes.function = state_newclass(state, "Function");
     }
     if (!nom_error(state))
     {
-        state->classclass = state_newclass(state, "Class");
+        state->classes.clss = state_newclass(state, "Class");
     }
 
     // Import the prelude library

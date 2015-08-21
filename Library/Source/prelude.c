@@ -311,7 +311,7 @@ static NomValue prelude_class(
             map = nom_newmap(state);
         }
 
-        map_setclass(state, map, state->classclass);
+        map_setclass(state, map, state->classes.clss);
 
         NomValue namestring = nom_newinternedstring(state, "name");
         map_insertorset(state, map, namestring, name);
@@ -338,16 +338,16 @@ static NomValue prelude_classof(
     switch (type)
     {
     case VALUETYPE_NIL:
-        result = state->nilclass;
+        result = state->classes.nil;
         break;
     case VALUETYPE_NUMBER:
-        result = state->numberclass;
+        result = state->classes.number;
         break;
     case VALUETYPE_BOOLEAN:
-        result = state->booleanclass;
+        result = state->classes.boolean;
         break;
     case VALUETYPE_INTERNED_STRING:
-        result = state->stringclass;
+        result = state->classes.string;
         break;
     case VALUETYPE_OBJECT:
     {
@@ -360,13 +360,13 @@ static NomValue prelude_classof(
                 switch (object->type)
                 {
                 case OBJECTTYPE_STRING:
-                    result = state->stringclass;
+                    result = state->classes.string;
                     break;
                 case OBJECTTYPE_MAP:
-                    result = state->mapclass;
+                    result = state->classes.map;
                     break;
                 case OBJECTTYPE_FUNCTION:
-                    result = state->functionclass;
+                    result = state->classes.function;
                     break;
                 }
             }

@@ -56,13 +56,17 @@ struct NomState
     Heap*           heap;
     StringPool*     stringpool;
 
-    NomValue        nilclass;
-    NomValue        numberclass;
-    NomValue        booleanclass;
-    NomValue        stringclass;
-    NomValue        mapclass;
-    NomValue        functionclass;
-    NomValue        classclass;
+    // Classes for intrinsic types
+    struct
+    {
+        NomValue    nil;
+        NomValue    number;
+        NomValue    boolean;
+        NomValue    string;
+        NomValue    map;
+        NomValue    function;
+        NomValue    clss;
+    } classes;
 
     char            error[2048];
     bool            errorflag;
