@@ -31,7 +31,7 @@
 
 #define MAX_FUNCTION_PARAMS (16)
 
-// The internal data of a function
+// The internal data of a Nominal function
 typedef struct FunctionData
 {
     uint32_t    ip;

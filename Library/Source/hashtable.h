@@ -68,11 +68,11 @@ typedef struct HashTable
 // An iterator of a hash table
 typedef struct HashTableIterator
 {
-    HashTable*  hashtable;
-    size_t      index;
-    UserData    key;
-    UserData    value;
-    BucketNode* bucketnode;
+    HashTable*      hashtable;
+    size_t          index;
+    UserData        key;
+    UserData        value;
+    BucketNode*     bucketnode;
 } HashTableIterator;
 
 // Creates a new hash table given the hash/compare functions and the context

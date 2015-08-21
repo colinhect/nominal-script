@@ -23,63 +23,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "codegen.h"
 
-// Maps operators to their op code
-const OpCode OP_OPCODE[] =
-{
-    OPCODE_LET,   // OP_LET
-    OPCODE_SET,   // OP_SET
-    OPCODE_ADD,   // OP_ADD
-    OPCODE_SUB,   // OP_SUB
-    OPCODE_MUL,   // OP_MUL
-    OPCODE_DIV,   // OP_DIV
-    OPCODE_NEG,   // OP_NEG
-    OPCODE_EQ,    // OP_EQ
-    OPCODE_NE,    // OP_NE
-    OPCODE_GT,    // OP_GT
-    OPCODE_GTE,   // OP_GTE
-    OPCODE_LT,    // OP_LT
-    OPCODE_LTE,   // OP_LTE
-    OPCODE_AND,   // OP_AND
-    OPCODE_OR,    // OP_OR
-    OPCODE_NOT,   // OP_NOT
-    OPCODE_ASSOC, // OP_ASSOC
-    OPCODE_RET    // OP_RET
-};
-
-const char* const OPCODE_NAMES[] =
-{
-    "LET",          // OPCODE_LET,
-    "SET",          // OPCODE_SET,
-    "GET",          // OPCODE_GET,
-    "ADD",          // OPCODE_ADD,
-    "SUB",          // OPCODE_SUB,
-    "MUL",          // OPCODE_MUL,
-    "DIV",          // OPCODE_DIV,
-    "NEG",          // OPCODE_NEG,
-    "EQ",           // OPCODE_EQ,
-    "NE",           // OPCODE_NE,
-    "GT",           // OPCODE_GT,
-    "GTE",          // OPCODE_GTE,
-    "LT",           // OPCODE_LT,
-    "LTE",          // OPCODE_LTE,
-    "AND",          // OPCODE_AND,
-    "OR",           // OPCODE_OR,
-    "NOT",          // OPCODE_NOT,
-    "ASSOC",        // OPCODE_ASSOC,
-    "RET",          // OPCODE_RET,
-    "VALUE_LET",    // OPCODE_VALUE_LET,
-    "VALUE_SET",    // OPCODE_VALUE_SET,
-    "VALUE_GET",    // OPCODE_VALUE_GET,
-    "BRACKET_SET",  // OPCODE_BRACKET_SET,
-    "BRACKET_GET",  // OPCODE_BRACKET_GET,
-    "PUSH",         // OPCODE_PUSH,
-    "POP",          // OPCODE_POP,
-    "MAP",          // OPCODE_MAP,
-    "FUNCTION",     // OPCODE_FUNCTION,
-    "GOTO",         // OPCODE_GOTO,
-    "INVOKE"        // OPCODE_INVOKE
-};
-
 // Emits an opcode value to the byte code array
 #define OPCODE(op)\
     bytecode[index++] = (unsigned char)op
@@ -318,3 +261,59 @@ uint32_t generatecode(
 
     return index;
 }
+
+const OpCode OP_OPCODE[] =
+{
+    OPCODE_LET,     // OP_LET
+    OPCODE_SET,     // OP_SET
+    OPCODE_ADD,     // OP_ADD
+    OPCODE_SUB,     // OP_SUB
+    OPCODE_MUL,     // OP_MUL
+    OPCODE_DIV,     // OP_DIV
+    OPCODE_NEG,     // OP_NEG
+    OPCODE_EQ,      // OP_EQ
+    OPCODE_NE,      // OP_NE
+    OPCODE_GT,      // OP_GT
+    OPCODE_GTE,     // OP_GTE
+    OPCODE_LT,      // OP_LT
+    OPCODE_LTE,     // OP_LTE
+    OPCODE_AND,     // OP_AND
+    OPCODE_OR,      // OP_OR
+    OPCODE_NOT,     // OP_NOT
+    OPCODE_ASSOC,   // OP_ASSOC
+    OPCODE_RET      // OP_RET
+};
+
+const char* const OPCODE_NAMES[] =
+{
+    "LET",          // OPCODE_LET
+    "SET",          // OPCODE_SET
+    "GET",          // OPCODE_GET
+    "ADD",          // OPCODE_ADD
+    "SUB",          // OPCODE_SUB
+    "MUL",          // OPCODE_MUL
+    "DIV",          // OPCODE_DIV
+    "NEG",          // OPCODE_NEG
+    "EQ",           // OPCODE_EQ
+    "NE",           // OPCODE_NE
+    "GT",           // OPCODE_GT
+    "GTE",          // OPCODE_GTE
+    "LT",           // OPCODE_LT
+    "LTE",          // OPCODE_LTE
+    "AND",          // OPCODE_AND
+    "OR",           // OPCODE_OR
+    "NOT",          // OPCODE_NOT
+    "ASSOC",        // OPCODE_ASSOC
+    "RET",          // OPCODE_RET
+    "VALUE_LET",    // OPCODE_VALUE_LET
+    "VALUE_SET",    // OPCODE_VALUE_SET
+    "VALUE_GET",    // OPCODE_VALUE_GET
+    "BRACKET_SET",  // OPCODE_BRACKET_SET
+    "BRACKET_GET",  // OPCODE_BRACKET_GET
+    "PUSH",         // OPCODE_PUSH
+    "POP",          // OPCODE_POP
+    "MAP",          // OPCODE_MAP
+    "FUNCTION",     // OPCODE_FUNCTION
+    "GOTO",         // OPCODE_GOTO
+    "INVOKE"        // OPCODE_INVOKE
+};

@@ -34,67 +34,7 @@ static bool findnode(
     UserData        key,
     bool            createNew,
     BucketNode**    node
-)
-{
-    // Hash the key
-    Hash hash = hashtable->hash(key, hashtable->context);
-    hash = hash % hashtable->bucketcount;
-
-    // Find the first node of the bucket for the hash
-    BucketNode* curr = hashtable->buckets[hash];
-    BucketNode* prev = NULL;
-
-    // Iterate through each node in the bucket
-    while (curr)
-    {
-        // Check if this is the right node
-        if (hashtable->compare(curr->key, key, hashtable->context))
-        {
-            // Found the node
-            *node = curr;
-
-            // If we were supposed to create a new node then this is a failure
-            // and if we were supposed to set an existing value then this is a
-            // success
-            return !createNew;
-        }
-
-        // Move to the next node
-        prev = curr;
-        curr = curr->next;
-    }
-
-    // We didn't find an existing node, if we were supposed to create one then
-    // create it
-    if (createNew)
-    {
-        // Create the node
-        curr = (BucketNode*)malloc(sizeof(BucketNode));
-        assert(curr);
-        curr->key = key;
-        curr->next = NULL;
-
-        if (prev)
-        {
-            // Link to the previous node
-            prev->next = curr;
-        }
-        else
-        {
-            // Set as first node in a new bucket
-            hashtable->buckets[hash] = curr;
-        }
-
-        // Return the value
-        *node = curr;
-
-        return true;
-    }
-
-    // We were not support to create a new node and we never found one, so this
-    // is a falure
-    return false;
-}
+);
 
 HashTable* hashtable_new(
     HashFunction    hash,
@@ -103,6 +43,9 @@ HashTable* hashtable_new(
     size_t          bucketcount
 )
 {
+    assert(hash);
+    assert(compare);
+
     HashTable* hashtable = (HashTable*)malloc(sizeof(HashTable));
     assert(hashtable);
 
@@ -339,4 +282,71 @@ bool compareidentity(
 {
     (void)context;
     return left == right;
+}
+
+static bool findnode(
+    HashTable*      hashtable,
+    UserData        key,
+    bool            createNew,
+    BucketNode**    node
+)
+{
+    // Hash the key
+    Hash hash = hashtable->hash(key, hashtable->context);
+    hash = hash % hashtable->bucketcount;
+
+    // Find the first node of the bucket for the hash
+    BucketNode* curr = hashtable->buckets[hash];
+    BucketNode* prev = NULL;
+
+    // Iterate through each node in the bucket
+    while (curr)
+    {
+        // Check if this is the right node
+        if (hashtable->compare(curr->key, key, hashtable->context))
+        {
+            // Found the node
+            *node = curr;
+
+            // If we were supposed to create a new node then this is a failure
+            // and if we were supposed to set an existing value then this is a
+            // success
+            return !createNew;
+        }
+
+        // Move to the next node
+        prev = curr;
+        curr = curr->next;
+    }
+
+    // We didn't find an existing node, if we were supposed to create one then
+    // create it
+    if (createNew)
+    {
+        // Create the node
+        curr = (BucketNode*)malloc(sizeof(BucketNode));
+        assert(curr);
+        curr->key = key;
+        curr->next = NULL;
+
+        if (prev)
+        {
+            // Link to the previous node
+            prev->next = curr;
+        }
+        else
+        {
+            // Set as first node in a new bucket
+            hashtable->buckets[hash] = curr;
+        }
+
+        // Return the value
+        *node = curr;
+
+        return true;
+    }
+
+    // We were not support to create a new node and we never found one, so this
+    // is a falure
+    return false;
 }

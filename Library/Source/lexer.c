@@ -30,48 +30,21 @@
 #include <string.h>
 #include <ctype.h>
 
+// Moves to the next character and returns it
 char readnext(
     Lexer*  lexer
-)
-{
-    if (lexer->state.type == TOK_EOI)
-    {
-        return '\0';
-    }
+);
 
-    char c = lexer->source[lexer->state.index++];
-    if (c == '\n')
-    {
-        ++lexer->state.line;
-    }
-    else if (c == '\0')
-    {
-        lexer->state.type = TOK_EOI;
-    }
-
-    return c;
-}
-
+// Reads the next character and resturns it without affecting the lexer state
 char peaknext(
     Lexer*  lexer
-)
-{
-    if (lexer->state.type == TOK_EOI)
-    {
-        return '\0';
-    }
-    return lexer->source[lexer->state.index];
-}
+);
 
+// Returns whether a string starts with a sub-string
 bool startswith(
     const char* str,
     const char* pre
-)
-{
-    size_t prelength = strlen(pre);
-    size_t strlength = strlen(str);
-    return strlength < prelength ? false : strncmp(pre, str, prelength) == 0;
-}
+);
 
 Lexer* lexer_new(
     const char* source
@@ -437,4 +410,47 @@ void lexer_restorestate(
 )
 {
     lexer->state = state;
+}
+
+char readnext(
+    Lexer*  lexer
+)
+{
+    if (lexer->state.type == TOK_EOI)
+    {
+        return '\0';
+    }
+
+    char c = lexer->source[lexer->state.index++];
+    if (c == '\n')
+    {
+        ++lexer->state.line;
+    }
+    else if (c == '\0')
+    {
+        lexer->state.type = TOK_EOI;
+    }
+
+    return c;
+}
+
+char peaknext(
+    Lexer*  lexer
+)
+{
+    if (lexer->state.type == TOK_EOI)
+    {
+        return '\0';
+    }
+    return lexer->source[lexer->state.index];
+}
+
+bool startswith(
+    const char* str,
+    const char* pre
+)
+{
+    size_t prelength = strlen(pre);
+    size_t strlength = strlen(str);
+    return strlength < prelength ? false : strncmp(pre, str, prelength) == 0;
 }

@@ -323,10 +323,9 @@ size_t nom_tostring(
 #define ARITH(l, r, op, name)\
     if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
-        NomValue classmap = map_getclass(state, left);\
+        NomValue clss = map_getclass(state, left);\
         NomValue function = nom_nil();\
-        if (nom_istrue(state, classmap) &&\
-            nom_tryget(state, classmap, nom_newstring(state, name), &function) &&\
+        if (nom_tryget(state, clss, nom_newstring(state, name), &function) &&\
             nom_isfunction(state, function))\
         {\
             NomValue args[2] = { { left.raw }, { right.raw } };\

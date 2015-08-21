@@ -39,7 +39,7 @@ typedef enum
     TOK_EOI
 } TokenType;
 
-// Contains the position and state of a lexer
+// Contains the current state a lexer
 typedef struct LexerState
 {
     unsigned    index;

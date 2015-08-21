@@ -32,10 +32,10 @@
 
 #define INITIAL_HEAP_SIZE   (65536) // 2 ^ 16
 
-// A handle to a GC object (specific to a certain heap)
+// A handle to a garbage-collected heap object (specific to a certain heap)
 typedef uint32_t HeapObjectId;
 
-// A GC object on the heap
+// A garbage-collected object heap object
 typedef struct HeapObject
 {
     ObjectType  type;
@@ -45,7 +45,7 @@ typedef struct HeapObject
     bool        marked;
 } HeapObject;
 
-// A heap of GC objects
+// A heap of garbage-collected objects
 typedef struct Heap
 {
     HeapObject*     objects;

@@ -33,86 +33,22 @@
 Hash hashvalue(
     UserData    key,
     UserData    context
-)
-{
-    NomState* state = (NomState*)context;
-    NomValue value = { key };
-    return nom_hash(state, value);
-}
+);
 
 void freemapdata(
     void*   data
-)
-{
-    assert(data);
-
-    MapData* mapdata = (MapData*)data;
-
-    // Free the hash table
-    if (mapdata->hashtable)
-    {
-        hashtable_free(mapdata->hashtable, NULL, NULL);
-    }
-
-    // Free the array of keys
-    if (mapdata->keys)
-    {
-        free(mapdata->keys);
-    }
-
-    free(mapdata);
-}
+);
 
 bool comparevalue(
     UserData    left,
     UserData    right,
     UserData    context
-)
-{
-    NomState* state = (NomState*)context;
-    NomValue leftvalue = { left };
-    NomValue rightvalue = { right };
-
-    return nom_equals(state, leftvalue, rightvalue);
-}
+);
 
 void insertkey(
     MapData*    data,
     NomValue    key
-)
-{
-    assert(data);
-
-    // If there is not enough capacity
-    if (data->count >= data->capacity)
-    {
-        // Double the capacity
-        data->capacity *= 2;
-
-        // Allocate a new array of keys
-        NomValue* newkeys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
-
-        // Copy the keys from the old array of keys
-        for (size_t i = 0; i < data->count; ++i)
-        {
-            newkeys[i] = data->keys[i];
-        }
-
-        // Free the old keys and use the new array
-        free(data->keys);
-        data->keys = newkeys;
-    }
-
-    // Insert the key at the end
-    data->keys[data->count] = key;
-    data->count += 1;
-
-    if (data->contiguous)
-    {
-        // If the key matches the index then the map remains contiguous
-        data->contiguous = IS_NUMBER(key) && (data->count - 1) == (size_t)key.number;
-    }
-}
+);
 
 bool nom_ismap(
     NomState*   state,
@@ -146,7 +82,7 @@ NomValue nom_newmap(
     data->count = 0;
     data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
     data->contiguous = true;
-    data->classmap = nom_nil();
+    data->clss = nom_nil();
 
     return map;
 }
@@ -349,7 +285,7 @@ bool map_tryget(
 void map_setclass(
     NomState*   state,
     NomValue    map,
-    NomValue    classmap
+    NomValue    clss
 )
 {
     assert(state);
@@ -358,7 +294,7 @@ void map_setclass(
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
-        data->classmap = classmap;
+        data->clss = clss;
     }
 }
 
@@ -369,14 +305,98 @@ NomValue map_getclass(
 {
     assert(state);
 
-    NomValue classmap = nom_nil();
+    NomValue clss = nom_nil();
 
     HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
-        classmap = data->classmap;
+        clss = data->clss;
     }
 
-    return classmap;
+    return clss;
+}
+
+Hash hashvalue(
+    UserData    key,
+    UserData    context
+)
+{
+    NomState* state = (NomState*)context;
+    NomValue value = { key };
+    return nom_hash(state, value);
+}
+
+void freemapdata(
+    void*   data
+)
+{
+    assert(data);
+
+    MapData* mapdata = (MapData*)data;
+
+    // Free the hash table
+    if (mapdata->hashtable)
+    {
+        hashtable_free(mapdata->hashtable, NULL, NULL);
+    }
+
+    // Free the array of keys
+    if (mapdata->keys)
+    {
+        free(mapdata->keys);
+    }
+
+    free(mapdata);
+}
+
+bool comparevalue(
+    UserData    left,
+    UserData    right,
+    UserData    context
+)
+{
+    NomState* state = (NomState*)context;
+    NomValue leftvalue = { left };
+    NomValue rightvalue = { right };
+
+    return nom_equals(state, leftvalue, rightvalue);
+}
+
+void insertkey(
+    MapData*    data,
+    NomValue    key
+)
+{
+    assert(data);
+
+    // If there is not enough capacity
+    if (data->count >= data->capacity)
+    {
+        // Double the capacity
+        data->capacity *= 2;
+
+        // Allocate a new array of keys
+        NomValue* newkeys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
+
+        // Copy the keys from the old array of keys
+        for (size_t i = 0; i < data->count; ++i)
+        {
+            newkeys[i] = data->keys[i];
+        }
+
+        // Free the old keys and use the new array
+        free(data->keys);
+        data->keys = newkeys;
+    }
+
+    // Insert the key at the end
+    data->keys[data->count] = key;
+    data->count += 1;
+
+    if (data->contiguous)
+    {
+        // If the key matches the index then the map remains contiguous
+        data->contiguous = IS_NUMBER(key) && (data->count - 1) == (size_t)key.number;
+    }
 }

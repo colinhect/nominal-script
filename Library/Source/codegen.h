@@ -67,6 +67,9 @@ typedef enum
     OPCODE_INVOKE
 } OpCode;
 
+// Maps operators to their op code
+extern const OpCode OP_OPCODE[];
+
 // The name of each byte code operation
 extern const char* const OPCODE_NAMES[];
 

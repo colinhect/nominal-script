@@ -31,20 +31,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-static NomValue allocfunction(
-    NomState*       state,
-    FunctionData**  data
-)
-{
-    assert(state);
-    assert(data);
-
-    NomValue value = heap_alloc(state->heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
-    *data = heap_getdata(state->heap, value);
-
-    return value;
-}
-
 bool nom_isfunction(
     NomState*   state,
     NomValue    value
@@ -70,8 +56,9 @@ NomValue nom_newfunction(
 {
     assert(state);
 
-    FunctionData* data;
-    NomValue value = allocfunction(state, &data);
+    NomValue value = heap_alloc(state->heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
+    FunctionData* data = heap_getdata(state->heap, value);
+
     data->ip = 0;
     data->nativefunction = function;
     data->paramcount = 0;
@@ -86,8 +73,8 @@ NomValue function_new(
 {
     assert(state);
 
-    FunctionData* data;
-    NomValue value = allocfunction(state, &data);
+    NomValue value = heap_alloc(state->heap, OBJECTTYPE_FUNCTION, sizeof(FunctionData), free);
+    FunctionData* data = heap_getdata(state->heap, value);
     data->ip = ip;
     data->nativefunction = NULL;
     data->paramcount = 0;

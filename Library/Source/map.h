@@ -28,6 +28,7 @@
 
 #include "hashtable.h"
 
+// The internal data of a Nominal map
 typedef struct MapData
 {
     HashTable*  hashtable;
@@ -35,7 +36,7 @@ typedef struct MapData
     size_t      count;
     NomValue*   keys;
     bool        contiguous;
-    NomValue    classmap;
+    NomValue    clss;
 } MapData;
 
 // Returns whether the keys in a map are contiguous natural numbers starting
@@ -101,7 +102,7 @@ bool map_tryget(
 void map_setclass(
     NomState*   state,
     NomValue    map,
-    NomValue    classmap
+    NomValue    clss
 );
 
 // Returns a reference to the map's class, returning nil if the map has no

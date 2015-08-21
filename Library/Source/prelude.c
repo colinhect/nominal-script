@@ -386,13 +386,13 @@ static NomValue prelude_object(
 
     NomValue object = nom_nil();
 
-    NomValue classmap = nom_getarg(state, 0);
-    if (nom_ismap(state, classmap))
+    NomValue clss = nom_getarg(state, 0);
+    if (nom_ismap(state, clss))
     {
         object = nom_getarg(state, 1);
         if (nom_ismap(state, object))
         {
-            map_setclass(state, object, classmap);
+            map_setclass(state, object, clss);
         }
         else
         {
