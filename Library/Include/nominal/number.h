@@ -117,7 +117,7 @@ NOM_EXPORT NomValue nom_fromunsignedlonglong(
 ///
 /// \returns The new Nominal number.
 NOM_EXPORT NomValue nom_fromsize(
-    size_t  value
+    size_t      value
 );
 
 ///
@@ -215,7 +215,7 @@ NOM_EXPORT unsigned long long nom_tounsignedlonglong(
 /// \param value
 ///     The Nominal number to get the numeric value of.
 ///
-/// \returns The resulting value ((size_t)-1 if the value is not a number).
+/// \returns The resulting value (-1 if the value is not a number).
 NOM_EXPORT size_t nom_tosize(
     NomValue    value
 );

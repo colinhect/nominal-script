@@ -32,7 +32,7 @@
 ///
 /// \brief Creates a new Nominal state.
 ///
-/// \returns The new Nominal state.
+/// \returns A pointer to the new Nominal state.
 NOM_EXPORT NomState* nom_newstate(
     void
 );
@@ -65,7 +65,8 @@ NOM_EXPORT void nom_letvar(
 );
 
 ///
-/// \brief Sets a variable accessible from the current scope.
+/// \brief Sets the value of an existing variable accessible from the current
+///        scope.
 ///
 /// \warning Ths function could have encountered an error.  Check nom_error()
 ///          directly after invoking this function.
@@ -83,7 +84,8 @@ NOM_EXPORT void nom_setvar(
 );
 
 ///
-/// \brief Gets a variable accessible from the current scope.
+/// \brief Gets the value of an existing variable accessible from the current
+///        scope.
 ///
 /// \warning Ths function could have encountered an error.  Check nom_error()
 ///          directly after invoking this function.
@@ -111,22 +113,24 @@ NOM_EXPORT size_t nom_getargcount(
 );
 
 ///
-/// \brief Gets the argument at the given index on the call stack.
+/// \brief Gets the value of the argument at the given index on the call
+///        stack.
 ///
 /// \param state
 ///     The state.
 /// \param index
-///     The index.
+///     The index of the argument.
 ///
-/// \returns The argument; nil if the index is greater than the number of
-///          arguments currently on the call stack.
+/// \returns The value of the argument; nil if the index is greater than the
+///          number of arguments currently on the call stack.
 NOM_EXPORT NomValue nom_getarg(
     NomState*   state,
     size_t      index
 );
 
 ///
-/// \brief Executes a snippet of Nominal source code and returns the value.
+/// \brief Executes a snippet of Nominal source code and returns the
+///        resulting value.
 ///
 /// \warning The execution could have encountered an error.  Check
 ///          nom_error() directly after invoking this function.
@@ -159,10 +163,10 @@ NOM_EXPORT void nom_dofile(
 
 ///
 /// \brief Prints the byte code resulting from a snippet of Nominal source
-/// code to stdout.
+///        code to stdout.
 ///
-/// \warning The source code could have failed to parse.  Check
-///          nom_error() directly after invoking this function.
+/// \warning The source code could have failed to parse.  Check nom_error()
+///          directly after invoking this function.
 ///
 /// \param state
 ///     The state.
@@ -199,7 +203,7 @@ NOM_EXPORT void nom_seterror(
 );
 
 ///
-/// \brief Returns the error message of the last error.
+/// \brief Returns the message of the last occuring error.
 ///
 /// \param state
 ///     The state.

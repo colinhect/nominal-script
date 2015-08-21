@@ -109,13 +109,6 @@ NomValue nom_false(
     return value;
 }
 
-bool nom_isobject(
-    NomValue    value
-)
-{
-    return GET_TYPE(value) == VALUETYPE_OBJECT;
-}
-
 bool nom_istrue(
     NomState*   state,
     NomValue    value
@@ -129,8 +122,25 @@ bool nom_istrue(
     }
     else
     {
-        return !nom_equals(state, value, nom_nil());
+        return !nom_isnil(state, value);
     }
+}
+
+bool nom_isnil(
+    NomState*   state,
+    NomValue    value
+)
+{
+    assert(state);
+
+    return nom_equals(state, value, nom_nil());
+}
+
+bool nom_isobject(
+    NomValue    value
+)
+{
+    return GET_TYPE(value) == VALUETYPE_OBJECT;
 }
 
 bool nom_equals(

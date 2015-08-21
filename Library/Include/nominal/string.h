@@ -80,7 +80,7 @@ NOM_EXPORT NomValue nom_newinternedstring(
 /// \param value
 ///     The string value.
 ///
-/// \returns A pointer to a NULL terminated string; NULL if the value is not
+/// \returns A pointer to the NULL terminated string; NULL if the value is not
 ///          a string.
 NOM_EXPORT const char* nom_getstring(
     NomState*   state,

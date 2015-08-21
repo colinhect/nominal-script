@@ -41,14 +41,13 @@ typedef struct NomState NomState;
 typedef union
 {
     uint64_t    raw;
+    double      number;
 
     struct
     {
         uint32_t    lower;
         uint32_t    upper;
     } data;
-
-    double      number;
 } NomValue;
 
 ///
@@ -58,9 +57,9 @@ typedef struct NomIterator
     NomValue    source;
     NomValue    key;
     NomValue    value;
+
     union
     {
-        // Map-related iterator data
         struct
         {
             size_t  index;
@@ -87,17 +86,6 @@ NOM_EXPORT NomValue nom_false(
 );
 
 ///
-/// \brief Returns whether a Nominal value is a reference to an object.
-///
-/// \param value
-///     The value in question.
-///
-/// \returns True if the value is a reference to an object; false otherwise.
-NOM_EXPORT bool nom_isobject(
-    NomValue    value
-);
-
-///
 /// \brief Returns whether a Nominal value is true.
 ///
 /// \param state
@@ -108,6 +96,31 @@ NOM_EXPORT bool nom_isobject(
 /// \returns True if the value is true; false otherwise.
 NOM_EXPORT bool nom_istrue(
     NomState*   state,
+    NomValue    value
+);
+
+///
+/// \brief Returns whether a Nominal value is nil.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value in question.
+///
+/// \returns True if the value is nil; false otherwise.
+NOM_EXPORT bool nom_isnil(
+    NomState*   state,
+    NomValue    value
+);
+
+///
+/// \brief Returns whether a Nominal value is a reference to an object.
+///
+/// \param value
+///     The value in question.
+///
+/// \returns True if the value is a reference to an object; false otherwise.
+NOM_EXPORT bool nom_isobject(
     NomValue    value
 );
 

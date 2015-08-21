@@ -52,7 +52,7 @@ NOM_EXPORT bool nom_ismap(
 /// \param state
 ///     The state to create the map for.
 ///
-/// \returns The reference to the new Nominal map.
+/// \returns A reference to the new Nominal map.
 NOM_EXPORT NomValue nom_newmap(
     NomState*   state
 );
