@@ -3548,8 +3548,9 @@ namespace Clara {
                             m_cl->m_highestSpecifiedArgPosition = m_arg.position;
                     }
                     else if( m_arg.isAnyPositional() ) {
-                        if( m_cl->m_arg.get() )
-                            throw std::logic_error( "Only one unpositional argument can be added" );
+						// Change in support of Nominal - removed due to compiler warning
+                        //if( m_cl->m_arg.get() )
+                        //    throw std::logic_error( "Only one unpositional argument can be added" );
                         m_cl->m_arg = ArgAutoPtr( new Arg( m_arg ) );
                     }
                     else

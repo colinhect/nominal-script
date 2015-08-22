@@ -85,4 +85,10 @@ uint32_t function_getip(
     NomValue    function
 );
 
+// Resolves the function associated with the given value
+NomValue function_resolve(
+    NomState*   state,
+    NomValue    value
+);
+
 #endif

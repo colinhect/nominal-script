@@ -34,6 +34,7 @@
 #define STATE_MAX_BYTE_CODE         (8096)
 #define STATE_STRING_POOL_SIZE      (512)
 
+// A stack frame
 typedef struct StackFrame
 {
     uint32_t    ip;
@@ -41,6 +42,7 @@ typedef struct StackFrame
     NomValue    scope;
 } StackFrame;
 
+// A Nominal state
 struct NomState
 {
     NomValue        stack[STATE_MAX_STACK_SIZE];
@@ -56,17 +58,28 @@ struct NomState
     Heap*           heap;
     StringPool*     stringpool;
 
-    // Classes for intrinsic types
+    // References to intrinsic classes
     struct
     {
+        NomValue    class;
         NomValue    nil;
         NomValue    number;
         NomValue    boolean;
         NomValue    string;
         NomValue    map;
         NomValue    function;
-        NomValue    clss;
     } classes;
+
+    // References to intrinsic strings
+    struct
+    {
+        NomValue    name;
+        NomValue    new;
+        NomValue    add;
+        NomValue    subtract;
+        NomValue    multiply;
+        NomValue    divide;
+    } strings;
 
     char            error[2048];
     bool            errorflag;
@@ -129,6 +142,7 @@ NomValue state_execute(
 // after invoking this function
 NomValue state_newclass(
     NomState*   state,
-    const char* name);
+    const char* name
+);
 
 #endif

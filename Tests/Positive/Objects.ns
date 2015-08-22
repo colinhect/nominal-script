@@ -11,6 +11,12 @@ Cat.meow := [ self |
   print: self " says meow"
 ]
 
+-- Invoke the constructor explicitly
 janks := Cat.new: "Janks"
 assertEqual: (classOf: janks) Cat
 assertEqual: janks.name "Janks"
+
+-- Invoke the constructor implicitly
+svedka := Cat: "Svedka"
+assertEqual: (classOf: svedka) Cat
+assertEqual: svedka.name "Svedka"

@@ -311,7 +311,7 @@ static NomValue prelude_class(
             map = nom_newmap(state);
         }
 
-        map_setclass(state, map, state->classes.clss);
+        map_setclass(state, map, state->classes.class);
 
         NomValue namestring = nom_newinternedstring(state, "name");
         map_insertorset(state, map, namestring, name);
@@ -386,13 +386,13 @@ static NomValue prelude_object(
 
     NomValue object = nom_nil();
 
-    NomValue clss = nom_getarg(state, 0);
-    if (nom_ismap(state, clss))
+    NomValue class = nom_getarg(state, 0);
+    if (nom_ismap(state, class))
     {
         object = nom_getarg(state, 1);
         if (nom_ismap(state, object))
         {
-            map_setclass(state, object, clss);
+            map_setclass(state, object, class);
         }
         else
         {

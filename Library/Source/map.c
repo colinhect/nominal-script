@@ -82,7 +82,7 @@ NomValue nom_newmap(
     data->count = 0;
     data->keys = (NomValue*)malloc(sizeof(NomValue) * data->capacity);
     data->contiguous = true;
-    data->clss = nom_nil();
+    data->class = nom_nil();
 
     return map;
 }
@@ -285,7 +285,7 @@ bool map_tryget(
 void map_setclass(
     NomState*   state,
     NomValue    map,
-    NomValue    clss
+    NomValue    class
 )
 {
     assert(state);
@@ -294,7 +294,7 @@ void map_setclass(
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
-        data->clss = clss;
+        data->class = class;
     }
 }
 
@@ -305,16 +305,16 @@ NomValue map_getclass(
 {
     assert(state);
 
-    NomValue clss = nom_nil();
+    NomValue class = nom_nil();
 
     HeapObject* object = heap_getobject(state->heap, map);
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
-        clss = data->clss;
+        class = data->class;
     }
 
-    return clss;
+    return class;
 }
 
 Hash hashvalue(

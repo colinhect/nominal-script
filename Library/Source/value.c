@@ -28,7 +28,6 @@
 #include "heap.h"
 #include "state.h"
 
-#include <nominal.h>
 #include <assert.h>
 #include <math.h>
 #include <stdlib.h>
@@ -45,7 +44,8 @@ int c99_vsnprintf(
     char*       str,
     size_t      size,
     const char* format,
-    va_list     ap)
+    va_list     ap
+)
 {
     int count = -1;
 
@@ -65,7 +65,8 @@ int c99_snprintf(
     char*       str,
     size_t      size,
     const char* format,
-    ...)
+    ...
+)
 {
     int count;
     va_list ap;
@@ -122,18 +123,16 @@ bool nom_istrue(
     }
     else
     {
-        return !nom_isnil(state, value);
+        return !nom_isnil(value);
     }
 }
 
 bool nom_isnil(
-    NomState*   state,
     NomValue    value
 )
 {
-    assert(state);
-
-    return nom_equals(state, value, nom_nil());
+    bool result = value.raw == nom_nil().raw;
+    return result;
 }
 
 bool nom_isobject(
@@ -141,6 +140,17 @@ bool nom_isobject(
 )
 {
     return GET_TYPE(value) == VALUETYPE_OBJECT;
+}
+
+bool nom_isclass(
+    NomState*   state,
+    NomValue    value
+)
+{
+    assert(state);
+
+    bool result = map_getclass(state, value).raw == state->classes.class.raw;
+    return result;
 }
 
 bool nom_equals(
@@ -323,9 +333,9 @@ size_t nom_tostring(
 #define ARITH(l, r, op, name)\
     if (!IS_NUMBER(l) || !IS_NUMBER(r))\
     {\
-        NomValue clss = map_getclass(state, left);\
+        NomValue class = map_getclass(state, left);\
         NomValue function = nom_nil();\
-        if (nom_tryget(state, clss, nom_newstring(state, name), &function) &&\
+        if (nom_tryget(state, class, state->strings.##name, &function) &&\
             nom_isfunction(state, function))\
         {\
             NomValue args[2] = { { left.raw }, { right.raw } };\
@@ -333,7 +343,7 @@ size_t nom_tostring(
         }\
         else\
         {\
-            nom_seterror(state, "Cannot %s non-numeric values", name);\
+            nom_seterror(state, "Cannot " #name " non-numeric values", #name);\
         }\
     }\
     else\
@@ -348,7 +358,7 @@ NomValue nom_add(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, +, "add");
+    ARITH(left, right, +, add);
     return result;
 }
 
@@ -359,7 +369,7 @@ NomValue nom_sub(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, -, "subtract");
+    ARITH(left, right, -, subtract);
     return result;
 }
 
@@ -370,7 +380,7 @@ NomValue nom_mul(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, *, "multiply");
+    ARITH(left, right, *, multiply);
     return result;
 }
 
@@ -381,7 +391,7 @@ NomValue nom_div(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, / , "divide");
+    ARITH(left, right, / , divide);
     return result;
 }
 
@@ -409,7 +419,12 @@ bool nom_isinvokable(
     NomValue    value
 )
 {
-    return nom_isfunction(state, value);
+    assert(state);
+
+    value = function_resolve(state, value);
+    bool result = nom_isfunction(state, value);
+
+    return result;
 }
 
 NomValue nom_invoke(
@@ -419,7 +434,17 @@ NomValue nom_invoke(
     NomValue*   args
 )
 {
-    return state_invoke(state, value, argcount, args);
+    assert(state);
+
+    NomValue result = nom_nil();
+
+    value = function_resolve(state, value);
+    if (nom_isfunction(state, value))
+    {
+        result = state_invoke(state, value, argcount, args);
+    }
+
+    return result;
 }
 
 bool nom_isiterable(
@@ -427,6 +452,8 @@ bool nom_isiterable(
     NomValue    value
 )
 {
+    assert(state);
+
     return nom_ismap(state, value);
 }
 

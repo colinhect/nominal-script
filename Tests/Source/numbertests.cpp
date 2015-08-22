@@ -28,6 +28,58 @@ extern "C"
 #include <nominal.h>
 }
 
+template <typename T>
+void check_number(
+    NomValue    value,
+    T           expected
+)
+{
+    SECTION("Converting to int")
+    {
+        CHECK(nom_toint(value) == (int)expected);
+    }
+
+    SECTION("Converting to unsigned int")
+    {
+        CHECK(nom_tounsignedint(value) == (unsigned int)expected);
+    }
+
+    SECTION("Converting to long")
+    {
+        CHECK(nom_tolong(value) == (long)expected);
+    }
+
+    SECTION("Converting to unsigned long")
+    {
+        CHECK(nom_tounsignedlong(value) == (unsigned long)expected);
+    }
+
+    SECTION("Converting to long long")
+    {
+        CHECK(nom_tolonglong(value) == (long long)expected);
+    }
+
+    SECTION("Converting to unsigned long long")
+    {
+        CHECK(nom_tounsignedlonglong(value) == (unsigned long long)expected);
+    }
+
+    SECTION("Converting to size_t")
+    {
+        CHECK(nom_tosize(value) == (size_t)expected);
+    }
+
+    SECTION("Converting to float")
+    {
+        CHECK(nom_tofloat(value) == (float)expected);
+    }
+
+    SECTION("Converting to double")
+    {
+        CHECK(nom_todouble(value) == (double)expected);
+    }
+}
+
 TEST_CASE("Creating/converting a Nominal number from/to all supported numeric types", "[Number]")
 {
     SECTION("Creating from int")
@@ -36,50 +88,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from unsigned int")
@@ -88,50 +97,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from long")
@@ -140,50 +106,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from unsigned long")
@@ -192,50 +115,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from long long")
@@ -244,50 +124,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from unsigned long long")
@@ -296,50 +133,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from size")
@@ -348,50 +142,7 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.0f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.0);
-        }
+        check_number(value, 4);
     }
 
     SECTION("Creating from float")
@@ -400,102 +151,14 @@ TEST_CASE("Creating/converting a Nominal number from/to all supported numeric ty
 
         CHECK(nom_isnumber(value) == true);
 
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.321f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == (double)4.321f);
-        }
+        check_number(value, 4.321f);
     }
 
     SECTION("Creating from double")
     {
         NomValue value = nom_fromdouble(4.321);
 
-        CHECK(nom_isnumber(value) == true);
-
-        SECTION("Converting to int")
-        {
-            CHECK(nom_toint(value) == 4);
-        }
-
-        SECTION("Converting to unsigned int")
-        {
-            CHECK(nom_tounsignedint(value) == 4);
-        }
-
-        SECTION("Converting to long")
-        {
-            CHECK(nom_tolong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long")
-        {
-            CHECK(nom_tounsignedlong(value) == 4);
-        }
-
-        SECTION("Converting to long long")
-        {
-            CHECK(nom_tolonglong(value) == 4);
-        }
-
-        SECTION("Converting to unsigned long long")
-        {
-            CHECK(nom_tounsignedlonglong(value) == 4);
-        }
-
-        SECTION("Converting to size_t")
-        {
-            CHECK(nom_tosize(value) == 4);
-        }
-
-        SECTION("Converting to float")
-        {
-            CHECK(nom_tofloat(value) == 4.321f);
-        }
-
-        SECTION("Converting to double")
-        {
-            CHECK(nom_todouble(value) == 4.321);
-        }
+        check_number(value, 4.321);
     }
 }
 

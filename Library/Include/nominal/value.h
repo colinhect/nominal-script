@@ -102,14 +102,11 @@ NOM_EXPORT bool nom_istrue(
 ///
 /// \brief Returns whether a Nominal value is nil.
 ///
-/// \param state
-///     The state.
 /// \param value
 ///     The value in question.
 ///
 /// \returns True if the value is nil; false otherwise.
 NOM_EXPORT bool nom_isnil(
-    NomState*   state,
     NomValue    value
 );
 
@@ -121,6 +118,20 @@ NOM_EXPORT bool nom_isnil(
 ///
 /// \returns True if the value is a reference to an object; false otherwise.
 NOM_EXPORT bool nom_isobject(
+    NomValue    value
+);
+
+///
+/// \brief Returns whether a Nominal value is a reference to a class.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value in question.
+///
+/// \returns True if the value is a reference to a class; false otherwise.
+NOM_EXPORT bool nom_isclass(
+    NomState*   state,
     NomValue    value
 );
 

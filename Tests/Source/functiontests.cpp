@@ -28,19 +28,19 @@ extern "C"
 #include <nominal.h>
 }
 
-#define TEST_EXPR(expr, expected)\
-{\
-    CHECK(state != NULL); \
+#define TEST_EXPR(expr, expected) \
+{ \
+    CHECK(state); \
     NomValue value = nom_execute(state, expr); \
-    CHECK(nom_error(state) == false); \
-    CHECK(nom_equals(state, value, expected) == true); \
+    CHECK(!nom_error(state)); \
+    CHECK(nom_equals(state, value, expected)); \
 }
 
-#define TEST_EXPR_ERROR(expr)\
-{\
-    CHECK(state != NULL); \
+#define TEST_EXPR_ERROR(expr) \
+{ \
+    CHECK(state); \
     nom_execute(state, expr); \
-    CHECK(nom_error(state) == true); \
+    CHECK(nom_error(state)); \
 }
 
 TEST_CASE("Creating and invoking functions with parameters", "[Function]")

@@ -32,15 +32,7 @@
 
 static void unexpectedtokenerror(
     Parser*     parser
-)
-{
-    char buffer[MAX_PARSER_ERROR_LENGTH];
-    size_t length = lexer_gettokenlength(parser->lexer);
-    const char* string = lexer_gettokenstring(parser->lexer);
-    memcpy(buffer, string, length);
-    buffer[length] = '\0';
-    parser_seterror(parser, "Unexpected token '%s'", buffer);
-}
+);
 
 Parser* parser_new(
     const char* source,
@@ -620,7 +612,6 @@ Node* parser_function(
         lexer_restorestate(parser->lexer, state);
     }
 
-    // Parse the body of the function
     Node* exprs = parser_exprs(parser, true);
     if (!exprs)
     {
@@ -668,4 +659,16 @@ Node* parser_stringorident(
     lexer_next(parser->lexer);
 
     return node;
+}
+
+static void unexpectedtokenerror(
+    Parser*     parser
+)
+{
+    char buffer[MAX_PARSER_ERROR_LENGTH];
+    size_t length = lexer_gettokenlength(parser->lexer);
+    const char* string = lexer_gettokenstring(parser->lexer);
+    memcpy(buffer, string, length);
+    buffer[length] = '\0';
+    parser_seterror(parser, "Unexpected token '%s'", buffer);
 }

@@ -35,6 +35,75 @@ TEST_CASE("Create and free a Nominal state", "[State]")
     nom_freestate(state);
 }
 
+TEST_CASE("Check intrinsic variable nil", "[State]")
+{
+    NomState* state = nom_newstate();
+    CHECK(state);
+
+    NomValue value = nom_getvar(state, "nil");
+    CHECK(!nom_error(state));
+    CHECK(nom_isnil(value));
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Check intrinsic variable true", "[State]")
+{
+    NomState* state = nom_newstate();
+    CHECK(state);
+
+    NomValue value = nom_getvar(state, "true");
+    CHECK(!nom_error(state));
+    CHECK(!nom_isnil(value));
+    CHECK(nom_istrue(state, value));
+    CHECK(nom_equals(state, value, nom_true()));
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Check intrinsic variable false", "[State]")
+{
+    NomState* state = nom_newstate();
+    CHECK(state);
+
+    NomValue value = nom_getvar(state, "false");
+    CHECK(!nom_error(state));
+    CHECK(!nom_isnil(value));
+    CHECK(!nom_istrue(state, value));
+    CHECK(nom_equals(state, value, nom_false()));
+
+    nom_freestate(state);
+}
+
+TEST_CASE("Check intrinsic classes", "[State]")
+{
+    NomState* state = nom_newstate();
+    CHECK(state);
+
+    const char* classes[] = 
+    {
+        "Nil",
+        "Number",
+        "Boolean",
+        "String",
+        "Map",
+        "Function",
+        "Class"
+    };
+
+    unsigned count = sizeof(classes) / sizeof(const char*);
+    for (unsigned i = 0; i < count; ++i)
+    {
+        NomValue value = nom_getvar(state, classes[i]);
+        CHECK(!nom_error(state));
+        CHECK(!nom_isnil(value));
+        CHECK(nom_istrue(state, value));
+        CHECK(nom_isclass(state, value));
+    }
+
+    nom_freestate(state);
+}
+
 TEST_CASE("Collecting garbage when there are no unreferenced objects", "[State]")
 {
     NomState* state = nom_newstate();

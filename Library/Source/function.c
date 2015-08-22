@@ -197,3 +197,25 @@ uint32_t function_getip(
 
     return ip;
 }
+
+NomValue function_resolve(
+    NomState*   state,
+    NomValue    value
+)
+{
+    assert(state);
+
+    NomValue result = value;
+
+    if (nom_isclass(state, value))
+    {
+        NomValue function;
+        if (nom_tryget(state, value, state->strings.new, &function) &&
+                nom_isfunction(state, function))
+        {
+            result = function;
+        }
+    }
+
+    return result;
+}

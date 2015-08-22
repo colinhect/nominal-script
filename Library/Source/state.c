@@ -31,15 +31,12 @@
 #include "codegen.h"
 #include "string.h"
 
-#include <nominal.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
-
-
 
 // Pops a stack frame from the callstack and returns the return instruction
 // pointer
@@ -80,101 +77,22 @@
 static void compile(
     NomState*   state,
     const char* source
-)
-{
-    assert(state);
-    assert(source);
-
-    state->errorflag = false;
-
-    Parser* p = parser_new(source, state->stringpool);
-    Node* node = parser_exprs(p, true);
-
-    if (!node)
-    {
-        nom_seterror(state, parser_geterror(p));
-    }
-    else
-    {
-        state->end = generatecode(state, node, state->bytecode, state->ip);
-        node_free(node);
-    }
-
-    parser_free(p);
-}
+);
 
 static void ret(
     NomState*   state
-)
-{
-    assert(state);
-
-    StackFrame* frame = TOP_FRAME();
-    NomValue result = POP_VALUE();
-
-    for (int i = 0; i < frame->argcount; ++i)
-    {
-        (void)POP_VALUE();
-    }
-
-    state->ip = frame->ip;
-
-    POP_FRAME();
-    PUSH_VALUE(result);
-}
+);
 
 static void invoke(
     NomState*   state,
     uint8_t     argcount,
     bool        execute
-)
-{
-    assert(state);
+);
 
-    NomValue value = POP_VALUE();
-    if (nom_isinvokable(state, value))
-    {
-        PUSH_FRAME(state->ip, argcount);
-
-        if (function_isnative(state, value))
-        {
-            NomFunction function = function_getnative(state, value);
-            value = function(state);
-            PUSH_VALUE(value);
-            ret(state);
-        }
-        else
-        {
-            size_t paramcount = function_getparamcount(state, value);
-            if (argcount <= paramcount)
-            {
-                size_t i = paramcount;
-                while (i > 0)
-                {
-                    --i;
-                    NomValue arg = nom_getarg(state, i);
-                    StringId param = function_getparam(state, value, i);
-                    state_letinterned(state, param, arg);
-                }
-                state->ip = function_getip(state, value);
-
-                if (execute)
-                {
-                    NomValue value = state_execute(state);
-                    PUSH_VALUE(value);
-                }
-            }
-            else
-            {
-                nom_seterror(state, "Too many arguments given (expected %u)", paramcount);
-            }
-        }
-    }
-    else
-    {
-        nom_seterror(state, "Value cannot be invoked");
-    }
-}
+static void mark(
+    NomState*   state,
+    NomValue    value
+);
 
 NomState* nom_newstate(
     void
@@ -190,46 +108,31 @@ NomState* nom_newstate(
     state->stringpool = stringpool_new(STATE_STRING_POOL_SIZE);
 
     // Define intrinsic global variables
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "nil", nom_nil());
-    }
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "true", nom_true());
-    }
-    if (!nom_error(state))
-    {
-        nom_letvar(state, "false", nom_false());
-    }
-    if (!nom_error(state))
-    {
-        state->classes.nil = state_newclass(state, "Nil");
-    }
-    if (!nom_error(state))
-    {
-        state->classes.number = state_newclass(state, "Number");
-    }
-    if (!nom_error(state))
-    {
-        state->classes.boolean = state_newclass(state, "Boolean");
-    }
-    if (!nom_error(state))
-    {
-        state->classes.string = state_newclass(state, "String");
-    }
-    if (!nom_error(state))
-    {
-        state->classes.map = state_newclass(state, "Map");
-    }
-    if (!nom_error(state))
-    {
-        state->classes.function = state_newclass(state, "Function");
-    }
-    if (!nom_error(state))
-    {
-        state->classes.clss = state_newclass(state, "Class");
-    }
+    nom_letvar(state, "nil", nom_nil());
+    nom_letvar(state, "true", nom_true());
+    nom_letvar(state, "false", nom_false());
+
+    // Define intrinsic strings
+    state->strings.name = nom_newinternedstring(state, "name");
+    state->strings.new = nom_newinternedstring(state, "new");
+    state->strings.add = nom_newinternedstring(state, "add");
+    state->strings.subtract = nom_newinternedstring(state, "subtract");
+    state->strings.multiply = nom_newinternedstring(state, "multiply");
+    state->strings.divide = nom_newinternedstring(state, "divide");
+
+    // Define the intrinsic class map
+    state->classes.class = nom_newmap(state);
+    nom_insert(state, state->classes.class, state->strings.name, nom_newinternedstring(state, "Class"));
+    nom_letvar(state, "Class", state->classes.class);
+    map_setclass(state, state->classes.class, state->classes.class);
+
+    // Define the other intrinsic classes
+    state->classes.nil = state_newclass(state, "Nil");
+    state->classes.number = state_newclass(state, "Number");
+    state->classes.boolean = state_newclass(state, "Boolean");
+    state->classes.string = state_newclass(state, "String");
+    state->classes.map = state_newclass(state, "Map");
+    state->classes.function = state_newclass(state, "Function");
 
     // Import the prelude library
     if (!nom_error(state))
@@ -332,6 +235,204 @@ NomValue nom_getarg(
     }
 
     return value;
+}
+
+NomValue nom_execute(
+    NomState*   state,
+    const char* source
+)
+{
+    compile(state, source);
+    return state_execute(state);
+}
+
+void nom_dofile(
+    NomState*   state,
+    const char* path
+)
+{
+    assert(state);
+    assert(path);
+
+    FILE* fp = fopen(path, "r");
+    if (fp)
+    {
+        fseek(fp, 0L, SEEK_END);
+        long length = ftell(fp);
+        fseek(fp, 0L, SEEK_SET);
+
+        char* source = malloc(length + 1);
+
+        size_t bytesRead = fread(source, sizeof(char), length, fp);
+        if (bytesRead > 0)
+        {
+            source[bytesRead] = '\0';
+        }
+        else
+        {
+            nom_seterror(state, "Failed to read file '%s'", path);
+        }
+
+        fclose(fp);
+
+        if (!nom_error(state))
+        {
+            nom_execute(state, source);
+        }
+
+        free(source);
+    }
+    else
+    {
+        nom_seterror(state, "Failed to open file '%s'", path);
+    }
+}
+
+void nom_dumpbytecode(
+    NomState*   state,
+    const char* source
+)
+{
+    assert(state);
+
+    if (source)
+    {
+        compile(state, source);
+    }
+    else
+    {
+        state->ip = 0;
+    }
+
+    while (state->ip < state->end)
+    {
+        OpCode op = (OpCode)state->bytecode[state->ip++];
+        printf("0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
+
+        switch (op)
+        {
+        case OPCODE_LET:
+        case OPCODE_GET:
+        case OPCODE_SET:
+        {
+            StringId id = READAS(StringId);
+            const char* string = stringpool_find(state->stringpool, id);
+            printf("\t%s", string);
+        }
+        break;
+
+        case OPCODE_PUSH:
+        {
+            NomValue value = READAS(NomValue);
+            char buffer[256];
+            nom_tostring(state, buffer, 256, value);
+            printf("%s", buffer);
+        }
+        break;
+
+        case OPCODE_MAP:
+        {
+            uint32_t itemCount = READAS(uint32_t);
+            printf("\t%u", itemCount);
+        }
+        break;
+
+        case OPCODE_FUNCTION:
+        {
+            uint32_t ip = READAS(uint32_t);
+            uint32_t paramcount = READAS(uint32_t);
+            printf("0x%x %u ", ip, paramcount);
+            for (uint32_t i = 0; i < paramcount; ++i)
+            {
+                StringId id = READAS(StringId);
+                const char* param = stringpool_find(state->stringpool, id);
+                printf("%s", param);
+                if (i < paramcount - 1)
+                {
+                    printf(" ");
+                }
+            }
+        }
+        break;
+
+        case OPCODE_GOTO:
+        {
+            uint32_t ip = READAS(uint32_t);
+            printf("0x%x", ip);
+        }
+        break;
+
+        case OPCODE_INVOKE:
+        {
+            uint32_t argcount = READAS(uint32_t);
+            printf("%u", argcount);
+        }
+        break;
+
+        default:
+            break;
+        }
+
+        printf("\n");
+    }
+
+    state->ip = state->end;
+}
+
+bool nom_error(
+    NomState*   state
+)
+{
+    assert(state);
+    return state->errorflag;
+}
+
+void nom_seterror(
+    NomState*   state,
+    const char* fmt,
+    ...
+)
+{
+    assert(state);
+    assert(fmt);
+    va_list args;
+    va_start(args, fmt);
+    vsprintf(state->error, fmt, args);
+    va_end(args);
+    state->errorflag = true;
+}
+
+const char* nom_geterror(
+    NomState*   state
+)
+{
+    assert(state);
+    state->errorflag = false;
+    return state->error;
+}
+
+int nom_collectgarbage(
+    NomState*   state
+)
+{
+    assert(state);
+
+    // Mark all values on the stack
+    for (uint32_t i = 0; i < state->sp; ++i)
+    {
+        value_visit(state, state->stack[i], mark);
+    }
+
+    // Mark all scopes on the callstack
+    for (uint32_t i = 0; i < state->cp; ++i)
+    {
+        value_visit(state, state->callstack[i].scope, mark);
+    }
+
+    // Sweep
+    unsigned int count = heap_sweep(state->heap);
+
+    return count;
 }
 
 void state_letinterned(
@@ -687,194 +788,121 @@ NomValue state_execute(
 
 NomValue state_newclass(
     NomState*   state,
-    const char* name)
+    const char* name
+)
 {
     assert(state);
     assert(name);
 
-    NomValue namestring = nom_newinternedstring(state, "name");
     NomValue classname = nom_newinternedstring(state, name);
-
     NomValue classvalue = nom_newmap(state);
-    nom_insert(state, classvalue, namestring, classname);
+    nom_insert(state, classvalue, state->strings.name, classname);
+    map_setclass(state, classvalue, state->classes.class);
 
     nom_letvar(state, name, classvalue);
 
     return classvalue;
 }
 
-NomValue nom_execute(
+static void compile(
     NomState*   state,
     const char* source
 )
 {
-    compile(state, source);
-    return state_execute(state);
+    assert(state);
+    assert(source);
+
+    state->errorflag = false;
+
+    Parser* p = parser_new(source, state->stringpool);
+    Node* node = parser_exprs(p, true);
+
+    if (!node)
+    {
+        nom_seterror(state, parser_geterror(p));
+    }
+    else
+    {
+        state->end = generatecode(state, node, state->bytecode, state->ip);
+        node_free(node);
+    }
+
+    parser_free(p);
 }
 
-void nom_dofile(
-    NomState*   state,
-    const char* path
+static void ret(
+    NomState*   state
 )
 {
     assert(state);
-    assert(path);
 
-    FILE* fp = fopen(path, "r");
-    if (fp)
+    StackFrame* frame = TOP_FRAME();
+    NomValue result = POP_VALUE();
+
+    for (int i = 0; i < frame->argcount; ++i)
     {
-        fseek(fp, 0L, SEEK_END);
-        long length = ftell(fp);
-        fseek(fp, 0L, SEEK_SET);
+        (void)POP_VALUE();
+    }
 
-        char* source = malloc(length + 1);
+    state->ip = frame->ip;
 
-        size_t bytesRead = fread(source, sizeof(char), length, fp);
-        if (bytesRead > 0)
+    POP_FRAME();
+    PUSH_VALUE(result);
+}
+
+static void invoke(
+    NomState*   state,
+    uint8_t     argcount,
+    bool        execute
+)
+{
+    assert(state);
+
+    NomValue value = POP_VALUE();
+    if (nom_isinvokable(state, value))
+    {
+        value = function_resolve(state, value);
+
+        PUSH_FRAME(state->ip, argcount);
+
+        if (function_isnative(state, value))
         {
-            source[bytesRead] = '\0';
+            NomFunction function = function_getnative(state, value);
+            value = function(state);
+            PUSH_VALUE(value);
+            ret(state);
         }
         else
         {
-            nom_seterror(state, "Failed to read file '%s'", path);
-        }
-
-        fclose(fp);
-
-        if (!nom_error(state))
-        {
-            nom_execute(state, source);
-        }
-
-        free(source);
-    }
-    else
-    {
-        nom_seterror(state, "Failed to open file '%s'", path);
-    }
-}
-
-void nom_dumpbytecode(
-    NomState*   state,
-    const char* source
-)
-{
-    assert(state);
-
-    if (source)
-    {
-        compile(state, source);
-    }
-    else
-    {
-        state->ip = 0;
-    }
-
-    while (state->ip < state->end)
-    {
-        OpCode op = (OpCode)state->bytecode[state->ip++];
-        printf("0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
-
-        switch (op)
-        {
-        case OPCODE_LET:
-        case OPCODE_GET:
-        case OPCODE_SET:
-        {
-            StringId id = READAS(StringId);
-            const char* string = stringpool_find(state->stringpool, id);
-            printf("\t%s", string);
-        }
-        break;
-
-        case OPCODE_PUSH:
-        {
-            NomValue value = READAS(NomValue);
-            char buffer[256];
-            nom_tostring(state, buffer, 256, value);
-            printf("%s", buffer);
-        }
-        break;
-
-        case OPCODE_MAP:
-        {
-            uint32_t itemCount = READAS(uint32_t);
-            printf("\t%u", itemCount);
-        }
-        break;
-
-        case OPCODE_FUNCTION:
-        {
-            uint32_t ip = READAS(uint32_t);
-            uint32_t paramcount = READAS(uint32_t);
-            printf("0x%x %u ", ip, paramcount);
-            for (uint32_t i = 0; i < paramcount; ++i)
+            size_t paramcount = function_getparamcount(state, value);
+            if (argcount <= paramcount)
             {
-                StringId id = READAS(StringId);
-                const char* param = stringpool_find(state->stringpool, id);
-                printf("%s", param);
-                if (i < paramcount - 1)
+                size_t i = paramcount;
+                while (i > 0)
                 {
-                    printf(" ");
+                    --i;
+                    NomValue arg = nom_getarg(state, i);
+                    StringId param = function_getparam(state, value, i);
+                    state_letinterned(state, param, arg);
+                }
+                state->ip = function_getip(state, value);
+
+                if (execute)
+                {
+                    NomValue value = state_execute(state);
+                    PUSH_VALUE(value);
                 }
             }
+            else
+            {
+                nom_seterror(state, "Too many arguments given (expected %u)", paramcount);
+            }
         }
-        break;
-
-        case OPCODE_GOTO:
-        {
-            uint32_t ip = READAS(uint32_t);
-            printf("0x%x", ip);
-        }
-        break;
-
-        case OPCODE_INVOKE:
-        {
-            uint32_t argcount = READAS(uint32_t);
-            printf("%u", argcount);
-        }
-        break;
-
-        default:
-            break;
-        }
-
-        printf("\n");
     }
-
-    state->ip = state->end;
-}
-
-bool nom_error(
-    NomState*   state
-)
-{
-    assert(state);
-    return state->errorflag;
-}
-
-void nom_seterror(
-    NomState*   state,
-    const char* fmt,
-    ...
-)
-{
-    assert(state);
-    assert(fmt);
-    va_list args;
-    va_start(args, fmt);
-    vsprintf(state->error, fmt, args);
-    va_end(args);
-    state->errorflag = true;
-}
-
-const char* nom_geterror(
-    NomState*   state
-)
-{
-    assert(state);
-    state->errorflag = false;
-    return state->error;
+    else
+    {
+        nom_seterror(state, "Value cannot be invoked");
+    }
 }
 
 static void mark(
@@ -884,28 +912,4 @@ static void mark(
 {
     assert(state);
     heap_mark(state->heap, value);
-}
-
-int nom_collectgarbage(
-    NomState*   state
-)
-{
-    assert(state);
-
-    // Mark all values on the stack
-    for (uint32_t i = 0; i < state->sp; ++i)
-    {
-        value_visit(state, state->stack[i], mark);
-    }
-
-    // Mark all scopes on the callstack
-    for (uint32_t i = 0; i < state->cp; ++i)
-    {
-        value_visit(state, state->callstack[i].scope, mark);
-    }
-
-    // Sweep
-    unsigned int count = heap_sweep(state->heap);
-
-    return count;
 }

@@ -23,11 +23,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #include "value.h"
 
-#include <nominal.h>
 #include <math.h>
-
-#define FROM_NUMBER(v)      NomValue nv; nv.number = v; return nv
-#define AS_NUMBER(v, t, e)  return IS_NUMBER(v) ? (t)v.number : e
 
 bool nom_isnumber(
     NomValue    value
@@ -40,124 +36,187 @@ NomValue nom_fromint(
     int             value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromunsignedint(
     unsigned int    value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromlong(
     long            value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromunsignedlong(
     unsigned long   value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromlonglong(
     long long           value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromunsignedlonglong(
     unsigned long long  value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromsize(
     size_t  value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromfloat(
     float       value
 )
 {
-    FROM_NUMBER((double)value);
+    NomValue result;
+    result.number = (double)value;
+    return result;
 }
 
 NomValue nom_fromdouble(
     double      value
 )
 {
-    FROM_NUMBER(value);
+    NomValue result;
+    result.number = value;
+    return result;
 }
 
 int nom_toint(
     NomValue    value
 )
 {
-    AS_NUMBER(value, int, INT_MAX);
+    int result = INT_MAX;
+    if (IS_NUMBER(value))
+    {
+        result = (int)value.number;
+    }
+    return result;
 }
 
 unsigned int nom_tounsignedint(
     NomValue    value
 )
 {
-    AS_NUMBER(value, unsigned int, UINT_MAX);
+    unsigned int result = UINT_MAX;
+    if (IS_NUMBER(value))
+    {
+        result = (unsigned int)value.number;
+    }
+    return result;
 }
 
 long nom_tolong(
     NomValue    value
 )
 {
-    AS_NUMBER(value, long, LONG_MAX);
+    long result = LONG_MAX;
+    if (IS_NUMBER(value))
+    {
+        result = (long)value.number;
+    }
+    return result;
 }
 
 unsigned long nom_tounsignedlong(
     NomValue    value
 )
 {
-    AS_NUMBER(value, unsigned long, ULONG_MAX);
+    unsigned long result = ULONG_MAX;
+    if (IS_NUMBER(value))
+    {
+        result = (unsigned long)value.number;
+    }
+    return result;
 }
 
 long long nom_tolonglong(
     NomValue    value
 )
 {
-    AS_NUMBER(value, long long, LLONG_MAX);
+    long long result = LLONG_MAX;
+    if (IS_NUMBER(value))
+    {
+        result = (long long)value.number;
+    }
+    return result;
 }
 
 unsigned long long nom_tounsignedlonglong(
     NomValue    value
 )
 {
-    AS_NUMBER(value, unsigned long long, ULLONG_MAX);
+    unsigned long long result = ULLONG_MAX;
+    if (IS_NUMBER(value))
+    {
+        result = (unsigned long long)value.number;
+    }
+    return result;
 }
 
 size_t nom_tosize(
     NomValue    value
 )
 {
-    AS_NUMBER(value, size_t, (size_t)-1);
+    size_t result = (size_t)-1;
+    if (IS_NUMBER(value))
+    {
+        result = (size_t)value.number;
+    }
+    return result;
 }
 
 float nom_tofloat(
     NomValue    value
 )
 {
-    AS_NUMBER(value, float, NAN);
+    float result = NAN;
+    if (IS_NUMBER(value))
+    {
+        result = (float)value.number;
+    }
+    return result;
 }
 
 double nom_todouble(
     NomValue    value
 )
 {
-    AS_NUMBER(value, double, NAN);
+    double result = NAN;
+    if (IS_NUMBER(value))
+    {
+        result = value.number;
+    }
+    return result;
 }
