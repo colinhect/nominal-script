@@ -330,27 +330,6 @@ size_t nom_tostring(
     return count;
 }
 
-#define ARITH(l, r, op, name)\
-    if (!IS_NUMBER(l) || !IS_NUMBER(r))\
-    {\
-        NomValue class = map_getclass(state, left);\
-        NomValue function = nom_nil();\
-        if (nom_tryget(state, class, state->strings.##name, &function) &&\
-            nom_isfunction(state, function))\
-        {\
-            NomValue args[2] = { { left.raw }, { right.raw } };\
-            result = nom_invoke(state, function, 2, args);\
-        }\
-        else\
-        {\
-            nom_seterror(state, "Cannot " #name " non-numeric values", #name);\
-        }\
-    }\
-    else\
-    {\
-        result.number = l.number op r.number;\
-    }
-
 NomValue nom_add(
     NomState*   state,
     NomValue    left,
@@ -358,7 +337,27 @@ NomValue nom_add(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, +, add);
+
+    if (!IS_NUMBER(left) || !IS_NUMBER(right))
+    {
+        NomValue class = map_getclass(state, left);
+        NomValue function;
+        if (nom_tryget(state, class, state->strings.add, &function) &&
+                nom_isfunction(state, function))
+        {
+            NomValue args[2] = { { left.raw }, { right.raw } };
+            result = nom_invoke(state, function, 2, args);
+        }
+        else
+        {
+            nom_seterror(state, "Cannot add non-numeric values");
+        }
+    }
+    else
+    {
+        result.number = left.number + right.number;
+    }
+
     return result;
 }
 
@@ -369,7 +368,27 @@ NomValue nom_sub(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, -, subtract);
+
+    if (!IS_NUMBER(left) || !IS_NUMBER(right))
+    {
+        NomValue class = map_getclass(state, left);
+        NomValue function;
+        if (nom_tryget(state, class, state->strings.subtract, &function) &&
+                nom_isfunction(state, function))
+        {
+            NomValue args[2] = { { left.raw }, { right.raw } };
+            result = nom_invoke(state, function, 2, args);
+        }
+        else
+        {
+            nom_seterror(state, "Cannot subtract non-numeric values");
+        }
+    }
+    else
+    {
+        result.number = left.number - right.number;
+    }
+
     return result;
 }
 
@@ -380,7 +399,27 @@ NomValue nom_mul(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, *, multiply);
+
+    if (!IS_NUMBER(left) || !IS_NUMBER(right))
+    {
+        NomValue class = map_getclass(state, left);
+        NomValue function;
+        if (nom_tryget(state, class, state->strings.multiply, &function) &&
+                nom_isfunction(state, function))
+        {
+            NomValue args[2] = { { left.raw }, { right.raw } };
+            result = nom_invoke(state, function, 2, args);
+        }
+        else
+        {
+            nom_seterror(state, "Cannot multiply non-numeric values");
+        }
+    }
+    else
+    {
+        result.number = left.number * right.number;
+    }
+
     return result;
 }
 
@@ -391,7 +430,27 @@ NomValue nom_div(
 )
 {
     NomValue result = nom_nil();
-    ARITH(left, right, / , divide);
+
+    if (!IS_NUMBER(left) || !IS_NUMBER(right))
+    {
+        NomValue class = map_getclass(state, left);
+        NomValue function;
+        if (nom_tryget(state, class, state->strings.divide, &function) &&
+                nom_isfunction(state, function))
+        {
+            NomValue args[2] = { { left.raw }, { right.raw } };
+            result = nom_invoke(state, function, 2, args);
+        }
+        else
+        {
+            nom_seterror(state, "Cannot divide non-numeric values");
+        }
+    }
+    else
+    {
+        result.number = left.number / right.number;
+    }
+
     return result;
 }
 
