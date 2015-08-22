@@ -115,6 +115,7 @@ bool nom_istrue(
     NomValue    value
 )
 {
+    (void)state;
     assert(state);
 
     if (GET_TYPE(value) == VALUETYPE_BOOLEAN)
