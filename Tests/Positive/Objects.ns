@@ -24,16 +24,15 @@ svedka := Cat: "Svedka"
 assertEqual: (classOf: svedka) Cat
 assertEqual: svedka.name "Svedka"
 
--- Verify that no cats have meowed
 assertEqual: Cat.lastMeow.cat nil
 assertEqual: Cat.lastMeow.expression nil
 
--- Invoke class method
-janks..meow: "Hiss"
+-- Explicit class method invocation
+(classOf: janks).meow: janks "Hiss"
 assertEqual: Cat.lastMeow.cat janks
 assertEqual: Cat.lastMeow.expression "Hiss"
 
--- Invoke class method
-svedka..meow: "P`meu"
+-- Implicit class method invocation
+svedka..meow: "P'meuw"
 assertEqual: Cat.lastMeow.cat svedka
-assertEqual: Cat.lastMeow.expression "P`meu"
+assertEqual: Cat.lastMeow.expression "P'meuw"
