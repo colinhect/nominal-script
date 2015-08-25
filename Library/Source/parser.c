@@ -279,10 +279,19 @@ Node* parser_secondaryexpr(
             {
                 lexer_next(parser->lexer);
 
+                // Check if it is a class index (double dot)
+                bool class = false;
+                if (!lexer_skippedwhitespace(parser->lexer) &&
+                        lexer_istokentypeandid(parser->lexer, TOK_SYMBOL, '.'))
+                {
+                    lexer_next(parser->lexer);
+                    class = true;
+                }
+
                 // Expect an identifier
                 if (!lexer_istokentype(parser->lexer, TOK_IDENT))
                 {
-                    parser_seterror(parser, "Right side of '.' operation must be an identifier");
+                    parser_seterror(parser, "Right side of '%s' operation must be an identifier", class ? ".." : ".");
                     node_free(node);
                     return NULL;
                 }
@@ -301,6 +310,7 @@ Node* parser_secondaryexpr(
                 // Create the index node
                 Node* index = node_new(NODE_INDEX);
                 index->data.index.bracket = false;
+                index->data.index.class = class;
                 index->data.index.expr = node;
                 index->data.index.key = key;
 

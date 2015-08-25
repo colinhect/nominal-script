@@ -330,51 +330,9 @@ static NomValue prelude_classof(
 {
     assert(state);
 
-    NomValue result = nom_nil();
-
     NomValue value = nom_getarg(state, 0);
-    ValueType type = GET_TYPE(value);
 
-    switch (type)
-    {
-    case VALUETYPE_NIL:
-        result = state->classes.nil;
-        break;
-    case VALUETYPE_NUMBER:
-        result = state->classes.number;
-        break;
-    case VALUETYPE_BOOLEAN:
-        result = state->classes.boolean;
-        break;
-    case VALUETYPE_INTERNED_STRING:
-        result = state->classes.string;
-        break;
-    case VALUETYPE_OBJECT:
-    {
-        result = map_getclass(state, value);
-        if (!nom_istrue(state, result))
-        {
-            HeapObject* object = heap_getobject(state->heap, value);
-            if (object)
-            {
-                switch (object->type)
-                {
-                case OBJECTTYPE_STRING:
-                    result = state->classes.string;
-                    break;
-                case OBJECTTYPE_MAP:
-                    result = state->classes.map;
-                    break;
-                case OBJECTTYPE_FUNCTION:
-                    result = state->classes.function;
-                    break;
-                }
-            }
-        }
-    }
-    break;
-    }
-
+    NomValue result = state_classof(state, value);
     return result;
 }
 

@@ -1,0 +1,16 @@
+Test := class: "Test"
+Test.new := [ name |
+  object: Test {
+    name := name
+  }
+]
+
+a := Test: "A"
+assertEqual: a.name "A"
+assertEqual: a..name "Test"
+
+a..name = "Something"
+assertEqual: a..name "Something"
+
+a..what := "What"
+assertEqual: a..what "What"

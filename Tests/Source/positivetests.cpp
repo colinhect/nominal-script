@@ -43,6 +43,7 @@ extern "C"
     }
 
 TEST_FILE("Tests/Positive/Arithmetic.ns")
+TEST_FILE("Tests/Positive/ClassGetAndSet.ns")
 TEST_FILE("Tests/Positive/Comments.ns")
 TEST_FILE("Tests/Positive/Fibonacci.ns")
 TEST_FILE("Tests/Positive/Functions.ns")

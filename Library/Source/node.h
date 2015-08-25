@@ -123,6 +123,7 @@ typedef struct Node
             struct Node* expr;
             struct Node* key;
             bool bracket;
+            bool class;
         } index;
 
         // A sequence of expressions

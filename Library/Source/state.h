@@ -145,4 +145,13 @@ NomValue state_newclass(
     const char* name
 );
 
+// Returns the class associated with the specified value.
+//
+// The call may have encountered an error; check nom_error() directly
+// after invoking this function
+NomValue state_classof(
+    NomState*   state,
+    NomValue    value
+);
+
 #endif

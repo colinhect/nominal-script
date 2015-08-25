@@ -97,6 +97,11 @@ uint32_t generatecode(
         break;
     case NODE_INDEX:
         index = generatecode(state, node->data.index.expr, bytecode, index);
+        if (node->data.index.class)
+        {
+            OPCODE(OPCODE_CLASS_OF);
+        }
+
         index = generatecode(state, node->data.index.key, bytecode, index);
         if (node->data.index.bracket)
         {
@@ -122,6 +127,11 @@ uint32_t generatecode(
             if (leftexpr->type == NODE_INDEX)
             {
                 index = generatecode(state, leftexpr->data.index.expr, bytecode, index);
+                if (leftexpr->data.index.class)
+                {
+                    OPCODE(OPCODE_CLASS_OF);
+                }
+
                 index = generatecode(state, leftexpr->data.index.key, bytecode, index);
 
                 if (op == OPCODE_SET)
@@ -231,6 +241,17 @@ uint32_t generatecode(
     {
         uint32_t argcount = 0;
 
+        // Check if the function expression is referencing a class function
+        Node* expr = node->data.invocation.expr;
+        bool class = expr->type == NODE_INDEX && expr->data.index.class;
+
+        // Push the object as the first argument
+        if (class)
+        {
+            index = generatecode(state, expr->data.index.expr, bytecode, index);
+            ++argcount;
+        }
+
         // Push the arguments
         Node* arg = node->data.invocation.args;
         while (arg)
@@ -249,11 +270,25 @@ uint32_t generatecode(
             }
         }
 
-        // Generate the code to push the function on the stack
-        index = generatecode(state, node->data.invocation.expr, bytecode, index);
+        if (class)
+        {
+            // Get the class of the object
+            OPCODE(OPCODE_DUP);
+            WRITEAS(uint32_t, argcount - 1);
+            OPCODE(OPCODE_CLASS_OF);
+
+            index = generatecode(state, expr->data.index.key, bytecode, index);
+            OPCODE(OPCODE_VALUE_GET);
+        }
+        else
+        {
+            // Generate the code to push the function on the stack
+            index = generatecode(state, node->data.invocation.expr, bytecode, index);
+        }
 
         // Invoke the function
         OPCODE(OPCODE_INVOKE);
+
         WRITEAS(uint32_t, argcount);
     }
     break;
@@ -312,8 +347,10 @@ const char* const OPCODE_NAMES[] =
     "BRACKET_GET",  // OPCODE_BRACKET_GET
     "PUSH",         // OPCODE_PUSH
     "POP",          // OPCODE_POP
+    "DUP",          // OPCODE_DUP
     "MAP",          // OPCODE_MAP
     "FUNCTION",     // OPCODE_FUNCTION
+    "CLASS_OF",     // OPCODE_CLASS_OF
     "GOTO",         // OPCODE_GOTO
     "INVOKE"        // OPCODE_INVOKE
 };
