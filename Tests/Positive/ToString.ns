@@ -9,3 +9,5 @@ assertions := {
 forKeys: assertions [ key |
   assertEqual: key assertions[key]
 ]
+
+completed := true

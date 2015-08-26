@@ -24,3 +24,5 @@ assertEqual: b.c 1
 d := { }
 d.e := 1
 assertEqual: d.e 1
+
+completed := true

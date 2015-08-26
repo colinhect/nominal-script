@@ -1,0 +1,29 @@
+-- Create a new class
+Test := class: "Test"
+
+-- Define the constructor
+Test.new := [ a b |
+  object: Test {
+    a := a,
+    b := b
+  }
+]
+
+-- Construct and object using the constructor explicitly
+x := Test.new: 1 2
+
+-- Verify the class of the object
+assertEqual: (classOf: x) Test
+
+-- Verify the members of the object
+assertEqual: x.a 1
+assertEqual: x.b 2
+
+-- Construct and object using the constructor implicitly
+y := Test: 3 4
+
+-- Verify the members of the object
+assertEqual: y.a 3
+assertEqual: y.b 4
+
+completed := true

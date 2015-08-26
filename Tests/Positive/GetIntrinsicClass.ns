@@ -10,3 +10,5 @@ assertEqual: (classOf: { }) Map
 assertEqual: (classOf: { }).name "Map"
 assertEqual: (classOf: [ nil ]) Function
 assertEqual: (classOf: [ nil ]).name "Function"
+
+completed := true

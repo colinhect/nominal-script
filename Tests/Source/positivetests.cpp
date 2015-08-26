@@ -39,10 +39,16 @@ extern "C"
             INFO(nom_geterror(state));\
             CHECK(!error);\
         }\
+        else\
+        {\
+            NomValue completed = nom_getvar(state, "completed");\
+            CHECK(nom_istrue(state, completed));\
+        }\
         nom_freestate(state);\
     }
 
 TEST_FILE("Tests/Positive/Arithmetic.ns")
+TEST_FILE("Tests/Positive/ClassCreation.ns")
 TEST_FILE("Tests/Positive/ClassGetAndSet.ns")
 TEST_FILE("Tests/Positive/Comments.ns")
 TEST_FILE("Tests/Positive/Fibonacci.ns")
@@ -51,6 +57,7 @@ TEST_FILE("Tests/Positive/GetIntrinsicClass.ns")
 TEST_FILE("Tests/Positive/If.ns")
 TEST_FILE("Tests/Positive/Map.ns")
 TEST_FILE("Tests/Positive/Objects.ns")
+TEST_FILE("Tests/Positive/ObjectConstructors.ns")
 TEST_FILE("Tests/Positive/OverloadArithmetic.ns")
 TEST_FILE("Tests/Positive/ToString.ns")
 TEST_FILE("Tests/Positive/While.ns")

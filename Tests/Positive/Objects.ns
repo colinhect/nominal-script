@@ -36,3 +36,5 @@ assertEqual: Cat.lastMeow.expression "Hiss"
 svedka..meow: "P'meuw"
 assertEqual: Cat.lastMeow.cat svedka
 assertEqual: Cat.lastMeow.expression "P'meuw"
+
+completed := true

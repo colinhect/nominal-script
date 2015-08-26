@@ -16,3 +16,5 @@ assertEqual: a 6
 
 b := {- x -} -y + z {- * 3 -}
 assertEqual: b 1
+
+completed := true

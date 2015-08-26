@@ -242,8 +242,17 @@ NomValue nom_execute(
     const char* source
 )
 {
+    assert(state);
+    assert(source);
+
+    // Compile and execute the code
     compile(state, source);
-    return state_execute(state);
+    NomValue result = state_execute(state);
+
+    // Set the instruction pointer to the end of the bytecode
+    state->ip = state->end;
+
+    return result;
 }
 
 void nom_dofile(
@@ -557,8 +566,9 @@ NomValue state_execute(
     NomValue l, r, result;
     OpCode op;
     uint32_t count, ip;
+    bool stop = false;
 
-    while (state->ip < state->end && !state->errorflag)
+    while (state->ip < state->end && !state->errorflag && !stop)
     {
         op = (OpCode)state->bytecode[state->ip++];
         switch (op)
@@ -682,7 +692,7 @@ NomValue state_execute(
             ret(state);
             if (state->cp < startcp)
             {
-                state->ip = state->end;
+                stop = true;
             }
             break;
 
@@ -791,8 +801,10 @@ NomValue state_execute(
     {
         result = POP_VALUE();
     }
-
-    state->ip = state->end;
+    else
+    {
+        state->sp = 0;
+    }
 
     return result;
 }

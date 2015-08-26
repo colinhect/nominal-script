@@ -138,6 +138,10 @@ bool lexer_next(
             {
                 return false;
             }
+            else if (c == '\n')
+            {
+                lexer->state.skippednewline = true;
+            }
 
             lexer->state.skippedwhitespace = true;
         }

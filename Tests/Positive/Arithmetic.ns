@@ -16,3 +16,5 @@ assertEqual: (2 * 3.0) 6.0
 assertEqual: (6 / 3.0) 2.0
 assertEqual: (6.0 / 3) 2.0
 assertEqual: (6 / 3.0) 2.0
+
+completed := true

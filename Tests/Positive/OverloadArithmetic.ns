@@ -24,3 +24,5 @@ assertEqual: (xs + ys) (xs[0] + ys[0])
 assertEqual: (xs - ys) (xs[0] - ys[0])
 assertEqual: (xs * ys) (xs[0] * ys[0])
 assertEqual: (xs / ys) (xs[0] / ys[0])
+
+completed := true
