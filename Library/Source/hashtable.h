@@ -116,7 +116,7 @@ bool hashtable_set(
 
 // Inserts a new value or sets an existing value in the hash table, returning
 // true if a new value was inserted or false if an existing value was changed
-bool hashtable_insertorset(
+bool hashtable_update(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
@@ -124,7 +124,7 @@ bool hashtable_insertorset(
 
 // Gets the value for a key, returning true if a value was found for the
 // specified key and false if no value was found for the specified key
-bool hashtable_get(
+bool hashtable_find(
     HashTable*  hashtable,
     UserData    key,
     UserData*   value

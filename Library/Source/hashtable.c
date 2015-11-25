@@ -183,7 +183,7 @@ bool hashtable_set(
     return result;
 }
 
-bool hashtable_insertorset(
+bool hashtable_update(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
@@ -198,7 +198,7 @@ bool hashtable_insertorset(
     return result;
 }
 
-bool hashtable_get(
+bool hashtable_find(
     HashTable*  hashtable,
     UserData    key,
     UserData*   value

@@ -394,7 +394,7 @@ NOM_EXPORT bool nom_set(
 ///
 /// \returns True if the value was inserted for they key; false if a value
 ///          already exists for the key.
-NOM_EXPORT bool nom_insertorset(
+NOM_EXPORT bool nom_update(
     NomState*   state,
     NomValue    value,
     NomValue    key,
@@ -412,7 +412,7 @@ NOM_EXPORT bool nom_insertorset(
 ///     The key to get the value for.
 ///
 /// \returns The value for the key; nil of no value exists for the key.
-NOM_EXPORT NomValue nom_get(
+NOM_EXPORT NomValue nom_find(
     NomState*   state,
     NomValue    value,
     NomValue    key
@@ -432,7 +432,7 @@ NOM_EXPORT NomValue nom_get(
 ///     key.
 ///
 /// \returns True if the value was found for the key; false otherwise.
-NOM_EXPORT bool nom_tryget(
+NOM_EXPORT bool nom_get(
     NomState*   state,
     NomValue    value,
     NomValue    key,

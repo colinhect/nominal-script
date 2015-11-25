@@ -88,7 +88,7 @@ uint32_t generatecode(
     }
     break;
     case NODE_IDENT:
-        OPCODE(OPCODE_GETVAR);
+        OPCODE(OPCODE_GET_VAR);
         WRITEAS(StringId, node->data.ident.id);
         break;
     case NODE_UNARY:
@@ -322,8 +322,8 @@ uint32_t generatecode(
 
 const OpCode OP_OPCODE[] =
 {
-    OPCODE_LETVAR,     // OP_LET
-    OPCODE_SETVAR,     // OP_SET
+    OPCODE_LET_VAR,     // OP_LET
+    OPCODE_SET_VAR,     // OP_SET
     OPCODE_ADD,     // OP_ADD
     OPCODE_SUB,     // OP_SUB
     OPCODE_MUL,     // OP_MUL
@@ -344,9 +344,9 @@ const OpCode OP_OPCODE[] =
 
 const char* const OPCODE_NAMES[] =
 {
-    "LETVAR",       // OPCODE_LETVAR
-    "SETVAR",       // OPCODE_SETVAR
-    "GETVAR",       // OPCODE_GETVAR
+    "LET_VAR",       // OPCODE_LET_VAR
+    "SET_VAR",       // OPCODE_SET_VAR
+    "GET_VAR",       // OPCODE_GET_VAR
     "ADD",          // OPCODE_ADD
     "SUB",          // OPCODE_SUB
     "MUL",          // OPCODE_MUL
@@ -363,10 +363,10 @@ const char* const OPCODE_NAMES[] =
     "NOT",          // OPCODE_NOT
     "RET",          // OPCODE_RET
     "INSERT",       // OPCODE_INSERT
-    "SET",          // OPCODE_SET
-    "GET",          // OPCODE_GET
     "UPDATE",       // OPCODE_UPDATE
     "FIND",         // OPCODE_FIND
+    "SET",          // OPCODE_SET
+    "GET",          // OPCODE_GET
     "PUSH",         // OPCODE_PUSH
     "POP",          // OPCODE_POP
     "DUP",          // OPCODE_DUP

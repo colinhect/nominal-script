@@ -210,7 +210,7 @@ NomValue function_resolve(
     if (nom_isclass(state, value))
     {
         NomValue function;
-        if (nom_tryget(state, value, state->strings.new, &function) &&
+        if (nom_get(state, value, state->strings.new, &function) &&
                 nom_isfunction(state, function))
         {
             result = function;

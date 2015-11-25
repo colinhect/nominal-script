@@ -35,9 +35,9 @@
 // A byte code operation
 typedef enum
 {
-    OPCODE_LETVAR,
-    OPCODE_SETVAR,
-    OPCODE_GETVAR,
+    OPCODE_LET_VAR,
+    OPCODE_SET_VAR,
+    OPCODE_GET_VAR,
     OPCODE_ADD,
     OPCODE_SUB,
     OPCODE_MUL,
@@ -54,10 +54,10 @@ typedef enum
     OPCODE_NOT,
     OPCODE_RET,
     OPCODE_INSERT,
-    OPCODE_SET,
-    OPCODE_GET,
     OPCODE_UPDATE,
     OPCODE_FIND,
+    OPCODE_SET,
+    OPCODE_GET,
     OPCODE_PUSH,
     OPCODE_POP,
     OPCODE_DUP,

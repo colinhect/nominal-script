@@ -320,9 +320,9 @@ void nom_dumpbytecode(
 
         switch (op)
         {
-        case OPCODE_LETVAR:
-        case OPCODE_GETVAR:
-        case OPCODE_SETVAR:
+        case OPCODE_LET_VAR:
+        case OPCODE_GET_VAR:
+        case OPCODE_SET_VAR:
         {
             StringId id = READAS(StringId);
             const char* string = stringpool_find(state->stringpool, id);
@@ -518,7 +518,7 @@ NomValue state_getinterned(
     {
         // Try to get the variable value
         NomValue scope = state->callstack[i].scope;
-        if (map_tryget(state, scope, string, &result))
+        if (map_get(state, scope, string, &result))
         {
             success = true;
             break;
@@ -574,17 +574,17 @@ NomValue state_execute(
         op = (OpCode)state->bytecode[state->ip++];
         switch (op)
         {
-        case OPCODE_LETVAR:
+        case OPCODE_LET_VAR:
             id = READAS(StringId);
             state_letinterned(state, id, TOP_VALUE());
             break;
 
-        case OPCODE_SETVAR:
+        case OPCODE_SET_VAR:
             id = READAS(StringId);
             state_setinterned(state, id, TOP_VALUE());
             break;
 
-        case OPCODE_GETVAR:
+        case OPCODE_GET_VAR:
             id = READAS(StringId);
             result = state_getinterned(state, id);
             PUSH_VALUE(result);
@@ -703,6 +703,19 @@ NomValue state_execute(
             }
             break;
 
+        case OPCODE_UPDATE:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            nom_update(state, r, l, TOP_VALUE());
+            break;
+
+        case OPCODE_FIND:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_find(state, r, l);
+            PUSH_VALUE(result);
+            break;
+
         case OPCODE_SET:
             l = POP_VALUE();
             r = POP_VALUE();
@@ -715,7 +728,7 @@ NomValue state_execute(
         case OPCODE_GET:
             l = POP_VALUE();
             r = POP_VALUE();
-            if (!nom_tryget(state, r, l, &result))
+            if (!nom_get(state, r, l, &result))
             {
                 nom_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
@@ -723,19 +736,6 @@ NomValue state_execute(
             {
                 PUSH_VALUE(result);
             }
-            break;
-
-        case OPCODE_UPDATE:
-            l = POP_VALUE();
-            r = POP_VALUE();
-            nom_insertorset(state, r, l, TOP_VALUE());
-            break;
-
-        case OPCODE_FIND:
-            l = POP_VALUE();
-            r = POP_VALUE();
-            result = nom_get(state, r, l);
-            PUSH_VALUE(result);
             break;
 
         case OPCODE_PUSH:
@@ -760,7 +760,7 @@ NomValue state_execute(
             {
                 NomValue key = POP_VALUE();
                 NomValue value = POP_VALUE();
-                map_insertorset(state, result, key, value);
+                map_update(state, result, key, value);
             }
             PUSH_VALUE(result);
             break;
@@ -799,6 +799,10 @@ NomValue state_execute(
         case OPCODE_INVOKE:
             count = READAS(uint32_t);
             invoke(state, count, false);
+            break;
+
+        case OPCODE_INVALID:
+            nom_seterror(state, "Invalid opcode");
             break;
         }
     }

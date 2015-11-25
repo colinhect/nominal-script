@@ -74,7 +74,7 @@ bool map_set(
 
 // Inserts a new value or sets an existing value in a map, returning true if a
 // new value was inserted or false if an existing value was changed
-bool map_insertorset(
+bool map_update(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -83,7 +83,7 @@ bool map_insertorset(
 
 // Gets the value for a key in a map, returning nil no value is set for the
 // specified key
-NomValue map_get(
+NomValue map_find(
     NomState*   state,
     NomValue    map,
     NomValue    key
@@ -91,7 +91,7 @@ NomValue map_get(
 
 // Tries to get the value for a key in a map, returning true if the value was
 // found or false otherwise
-bool map_tryget(
+bool map_get(
     NomState*   state,
     NomValue    map,
     NomValue    key,

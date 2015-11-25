@@ -146,7 +146,7 @@ bool map_next(
 
                 // Get the value with the key
                 NomValue value;
-                hashtable_get(data->hashtable, (UserData)key.raw, (UserData*)&value.data);
+                hashtable_find(data->hashtable, (UserData)key.raw, (UserData*)&value.data);
 
                 // Update the iterator
                 iterator->key = key;
@@ -222,7 +222,7 @@ bool map_set(
     return result;
 }
 
-bool map_insertorset(
+bool map_update(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -239,7 +239,7 @@ bool map_insertorset(
         MapData* data = (MapData*)object->data;
         if (data)
         {
-            result = hashtable_insertorset(data->hashtable, (UserData)key.raw, (UserData)value.raw);
+            result = hashtable_update(data->hashtable, (UserData)key.raw, (UserData)value.raw);
             if (result)
             {
                 insertkey(data, key);
@@ -250,18 +250,18 @@ bool map_insertorset(
     return result;
 }
 
-NomValue map_get(
+NomValue map_find(
     NomState*   state,
     NomValue    map,
     NomValue    key
 )
 {
     NomValue value = { 0 };
-    map_tryget(state, map, key, &value);
+    map_get(state, map, key, &value);
     return value;
 }
 
-bool map_tryget(
+bool map_get(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -276,7 +276,7 @@ bool map_tryget(
     if (object && object->type == OBJECTTYPE_MAP && object->data)
     {
         MapData* data = (MapData*)object->data;
-        result = hashtable_get(data->hashtable, (UserData)key.raw, (UserData*)&value->data);
+        result = hashtable_find(data->hashtable, (UserData)key.raw, (UserData*)&value->data);
     }
 
     return result;
