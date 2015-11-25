@@ -114,7 +114,7 @@ uint32_t generatecode(
         break;
     case NODE_BINARY:
     {
-        OpCode op = (OpCode)node->data.binary.op;
+        Operator op = (Operator)node->data.binary.op;
 
         Node* leftexpr = node->data.binary.leftexpr;
         Node* rightexpr = node->data.binary.rightexpr;
