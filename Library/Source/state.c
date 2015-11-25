@@ -365,6 +365,7 @@ void nom_dumpbytecode(
         break;
 
         case OPCODE_GOTO:
+        case OPCODE_GOTO_IF_TRUE:
         {
             uint32_t ip = READAS(uint32_t);
             printf("0x%x", ip);
@@ -787,6 +788,15 @@ NomValue state_execute(
         case OPCODE_GOTO:
             ip = READAS(uint32_t);
             state->ip = ip;
+            break;
+
+        case OPCODE_GOTO_IF_TRUE:
+            ip = READAS(uint32_t);
+            l = POP_VALUE();
+            if (nom_istrue(state, l))
+            {
+                state->ip = ip;
+            }
             break;
 
         case OPCODE_INVOKE:

@@ -119,11 +119,33 @@ uint32_t generatecode(
         Node* leftexpr = node->data.binary.leftexpr;
         Node* rightexpr = node->data.binary.rightexpr;
 
-        // Push right hand side on stack
-        index = generatecode(state, rightexpr, bytecode, index);
-
-        if (op == OPCODE_LET || op == OPCODE_SET)
+        // And/or operations require short-circuit logic
+        if (op == OP_OR || op == OP_AND)
         {
+            index = generatecode(state, leftexpr, bytecode, index);
+
+            // Skip past the right expression if short-circuited
+            OPCODE(OPCODE_DUP);
+            WRITEAS(uint32_t, 0);
+            if (op == OP_AND)
+            {
+                OPCODE(OPCODE_NOT);
+            }
+            OPCODE(OPCODE_GOTO_IF_TRUE);
+            uint32_t gotoIndex = index;
+            WRITEAS(uint32_t, 0);
+
+            index = generatecode(state, rightexpr, bytecode, index);
+            OPCODE(OP_OPCODE[op]);
+
+            uint32_t endIndex = index;
+            index = gotoIndex;
+            WRITEAS(uint32_t, endIndex);
+            index = endIndex;
+        }
+        else if (op == OP_LET || op == OP_SET)
+        {
+            index = generatecode(state, rightexpr, bytecode, index);
             if (leftexpr->type == NODE_INDEX)
             {
                 index = generatecode(state, leftexpr->data.index.expr, bytecode, index);
@@ -134,7 +156,7 @@ uint32_t generatecode(
 
                 index = generatecode(state, leftexpr->data.index.key, bytecode, index);
 
-                if (op == OPCODE_SET)
+                if (op == OP_SET)
                 {
                     bool bracket = leftexpr->data.index.bracket;
                     if (bracket)
@@ -160,6 +182,7 @@ uint32_t generatecode(
         }
         else
         {
+            index = generatecode(state, rightexpr, bytecode, index);
             index = generatecode(state, leftexpr, bytecode, index);
             OPCODE(OP_OPCODE[op]);
         }
@@ -352,5 +375,6 @@ const char* const OPCODE_NAMES[] =
     "FUNCTION",     // OPCODE_FUNCTION
     "CLASS_OF",     // OPCODE_CLASS_OF
     "GOTO",         // OPCODE_GOTO
+    "GOTO_IF_TRUE", // OPCODE_GOTO_IF_TRUE
     "INVOKE"        // OPCODE_INVOKE
 };

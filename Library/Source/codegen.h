@@ -66,6 +66,7 @@ typedef enum
     OPCODE_FUNCTION,
     OPCODE_CLASS_OF,
     OPCODE_GOTO,
+    OPCODE_GOTO_IF_TRUE,
     OPCODE_INVOKE
 } OpCode;
 
