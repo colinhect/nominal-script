@@ -33,7 +33,8 @@
 #include "nominal/export.h"
 
 ///
-/// \brief A Nominal state.
+/// \brief A self-contained instance of a Nominal compiler and virtual
+///        machine.
 typedef struct NomState NomState;
 
 ///

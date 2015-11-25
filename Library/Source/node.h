@@ -45,8 +45,8 @@ typedef enum
     OP_AND,
     OP_OR,
     OP_NOT,
-    OP_ASSOC,
-    OP_RET
+    OP_RET,
+    OP_ASSOC
 } Operator;
 
 // The precedence of each operator

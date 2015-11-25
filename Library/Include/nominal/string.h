@@ -50,7 +50,7 @@ NOM_EXPORT bool nom_isstring(
 /// \param state
 ///     The state to create the value for.
 /// \param value
-///     The NULL-terminated string value.
+///     The UTF-8 NULL-terminated string value.
 ///
 /// \returns A reference to the new Nominal string.
 NOM_EXPORT NomValue nom_newstring(
@@ -64,7 +64,7 @@ NOM_EXPORT NomValue nom_newstring(
 /// \param state
 ///     The state to create the value for.
 /// \param value
-///     The NULL-terminated string value.
+///     The UTF-8 NULL-terminated string value.
 ///
 /// \returns A reference to the new Nominal string.
 NOM_EXPORT NomValue nom_newinternedstring(
@@ -80,8 +80,8 @@ NOM_EXPORT NomValue nom_newinternedstring(
 /// \param value
 ///     The string value.
 ///
-/// \returns A pointer to the NULL terminated string; NULL if the value is not
-///          a string.
+/// \returns A pointer to the UTF-8 NULL-terminated string; NULL if the value
+///          is not a string.
 NOM_EXPORT const char* nom_getstring(
     NomState*   state,
     NomValue    value

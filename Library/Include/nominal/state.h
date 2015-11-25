@@ -49,7 +49,7 @@ NOM_EXPORT void nom_freestate(
 ///
 /// \brief Declares a variable in the current scope.
 ///
-/// \warning Ths function could have encountered an error.  Check nom_error()
+/// \warning This function could have encountered an error.  Check nom_error()
 ///          directly after invoking this function.
 ///
 /// \param state
@@ -68,7 +68,7 @@ NOM_EXPORT void nom_letvar(
 /// \brief Sets the value of an existing variable accessible from the current
 ///        scope.
 ///
-/// \warning Ths function could have encountered an error.  Check nom_error()
+/// \warning This function could have encountered an error.  Check nom_error()
 ///          directly after invoking this function.
 ///
 /// \param state
@@ -87,7 +87,7 @@ NOM_EXPORT void nom_setvar(
 /// \brief Gets the value of an existing variable accessible from the current
 ///        scope.
 ///
-/// \warning Ths function could have encountered an error.  Check nom_error()
+/// \warning This function could have encountered an error.  Check nom_error()
 ///          directly after invoking this function.
 ///
 /// \param state

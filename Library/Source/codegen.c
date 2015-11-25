@@ -88,7 +88,7 @@ uint32_t generatecode(
     }
     break;
     case NODE_IDENT:
-        OPCODE(OPCODE_GET);
+        OPCODE(OPCODE_GETVAR);
         WRITEAS(StringId, node->data.ident.id);
         break;
     case NODE_UNARY:
@@ -105,11 +105,11 @@ uint32_t generatecode(
         index = generatecode(state, node->data.index.key, bytecode, index);
         if (node->data.index.bracket)
         {
-            OPCODE(OPCODE_BRACKET_GET);
+            OPCODE(OPCODE_FIND);
         }
         else
         {
-            OPCODE(OPCODE_VALUE_GET);
+            OPCODE(OPCODE_GET);
         }
         break;
     case NODE_BINARY:
@@ -161,16 +161,16 @@ uint32_t generatecode(
                     bool bracket = leftexpr->data.index.bracket;
                     if (bracket)
                     {
-                        OPCODE(OPCODE_BRACKET_SET);
+                        OPCODE(OPCODE_UPDATE);
                     }
                     else
                     {
-                        OPCODE(OPCODE_VALUE_SET);
+                        OPCODE(OPCODE_SET);
                     }
                 }
                 else
                 {
-                    OPCODE(OPCODE_VALUE_LET);
+                    OPCODE(OPCODE_INSERT);
                 }
             }
             else
@@ -301,7 +301,7 @@ uint32_t generatecode(
             OPCODE(OPCODE_CLASS_OF);
 
             index = generatecode(state, expr->data.index.key, bytecode, index);
-            OPCODE(OPCODE_VALUE_GET);
+            OPCODE(OPCODE_GET);
         }
         else
         {
@@ -322,8 +322,8 @@ uint32_t generatecode(
 
 const OpCode OP_OPCODE[] =
 {
-    OPCODE_LET,     // OP_LET
-    OPCODE_SET,     // OP_SET
+    OPCODE_LETVAR,     // OP_LET
+    OPCODE_SETVAR,     // OP_SET
     OPCODE_ADD,     // OP_ADD
     OPCODE_SUB,     // OP_SUB
     OPCODE_MUL,     // OP_MUL
@@ -338,15 +338,15 @@ const OpCode OP_OPCODE[] =
     OPCODE_AND,     // OP_AND
     OPCODE_OR,      // OP_OR
     OPCODE_NOT,     // OP_NOT
-    OPCODE_ASSOC,   // OP_ASSOC
-    OPCODE_RET      // OP_RET
+    OPCODE_RET,     // OP_RET
+    OPCODE_INVALID, // OP_ASSOC
 };
 
 const char* const OPCODE_NAMES[] =
 {
-    "LET",          // OPCODE_LET
-    "SET",          // OPCODE_SET
-    "GET",          // OPCODE_GET
+    "LETVAR",       // OPCODE_LETVAR
+    "SETVAR",       // OPCODE_SETVAR
+    "GETVAR",       // OPCODE_GETVAR
     "ADD",          // OPCODE_ADD
     "SUB",          // OPCODE_SUB
     "MUL",          // OPCODE_MUL
@@ -361,13 +361,12 @@ const char* const OPCODE_NAMES[] =
     "AND",          // OPCODE_AND
     "OR",           // OPCODE_OR
     "NOT",          // OPCODE_NOT
-    "ASSOC",        // OPCODE_ASSOC
     "RET",          // OPCODE_RET
-    "VALUE_LET",    // OPCODE_VALUE_LET
-    "VALUE_SET",    // OPCODE_VALUE_SET
-    "VALUE_GET",    // OPCODE_VALUE_GET
-    "BRACKET_SET",  // OPCODE_BRACKET_SET
-    "BRACKET_GET",  // OPCODE_BRACKET_GET
+    "INSERT",       // OPCODE_INSERT
+    "SET",          // OPCODE_SET
+    "GET",          // OPCODE_GET
+    "UPDATE",       // OPCODE_UPDATE
+    "FIND",         // OPCODE_FIND
     "PUSH",         // OPCODE_PUSH
     "POP",          // OPCODE_POP
     "DUP",          // OPCODE_DUP

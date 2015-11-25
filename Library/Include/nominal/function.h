@@ -33,7 +33,7 @@
 ///
 /// \brief A function pointer to a native function invoked in the place of a
 ///        Nominal function.
-typedef NomValue(*NomFunction)(NomState* state);
+typedef NomValue (*NomFunction)(NomState* state);
 
 ///
 /// \brief Checks if a value is a reference to a Nominal function.

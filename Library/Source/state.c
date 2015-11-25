@@ -320,9 +320,9 @@ void nom_dumpbytecode(
 
         switch (op)
         {
-        case OPCODE_LET:
-        case OPCODE_GET:
-        case OPCODE_SET:
+        case OPCODE_LETVAR:
+        case OPCODE_GETVAR:
+        case OPCODE_SETVAR:
         {
             StringId id = READAS(StringId);
             const char* string = stringpool_find(state->stringpool, id);
@@ -574,17 +574,17 @@ NomValue state_execute(
         op = (OpCode)state->bytecode[state->ip++];
         switch (op)
         {
-        case OPCODE_LET:
+        case OPCODE_LETVAR:
             id = READAS(StringId);
             state_letinterned(state, id, TOP_VALUE());
             break;
 
-        case OPCODE_SET:
+        case OPCODE_SETVAR:
             id = READAS(StringId);
             state_setinterned(state, id, TOP_VALUE());
             break;
 
-        case OPCODE_GET:
+        case OPCODE_GETVAR:
             id = READAS(StringId);
             result = state_getinterned(state, id);
             PUSH_VALUE(result);
@@ -686,9 +686,6 @@ NomValue state_execute(
             PUSH_VALUE(result);
             break;
 
-        case OPCODE_ASSOC:
-            break;
-
         case OPCODE_RET:
             ret(state);
             if (state->cp < startcp)
@@ -697,7 +694,7 @@ NomValue state_execute(
             }
             break;
 
-        case OPCODE_VALUE_LET:
+        case OPCODE_INSERT:
             l = POP_VALUE();
             r = POP_VALUE();
             if (!nom_insert(state, r, l, TOP_VALUE()))
@@ -706,7 +703,7 @@ NomValue state_execute(
             }
             break;
 
-        case OPCODE_VALUE_SET:
+        case OPCODE_SET:
             l = POP_VALUE();
             r = POP_VALUE();
             if (!nom_set(state, r, l, TOP_VALUE()))
@@ -715,7 +712,7 @@ NomValue state_execute(
             }
             break;
 
-        case OPCODE_VALUE_GET:
+        case OPCODE_GET:
             l = POP_VALUE();
             r = POP_VALUE();
             if (!nom_tryget(state, r, l, &result))
@@ -728,13 +725,13 @@ NomValue state_execute(
             }
             break;
 
-        case OPCODE_BRACKET_SET:
+        case OPCODE_UPDATE:
             l = POP_VALUE();
             r = POP_VALUE();
             nom_insertorset(state, r, l, TOP_VALUE());
             break;
 
-        case OPCODE_BRACKET_GET:
+        case OPCODE_FIND:
             l = POP_VALUE();
             r = POP_VALUE();
             result = nom_get(state, r, l);

@@ -140,8 +140,8 @@ const int OP_PREC[] =
     5,  // OP_AND
     5,  // OP_OR
     6,  // OP_NOT
-    1,  // OP_ASSOC
-    1   // OP_RET
+    1,  // OP_RET
+    1  // OP_ASSOC
 };
 
 const char* const OP_STR[] =
@@ -162,6 +162,6 @@ const char* const OP_STR[] =
     "&&", // OP_AND
     "||", // OP_OR
     "!",  // OP_NOT
-    "->", // OP_ASSOC
-    "<-"  // OP_RET
+    "<-", // OP_RET
+    "->"  // OP_ASSOC
 };
