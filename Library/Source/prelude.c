@@ -314,7 +314,7 @@ static NomValue prelude_class(
         map_setclass(state, map, state->classes.class);
 
         NomValue namestring = nom_newinternedstring(state, "name");
-        map_update(state, map, namestring, name);
+        map_set(state, map, namestring, name);
     }
     else
     {

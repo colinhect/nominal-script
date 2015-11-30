@@ -343,7 +343,7 @@ NomValue nom_add(
     {
         NomValue class = map_getclass(state, left);
         NomValue function;
-        if (nom_get(state, class, state->strings.add, &function) &&
+        if (nom_find(state, class, state->strings.add, &function) &&
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
@@ -374,7 +374,7 @@ NomValue nom_sub(
     {
         NomValue class = map_getclass(state, left);
         NomValue function;
-        if (nom_get(state, class, state->strings.subtract, &function) &&
+        if (nom_find(state, class, state->strings.subtract, &function) &&
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
@@ -405,7 +405,7 @@ NomValue nom_mul(
     {
         NomValue class = map_getclass(state, left);
         NomValue function;
-        if (nom_get(state, class, state->strings.multiply, &function) &&
+        if (nom_find(state, class, state->strings.multiply, &function) &&
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
@@ -436,7 +436,7 @@ NomValue nom_div(
     {
         NomValue class = map_getclass(state, left);
         NomValue function;
-        if (nom_get(state, class, state->strings.divide, &function) &&
+        if (nom_find(state, class, state->strings.divide, &function) &&
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
@@ -546,21 +546,6 @@ bool nom_insert(
     return result;
 }
 
-bool nom_set(
-    NomState*   state,
-    NomValue    value,
-    NomValue    key,
-    NomValue    keyvalue
-)
-{
-    bool result = false;
-    if (nom_ismap(state, value))
-    {
-        result = map_set(state, value, key, keyvalue);
-    }
-    return result;
-}
-
 bool nom_update(
     NomState*   state,
     NomValue    value,
@@ -576,22 +561,7 @@ bool nom_update(
     return result;
 }
 
-NomValue nom_find(
-    NomState*   state,
-    NomValue    value,
-    NomValue    key
-)
-{
-    NomValue result = nom_nil();
-    if (nom_ismap(state, value))
-    {
-        map_get(state, value, key, &result);
-    }
-
-    return result;
-}
-
-bool nom_get(
+bool nom_find(
     NomState*   state,
     NomValue    value,
     NomValue    key,
@@ -605,9 +575,39 @@ bool nom_get(
     *keyvalue = nom_nil();
     if (nom_ismap(state, value))
     {
-        result = map_get(state, value, key, keyvalue);
+        result = map_find(state, value, key, keyvalue);
     }
 
+    return result;
+}
+
+NomValue nom_get(
+    NomState*   state,
+    NomValue    value,
+    NomValue    key
+)
+{
+    NomValue result = nom_nil();
+    if (nom_ismap(state, value))
+    {
+        map_find(state, value, key, &result);
+    }
+
+    return result;
+}
+
+bool nom_set(
+    NomState*   state,
+    NomValue    value,
+    NomValue    key,
+    NomValue    keyvalue
+)
+{
+    bool result = false;
+    if (nom_ismap(state, value))
+    {
+        result = map_set(state, value, key, keyvalue);
+    }
     return result;
 }
 

@@ -359,7 +359,7 @@ NOM_EXPORT bool nom_insert(
 );
 
 ///
-/// \brief Sets a value for a key in a Nominal value.
+/// \brief Updates a value for a key in a Nominal value.
 ///
 /// \param state
 ///     The state.
@@ -370,30 +370,9 @@ NOM_EXPORT bool nom_insert(
 /// \param keyvalue
 ///     The value to set for the key.
 ///
-/// \returns True if the value was set for they key; false if a value does
-///          not exist for the key or the value does not support setting values
-///          for keys.
-NOM_EXPORT bool nom_set(
-    NomState*   state,
-    NomValue    value,
-    NomValue    key,
-    NomValue    keyvalue
-);
-
-///
-/// \brief Inserts or sets a value for a key in a Nominal value.
-///
-/// \param state
-///     The state.
-/// \param value
-///     The value.
-/// \param key
-///     The key to insert or set the value for.
-/// \param keyvalue
-///     The value to insert or set for the key.
-///
-/// \returns True if the value was inserted for they key; false if a value
-///          already exists for the key.
+/// \returns True if the value was update for they key; false if a value does
+///          not exist for the key or the value does not support updating
+///          values for keys.
 NOM_EXPORT bool nom_update(
     NomState*   state,
     NomValue    value,
@@ -410,12 +389,16 @@ NOM_EXPORT bool nom_update(
 ///     The value.
 /// \param key
 ///     The key to get the value for.
+/// \param keyvalue
+///     Returns the found value for the key; nil if no value exists for the
+///     key.
 ///
-/// \returns The value for the key; nil of no value exists for the key.
-NOM_EXPORT NomValue nom_find(
+/// \returns True if the value was found for the key; false otherwise.
+NOM_EXPORT bool nom_find(
     NomState*   state,
     NomValue    value,
-    NomValue    key
+    NomValue    key,
+    NomValue*   keyvalue
 );
 
 ///
@@ -427,16 +410,33 @@ NOM_EXPORT NomValue nom_find(
 ///     The value.
 /// \param key
 ///     The key to get the value for.
-/// \param keyvalue
-///     Returns the found value for the key; nil if no value exists for the
-///     key.
 ///
-/// \returns True if the value was found for the key; false otherwise.
-NOM_EXPORT bool nom_get(
+/// \returns The value for the key; nil of no value exists for the key.
+NOM_EXPORT NomValue nom_get(
+    NomState*   state,
+    NomValue    value,
+    NomValue    key
+);
+
+///
+/// \brief Inserts or updates a value for a key in a Nominal value.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value.
+/// \param key
+///     The key to insert or set the value for.
+/// \param keyvalue
+///     The value to insert or set for the key.
+///
+/// \returns True if the value was inserted for they key; false if a value
+///          already exists for the key.
+NOM_EXPORT bool nom_set(
     NomState*   state,
     NomValue    value,
     NomValue    key,
-    NomValue*   keyvalue
+    NomValue    keyvalue
 );
 
 ///

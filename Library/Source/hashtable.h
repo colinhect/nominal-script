@@ -106,28 +106,29 @@ bool hashtable_insert(
     UserData    value
 );
 
-// Sets an existing value in the hash table, returning true if the set was
-// successful or false if no value exists for the specified key
-bool hashtable_set(
-    HashTable*  hashtable,
-    UserData    key,
-    UserData    value
-);
-
-// Inserts a new value or sets an existing value in the hash table, returning
-// true if a new value was inserted or false if an existing value was changed
+// Updates an existing value in the hash table, returning true if the update
+// was successful or false if no value exists for the specified key
 bool hashtable_update(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
 );
 
-// Gets the value for a key, returning true if a value was found for the
+// Finds the value for a key, returning true if a value was found for the
 // specified key and false if no value was found for the specified key
 bool hashtable_find(
     HashTable*  hashtable,
     UserData    key,
     UserData*   value
+);
+
+// Inserts a new value or updates an existing value in the hash table,
+// returning true if a new value was inserted or false if an existing value
+// was changed
+bool hashtable_set(
+    HashTable*  hashtable,
+    UserData    key,
+    UserData    value
 );
 
 // Either inserts a new value or get an existing value, returning true if a

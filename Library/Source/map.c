@@ -198,30 +198,6 @@ bool map_insert(
     return result;
 }
 
-bool map_set(
-    NomState*   state,
-    NomValue    map,
-    NomValue    key,
-    NomValue    value
-)
-{
-    assert(state);
-
-    bool result = false;
-
-    HeapObject* object = heap_getobject(state->heap, map);
-    if (object && object->type == OBJECTTYPE_MAP && object->data)
-    {
-        MapData* data = (MapData*)object->data;
-        if (data)
-        {
-            result = hashtable_set(data->hashtable, (UserData)key.raw, (UserData)value.raw);
-        }
-    }
-
-    return result;
-}
-
 bool map_update(
     NomState*   state,
     NomValue    map,
@@ -240,28 +216,13 @@ bool map_update(
         if (data)
         {
             result = hashtable_update(data->hashtable, (UserData)key.raw, (UserData)value.raw);
-            if (result)
-            {
-                insertkey(data, key);
-            }
         }
     }
 
     return result;
 }
 
-NomValue map_find(
-    NomState*   state,
-    NomValue    map,
-    NomValue    key
-)
-{
-    NomValue value = { 0 };
-    map_get(state, map, key, &value);
-    return value;
-}
-
-bool map_get(
+bool map_find(
     NomState*   state,
     NomValue    map,
     NomValue    key,
@@ -277,6 +238,34 @@ bool map_get(
     {
         MapData* data = (MapData*)object->data;
         result = hashtable_find(data->hashtable, (UserData)key.raw, (UserData*)&value->data);
+    }
+
+    return result;
+}
+
+bool map_set(
+    NomState*   state,
+    NomValue    map,
+    NomValue    key,
+    NomValue    value
+)
+{
+    assert(state);
+
+    bool result = false;
+
+    HeapObject* object = heap_getobject(state->heap, map);
+    if (object && object->type == OBJECTTYPE_MAP && object->data)
+    {
+        MapData* data = (MapData*)object->data;
+        if (data)
+        {
+            result = hashtable_set(data->hashtable, (UserData)key.raw, (UserData)value.raw);
+            if (result)
+            {
+                insertkey(data, key);
+            }
+        }
     }
 
     return result;

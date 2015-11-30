@@ -165,7 +165,7 @@ bool hashtable_insert(
     return result;
 }
 
-bool hashtable_set(
+bool hashtable_update(
     HashTable*  hashtable,
     UserData    key,
     UserData    value
@@ -183,21 +183,6 @@ bool hashtable_set(
     return result;
 }
 
-bool hashtable_update(
-    HashTable*  hashtable,
-    UserData    key,
-    UserData    value
-)
-{
-    assert(hashtable);
-
-    BucketNode* node = NULL;
-    bool result = findnode(hashtable, key, true, &node);
-
-    node->value = value;
-    return result;
-}
-
 bool hashtable_find(
     HashTable*  hashtable,
     UserData    key,
@@ -211,6 +196,21 @@ bool hashtable_find(
         *value = node->value;
     }
 
+    return result;
+}
+
+bool hashtable_set(
+    HashTable*  hashtable,
+    UserData    key,
+    UserData    value
+)
+{
+    assert(hashtable);
+
+    BucketNode* node = NULL;
+    bool result = findnode(hashtable, key, true, &node);
+
+    node->value = value;
     return result;
 }
 

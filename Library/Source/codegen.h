@@ -69,8 +69,8 @@ typedef enum
     OPCODE_INSERT,
     OPCODE_UPDATE,
     OPCODE_FIND,
-    OPCODE_SET,
     OPCODE_GET,
+    OPCODE_SET,
 
     // Object operations
     OPCODE_MAP,

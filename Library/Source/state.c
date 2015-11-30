@@ -349,7 +349,7 @@ void nom_dumpbytecode(
         case OPCODE_MAP:
         {
             uint32_t itemCount = READAS(uint32_t);
-            printf("%u", itemCount);
+            printf("\t%u", itemCount);
         }
         break;
 
@@ -495,7 +495,7 @@ void state_setinterned(
     {
         // Try to set the variable
         NomValue scope = state->callstack[i].scope;
-        if (map_set(state, scope, string, value))
+        if (map_update(state, scope, string, value))
         {
             success = true;
             break;
@@ -525,7 +525,7 @@ NomValue state_getinterned(
     {
         // Try to get the variable value
         NomValue scope = state->callstack[i].scope;
-        if (map_get(state, scope, string, &result))
+        if (map_find(state, scope, string, &result))
         {
             success = true;
             break;
@@ -720,29 +720,16 @@ NomValue state_execute(
         case OPCODE_UPDATE:
             l = POP_VALUE();
             r = POP_VALUE();
-            nom_update(state, r, l, TOP_VALUE());
-            break;
-
-        case OPCODE_FIND:
-            l = POP_VALUE();
-            r = POP_VALUE();
-            result = nom_find(state, r, l);
-            PUSH_VALUE(result);
-            break;
-
-        case OPCODE_SET:
-            l = POP_VALUE();
-            r = POP_VALUE();
-            if (!nom_set(state, r, l, TOP_VALUE()))
+            if (!nom_update(state, r, l, TOP_VALUE()))
             {
                 nom_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
             break;
 
-        case OPCODE_GET:
+        case OPCODE_FIND:
             l = POP_VALUE();
             r = POP_VALUE();
-            if (!nom_get(state, r, l, &result))
+            if (!nom_find(state, r, l, &result))
             {
                 nom_seterror(state, "No value for key '%s'", nom_getstring(state, l));
             }
@@ -752,6 +739,19 @@ NomValue state_execute(
             }
             break;
 
+        case OPCODE_GET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            result = nom_get(state, r, l);
+            PUSH_VALUE(result);
+            break;
+
+        case OPCODE_SET:
+            l = POP_VALUE();
+            r = POP_VALUE();
+            nom_set(state, r, l, TOP_VALUE());
+            break;
+
         case OPCODE_MAP:
             count = READAS(uint32_t);
             result = nom_newmap(state);
@@ -759,7 +759,7 @@ NomValue state_execute(
             {
                 NomValue key = POP_VALUE();
                 NomValue value = POP_VALUE();
-                map_update(state, result, key, value);
+                map_set(state, result, key, value);
             }
             PUSH_VALUE(result);
             break;

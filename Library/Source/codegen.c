@@ -105,11 +105,11 @@ uint32_t generatecode(
         index = generatecode(state, node->data.index.key, bytecode, index);
         if (node->data.index.bracket)
         {
-            OPCODE(OPCODE_FIND);
+            OPCODE(OPCODE_GET);
         }
         else
         {
-            OPCODE(OPCODE_GET);
+            OPCODE(OPCODE_FIND);
         }
         break;
     case NODE_BINARY:
@@ -161,11 +161,11 @@ uint32_t generatecode(
                     bool bracket = leftexpr->data.index.bracket;
                     if (bracket)
                     {
-                        OPCODE(OPCODE_UPDATE);
+                        OPCODE(OPCODE_SET);
                     }
                     else
                     {
-                        OPCODE(OPCODE_SET);
+                        OPCODE(OPCODE_UPDATE);
                     }
                 }
                 else
@@ -301,7 +301,7 @@ uint32_t generatecode(
             OPCODE(OPCODE_CLASSOF);
 
             index = generatecode(state, expr->data.index.key, bytecode, index);
-            OPCODE(OPCODE_GET);
+            OPCODE(OPCODE_FIND);
         }
         else
         {
@@ -367,8 +367,8 @@ const char* const OPCODE_NAMES[] =
     "INSERT",       // OPCODE_INSERT
     "UPDATE",       // OPCODE_UPDATE
     "FIND",         // OPCODE_FIND
-    "SET",          // OPCODE_SET
     "GET",          // OPCODE_GET
+    "SET",          // OPCODE_SET
     "MAP",          // OPCODE_MAP
     "FUNCTION",     // OPCODE_FUNCTION
     "CLASSOF",      // OPCODE_CLASSOF

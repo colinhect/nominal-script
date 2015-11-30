@@ -80,7 +80,7 @@ TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
         NomValue key = nom_fromint(5);
         NomValue value = nom_fromint(10);
         CHECK(nom_insert(state, map, key, value) == true);
-        NomValue result = nom_find(state, map, key);
+        NomValue result = nom_get(state, map, key);
         CHECK(nom_equals(state, result, value) == true);
     }
 
@@ -89,7 +89,7 @@ TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
         NomValue key = nom_newstring(state, "Key");
         NomValue value = nom_fromint(10);
         CHECK(nom_insert(state, map, key, value) == true);
-        NomValue result = nom_find(state, map, key);
+        NomValue result = nom_get(state, map, key);
         CHECK(nom_equals(state, result, value) == true);
     }
 
@@ -98,7 +98,7 @@ TEST_CASE("Inserting and retrieving values to/from a Nominal map", "[Map]")
         NomValue key = nom_newinternedstring(state, "Key");
         NomValue value = nom_fromint(10);
         CHECK(nom_insert(state, map, key, value) == true);
-        NomValue result = nom_find(state, map, key);
+        NomValue result = nom_get(state, map, key);
         CHECK(nom_equals(state, result, value) == true);
     }
 
@@ -115,15 +115,15 @@ TEST_CASE("Setting a value in a Nominal map after it is inserted", "[Map]")
     NomValue value = nom_fromint(10);
     NomValue newvalue = nom_fromint(25);
     CHECK(nom_insert(state, map, key, value) == true);
-    CHECK(nom_set(state, map, key, newvalue) == true);
+    CHECK(nom_update(state, map, key, newvalue) == true);
 
-    NomValue result = nom_find(state, map, key);
+    NomValue result = nom_get(state, map, key);
     CHECK(nom_equals(state, result, newvalue) == true);
 
     nom_freestate(state);
 }
 
-TEST_CASE("Calling nom_get() for a key that exists", "[Map]")
+TEST_CASE("Calling nom_find() for a key that exists", "[Map]")
 {
     NomState* state = nom_newstate();
 
@@ -134,13 +134,13 @@ TEST_CASE("Calling nom_get() for a key that exists", "[Map]")
     CHECK(nom_insert(state, map, key, value) == true);
 
     NomValue result;
-    CHECK(nom_get(state, map, key, &result) == true);
+    CHECK(nom_find(state, map, key, &result) == true);
     CHECK(nom_equals(state, result, value) == true);
 
     nom_freestate(state);
 }
 
-TEST_CASE("Calling nom_get() for a key that does not exist in a Nominal map", "[Map]")
+TEST_CASE("Calling nom_find() for a key that does not exist in a Nominal map", "[Map]")
 {
     NomState* state = nom_newstate();
 
@@ -151,7 +151,7 @@ TEST_CASE("Calling nom_get() for a key that does not exist in a Nominal map", "[
     CHECK(nom_insert(state, map, key, value) == true);
 
     NomValue result;
-    CHECK(nom_get(state, map, value, &result) == false);
+    CHECK(nom_find(state, map, value, &result) == false);
 
     nom_freestate(state);
 }
@@ -175,13 +175,13 @@ TEST_CASE("Inserting and retrieving multiple values keyed from strings in a Nomi
     CHECK(nom_insert(state, map, e, a) == true);
 
     NomValue result;
-    result = nom_find(state, map, a);
+    result = nom_get(state, map, a);
     CHECK(nom_equals(state, result, b) == true);
-    result = nom_find(state, map, b);
+    result = nom_get(state, map, b);
     CHECK(nom_equals(state, result, c) == true);
-    result = nom_find(state, map, c);
+    result = nom_get(state, map, c);
     CHECK(nom_equals(state, result, d) == true);
-    result = nom_find(state, map, e);
+    result = nom_get(state, map, e);
     CHECK(nom_equals(state, result, a) == true);
 
     nom_freestate(state);
@@ -206,13 +206,13 @@ TEST_CASE("Inserting and retrieving multiple values keyed from interned strings 
     CHECK(nom_insert(state, map, e, a) == true);
 
     NomValue result;
-    result = nom_find(state, map, a);
+    result = nom_get(state, map, a);
     CHECK(nom_equals(state, result, b) == true);
-    result = nom_find(state, map, b);
+    result = nom_get(state, map, b);
     CHECK(nom_equals(state, result, c) == true);
-    result = nom_find(state, map, c);
+    result = nom_get(state, map, c);
     CHECK(nom_equals(state, result, d) == true);
-    result = nom_find(state, map, e);
+    result = nom_get(state, map, e);
     CHECK(nom_equals(state, result, a) == true);
 
     nom_freestate(state);
@@ -232,7 +232,7 @@ TEST_CASE("Inserting values keyed from mixed interned/non-interned strings into 
     NomValue a2 = nom_newstring(state, "a");
 
     NomValue result;
-    result = nom_find(state, map, a2);
+    result = nom_get(state, map, a2);
     CHECK(nom_equals(state, result, b) == true);
 
     nom_freestate(state);
@@ -296,7 +296,7 @@ TEST_CASE("Creating a map with implicit keys", "[Map]")
 
     for (int i = 0; i < 4; ++i)
     {
-        result = nom_find(state, map, nom_fromint(i));
+        result = nom_get(state, map, nom_fromint(i));
         CHECK(nom_equals(state, result, nom_fromint(i)));
     }
 
@@ -312,11 +312,11 @@ TEST_CASE("Creating a map with explicit keys", "[Map]")
     CHECK(nom_ismap(state, map));
 
     NomValue result;
-    result = nom_find(state, map, nom_newstring(state, "zero"));
+    result = nom_get(state, map, nom_newstring(state, "zero"));
     CHECK(nom_equals(state, result, nom_fromint(0)) == true);
-    result = nom_find(state, map, nom_newstring(state, "one"));
+    result = nom_get(state, map, nom_newstring(state, "one"));
     CHECK(nom_equals(state, result, nom_fromint(1)) == true);
-    result = nom_find(state, map, nom_newstring(state, "two"));
+    result = nom_get(state, map, nom_newstring(state, "two"));
     CHECK(nom_equals(state, result, nom_fromint(2)) == true);
 
     nom_freestate(state);
