@@ -50,7 +50,7 @@ NOM_EXPORT void nom_freestate(
 /// \brief Declares a variable in the current scope.
 ///
 /// \warning This function could have encountered an error.  Check nom_error()
-///          directly after invoking this function.
+///          directly after calling this function.
 ///
 /// \param state
 ///     The state.
@@ -69,7 +69,7 @@ NOM_EXPORT void nom_letvar(
 ///        scope.
 ///
 /// \warning This function could have encountered an error.  Check nom_error()
-///          directly after invoking this function.
+///          directly after calling this function.
 ///
 /// \param state
 ///     The state.
@@ -88,7 +88,7 @@ NOM_EXPORT void nom_setvar(
 ///        scope.
 ///
 /// \warning This function could have encountered an error.  Check nom_error()
-///          directly after invoking this function.
+///          directly after calling this function.
 ///
 /// \param state
 ///     The state.
@@ -133,7 +133,7 @@ NOM_EXPORT NomValue nom_getarg(
 ///        resulting value.
 ///
 /// \warning The execution could have encountered an error.  Check
-///          nom_error() directly after invoking this function.
+///          nom_error() directly after calling this function.
 ///
 /// \param state
 ///     The state.
@@ -150,7 +150,7 @@ NOM_EXPORT NomValue nom_execute(
 /// \brief Executes a file containing Nominal source code.
 ///
 /// \warning The execution could have encountered an error.  Check
-///          nom_error() directly after invoking this function.
+///          nom_error() directly after calling this function.
 ///
 /// \param state
 ///     The state.
@@ -166,7 +166,7 @@ NOM_EXPORT void nom_dofile(
 ///        code to stdout.
 ///
 /// \warning The source code could have failed to parse.  Check nom_error()
-///          directly after invoking this function.
+///          directly after calling this function.
 ///
 /// \param state
 ///     The state.

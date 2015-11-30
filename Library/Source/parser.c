@@ -466,7 +466,7 @@ Node* parser_binexpr(
         }
 
         // Verify the binary operation is valid
-        if (op == OP_LET && leftexpr->type != NODE_IDENT && !(leftexpr->type == NODE_INDEX && leftexpr->data.index.bracket == false))
+        if (op == OP_DEFINE && leftexpr->type != NODE_IDENT && !(leftexpr->type == NODE_INDEX && leftexpr->data.index.bracket == false))
         {
             parser_seterror(parser, "The left side of a ':=' expression must be an identifier");
             node_free(leftexpr);
@@ -531,7 +531,7 @@ Node* parser_map(
 
         // If the association is a let operation then treat the left side as
         // a string
-        if (item->type == NODE_BINARY && item->data.binary.op == OP_LET)
+        if (item->type == NODE_BINARY && item->data.binary.op == OP_DEFINE)
         {
             item->data.binary.op = OP_ASSOC;
             item->data.binary.leftexpr->type = NODE_STRING;

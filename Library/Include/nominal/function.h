@@ -31,7 +31,7 @@
 #include "nominal/state.h"
 
 ///
-/// \brief A function pointer to a native function invoked in the place of a
+/// \brief A function pointer to a native function called in the place of a
 ///        Nominal function.
 typedef NomValue (*NomFunction)(NomState* state);
 

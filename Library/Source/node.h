@@ -29,8 +29,8 @@
 // A binary/unary operator
 typedef enum
 {
-    OP_LET,
-    OP_SET,
+    OP_DEFINE,
+    OP_ASSIGN,
     OP_ADD,
     OP_SUB,
     OP_MUL,

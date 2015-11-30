@@ -89,7 +89,7 @@ struct NomState
 // on the current scope
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
+// after calling this function
 void state_letinterned(
     NomState*   state,
     StringId    id,
@@ -100,7 +100,7 @@ void state_letinterned(
 // on the current scope
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
+// after calling this function
 void state_setinterned(
     NomState*   state,
     StringId    id,
@@ -111,17 +111,17 @@ void state_setinterned(
 // on the current scope
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
+// after calling this function
 NomValue state_getinterned(
     NomState*   state,
     StringId    id
 );
 
-// Invokes a function
+// Calls a function
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
-NomValue state_invoke(
+// after calling this function
+NomValue state_call(
     NomState*   state,
     NomValue    value,
     uint8_t     argcount,
@@ -131,7 +131,7 @@ NomValue state_invoke(
 // Begins execution at the current instruction pointer
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
+// after calling this function
 NomValue state_execute(
     NomState*   state
 );
@@ -139,7 +139,7 @@ NomValue state_execute(
 // Creates a new map representing a class
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
+// after calling this function
 NomValue state_newclass(
     NomState*   state,
     const char* name
@@ -148,7 +148,7 @@ NomValue state_newclass(
 // Returns the class associated with the specified value.
 //
 // The call may have encountered an error; check nom_error() directly
-// after invoking this function
+// after calling this function
 NomValue state_classof(
     NomState*   state,
     NomValue    value

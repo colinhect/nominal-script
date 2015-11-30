@@ -347,7 +347,7 @@ NomValue nom_add(
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
-            result = nom_invoke(state, function, 2, args);
+            result = nom_call(state, function, 2, args);
         }
         else
         {
@@ -378,7 +378,7 @@ NomValue nom_sub(
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
-            result = nom_invoke(state, function, 2, args);
+            result = nom_call(state, function, 2, args);
         }
         else
         {
@@ -409,7 +409,7 @@ NomValue nom_mul(
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
-            result = nom_invoke(state, function, 2, args);
+            result = nom_call(state, function, 2, args);
         }
         else
         {
@@ -440,7 +440,7 @@ NomValue nom_div(
                 nom_isfunction(state, function))
         {
             NomValue args[2] = { { left.raw }, { right.raw } };
-            result = nom_invoke(state, function, 2, args);
+            result = nom_call(state, function, 2, args);
         }
         else
         {
@@ -474,7 +474,7 @@ NomValue nom_neg(
     return result;
 }
 
-bool nom_isinvokable(
+bool nom_iscallable(
     NomState*   state,
     NomValue    value
 )
@@ -487,7 +487,7 @@ bool nom_isinvokable(
     return result;
 }
 
-NomValue nom_invoke(
+NomValue nom_call(
     NomState*   state,
     NomValue    value,
     uint8_t     argcount,
@@ -501,7 +501,7 @@ NomValue nom_invoke(
     value = function_resolve(state, value);
     if (nom_isfunction(state, value))
     {
-        result = state_invoke(state, value, argcount, args);
+        result = state_call(state, value, argcount, args);
     }
 
     return result;

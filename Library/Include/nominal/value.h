@@ -270,33 +270,33 @@ NOM_EXPORT NomValue nom_neg(
 );
 
 ///
-/// \brief Returns whether a Nominal value can be invoked.
+/// \brief Returns whether a Nominal value can be called.
 ///
 /// \param state
 ///     The state.
 /// \param value
 ///     The value in question.
 ///
-/// \returns True if the value can be invoked; false otherwise.
-NOM_EXPORT bool nom_isinvokable(
+/// \returns True if the value can be called; false otherwise.
+NOM_EXPORT bool nom_iscallable(
     NomState*   state,
     NomValue    value
 );
 
 ///
-/// \brief Invokes a Nominal value.
+/// \brief Calls a Nominal value.
 ///
 /// \param state
 ///     The state.
 /// \param value
-///     The value to invoke.
+///     The value to call.
 /// \param argcount
 ///     The number of arguments to pass.
 /// \param args
 ///     The array of argument values.
 ///
-/// \returns The result of invoking the value.
-NOM_EXPORT NomValue nom_invoke(
+/// \returns The result of calling the value.
+NOM_EXPORT NomValue nom_call(
     NomState*   state,
     NomValue    value,
     uint8_t     argcount,

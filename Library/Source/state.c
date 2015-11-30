@@ -83,7 +83,7 @@ static void ret(
     NomState*   state
 );
 
-static void invoke(
+static void call(
     NomState*   state,
     uint8_t     argcount,
     bool        execute
@@ -320,16 +320,6 @@ void nom_dumpbytecode(
 
         switch (op)
         {
-        case OPCODE_LET_VAR:
-        case OPCODE_GET_VAR:
-        case OPCODE_SET_VAR:
-        {
-            StringId id = READAS(StringId);
-            const char* string = stringpool_find(state->stringpool, id);
-            printf("\t%s", string);
-        }
-        break;
-
         case OPCODE_PUSH:
         {
             NomValue value = READAS(NomValue);
@@ -339,10 +329,27 @@ void nom_dumpbytecode(
         }
         break;
 
+        case OPCODE_DUP:
+        {
+            uint32_t index = READAS(uint32_t);
+            printf("%u", index);
+        }
+        break;
+
+        case OPCODE_DEFINE:
+        case OPCODE_FETCH:
+        case OPCODE_ASSIGN:
+        {
+            StringId id = READAS(StringId);
+            const char* string = stringpool_find(state->stringpool, id);
+            printf("%s", string);
+        }
+        break;
+
         case OPCODE_MAP:
         {
             uint32_t itemCount = READAS(uint32_t);
-            printf("\t%u", itemCount);
+            printf("%u", itemCount);
         }
         break;
 
@@ -350,7 +357,7 @@ void nom_dumpbytecode(
         {
             uint32_t ip = READAS(uint32_t);
             uint32_t paramcount = READAS(uint32_t);
-            printf("0x%x %u ", ip, paramcount);
+            printf("0x%08x %u ", ip, paramcount);
             for (uint32_t i = 0; i < paramcount; ++i)
             {
                 StringId id = READAS(StringId);
@@ -364,15 +371,15 @@ void nom_dumpbytecode(
         }
         break;
 
-        case OPCODE_GOTO:
-        case OPCODE_GOTO_IF_TRUE:
+        case OPCODE_JUMP:
+        case OPCODE_JUMPIF:
         {
             uint32_t ip = READAS(uint32_t);
-            printf("0x%x", ip);
+            printf("0x%08x", ip);
         }
         break;
 
-        case OPCODE_INVOKE:
+        case OPCODE_CALL:
         {
             uint32_t argcount = READAS(uint32_t);
             printf("%u", argcount);
@@ -533,7 +540,7 @@ NomValue state_getinterned(
     return result;
 }
 
-NomValue state_invoke(
+NomValue state_call(
     NomState*   state,
     NomValue    value,
     uint8_t     argcount,
@@ -549,7 +556,7 @@ NomValue state_invoke(
 
     PUSH_VALUE(value);
 
-    invoke(state, argcount, true);
+    call(state, argcount, true);
 
     NomValue result = POP_VALUE();
     return result;
@@ -574,19 +581,18 @@ NomValue state_execute(
         op = (OpCode)state->bytecode[state->ip++];
         switch (op)
         {
-        case OPCODE_LET_VAR:
-            id = READAS(StringId);
-            state_letinterned(state, id, TOP_VALUE());
+        case OPCODE_PUSH:
+            result = READAS(NomValue);
+            PUSH_VALUE(result);
             break;
 
-        case OPCODE_SET_VAR:
-            id = READAS(StringId);
-            state_setinterned(state, id, TOP_VALUE());
+        case OPCODE_POP:
+            (void)POP_VALUE();
             break;
 
-        case OPCODE_GET_VAR:
-            id = READAS(StringId);
-            result = state_getinterned(state, id);
+        case OPCODE_DUP:
+            count = READAS(uint32_t);
+            result = PEEK_VALUE(count);
             PUSH_VALUE(result);
             break;
 
@@ -686,12 +692,20 @@ NomValue state_execute(
             PUSH_VALUE(result);
             break;
 
-        case OPCODE_RET:
-            ret(state);
-            if (state->cp < startcp)
-            {
-                stop = true;
-            }
+        case OPCODE_DEFINE:
+            id = READAS(StringId);
+            state_letinterned(state, id, TOP_VALUE());
+            break;
+
+        case OPCODE_ASSIGN:
+            id = READAS(StringId);
+            state_setinterned(state, id, TOP_VALUE());
+            break;
+
+        case OPCODE_FETCH:
+            id = READAS(StringId);
+            result = state_getinterned(state, id);
+            PUSH_VALUE(result);
             break;
 
         case OPCODE_INSERT:
@@ -738,21 +752,6 @@ NomValue state_execute(
             }
             break;
 
-        case OPCODE_PUSH:
-            result = READAS(NomValue);
-            PUSH_VALUE(result);
-            break;
-
-        case OPCODE_POP:
-            (void)POP_VALUE();
-            break;
-
-        case OPCODE_DUP:
-            count = READAS(uint32_t);
-            result = PEEK_VALUE(count);
-            PUSH_VALUE(result);
-            break;
-
         case OPCODE_MAP:
             count = READAS(uint32_t);
             result = nom_newmap(state);
@@ -777,17 +776,17 @@ NomValue state_execute(
             PUSH_VALUE(result);
             break;
 
-        case OPCODE_CLASS_OF:
+        case OPCODE_CLASSOF:
             result = state_classof(state, POP_VALUE());
             PUSH_VALUE(result);
             break;
 
-        case OPCODE_GOTO:
+        case OPCODE_JUMP:
             ip = READAS(uint32_t);
             state->ip = ip;
             break;
 
-        case OPCODE_GOTO_IF_TRUE:
+        case OPCODE_JUMPIF:
             ip = READAS(uint32_t);
             l = POP_VALUE();
             if (nom_istrue(state, l))
@@ -796,9 +795,17 @@ NomValue state_execute(
             }
             break;
 
-        case OPCODE_INVOKE:
+        case OPCODE_CALL:
             count = READAS(uint32_t);
-            invoke(state, count, false);
+            call(state, count, false);
+            break;
+
+        case OPCODE_RET:
+            ret(state);
+            if (state->cp < startcp)
+            {
+                stop = true;
+            }
             break;
 
         case OPCODE_INVALID:
@@ -939,7 +946,7 @@ static void ret(
     PUSH_VALUE(result);
 }
 
-static void invoke(
+static void call(
     NomState*   state,
     uint8_t     argcount,
     bool        execute
@@ -948,7 +955,7 @@ static void invoke(
     assert(state);
 
     NomValue value = POP_VALUE();
-    if (nom_isinvokable(state, value))
+    if (nom_iscallable(state, value))
     {
         value = function_resolve(state, value);
 
@@ -990,7 +997,7 @@ static void invoke(
     }
     else
     {
-        nom_seterror(state, "Value cannot be invoked");
+        nom_seterror(state, "Value cannot be called");
     }
 }
 

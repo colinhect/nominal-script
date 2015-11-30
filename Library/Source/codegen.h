@@ -35,38 +35,54 @@
 // A byte code operation
 typedef enum
 {
-    OPCODE_LET_VAR,
-    OPCODE_SET_VAR,
-    OPCODE_GET_VAR,
+    // Stack operations
+    OPCODE_PUSH,
+    OPCODE_POP,
+    OPCODE_DUP,
+
+    // Arithmetic operations
     OPCODE_ADD,
     OPCODE_SUB,
     OPCODE_MUL,
     OPCODE_DIV,
     OPCODE_NEG,
+
+    // Comparison operations
     OPCODE_EQ,
     OPCODE_NE,
     OPCODE_GT,
     OPCODE_GTE,
     OPCODE_LT,
     OPCODE_LTE,
+
+    // Boolean operations
     OPCODE_AND,
     OPCODE_OR,
     OPCODE_NOT,
-    OPCODE_RET,
+
+    // Variable operations
+    OPCODE_DEFINE,
+    OPCODE_ASSIGN,
+    OPCODE_FETCH,
+
+    // Value operations
     OPCODE_INSERT,
     OPCODE_UPDATE,
     OPCODE_FIND,
     OPCODE_SET,
     OPCODE_GET,
-    OPCODE_PUSH,
-    OPCODE_POP,
-    OPCODE_DUP,
+
+    // Object operations
     OPCODE_MAP,
     OPCODE_FUNCTION,
-    OPCODE_CLASS_OF,
-    OPCODE_GOTO,
-    OPCODE_GOTO_IF_TRUE,
-    OPCODE_INVOKE,
+    OPCODE_CLASSOF,
+
+    // Flow operations
+    OPCODE_JUMP,
+    OPCODE_JUMPIF,
+    OPCODE_CALL,
+    OPCODE_RET,
+
     OPCODE_INVALID = 0xFF
 } OpCode;
 

@@ -88,7 +88,7 @@ uint32_t generatecode(
     }
     break;
     case NODE_IDENT:
-        OPCODE(OPCODE_GET_VAR);
+        OPCODE(OPCODE_FETCH);
         WRITEAS(StringId, node->data.ident.id);
         break;
     case NODE_UNARY:
@@ -99,7 +99,7 @@ uint32_t generatecode(
         index = generatecode(state, node->data.index.expr, bytecode, index);
         if (node->data.index.class)
         {
-            OPCODE(OPCODE_CLASS_OF);
+            OPCODE(OPCODE_CLASSOF);
         }
 
         index = generatecode(state, node->data.index.key, bytecode, index);
@@ -131,7 +131,7 @@ uint32_t generatecode(
             {
                 OPCODE(OPCODE_NOT);
             }
-            OPCODE(OPCODE_GOTO_IF_TRUE);
+            OPCODE(OPCODE_JUMPIF);
             uint32_t gotoIndex = index;
             WRITEAS(uint32_t, 0);
 
@@ -143,7 +143,7 @@ uint32_t generatecode(
             WRITEAS(uint32_t, endIndex);
             index = endIndex;
         }
-        else if (op == OP_LET || op == OP_SET)
+        else if (op == OP_DEFINE || op == OP_ASSIGN)
         {
             index = generatecode(state, rightexpr, bytecode, index);
             if (leftexpr->type == NODE_INDEX)
@@ -151,12 +151,12 @@ uint32_t generatecode(
                 index = generatecode(state, leftexpr->data.index.expr, bytecode, index);
                 if (leftexpr->data.index.class)
                 {
-                    OPCODE(OPCODE_CLASS_OF);
+                    OPCODE(OPCODE_CLASSOF);
                 }
 
                 index = generatecode(state, leftexpr->data.index.key, bytecode, index);
 
-                if (op == OP_SET)
+                if (op == OP_ASSIGN)
                 {
                     bool bracket = leftexpr->data.index.bracket;
                     if (bracket)
@@ -207,7 +207,7 @@ uint32_t generatecode(
     case NODE_FUNCTION:
     {
         // Go to the end of the function body
-        OPCODE(OPCODE_GOTO);
+        OPCODE(OPCODE_JUMP);
         uint32_t gotoIndex = index;
         WRITEAS(uint32_t, 0); // This will be known once the function code is generated
 
@@ -298,7 +298,7 @@ uint32_t generatecode(
             // Get the class of the object
             OPCODE(OPCODE_DUP);
             WRITEAS(uint32_t, argcount - 1);
-            OPCODE(OPCODE_CLASS_OF);
+            OPCODE(OPCODE_CLASSOF);
 
             index = generatecode(state, expr->data.index.key, bytecode, index);
             OPCODE(OPCODE_GET);
@@ -309,8 +309,8 @@ uint32_t generatecode(
             index = generatecode(state, node->data.invocation.expr, bytecode, index);
         }
 
-        // Invoke the function
-        OPCODE(OPCODE_INVOKE);
+        // Call the function
+        OPCODE(OPCODE_CALL);
 
         WRITEAS(uint32_t, argcount);
     }
@@ -322,8 +322,8 @@ uint32_t generatecode(
 
 const OpCode OP_OPCODE[] =
 {
-    OPCODE_LET_VAR,     // OP_LET
-    OPCODE_SET_VAR,     // OP_SET
+    OPCODE_DEFINE,  // OP_DEFINE
+    OPCODE_ASSIGN,  // OP_ASSIGN
     OPCODE_ADD,     // OP_ADD
     OPCODE_SUB,     // OP_SUB
     OPCODE_MUL,     // OP_MUL
@@ -339,14 +339,14 @@ const OpCode OP_OPCODE[] =
     OPCODE_OR,      // OP_OR
     OPCODE_NOT,     // OP_NOT
     OPCODE_RET,     // OP_RET
-    OPCODE_INVALID, // OP_ASSOC
+    OPCODE_INVALID  // OP_ASSOC
 };
 
 const char* const OPCODE_NAMES[] =
 {
-    "LET_VAR",       // OPCODE_LET_VAR
-    "SET_VAR",       // OPCODE_SET_VAR
-    "GET_VAR",       // OPCODE_GET_VAR
+    "PUSH",         // OPCODE_PUSH
+    "POP",          // OPCODE_POP
+    "DUP",          // OPCODE_DUP
     "ADD",          // OPCODE_ADD
     "SUB",          // OPCODE_SUB
     "MUL",          // OPCODE_MUL
@@ -361,19 +361,19 @@ const char* const OPCODE_NAMES[] =
     "AND",          // OPCODE_AND
     "OR",           // OPCODE_OR
     "NOT",          // OPCODE_NOT
-    "RET",          // OPCODE_RET
+    "DEFINE",       // OPCODE_DEFINE
+    "ASSIGN",       // OPCODE_ASSIGN
+    "FETCH",        // OPCODE_FETCH
     "INSERT",       // OPCODE_INSERT
     "UPDATE",       // OPCODE_UPDATE
     "FIND",         // OPCODE_FIND
     "SET",          // OPCODE_SET
     "GET",          // OPCODE_GET
-    "PUSH",         // OPCODE_PUSH
-    "POP",          // OPCODE_POP
-    "DUP",          // OPCODE_DUP
     "MAP",          // OPCODE_MAP
     "FUNCTION",     // OPCODE_FUNCTION
-    "CLASS_OF",     // OPCODE_CLASS_OF
-    "GOTO",         // OPCODE_GOTO
-    "GOTO_IF_TRUE", // OPCODE_GOTO_IF_TRUE
-    "INVOKE"        // OPCODE_INVOKE
+    "CLASSOF",      // OPCODE_CLASSOF
+    "JUMP",         // OPCODE_JUMP
+    "JUMPIF",       // OPCODE_JUMPIF
+    "CALL",         // OPCODE_CALL
+    "RET"           // OPCODE_RET
 };

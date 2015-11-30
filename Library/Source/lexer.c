@@ -162,7 +162,7 @@ bool lexer_next(
         {
             readnext(lexer);
             lexer->state.length = 2;
-            lexer->state.id = OP_LET;
+            lexer->state.id = OP_DEFINE;
             return true;
         }
         break;
@@ -175,7 +175,7 @@ bool lexer_next(
         }
         else
         {
-            lexer->state.id = OP_SET;
+            lexer->state.id = OP_ASSIGN;
         }
         return true;
     case '+':

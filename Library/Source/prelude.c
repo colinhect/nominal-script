@@ -93,13 +93,13 @@ static NomValue prelude_forvalues(
 
     if (nom_isiterable(state, values))
     {
-        if (nom_isinvokable(state, function))
+        if (nom_iscallable(state, function))
         {
             NomIterator iterator = { 0 };
             while (nom_next(state, values, &iterator))
             {
                 NomValue value = iterator.value;
-                nom_invoke(state, function, 1, &value);
+                nom_call(state, function, 1, &value);
             }
         }
         else
@@ -126,13 +126,13 @@ static NomValue prelude_forkeys(
 
     if (nom_isiterable(state, keys))
     {
-        if (nom_isinvokable(state, function))
+        if (nom_iscallable(state, function))
         {
             NomIterator iterator = { 0 };
             while (nom_next(state, keys, &iterator))
             {
                 NomValue key = iterator.key;
-                nom_invoke(state, function, 1, &key);
+                nom_call(state, function, 1, &key);
             }
         }
         else
@@ -159,9 +159,9 @@ static NomValue prelude_if(
     NomValue elsebody = nom_getarg(state, 2);
 
     NomValue conditionresult;
-    if (nom_isinvokable(state, condition))
+    if (nom_iscallable(state, condition))
     {
-        conditionresult = nom_invoke(state, condition, 0, NULL);
+        conditionresult = nom_call(state, condition, 0, NULL);
     }
     else
     {
@@ -173,9 +173,9 @@ static NomValue prelude_if(
     {
         if (nom_istrue(state, conditionresult))
         {
-            if (nom_isinvokable(state, thenbody))
+            if (nom_iscallable(state, thenbody))
             {
-                result = nom_invoke(state, thenbody, 0, NULL);
+                result = nom_call(state, thenbody, 0, NULL);
             }
             else if (nom_istrue(state, thenbody))
             {
@@ -184,9 +184,9 @@ static NomValue prelude_if(
         }
         else
         {
-            if (nom_isinvokable(state, elsebody))
+            if (nom_iscallable(state, elsebody))
             {
-                return nom_invoke(state, elsebody, 0, NULL);
+                return nom_call(state, elsebody, 0, NULL);
             }
             else if (nom_istrue(state, elsebody))
             {
@@ -208,19 +208,19 @@ static NomValue prelude_while(
     NomValue body = nom_getarg(state, 1);
 
     NomValue result = nom_nil();
-    if (nom_isinvokable(state, condition))
+    if (nom_iscallable(state, condition))
     {
-        if (nom_isinvokable(state, body))
+        if (nom_iscallable(state, body))
         {
             for (;;)
             {
-                NomValue value = nom_invoke(state, condition, 0, NULL);
+                NomValue value = nom_call(state, condition, 0, NULL);
                 if (nom_error(state) || !nom_istrue(state, value))
                 {
                     break;
                 }
 
-                result = nom_invoke(state, body, 0, NULL);
+                result = nom_call(state, body, 0, NULL);
             }
         }
         else

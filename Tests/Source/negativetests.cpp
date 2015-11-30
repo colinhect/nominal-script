@@ -38,5 +38,5 @@ extern "C"
         nom_freestate(state);\
     }
 
-TEST_FILE("Tests/Negative/InvokeUninvokable.ns", "Value cannot be invoked")
+TEST_FILE("Tests/Negative/CallUncallable.ns", "Value cannot be called")
 TEST_FILE("Tests/Negative/TooManyArguments.ns", "Too many arguments given (expected 3)")
