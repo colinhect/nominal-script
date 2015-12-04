@@ -1,4 +1,4 @@
-Nominal
+![alt text](https://github.com/colinhect/nominal/raw/master/Nominal.png "Nominal")
 =======
 
 Build status: [![Build status](https://travis-ci.org/colinhect/nominal.png)](https://travis-ci.org/colinhect/nominal)
