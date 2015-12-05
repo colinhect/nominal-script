@@ -30,7 +30,7 @@
 #include <nominal.h>
 
 #define STATE_MAX_STACK_SIZE        (128)
-#define STATE_MAX_CALLSTACK_SIZE    (32)
+#define STATE_MAX_CALLSTACK_SIZE    (128)
 #define STATE_MAX_BYTE_CODE         (8096)
 #define STATE_STRING_POOL_SIZE      (512)
 

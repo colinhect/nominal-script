@@ -2,11 +2,14 @@ include_directories(
     "${PROJECT_SOURCE_DIR}/Library/Include"
     )
 
-file(
-    GLOB
-    SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/Tests/Source/*.h"
-    "${PROJECT_SOURCE_DIR}/Tests/Source/*.cpp"
+set(SOURCE_FILES
+    "${PROJECT_SOURCE_DIR}/Tests/Source/functiontests.cpp"
+    "${PROJECT_SOURCE_DIR}/Tests/Source/main.cpp"
+    "${PROJECT_SOURCE_DIR}/Tests/Source/maptests.cpp"
+    "${PROJECT_SOURCE_DIR}/Tests/Source/negativetests.cpp"
+    "${PROJECT_SOURCE_DIR}/Tests/Source/numbertests.cpp"
+    "${PROJECT_SOURCE_DIR}/Tests/Source/positivetests.cpp"
+    "${PROJECT_SOURCE_DIR}/Tests/Source/statetests.cpp"
 )
 
 if(WIN32)
@@ -15,8 +18,8 @@ elseif(UNIX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-conversion-null")
 endif()
 
-add_executable(NominalTests ${SOURCE_FILES})    
-target_link_libraries(NominalTests Nominal)
+add_executable(NominalTests ${SOURCE_FILES})
+target_link_libraries(NominalTests NominalLibrary)
 
 set(REG_EXT "[^/]*([.]c|[.]h)$")
 

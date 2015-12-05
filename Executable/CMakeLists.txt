@@ -2,11 +2,8 @@ include_directories(
     "${PROJECT_SOURCE_DIR}/Library/Include"
     )
 
-file(
-    GLOB
-    SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/Interactive/Source/*.h"
-    "${PROJECT_SOURCE_DIR}/Interactive/Source/*.c"
+set(SOURCE_FILES
+    "${PROJECT_SOURCE_DIR}/Executable/Source/main.c"
 )
 
 if(WIN32)
@@ -15,15 +12,15 @@ elseif(UNIX)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -Wall -Wextra -Werror -pedantic -Wno-missing-braces -Wno-missing-field-initializers")
 endif()
 
-add_executable(NominalInteractive ${SOURCE_FILES})    
-target_link_libraries(NominalInteractive Nominal)
+add_executable(NominalExecutable ${SOURCE_FILES})
+target_link_libraries(NominalExecutable NominalLibrary)
 
 set(REG_EXT "[^/]*([.]c|[.]h)$")
 
 source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
-set_target_properties(NominalInteractive PROPERTIES
-    PROJECT_LABEL Interactive
+set_target_properties(NominalExecutable PROPERTIES
+    PROJECT_LABEL Executable
     OUTPUT_NAME nominal
     LINKER_LANGUAGE C
     )

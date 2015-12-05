@@ -2,13 +2,42 @@ include_directories(
     "${PROJECT_SOURCE_DIR}/Library/Include"
     )
 
-file(
-    GLOB
-    SOURCE_FILES
-    "${PROJECT_SOURCE_DIR}/Library/Include/*.h"
-    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/*.h"
-    "${PROJECT_SOURCE_DIR}/Library/Source/*.h"
-    "${PROJECT_SOURCE_DIR}/Library/Source/*.c"
+set(SOURCE_FILES
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/export.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/function.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/map.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/number.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/state.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/string.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal/value.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/codegen.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/codegen.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/function.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/function.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/hashtable.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/hashtable.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/heap.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/heap.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/lexer.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/lexer.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/map.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/map.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/node.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/node.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/number.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/parser.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/parser.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/prelude.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/prelude.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/state.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/state.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/string.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/string.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/stringpool.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/stringpool.h"
+    "${PROJECT_SOURCE_DIR}/Library/Source/value.c"
+    "${PROJECT_SOURCE_DIR}/Library/Source/value.h"
     )
 
 if(WIN32)
@@ -24,7 +53,7 @@ configure_file(
     "${PROJECT_SOURCE_DIR}/Library/Include/nominal/config.h"
     )
 
-add_library(Nominal SHARED ${SOURCE_FILES})
+add_library(NominalLibrary SHARED ${SOURCE_FILES})
 
 set(REG_INCLUDE ".*/Include/")
 set(REG_INCLUDE_NOMINAL ".*/Include/nominal/")
@@ -35,7 +64,7 @@ source_group("Include" REGULAR_EXPRESSION "${REG_INCLUDE}${REG_EXT}")
 source_group("Include\\nominal" REGULAR_EXPRESSION "${REG_INCLUDE_NOMINAL}${REG_EXT}")
 source_group("Source" REGULAR_EXPRESSION "${REG_SOURCE}${REG_EXT}")
 
-set_target_properties(Nominal PROPERTIES
+set_target_properties(NominalLibrary PROPERTIES
     PROJECT_LABEL Library
     OUTPUT_NAME nominal-${NOM_VERSION}
     LINKER_LANGUAGE C
