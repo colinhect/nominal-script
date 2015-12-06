@@ -31,6 +31,27 @@
 #include <assert.h>
 #include <stdio.h>
 
+static NomValue prelude_import(
+    NomState*   state
+)
+{
+    assert(state);
+
+    nom_seterror(state, "Not implemented");
+
+    NomValue file = nom_getarg(state, 0);
+    if (nom_isstring(state, file))
+    {
+    }
+    else
+    {
+        nom_seterror(state, "'file' is not a String");
+    }
+
+    NomValue result = nom_nil();
+    return result;
+}
+
 static NomValue prelude_print(
     NomState*   state
 )
@@ -371,6 +392,11 @@ void import_prelude(
 )
 {
     assert(state);
+
+    if (!nom_error(state))
+    {
+        nom_letvar(state, "import", nom_newfunction(state, prelude_import));
+    }
 
     if (!nom_error(state))
     {
