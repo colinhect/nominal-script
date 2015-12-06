@@ -68,6 +68,7 @@ struct NomState
         NomValue    string;
         NomValue    map;
         NomValue    function;
+        NomValue    module;
     } classes;
 
     // References to intrinsic strings

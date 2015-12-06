@@ -37,18 +37,27 @@ static NomValue prelude_import(
 {
     assert(state);
 
-    nom_seterror(state, "Not implemented");
+    NomValue result = nom_nil();
 
-    NomValue file = nom_getarg(state, 0);
-    if (nom_isstring(state, file))
+    NomValue module = nom_getarg(state, 0);
+    if (nom_isstring(state, module))
     {
+        // Defer up to the frame above this frame to ensure that the module
+        // is defined within the correct scope
+        uint32_t cp = state->cp;
+        state->cp -= 1;
+
+        const char* modulestring = nom_getstring(state, module);
+        result = nom_import(state, modulestring);
+
+        // Restore the frame
+        state->cp = cp;
     }
     else
     {
-        nom_seterror(state, "'file' is not a String");
+        nom_seterror(state, "'module' is not a String");
     }
 
-    NomValue result = nom_nil();
     return result;
 }
 

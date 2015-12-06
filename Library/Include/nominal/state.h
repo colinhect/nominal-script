@@ -47,6 +47,25 @@ NOM_EXPORT void nom_freestate(
 );
 
 ///
+/// \brief Imports a module.
+///
+/// \note If the module was already imported then no action is taken.
+///
+/// \warning This function could have encountered an error.  Check nom_error()
+///          directly after calling this function.
+///
+/// \param state
+///     The state.
+/// \param module
+///     The module to import.
+///
+/// \returns The imported module.
+NOM_EXPORT NomValue nom_import(
+    NomState*   state,
+    const char* module
+);
+
+///
 /// \brief Declares a variable in the current scope.
 ///
 /// \warning This function could have encountered an error.  Check nom_error()

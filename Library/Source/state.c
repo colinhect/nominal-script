@@ -133,6 +133,7 @@ NomState* nom_newstate(
     state->classes.string = state_newclass(state, "String");
     state->classes.map = state_newclass(state, "Map");
     state->classes.function = state_newclass(state, "Function");
+    state->classes.module = state_newclass(state, "Module");
 
     // Import the prelude library
     if (!nom_error(state))
@@ -162,6 +163,42 @@ void nom_freestate(
     }
 
     free(state);
+}
+
+NomValue nom_import(
+    NomState*   state,
+    const char* module
+)
+{
+    assert(state);
+    assert(module);
+
+    NomValue scope = nom_newmap(state);
+    nom_letvar(state, module, scope);
+    if (!nom_error(state))
+    {
+        map_setclass(state, scope, state->classes.module);
+
+        // Remember where the instruction pointer was before import
+        uint32_t ip = state->ip;
+
+        // Begin a new frame with the module scope
+        PUSH_FRAME(state->ip, 0);
+        TOP_FRAME()->scope = scope;
+
+        // Perform the import
+        char modulepath[256];
+        sprintf(modulepath, "%s.ns", module);
+        nom_dofile(state, modulepath);
+
+        // End the frame
+        POP_FRAME();
+
+        // Restore the instruction pointer
+        state->ip = ip;
+    }
+
+    return scope;
 }
 
 void nom_letvar(
@@ -244,6 +281,10 @@ NomValue nom_execute(
 {
     assert(state);
     assert(source);
+
+    // Ensure that no trailing bytecode is executed before the newly compiled
+    // bytecode
+    state->ip = state->end;
 
     // Compile and execute the code
     compile(state, source);
@@ -576,7 +617,8 @@ NomValue state_execute(
     uint32_t count, ip;
     bool stop = false;
 
-    while (state->ip < state->end && !state->errorflag && !stop)
+    uint32_t end = state->end;
+    while (state->ip < end && !state->errorflag && !stop)
     {
         op = (OpCode)state->bytecode[state->ip++];
         switch (op)
@@ -919,7 +961,7 @@ static void compile(
     }
     else
     {
-        state->end = generatecode(state, node, state->bytecode, state->ip);
+        state->end = generatecode(state, node, state->bytecode, state->end);
         node_free(node);
     }
 
