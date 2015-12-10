@@ -24,6 +24,7 @@
 #ifndef STATE_H
 #define STATE_H
 
+#include "hashtable.h"
 #include "heap.h"
 #include "stringpool.h"
 
@@ -33,6 +34,7 @@
 #define STATE_MAX_CALLSTACK_SIZE    (128)
 #define STATE_MAX_BYTE_CODE         (8096)
 #define STATE_STRING_POOL_SIZE      (512)
+#define STATE_MODULE_POOL_SIZE      (64)
 
 // A stack frame
 typedef struct StackFrame
@@ -40,6 +42,7 @@ typedef struct StackFrame
     uint32_t    ip;
     uint8_t     argcount;
     NomValue    scope;
+    NomValue    module;
 } StackFrame;
 
 // A Nominal state
@@ -57,6 +60,10 @@ struct NomState
 
     Heap*           heap;
     StringPool*     stringpool;
+    HashTable*      modulepool;
+
+    NomValue        mainmodule;
+    NomValue        currentmodule;
 
     // References to intrinsic classes
     struct
@@ -133,7 +140,7 @@ NomValue state_call(
 //
 // The call may have encountered an error; check nom_error() directly
 // after calling this function
-NomValue state_execute(
+void state_execute(
     NomState*   state
 );
 

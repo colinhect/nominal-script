@@ -1,0 +1,11 @@
+File := class: "File"
+
+File.new := [ path |
+  object: File {
+    path := path
+  }
+]
+
+File.open := [ path |
+  File: path
+]
