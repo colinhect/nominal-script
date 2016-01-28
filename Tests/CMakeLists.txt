@@ -33,10 +33,8 @@ set_target_properties(NominalTests PROPERTIES
 
 add_custom_command(TARGET NominalTests PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/Tests/Positive ${OUTPUT_DIR}/Tests/Positive
-    )
+    ${PROJECT_SOURCE_DIR}/Tests/Positive ${OUTPUT_DIR}/Tests/Positive)
 
 add_custom_command(TARGET NominalTests PRE_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/Tests/Negative ${OUTPUT_DIR}/Tests/Negative
-    )
+    ${PROJECT_SOURCE_DIR}/Tests/Negative ${OUTPUT_DIR}/Tests/Negative)

@@ -208,7 +208,7 @@ uint32_t generatecode(
     {
         // Go to the end of the function body
         OPCODE(OPCODE_JUMP);
-        uint32_t gotoindex = index;
+        uint32_t gotoIndex = index;
         WRITEAS(uint32_t, 0); // This will be known once the function code is generated
 
         // Remember the instruction pointer where the function begins
@@ -219,17 +219,17 @@ uint32_t generatecode(
         OPCODE(OPCODE_RET);
 
         // Remember the instruction pointer where the function ends
-        uint32_t endindex = index;
+        uint32_t endIndex = index;
 
         // Re-write the goto instruction pointer
-        index = gotoindex;
-        WRITEAS(uint32_t, endindex);
-        index = endindex;
+        index = gotoIndex;
+        WRITEAS(uint32_t, endIndex);
+        index = endIndex;
 
         // Create the function
         OPCODE(OPCODE_FUNCTION);
         WRITEAS(uint32_t, ip);
-        uint32_t paramcountindex = index;
+        uint32_t paramCountIndex = index;
         WRITEAS(uint32_t, 0); // This will be known once the parameters are traversed
 
         uint32_t paramcount = 0;
@@ -238,10 +238,10 @@ uint32_t generatecode(
         Node* param = node->data.function.params;
         while (param)
         {
-            Node* paramexpr = param->data.sequence.expr;
-            if (paramexpr)
+            Node* paramExpr = param->data.sequence.expr;
+            if (paramExpr)
             {
-                WRITEAS(StringId, paramexpr->data.string.id);
+                WRITEAS(StringId, paramExpr->data.string.id);
                 param = param->data.sequence.next;
                 ++paramcount;
             }
@@ -252,12 +252,12 @@ uint32_t generatecode(
         }
 
         // Remember the instruction pointer where the parameters end
-        endindex = index;
+        endIndex = index;
 
         // Re-write the parameter count
-        index = paramcountindex;
+        index = paramCountIndex;
         WRITEAS(uint32_t, paramcount);
-        index = endindex;
+        index = endIndex;
     }
     break;
     case NODE_INVOCATION:
@@ -279,11 +279,11 @@ uint32_t generatecode(
         Node* arg = node->data.invocation.args;
         while (arg)
         {
-            Node* argexpr = arg->data.sequence.expr;
-            if (argexpr)
+            Node* argExpr = arg->data.sequence.expr;
+            if (argExpr)
             {
                 // Generate the code to push the argument on the stack
-                index = generatecode(state, argexpr, bytecode, index);
+                index = generatecode(state, argExpr, bytecode, index);
                 arg = arg->data.sequence.next;
                 ++argcount;
             }

@@ -38,14 +38,12 @@ typedef struct FunctionData
     NomFunction nativefunction;
     StringId    params[MAX_FUNCTION_PARAMS];
     size_t      paramcount;
-    NomValue    module;
 } FunctionData;
 
 // Creates a new function
 NomValue function_new(
     NomState*   state,
-    uint32_t    ip,
-    NomValue    module
+    uint32_t    ip
 );
 
 // Adds a parameter to a function
@@ -83,12 +81,6 @@ NomFunction function_getnative(
 
 // Gets the instruction pointer of a function
 uint32_t function_getip(
-    NomState*   state,
-    NomValue    function
-);
-
-// Gets the module that the function was defined in
-NomValue function_getmodule(
     NomState*   state,
     NomValue    function
 );

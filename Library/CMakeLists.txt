@@ -69,8 +69,3 @@ set_target_properties(NominalLibrary PROPERTIES
     OUTPUT_NAME nominal-${NOM_VERSION}
     LINKER_LANGUAGE C
     )
-
-add_custom_command(TARGET NominalLibrary PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/Modules ${OUTPUT_DIR}/Modules
-    )

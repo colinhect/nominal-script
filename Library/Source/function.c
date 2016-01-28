@@ -68,8 +68,7 @@ NomValue nom_newfunction(
 
 NomValue function_new(
     NomState*   state,
-    uint32_t    ip,
-    NomValue    module
+    uint32_t    ip
 )
 {
     assert(state);
@@ -79,7 +78,6 @@ NomValue function_new(
     data->ip = ip;
     data->nativefunction = NULL;
     data->paramcount = 0;
-    data->module = module;
 
     return value;
 }
@@ -198,28 +196,6 @@ uint32_t function_getip(
     }
 
     return ip;
-}
-
-NomValue function_getmodule(
-    NomState*   state,
-    NomValue    function
-)
-{
-    assert(state);
-
-    NomValue module = nom_nil();
-
-    HeapObject* object = heap_getobject(state->heap, function);
-    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
-    {
-        FunctionData* data = (FunctionData*)object->data;
-        if (data)
-        {
-            module = data->module;
-        }
-    }
-
-    return module;
 }
 
 NomValue function_resolve(

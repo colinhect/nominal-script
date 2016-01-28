@@ -41,12 +41,14 @@
 // Pops a stack frame from the callstack and returns the return instruction
 // pointer
 #define POP_FRAME()\
-    --state->cp
+    --state->cp;
 
 // Pushes a stack frame on the callstack given the return instruction pointer
 // and the scope
-#define PUSH_FRAME()\
-    (&state->callstack[state->cp++])
+#define PUSH_FRAME(i, a)\
+    state->callstack[state->cp].ip = i;\
+    state->callstack[state->cp].argcount = a;\
+    state->callstack[state->cp++].scope = nom_nil();
 
 // Returns the top stack frame on the callstack
 #define TOP_FRAME()\
@@ -101,13 +103,9 @@ NomState* nom_newstate(
 
     memset(state, 0, sizeof(NomState));
 
+    state->cp = 1;
     state->heap = heap_new();
     state->stringpool = stringpool_new(STATE_STRING_POOL_SIZE);
-    state->modulepool = hashtable_new(hashidentity, compareidentity, 0, STATE_MODULE_POOL_SIZE);
-
-    // Create the main module
-    state->mainmodule = nom_newmap(state);
-    state->currentmodule = state->mainmodule;
 
     // Define intrinsic global variables
     nom_letvar(state, "nil", nom_nil());
@@ -152,12 +150,6 @@ void nom_freestate(
 {
     assert(state);
 
-    // Free the module pool
-    if (state->modulepool)
-    {
-        hashtable_free(state->modulepool, NULL, NULL);
-    }
-
     // Free the string pool
     if (state->stringpool)
     {
@@ -181,41 +173,32 @@ NomValue nom_import(
     assert(state);
     assert(module);
 
-    StringId id = stringpool_getid(state->stringpool, module);
-
-    NomValue importedmodule = nom_nil();
-    if (!hashtable_find(state->modulepool, (UserData)id, (UserData*)&importedmodule.data))
+    NomValue scope = nom_newmap(state);
+    nom_letvar(state, module, scope);
+    if (!nom_error(state))
     {
-        importedmodule = nom_newmap(state);
-
-        NomValue lastmodule = state->currentmodule;
-        state->currentmodule = importedmodule;
-
-        if (state->cp > 0)
-        {
-            StackFrame* frame = TOP_FRAME();
-            frame->scope = importedmodule;
-            frame->module = importedmodule;
-        }
+        map_setclass(state, scope, state->classes.module);
 
         // Remember where the instruction pointer was before import
         uint32_t ip = state->ip;
 
+        // Begin a new frame with the module scope
+        PUSH_FRAME(state->ip, 0);
+        TOP_FRAME()->scope = scope;
+
         // Perform the import
-        nom_dofile(state, module);
+        char modulepath[256];
+        sprintf(modulepath, "%s.ns", module);
+        nom_dofile(state, modulepath);
+
+        // End the frame
+        POP_FRAME();
 
         // Restore the instruction pointer
         state->ip = ip;
-
-        state->currentmodule = lastmodule;
-
-        if (!nom_error(state))
-        {
-            hashtable_insert(state->modulepool, (UserData)id, (UserData)importedmodule.raw);
-        }
     }
 
-    return importedmodule;
+    return scope;
 }
 
 void nom_letvar(
@@ -262,7 +245,6 @@ size_t nom_getargcount(
 )
 {
     assert(state);
-    assert(state->cp > 0);
     StackFrame* frame = TOP_FRAME();
     return frame->argcount;
 }
@@ -304,19 +286,9 @@ NomValue nom_execute(
     // bytecode
     state->ip = state->end;
 
-    NomValue result = nom_nil();
-
     // Compile and execute the code
     compile(state, source);
-    state_execute(state);
-    if (!state->errorflag && state->sp > 0)
-    {
-        result = POP_VALUE();
-    }
-    else
-    {
-        state->sp = 0;
-    }
+    NomValue result = state_execute(state);
 
     // Set the instruction pointer to the end of the bytecode
     state->ip = state->end;
@@ -355,16 +327,7 @@ void nom_dofile(
 
         if (!nom_error(state))
         {
-            // Ensure that no trailing bytecode is executed before the newly
-            // compiled bytecode
-            state->ip = state->end;
-
-            // Compile and execute the code
-            compile(state, source);
-            state_execute(state);
-
-            // Set the instruction pointer to the end of the bytecode
-            state->ip = state->end;
+            nom_execute(state, source);
         }
 
         free(source);
@@ -521,24 +484,8 @@ int nom_collectgarbage(
     // Mark all scopes on the callstack
     for (uint32_t i = 0; i < state->cp; ++i)
     {
-        StackFrame* frame = &state->callstack[i];
-        value_visit(state, frame->scope, mark);
+        value_visit(state, state->callstack[i].scope, mark);
     }
-
-    // Mark all imported modules
-    for (uint32_t i = 0; i < state->cp; ++i)
-    {
-        HashTableIterator iterator = { 0 };
-        while (hashtable_next(state->modulepool, &iterator))
-        {
-            NomValue module = { iterator.value };
-            value_visit(state, module, mark);
-        }
-    }
-
-    // Mark main/current module
-    value_visit(state, state->mainmodule, mark);
-    value_visit(state, state->currentmodule, mark);
 
     // Sweep
     unsigned int count = heap_sweep(state->heap);
@@ -554,25 +501,18 @@ void state_letinterned(
 {
     assert(state);
 
-    NomValue scope = state->currentmodule;
+    StackFrame* frame = TOP_FRAME();
     NomValue string = string_newinterned(id);
 
-    // If in the context of a function call
-    if (state->cp > 0)
+    // Create a new map for the scope if this is the first variable declared
+    // in this scope
+    if (!nom_ismap(state, frame->scope))
     {
-        StackFrame* frame = TOP_FRAME();
-
-        // Create a new map for the scope if this is the first variable declared
-        // in this scope
-        if (!nom_ismap(state, frame->scope))
-        {
-            frame->scope = nom_newmap(state);
-        }
-
-        scope = frame->scope;
+        frame->scope = nom_newmap(state);
     }
 
-    // Attempt to define the variable at the current scope
+    // Attempt to define the variable at the top-most scope
+    NomValue scope = frame->scope;
     if (!map_insert(state, scope, string, value))
     {
         nom_seterror(state, "Variable '%s' already exists", stringpool_find(state->stringpool, id));
@@ -594,36 +534,18 @@ void state_setinterned(
     // For each stack frame
     for (int i = state->cp - 1; i >= 0; --i)
     {
-        StackFrame* frame = &state->callstack[i];
-
-        // Try to set the variable in the current scope
-        if (map_update(state, frame->scope, string, value))
+        // Try to set the variable
+        NomValue scope = state->callstack[i].scope;
+        if (map_update(state, scope, string, value))
         {
             success = true;
-            break;
-        }
-
-        // Try to set the variable in the associated module
-        else if (nom_ismap(state, frame->module))
-        {
-            if (map_update(state, frame->module, string, value))
-            {
-                success = true;
-            }
             break;
         }
     }
 
     if (!success)
     {
-        // Try to set the variable in the current module
-        if (!map_update(state, state->currentmodule, string, value))
-        {
-            if (!map_update(state, state->mainmodule, string, value))
-            {
-                nom_seterror(state, "No variable '%s'", stringpool_find(state->stringpool, id));
-            }
-        }
+        nom_seterror(state, "No variable '%s'", stringpool_find(state->stringpool, id));
     }
 }
 
@@ -642,36 +564,18 @@ NomValue state_getinterned(
     // For each stack frame
     for (int i = state->cp - 1; i >= 0; --i)
     {
-        StackFrame* frame = &state->callstack[i];
-
-        // Try to set the variable in the current scope
-        if (map_find(state, frame->scope, string, &result))
+        // Try to get the variable value
+        NomValue scope = state->callstack[i].scope;
+        if (map_find(state, scope, string, &result))
         {
             success = true;
-            break;
-        }
-
-        // Try to set the variable in the associated module
-        else if (nom_ismap(state, frame->module))
-        {
-            if (map_find(state, frame->module, string, &result))
-            {
-                success = true;
-            }
             break;
         }
     }
 
     if (!success)
     {
-        // Try to get the variable in the current module
-        if (!map_find(state, state->currentmodule, string, &result))
-        {
-            if (!map_find(state, state->mainmodule, string, &result))
-            {
-                nom_seterror(state, "No variable '%s' in scope", stringpool_find(state->stringpool, id));
-            }
-        }
+        nom_seterror(state, "No variable '%s' in scope", stringpool_find(state->stringpool, id));
     }
 
     return result;
@@ -699,7 +603,7 @@ NomValue state_call(
     return result;
 }
 
-void state_execute(
+NomValue state_execute(
     NomState*   state
 )
 {
@@ -905,7 +809,7 @@ void state_execute(
         case OPCODE_FUNCTION:
             ip = READAS(uint32_t);
             count = READAS(uint32_t);
-            result = function_new(state, ip, state->cp > 0 ? state->currentmodule : nom_nil());
+            result = function_new(state, ip);
             for (uint32_t i = 0; i < count; ++i)
             {
                 StringId parameter = READAS(StringId);
@@ -951,6 +855,18 @@ void state_execute(
             break;
         }
     }
+
+    result = nom_nil();
+    if (!state->errorflag && state->sp > 0)
+    {
+        result = POP_VALUE();
+    }
+    else
+    {
+        state->sp = 0;
+    }
+
+    return result;
 }
 
 NomValue state_newclass(
@@ -1057,7 +973,6 @@ static void ret(
 )
 {
     assert(state);
-    assert(state->cp > 0);
 
     StackFrame* frame = TOP_FRAME();
     NomValue result = POP_VALUE();
@@ -1086,11 +1001,7 @@ static void call(
     {
         value = function_resolve(state, value);
 
-        StackFrame* frame = PUSH_FRAME();
-        frame->ip = state->ip;
-        frame->argcount = argcount;
-        frame->scope = nom_nil();
-        frame->module = function_getmodule(state, value);
+        PUSH_FRAME(state->ip, argcount);
 
         if (function_isnative(state, value))
         {
@@ -1116,7 +1027,8 @@ static void call(
 
                 if (execute)
                 {
-                    state_execute(state);
+                    NomValue value = state_execute(state);
+                    PUSH_VALUE(value);
                 }
             }
             else
