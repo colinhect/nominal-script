@@ -1,5 +1,5 @@
 Build/*
-Library/Include/Nominal/Config.h
+Library/Include/nominal/config.h
 
 *.sublime-workspace
 *.pyc
