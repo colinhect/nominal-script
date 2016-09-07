@@ -4,6 +4,7 @@ include_directories(
 
 set(SOURCE_FILES
     "${PROJECT_SOURCE_DIR}/Library/Include/nominal.h"
+    "${PROJECT_SOURCE_DIR}/Library/Include/nominal.hpp"
     "${PROJECT_SOURCE_DIR}/Library/Include/nominal/export.h"
     "${PROJECT_SOURCE_DIR}/Library/Include/nominal/function.h"
     "${PROJECT_SOURCE_DIR}/Library/Include/nominal/map.h"
@@ -58,7 +59,7 @@ add_library(NominalLibrary SHARED ${SOURCE_FILES})
 set(REG_INCLUDE ".*/Include/")
 set(REG_INCLUDE_NOMINAL ".*/Include/nominal/")
 set(REG_SOURCE ".*/Source/")
-set(REG_EXT "[^/]*([.]c|[.]h)$")
+set(REG_EXT "[^/]*([.]c|[.]h|[.]hpp)$")
 
 source_group("Include" REGULAR_EXPRESSION "${REG_INCLUDE}${REG_EXT}")
 source_group("Include\\nominal" REGULAR_EXPRESSION "${REG_INCLUDE_NOMINAL}${REG_EXT}")

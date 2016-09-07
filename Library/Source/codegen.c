@@ -132,16 +132,16 @@ uint32_t generatecode(
                 OPCODE(OPCODE_NOT);
             }
             OPCODE(OPCODE_JUMPIF);
-            uint32_t gotoIndex = index;
+            uint32_t gotoindex = index;
             WRITEAS(uint32_t, 0);
 
             index = generatecode(state, rightexpr, bytecode, index);
             OPCODE(OP_OPCODE[op]);
 
-            uint32_t endIndex = index;
-            index = gotoIndex;
-            WRITEAS(uint32_t, endIndex);
-            index = endIndex;
+            uint32_t endindex = index;
+            index = gotoindex;
+            WRITEAS(uint32_t, endindex);
+            index = endindex;
         }
         else if (op == OP_DEFINE || op == OP_ASSIGN)
         {
@@ -208,7 +208,7 @@ uint32_t generatecode(
     {
         // Go to the end of the function body
         OPCODE(OPCODE_JUMP);
-        uint32_t gotoIndex = index;
+        uint32_t gotoindex = index;
         WRITEAS(uint32_t, 0); // This will be known once the function code is generated
 
         // Remember the instruction pointer where the function begins
@@ -222,14 +222,14 @@ uint32_t generatecode(
         uint32_t endIndex = index;
 
         // Re-write the goto instruction pointer
-        index = gotoIndex;
+        index = gotoindex;
         WRITEAS(uint32_t, endIndex);
         index = endIndex;
 
         // Create the function
         OPCODE(OPCODE_FUNCTION);
         WRITEAS(uint32_t, ip);
-        uint32_t paramCountIndex = index;
+        uint32_t paramcountindex = index;
         WRITEAS(uint32_t, 0); // This will be known once the parameters are traversed
 
         uint32_t paramcount = 0;
@@ -238,10 +238,10 @@ uint32_t generatecode(
         Node* param = node->data.function.params;
         while (param)
         {
-            Node* paramExpr = param->data.sequence.expr;
-            if (paramExpr)
+            Node* paramexpr = param->data.sequence.expr;
+            if (paramexpr)
             {
-                WRITEAS(StringId, paramExpr->data.string.id);
+                WRITEAS(StringId, paramexpr->data.string.id);
                 param = param->data.sequence.next;
                 ++paramcount;
             }
@@ -255,7 +255,7 @@ uint32_t generatecode(
         endIndex = index;
 
         // Re-write the parameter count
-        index = paramCountIndex;
+        index = paramcountindex;
         WRITEAS(uint32_t, paramcount);
         index = endIndex;
     }
