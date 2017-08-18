@@ -1,8 +1,0 @@
-assertEqual: (if: true [ "Yes" ] [ "No" ]) "Yes"
-assertEqual: (if: false [ "Yes" ] [ "No" ]) "No"
-assertEqual: (if: true [ "Yes" ]) "Yes"
-assertEqual: (if: false [ "Yes" ]) nil
-assertEqual: (if: [ true ] [ "Yes" ] [ "No" ]) "Yes"
-assertEqual: (if: [ false ] [ "Yes" ] [ "No" ]) "No"
-
-completed := true
