@@ -219,12 +219,12 @@ uint32_t generatecode(
         OPCODE(OPCODE_RET);
 
         // Remember the instruction pointer where the function ends
-        uint32_t endIndex = index;
+        uint32_t endindex = index;
 
         // Re-write the goto instruction pointer
         index = gotoindex;
-        WRITEAS(uint32_t, endIndex);
-        index = endIndex;
+        WRITEAS(uint32_t, endindex);
+        index = endindex;
 
         // Create the function
         OPCODE(OPCODE_FUNCTION);
@@ -252,12 +252,12 @@ uint32_t generatecode(
         }
 
         // Remember the instruction pointer where the parameters end
-        endIndex = index;
+        endindex = index;
 
         // Re-write the parameter count
         index = paramcountindex;
         WRITEAS(uint32_t, paramcount);
-        index = endIndex;
+        index = endindex;
     }
     break;
     case NODE_INVOCATION:
