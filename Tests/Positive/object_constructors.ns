@@ -13,17 +13,17 @@ Test.new := [ a b |
 x := Test.new: 1 2
 
 -- Verify the class of the object
-assertEqual: (classOf: x) Test
+assert_equal: (class_of: x) Test
 
 -- Verify the members of the object
-assertEqual: x.a 1
-assertEqual: x.b 2
+assert_equal: x.a 1
+assert_equal: x.b 2
 
 -- Construct and object using the constructor implicitly
 y := Test: 3 4
 
 -- Verify the members of the object
-assertEqual: y.a 3
-assertEqual: y.b 4
+assert_equal: y.a 3
+assert_equal: y.b 4
 
 completed := true

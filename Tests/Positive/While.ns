@@ -1,7 +1,7 @@
 i := 0
 x := while: [ i < 3 ] [ i = i + 1 ]
 
-assertEqual: x 4
-assertEqual: i 4
+assert_equal: x 4
+assert_equal: i 4
 
 completed := true

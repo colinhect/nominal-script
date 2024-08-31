@@ -265,9 +265,9 @@ bool lexer_next(
     lexer->state = state;
 
     // Identifier
-    if (isalpha(c))
+    if (isalpha(c) || c == '_')
     {
-        while (isalnum(peaknext(lexer)))
+        while (isalnum(peaknext(lexer)) || peaknext(lexer) == '_')
         {
             readnext(lexer);
             ++lexer->state.length;

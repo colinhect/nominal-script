@@ -15,14 +15,14 @@ ApplyFirst := class: "ApplyFirst" {
     a[0] / b[0]
   ]
 }
-assertEqual: (classOf: ApplyFirst) Class
+assert_equal: (class_of: ApplyFirst) Class
 
 xs := object: ApplyFirst { 2, 3, 4 }
 ys := { 5, 6, 7 }
 
-assertEqual: (xs + ys) (xs[0] + ys[0])
-assertEqual: (xs - ys) (xs[0] - ys[0])
-assertEqual: (xs * ys) (xs[0] * ys[0])
-assertEqual: (xs / ys) (xs[0] / ys[0])
+assert_equal: (xs + ys) (xs[0] + ys[0])
+assert_equal: (xs - ys) (xs[0] - ys[0])
+assert_equal: (xs * ys) (xs[0] * ys[0])
+assert_equal: (xs / ys) (xs[0] / ys[0])
 
 completed := true

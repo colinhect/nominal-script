@@ -414,7 +414,7 @@ void import_prelude(
 
     if (!nom_error(state))
     {
-        nom_letvar(state, "toString", nom_newfunction(state, prelude_tostring));
+        nom_letvar(state, "to_string", nom_newfunction(state, prelude_tostring));
     }
 
     if (!nom_error(state))
@@ -429,22 +429,22 @@ void import_prelude(
 
     if (!nom_error(state))
     {
-        nom_letvar(state, "forValues", nom_newfunction(state, prelude_forvalues));
+        nom_letvar(state, "for_values", nom_newfunction(state, prelude_forvalues));
     }
 
     if (!nom_error(state))
     {
-        nom_letvar(state, "forKeys", nom_newfunction(state, prelude_forkeys));
+        nom_letvar(state, "for_keys", nom_newfunction(state, prelude_forkeys));
     }
 
     if (!nom_error(state))
     {
-        nom_letvar(state, "assertEqual", nom_newfunction(state, prelude_assertequal));
+        nom_letvar(state, "assert_equal", nom_newfunction(state, prelude_assertequal));
     }
 
     if (!nom_error(state))
     {
-        nom_letvar(state, "collectGarbage", nom_newfunction(state, prelude_collectgarbage));
+        nom_letvar(state, "collect_garbage", nom_newfunction(state, prelude_collectgarbage));
     }
 
     if (!nom_error(state))
@@ -459,7 +459,7 @@ void import_prelude(
 
     if (!nom_error(state))
     {
-        nom_letvar(state, "classOf", nom_newfunction(state, prelude_classof));
+        nom_letvar(state, "class_of", nom_newfunction(state, prelude_classof));
     }
 
     if (!nom_error(state))

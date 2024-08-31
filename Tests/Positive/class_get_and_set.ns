@@ -6,13 +6,13 @@ Test.new := [ name |
 ]
 
 a := Test: "A"
-assertEqual: a.name "A"
-assertEqual: a..name "Test"
+assert_equal: a.name "A"
+assert_equal: a..name "Test"
 
 a..name = "Something"
-assertEqual: a..name "Something"
+assert_equal: a..name "Something"
 
 a..what := "What"
-assertEqual: a..what "What"
+assert_equal: a..what "What"
 
 completed := true

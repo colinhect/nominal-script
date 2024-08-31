@@ -8,8 +8,8 @@ fib := [ n |
 
 expected := { 0, 1, 2, 3, 5, 8, 13, 21 }
 
-forKeys: expected [ n |
-  assertEqual: (fib: n) expected[n]
+for_keys: expected [ n |
+  assert_equal: (fib: n) expected[n]
 ]
 
 completed := true

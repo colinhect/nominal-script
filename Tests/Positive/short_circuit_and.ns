@@ -1,0 +1,17 @@
+x := false
+y := false && (x = true)
+
+assert_equal: x false
+assert_equal: y false
+
+y = true && (x = true)
+
+assert_equal: x true
+assert_equal: y true
+
+y = true && (x = false)
+
+assert_equal: x false
+assert_equal: y false
+
+completed := true

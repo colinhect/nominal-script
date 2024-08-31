@@ -3,14 +3,14 @@ f := [
   b := a:
   b
 ]
-assertEqual: (f:) 2
+assert_equal: (f:) 2
 
 f = [
   f := [ 2 ]
   g := [ f: + 3 ]
   g:
 ]
-assertEqual: (f:) 5
+assert_equal: (f:) 5
 
 f = [
   c := {
@@ -19,7 +19,7 @@ f = [
   }
   c.f: + c.g:
 ]
-assertEqual: (f:) 42
+assert_equal: (f:) 42
 
 f = [
   e := {
@@ -29,7 +29,7 @@ f = [
   }
   e.f::
 ]
-assertEqual: (f:) 23
+assert_equal: (f:) 23
 
 f = [
   x := 1
@@ -40,15 +40,15 @@ f = [
   ]:
   w + x
 ]
-assertEqual: (f:) 8
+assert_equal: (f:) 8
 
-assertEqual: ([ 1 ]:) 1
-assertEqual: (([ 1 ]):) 1
-assertEqual: ([ 1, 2, 3 ]:) 3
-assertEqual: ([ 1, 2, 3, { 4, 5 } ]:[1]) 5
-assertEqual: (([ 1, 2, 3, { 4, 5 } ]:)[1]) 5
-assertEqual: (-[[[[42]]]]::::) -42
-assertEqual: ([ { 0, 1, [ 7 + 3 ] } ]:[2]:) 10
-assertEqual: ([ { zero := 0, one := 1, two := 2 } ]:.one) 1
+assert_equal: ([ 1 ]:) 1
+assert_equal: (([ 1 ]):) 1
+assert_equal: ([ 1, 2, 3 ]:) 3
+assert_equal: ([ 1, 2, 3, { 4, 5 } ]:[1]) 5
+assert_equal: (([ 1, 2, 3, { 4, 5 } ]:)[1]) 5
+assert_equal: (-[[[[42]]]]::::) -42
+assert_equal: ([ { 0, 1, [ 7 + 3 ] } ]:[2]:) 10
+assert_equal: ([ { zero := 0, one := 1, two := 2 } ]:.one) 1
 
 completed := true

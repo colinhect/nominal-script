@@ -1,5 +1,5 @@
 Cat := class: "Cat"
-assertEqual: Cat.name "Cat"
+assert_equal: Cat.name "Cat"
 
 Cat.new := [ name |
   object: Cat {
@@ -16,25 +16,25 @@ Cat.meow := [ self expression |
 
 -- Invoke the constructor explicitly
 janks := Cat.new: "Janks"
-assertEqual: (classOf: janks) Cat
-assertEqual: janks.name "Janks"
+assert_equal: (class_of: janks) Cat
+assert_equal: janks.name "Janks"
 
 -- Invoke the constructor implicitly
 svedka := Cat: "Svedka"
-assertEqual: (classOf: svedka) Cat
-assertEqual: svedka.name "Svedka"
+assert_equal: (class_of: svedka) Cat
+assert_equal: svedka.name "Svedka"
 
-assertEqual: Cat.lastMeow.cat nil
-assertEqual: Cat.lastMeow.expression nil
+assert_equal: Cat.lastMeow.cat nil
+assert_equal: Cat.lastMeow.expression nil
 
 -- Explicit class method invocation
-(classOf: janks).meow: janks "Hiss"
-assertEqual: Cat.lastMeow.cat janks
-assertEqual: Cat.lastMeow.expression "Hiss"
+(class_of: janks).meow: janks "Hiss"
+assert_equal: Cat.lastMeow.cat janks
+assert_equal: Cat.lastMeow.expression "Hiss"
 
 -- Implicit class method invocation
 svedka..meow: "P'meuw"
-assertEqual: Cat.lastMeow.cat svedka
-assertEqual: Cat.lastMeow.expression "P'meuw"
+assert_equal: Cat.lastMeow.cat svedka
+assert_equal: Cat.lastMeow.expression "P'meuw"
 
 completed := true

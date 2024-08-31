@@ -85,12 +85,12 @@ TEST_CASE("Creating and invoking native functions", "[Function]")
     nom_freestate(state);
 }
 
-TEST_CASE("Invoking the 'assertEqual' function", "[Function]")
+TEST_CASE("Invoking the 'assert_equal' function", "[Function]")
 {
     NomState* state = nom_newstate();
 
-    TEST_EXPR("assertEqual: \"A\" \"A\"", nom_nil());
-    TEST_EXPR_ERROR("assertEqual: \"A\" \"B\"");
+    TEST_EXPR("assert_equal: \"A\" \"A\"", nom_nil());
+    TEST_EXPR_ERROR("assert_equal: \"A\" \"B\"");
 
     nom_freestate(state);
 }
