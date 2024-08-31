@@ -296,6 +296,17 @@ NomValue nom_execute(
     return result;
 }
 
+#ifdef _WIN32
+#include <direct.h>
+// MSDN recommends against using getcwd & chdir names
+#define cwd _getcwd
+#define cd _chdir
+#else
+#include "unistd.h"
+#define cwd getcwd
+#define cd chdir
+#endif
+
 void nom_dofile(
     NomState*   state,
     const char* path
@@ -313,10 +324,10 @@ void nom_dofile(
 
         char* source = malloc(length + 1);
 
-        size_t bytesRead = fread(source, sizeof(char), length, fp);
-        if (bytesRead > 0)
+        size_t bytesread = fread(source, sizeof(char), length, fp);
+        if (bytesread > 0)
         {
-            source[bytesRead] = '\0';
+            source[bytesread] = '\0';
         }
         else
         {
@@ -327,7 +338,28 @@ void nom_dofile(
 
         if (!nom_error(state))
         {
+            char parent[256] = { 0 };
+            char previous[256] = { 0 };
+            cwd(previous, sizeof(previous));
+
+            bool changed_directories = false;
+            char* last = strrchr(path, '/');
+            if (last != NULL)
+            {
+                size_t parent_len = strlen(path) - strlen(last + 1);
+                strncpy(parent, path, parent_len);
+                if (cd(parent) == 0)
+                {
+                    changed_directories = true;
+                }
+            }
+
             nom_execute(state, source);
+
+            if (changed_directories)
+            {
+                cd(previous);
+            }
         }
 
         free(source);

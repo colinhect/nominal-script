@@ -13,12 +13,12 @@ before_install:
  - sudo apt-get install -y valgrind
 
 install:
- - cmake -H./ -BBuild -DCMAKE_BUILD_TYPE=$BUILD_TYPE
- - cd Build
+ - cmake -H./ -Bbuild -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+ - cd build
  - make
  - cd ..
 
 script:
- - cd Build/Output
+ - cd build/output
  - ./nominaltests
  - valgrind ./nominaltests

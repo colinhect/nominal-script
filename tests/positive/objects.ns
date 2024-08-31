@@ -7,11 +7,11 @@ Cat.new := [ name |
   }
 ]
 
-Cat.lastMeow := { cat := nil, expression := nil }
+Cat.last_meow := { cat := nil, expression := nil }
 
 Cat.meow := [ self expression |
-  Cat.lastMeow.cat = self
-  Cat.lastMeow.expression = expression
+  Cat.last_meow.cat = self
+  Cat.last_meow.expression = expression
 ]
 
 -- Invoke the constructor explicitly
@@ -24,17 +24,17 @@ svedka := Cat: "Svedka"
 assert_equal: (class_of: svedka) Cat
 assert_equal: svedka.name "Svedka"
 
-assert_equal: Cat.lastMeow.cat nil
-assert_equal: Cat.lastMeow.expression nil
+assert_equal: Cat.last_meow.cat nil
+assert_equal: Cat.last_meow.expression nil
 
 -- Explicit class method invocation
 (class_of: janks).meow: janks "Hiss"
-assert_equal: Cat.lastMeow.cat janks
-assert_equal: Cat.lastMeow.expression "Hiss"
+assert_equal: Cat.last_meow.cat janks
+assert_equal: Cat.last_meow.expression "Hiss"
 
 -- Implicit class method invocation
 svedka..meow: "P'meuw"
-assert_equal: Cat.lastMeow.cat svedka
-assert_equal: Cat.lastMeow.expression "P'meuw"
+assert_equal: Cat.last_meow.cat svedka
+assert_equal: Cat.last_meow.expression "P'meuw"
 
 completed := true

@@ -149,8 +149,8 @@ bool parse_and_execute(NomState* state, int argc, char* argv[])
         }
         else
         {
-            const char* filePath = argv[i];
-            nom_dofile(state, filePath);
+            const char* filepath = argv[i];
+            nom_dofile(state, filepath);
             if (nom_error(state))
             {
                 fprintf(stderr, "Error: %s\n", nom_geterror(state));

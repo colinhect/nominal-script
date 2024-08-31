@@ -44,14 +44,14 @@ static NomValue prelude_import(
     {
         // Defer up to the frame above this frame to ensure that the module
         // is defined within the correct scope
-        uint32_t cp = state->cp;
-        state->cp -= 1;
+        //uint32_t cp = state->cp;
+        //state->cp -= 1;
 
         const char* modulestring = nom_getstring(state, module);
         result = nom_import(state, modulestring);
 
         // Restore the frame
-        state->cp = cp;
+        //state->cp = cp;
     }
     else
     {
