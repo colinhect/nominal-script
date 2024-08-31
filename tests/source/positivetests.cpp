@@ -28,15 +28,38 @@ extern "C"
 #include <nominal.h>
 }
 
-#define TEST_FILE(path, failure) \
-    TEST_CASE(#path, "[Negative]")\
+#define TEST_FILE(path) \
+    TEST_CASE(#path, "[Positive]")\
     {\
         NomState* state = nom_newstate();\
         nom_dofile(state, path);\
-        CHECK(nom_error(state));\
-        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
+        bool error = nom_error(state);\
+        if (error)\
+        {\
+            INFO(nom_geterror(state));\
+            CHECK(!error);\
+        }\
+        else\
+        {\
+            NomValue completed = nom_getvar(state, "completed");\
+            CHECK(nom_istrue(state, completed));\
+        }\
         nom_freestate(state);\
     }
 
-TEST_FILE("tests/negative/call_uncallable.ns", "Value cannot be called")
-TEST_FILE("tests/negative/too_many_arguments.ns", "Too many arguments given (expected 3)")
+TEST_FILE("tests/positive/arithmetic.ns")
+TEST_FILE("tests/positive/class_creation.ns")
+TEST_FILE("tests/positive/class_get_and_set.ns")
+TEST_FILE("tests/positive/comments.ns")
+TEST_FILE("tests/positive/fibonacci.ns")
+TEST_FILE("tests/positive/functions.ns")
+TEST_FILE("tests/positive/get_intrinsic_class.ns")
+TEST_FILE("tests/positive/if.ns")
+TEST_FILE("tests/positive/map.ns")
+TEST_FILE("tests/positive/objects.ns")
+TEST_FILE("tests/positive/object_constructors.ns")
+TEST_FILE("tests/positive/overload_arithmetic.ns")
+TEST_FILE("tests/positive/short_circuit_and.ns")
+TEST_FILE("tests/positive/short_circuit_or.ns")
+TEST_FILE("tests/positive/to_string.ns")
+TEST_FILE("tests/positive/while.ns")

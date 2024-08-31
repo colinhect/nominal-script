@@ -21,22 +21,40 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include <catch.hpp>
+/// \file
+///////////////////////////////////////////////////////////////////////////////
+#ifndef NOM_MAP_H
+#define NOM_MAP_H
 
-extern "C"
-{
-#include <nominal.h>
-}
+#include "nominal/export.h"
+#include "nominal/value.h"
 
-#define TEST_FILE(path, failure) \
-    TEST_CASE(#path, "[Negative]")\
-    {\
-        NomState* state = nom_newstate();\
-        nom_dofile(state, path);\
-        CHECK(nom_error(state));\
-        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
-        nom_freestate(state);\
-    }
+#include <stddef.h>
 
-TEST_FILE("tests/negative/call_uncallable.ns", "Value cannot be called")
-TEST_FILE("tests/negative/too_many_arguments.ns", "Too many arguments given (expected 3)")
+///
+/// \brief Checks if a value is a reference to a Nominal map.
+///
+/// \param state
+///     The state.
+/// \param value
+///     The value in question.
+///
+/// \returns True if the value is a reference to a Nominal map; false
+///          otherwise.
+NOM_EXPORT bool nom_ismap(
+    NomState*   state,
+    NomValue    value
+);
+
+///
+/// \brief Creates a new Nominal map.
+///
+/// \param state
+///     The state to create the map for.
+///
+/// \returns A reference to the new Nominal map.
+NOM_EXPORT NomValue nom_newmap(
+    NomState*   state
+);
+
+#endif

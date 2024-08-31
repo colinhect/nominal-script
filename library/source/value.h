@@ -21,22 +21,52 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include <catch.hpp>
+#ifndef VALUE_H
+#define VALUE_H
 
-extern "C"
-{
 #include <nominal.h>
-}
 
-#define TEST_FILE(path, failure) \
-    TEST_CASE(#path, "[Negative]")\
-    {\
-        NomState* state = nom_newstate();\
-        nom_dofile(state, path);\
-        CHECK(nom_error(state));\
-        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
-        nom_freestate(state);\
-    }
+// Enumeration of each type a value can be
+typedef enum
+{
+    VALUETYPE_NIL,
+    VALUETYPE_NUMBER,
+    VALUETYPE_BOOLEAN,
+    VALUETYPE_INTERNED_STRING,
+    VALUETYPE_OBJECT
+} ValueType;
 
-TEST_FILE("tests/negative/call_uncallable.ns", "Value cannot be called")
-TEST_FILE("tests/negative/too_many_arguments.ns", "Too many arguments given (expected 3)")
+// Enumeration of each type an object can be
+typedef enum
+{
+    OBJECTTYPE_STRING,
+    OBJECTTYPE_MAP,
+    OBJECTTYPE_FUNCTION,
+} ObjectType;
+
+#define TYPE_MASK       (0x0000000000000007)
+#define ID_MASK         (0xFFFFFFFF00000000)
+#define QNAN_MASK       (0x000000007FFFFF00)
+#define QNAN_VALUE      (0x000000007FF7A500)
+
+#define IS_NUMBER(v)    ((v.raw & QNAN_MASK) != QNAN_VALUE)
+
+#define SET_TYPE(v, t)  (v.data.lower = (TYPE_MASK & t) | (~TYPE_MASK & v.data.lower))
+#define GET_TYPE(v)     (IS_NUMBER(v) ? VALUETYPE_NUMBER : (ValueType)(TYPE_MASK & v.data.lower))
+#define SET_ID(v, i)    (v.data.upper = (uint32_t)i)
+#define GET_ID(v)       (v.data.upper)
+
+// A function for visiting Nominal values
+typedef void (*ValueVisitor)(
+    NomState*   state,
+    NomValue    value
+);
+
+// Visits the specified value and all child values
+void value_visit(
+    NomState*       state,
+    NomValue        value,
+    ValueVisitor    visitor
+);
+
+#endif

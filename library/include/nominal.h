@@ -21,22 +21,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include <catch.hpp>
+/// \file
+///////////////////////////////////////////////////////////////////////////////
+#ifndef NOMINAL_H
+#define NOMINAL_H
 
-extern "C"
-{
-#include <nominal.h>
-}
+#include "nominal/state.h"
+#include "nominal/value.h"
+#include "nominal/number.h"
+#include "nominal/map.h"
+#include "nominal/string.h"
+#include "nominal/function.h"
 
-#define TEST_FILE(path, failure) \
-    TEST_CASE(#path, "[Negative]")\
-    {\
-        NomState* state = nom_newstate();\
-        nom_dofile(state, path);\
-        CHECK(nom_error(state));\
-        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
-        nom_freestate(state);\
-    }
-
-TEST_FILE("tests/negative/call_uncallable.ns", "Value cannot be called")
-TEST_FILE("tests/negative/too_many_arguments.ns", "Too many arguments given (expected 3)")
+#endif

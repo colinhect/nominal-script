@@ -1,0 +1,14 @@
+assert_equal: (class_of: nil) Nil
+assert_equal: (class_of: nil).name "Nil"
+assert_equal: (class_of: 1) Number
+assert_equal: (class_of: 1).name "Number"
+assert_equal: (class_of: false) Boolean
+assert_equal: (class_of: false).name "Boolean"
+assert_equal: (class_of: " ") String
+assert_equal: (class_of: " ").name "String"
+assert_equal: (class_of: { }) Map
+assert_equal: (class_of: { }).name "Map"
+assert_equal: (class_of: [ nil ]) Function
+assert_equal: (class_of: [ nil ]).name "Function"
+
+completed := true

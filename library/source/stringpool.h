@@ -21,22 +21,62 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include <catch.hpp>
+#ifndef STRINGPOOL_H
+#define STRINGPOOL_H
 
-extern "C"
+#include "hashtable.h"
+
+#include <string.h>
+
+// A numeric identifier for a string in a string pool
+typedef uint32_t StringId;
+
+// A pool of strings
+typedef struct StringPool
 {
-#include <nominal.h>
-}
+    HashTable*  hashtable;
+    char**      strings;
+    Hash*       hashes;
+    size_t      stringcount;
+    StringId    nextid;
+} StringPool;
 
-#define TEST_FILE(path, failure) \
-    TEST_CASE(#path, "[Negative]")\
-    {\
-        NomState* state = nom_newstate();\
-        nom_dofile(state, path);\
-        CHECK(nom_error(state));\
-        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
-        nom_freestate(state);\
-    }
+// Creates a new string pool
+StringPool* stringpool_new(
+    size_t  stringcount
+);
 
-TEST_FILE("tests/negative/call_uncallable.ns", "Value cannot be called")
-TEST_FILE("tests/negative/too_many_arguments.ns", "Too many arguments given (expected 3)")
+// Frees a string pool
+void stringpool_free(
+    StringPool* stringpool
+);
+
+// Inserts a new string or gets the ID of an existing string, returning the ID
+// associated with the specified string
+StringId stringpool_getid(
+    StringPool* stringpool,
+    const char* string
+);
+
+// Inserts a new string or gets the ID of an existing string, returning the ID
+// associated with the specified string
+StringId stringpool_getidsubstring(
+    StringPool* stringpool,
+    const char* string,
+    size_t      length
+);
+
+// Returns the string value from a string ID (NULL if no string exists of the
+// given ID)
+const char* stringpool_find(
+    StringPool* stringpool,
+    StringId    id
+);
+
+// Returns the hash from a string ID
+Hash stringpool_hash(
+    StringPool* stringpool,
+    StringId    id
+);
+
+#endif

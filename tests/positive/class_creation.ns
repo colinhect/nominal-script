@@ -1,0 +1,10 @@
+-- Create a new class
+Test := class: "Test"
+
+-- Verify the class of the class
+assert_equal: (class_of: Test) Class
+
+-- Verify the name of the class
+assert_equal: Test.name "Test"
+
+completed := true

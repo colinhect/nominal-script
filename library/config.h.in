@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 // This source file is part of Nominal.
 //
-// Copyright (c) 2015 Colin Hill
+// Copyright (c) 2014 Colin Hill
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -21,22 +21,23 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 // IN THE SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////
-#include <catch.hpp>
+#pragma once
 
-extern "C"
-{
-#include <nominal.h>
-}
+// Detect build platform and mode
+#ifdef _MSC_VER
+ #define NOM_WINDOWS_BUILD
+ #ifdef _DEBUG
+  #define NOM_DEBUG_BUILD
+ #endif
+#endif
 
-#define TEST_FILE(path, failure) \
-    TEST_CASE(#path, "[Negative]")\
-    {\
-        NomState* state = nom_newstate();\
-        nom_dofile(state, path);\
-        CHECK(nom_error(state));\
-        CHECK(std::string(failure) == std::string(nom_geterror(state)));\
-        nom_freestate(state);\
-    }
+// Use VLD on debug builds if it is available
+#ifdef NOM_DEBUG_BUILD
+ #cmakedefine NOM_USE_VLD
 
-TEST_FILE("tests/negative/call_uncallable.ns", "Value cannot be called")
-TEST_FILE("tests/negative/too_many_arguments.ns", "Too many arguments given (expected 3)")
+ #ifdef NOM_USE_VLD
+  #include <vld.h>
+ #endif
+#endif
+
+#define NOM_SHARED
