@@ -219,3 +219,4 @@ NomValue function_resolve(
 
     return result;
 }
+

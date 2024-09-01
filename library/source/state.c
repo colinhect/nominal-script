@@ -993,7 +993,7 @@ static void compile(
     }
     else
     {
-        state->end = generatecode(state, node, state->bytecode, state->end);
+        state->end = generatecode(node, state->bytecode, state->end);
         node_free(node);
     }
 

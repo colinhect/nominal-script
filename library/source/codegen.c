@@ -32,7 +32,6 @@
     *(t*)&bytecode[index] = v; index += sizeof(t)
 
 uint32_t generatecode(
-    NomState*       state,
     Node*           node,
     unsigned char*  bytecode,
     uint32_t        index
@@ -57,7 +56,7 @@ uint32_t generatecode(
         }
 
         // Push all map items on the stack in reverse order
-        uint32_t itemCount = 0;
+        uint32_t itemcount = 0;
         while (node)
         {
             Node* assoc = node->data.map.assoc;
@@ -66,14 +65,14 @@ uint32_t generatecode(
             {
                 // Value on stack
                 Node* rightexpr = assoc->data.binary.rightexpr;
-                index = generatecode(state, rightexpr, bytecode, index);
+                index = generatecode(rightexpr, bytecode, index);
 
                 // Key on stack
                 Node* leftexpr = assoc->data.binary.leftexpr;
-                index = generatecode(state, leftexpr, bytecode, index);
+                index = generatecode(leftexpr, bytecode, index);
 
                 node = node->data.map.prev;
-                ++itemCount;
+                ++itemcount;
             }
             else
             {
@@ -84,7 +83,7 @@ uint32_t generatecode(
 
         // Create the map
         OPCODE(OPCODE_MAP);
-        WRITEAS(uint32_t, itemCount);
+        WRITEAS(uint32_t, itemcount);
     }
     break;
     case NODE_IDENT:
@@ -92,17 +91,17 @@ uint32_t generatecode(
         WRITEAS(StringId, node->data.ident.id);
         break;
     case NODE_UNARY:
-        index = generatecode(state, node->data.unary.expr, bytecode, index);
+        index = generatecode(node->data.unary.expr, bytecode, index);
         OPCODE(OP_OPCODE[node->data.unary.op]);
         break;
     case NODE_INDEX:
-        index = generatecode(state, node->data.index.expr, bytecode, index);
+        index = generatecode(node->data.index.expr, bytecode, index);
         if (node->data.index.class)
         {
             OPCODE(OPCODE_CLASSOF);
         }
 
-        index = generatecode(state, node->data.index.key, bytecode, index);
+        index = generatecode(node->data.index.key, bytecode, index);
         if (node->data.index.bracket)
         {
             OPCODE(OPCODE_GET);
@@ -122,7 +121,7 @@ uint32_t generatecode(
         // And/or operations require short-circuit logic
         if (op == OP_OR || op == OP_AND)
         {
-            index = generatecode(state, leftexpr, bytecode, index);
+            index = generatecode(leftexpr, bytecode, index);
 
             // Skip past the right expression if short-circuited
             OPCODE(OPCODE_DUP);
@@ -135,7 +134,7 @@ uint32_t generatecode(
             uint32_t gotoindex = index;
             WRITEAS(uint32_t, 0);
 
-            index = generatecode(state, rightexpr, bytecode, index);
+            index = generatecode(rightexpr, bytecode, index);
             OPCODE(OP_OPCODE[op]);
 
             uint32_t endindex = index;
@@ -145,16 +144,16 @@ uint32_t generatecode(
         }
         else if (op == OP_DEFINE || op == OP_ASSIGN)
         {
-            index = generatecode(state, rightexpr, bytecode, index);
+            index = generatecode(rightexpr, bytecode, index);
             if (leftexpr->type == NODE_INDEX)
             {
-                index = generatecode(state, leftexpr->data.index.expr, bytecode, index);
+                index = generatecode(leftexpr->data.index.expr, bytecode, index);
                 if (leftexpr->data.index.class)
                 {
                     OPCODE(OPCODE_CLASSOF);
                 }
 
-                index = generatecode(state, leftexpr->data.index.key, bytecode, index);
+                index = generatecode(leftexpr->data.index.key, bytecode, index);
 
                 if (op == OP_ASSIGN)
                 {
@@ -182,8 +181,8 @@ uint32_t generatecode(
         }
         else
         {
-            index = generatecode(state, rightexpr, bytecode, index);
-            index = generatecode(state, leftexpr, bytecode, index);
+            index = generatecode(rightexpr, bytecode, index);
+            index = generatecode(leftexpr, bytecode, index);
             OPCODE(OP_OPCODE[op]);
         }
     }
@@ -192,7 +191,7 @@ uint32_t generatecode(
     {
         while (node)
         {
-            index = generatecode(state, node->data.sequence.expr, bytecode, index);
+            index = generatecode(node->data.sequence.expr, bytecode, index);
             node = node->data.sequence.next;
 
             // Pop the result of that expression off of the stack if there is
@@ -215,7 +214,7 @@ uint32_t generatecode(
         uint32_t ip = index;
 
         // Generate the code for the function body
-        index = generatecode(state, node->data.function.exprs, bytecode, index);
+        index = generatecode(node->data.function.exprs, bytecode, index);
         OPCODE(OPCODE_RET);
 
         // Remember the instruction pointer where the function ends
@@ -271,7 +270,7 @@ uint32_t generatecode(
         // Push the object as the first argument
         if (class)
         {
-            index = generatecode(state, expr->data.index.expr, bytecode, index);
+            index = generatecode(expr->data.index.expr, bytecode, index);
             ++argcount;
         }
 
@@ -283,7 +282,7 @@ uint32_t generatecode(
             if (argExpr)
             {
                 // Generate the code to push the argument on the stack
-                index = generatecode(state, argExpr, bytecode, index);
+                index = generatecode(argExpr, bytecode, index);
                 arg = arg->data.sequence.next;
                 ++argcount;
             }
@@ -300,13 +299,13 @@ uint32_t generatecode(
             WRITEAS(uint32_t, argcount - 1);
             OPCODE(OPCODE_CLASSOF);
 
-            index = generatecode(state, expr->data.index.key, bytecode, index);
+            index = generatecode(expr->data.index.key, bytecode, index);
             OPCODE(OPCODE_FIND);
         }
         else
         {
             // Generate the code to push the function on the stack
-            index = generatecode(state, node->data.invocation.expr, bytecode, index);
+            index = generatecode(node->data.invocation.expr, bytecode, index);
         }
 
         // Call the function
@@ -339,7 +338,7 @@ const OpCode OP_OPCODE[] =
     OPCODE_OR,      // OP_OR
     OPCODE_NOT,     // OP_NOT
     OPCODE_RET,     // OP_RET
-    OPCODE_INVALID  // OP_ASSOC
+    OPCODE_INVALID
 };
 
 const char* const OPCODE_NAMES[] =
