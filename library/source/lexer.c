@@ -228,7 +228,7 @@ bool lexer_next(
         {
             readnext(lexer);
             lexer->state.length = 2;
-            lexer->state.id = OP_LT;
+            lexer->state.id = OP_LTE;
         }
         else if (peaknext(lexer) == '-')
         {
@@ -238,7 +238,7 @@ bool lexer_next(
         }
         else
         {
-            lexer->state.id = OP_LTE;
+            lexer->state.id = OP_LT;
         }
         return true;
     case '|':

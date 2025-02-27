@@ -1,0 +1,53 @@
+-- Test less than operator
+assert_equal: (1 < 2) true
+assert_equal: (2 < 2) false
+assert_equal: (3 < 2) false
+assert_equal: (1.0 < 2.0) true
+assert_equal: (2.0 < 2.0) false
+assert_equal: (3.0 < 2.0) false
+assert_equal: (1 < 2.0) true
+assert_equal: (1.0 < 2) true
+
+-- Test less than or equal operator
+assert_equal: (1 <= 2) true
+assert_equal: (2 <= 2) true
+assert_equal: (3 <= 2) false
+assert_equal: (1.0 <= 2.0) true
+assert_equal: (2.0 <= 2.0) true
+assert_equal: (3.0 <= 2.0) false
+assert_equal: (1 <= 2.0) true
+assert_equal: (2 <= 2.0) true
+assert_equal: (1.0 <= 2) true
+assert_equal: (2.0 <= 2) true
+
+-- Test greater than operator
+assert_equal: (1 > 2) false
+assert_equal: (2 > 2) false
+assert_equal: (3 > 2) true
+assert_equal: (1.0 > 2.0) false
+assert_equal: (2.0 > 2.0) false
+assert_equal: (3.0 > 2.0) true
+assert_equal: (1 > 2.0) false
+assert_equal: (3 > 2.0) true
+assert_equal: (1.0 > 2) false
+assert_equal: (3.0 > 2) true
+
+-- Test greater than or equal operator
+assert_equal: (1 >= 2) false
+assert_equal: (2 >= 2) true
+assert_equal: (3 >= 2) true
+assert_equal: (1.0 >= 2.0) false
+assert_equal: (2.0 >= 2.0) true
+assert_equal: (3.0 >= 2.0) true
+assert_equal: (1 >= 2.0) false
+assert_equal: (2 >= 2.0) true
+assert_equal: (1.0 >= 2) false
+assert_equal: (2.0 >= 2) true
+
+-- Test combined comparisons
+assert_equal: (1 < 2 && 3 > 2) true
+assert_equal: (1 < 2 && 1 > 2) false
+assert_equal: (2 <= 2 && 2 >= 2) true
+assert_equal: (1.5 < 2.5 && 3.5 > 2.5) true
+
+completed := true
