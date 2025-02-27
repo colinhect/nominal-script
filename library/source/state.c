@@ -173,18 +173,18 @@ NomValue nom_import(
     assert(state);
     assert(module);
 
-    NomValue scope = nom_newmap(state);
-    nom_letvar(state, module, scope);
+    // Create a new map to serve as the module's namespace
+    NomValue module_scope = nom_newmap(state);
+    map_setclass(state, module_scope, state->classes.module);
+
     if (!nom_error(state))
     {
-        map_setclass(state, scope, state->classes.module);
-
         // Remember where the instruction pointer was before import
         uint32_t ip = state->ip;
 
         // Begin a new frame with the module scope
         PUSH_FRAME(state->ip, 0);
-        TOP_FRAME()->scope = scope;
+        TOP_FRAME()->scope = module_scope;
 
         // Perform the import
         char modulepath[256];
@@ -198,7 +198,7 @@ NomValue nom_import(
         state->ip = ip;
     }
 
-    return scope;
+    return module_scope;
 }
 
 void nom_letvar(

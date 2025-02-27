@@ -1,8 +1,5 @@
 objects := import: "objects"
 
--- TODO: Module code refers to "Cat" which is out of scope here. Need to be in the modules scope when calling its functions
-{-
-tommy := objects.Cat.new: "Tommy"
--}
+assert_equal: (objects.Cat != nil) true
 
 completed := true
