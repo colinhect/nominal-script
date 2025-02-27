@@ -31,6 +31,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
+// Forward declarations from state.c
+#define TOP_FRAME() (&state->callstack[state->cp - 1])
+
 bool nom_isfunction(
     NomState*   state,
     NomValue    value
@@ -49,6 +52,27 @@ bool nom_isfunction(
     return result;
 }
 
+// Helper function to mark closures during garbage collection
+void function_visit_closure(
+    NomState*   state,
+    NomValue    function,
+    void (*visitor)(NomState*, NomValue)
+)
+{
+    assert(state);
+    assert(visitor);
+
+    HeapObject* object = heap_getobject(state->heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
+    {
+        FunctionData* data = (FunctionData*)object->data;
+        if (data && nom_ismap(state, data->closure))
+        {
+            visitor(state, data->closure);
+        }
+    }
+}
+
 NomValue nom_newfunction(
     NomState*   state,
     NomFunction function
@@ -62,6 +86,9 @@ NomValue nom_newfunction(
     data->ip = 0;
     data->nativefunction = function;
     data->paramcount = 0;
+    
+    // Initialize closure to nil, gets properly set during function call
+    data->closure = nom_nil();
 
     return value;
 }
@@ -78,6 +105,7 @@ NomValue function_new(
     data->ip = ip;
     data->nativefunction = NULL;
     data->paramcount = 0;
+    data->closure = TOP_FRAME()->scope;
 
     return value;
 }
@@ -196,6 +224,28 @@ uint32_t function_getip(
     }
 
     return ip;
+}
+
+NomValue function_getclosure(
+    NomState*   state,
+    NomValue    function
+)
+{
+    assert(state);
+
+    NomValue closure = nom_nil();
+
+    HeapObject* object = heap_getobject(state->heap, function);
+    if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
+    {
+        FunctionData* data = (FunctionData*)object->data;
+        if (data)
+        {
+            closure = data->closure;
+        }
+    }
+
+    return closure;
 }
 
 NomValue function_resolve(

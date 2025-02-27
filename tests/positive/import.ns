@@ -1,5 +1,7 @@
 objects := import: "objects"
 
-assert_equal: (objects.Cat != nil) true
+print: "What!"
+whater := objects.Cat.new: "whater"
+print: "Completed!"
 
 completed := true

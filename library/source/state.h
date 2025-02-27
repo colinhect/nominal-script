@@ -40,6 +40,7 @@ typedef struct StackFrame
     uint32_t    ip;
     uint8_t     argcount;
     NomValue    scope;
+    NomValue    closure_scope;
 } StackFrame;
 
 // A Nominal state

@@ -660,4 +660,9 @@ void value_visit(
             value_visit(state, iterator.value, visitor);
         }
     }
+    // If the value is a function, visit its closure
+    else if (nom_isfunction(state, value))
+    {
+        function_visit_closure(state, value, visitor);
+    }
 }

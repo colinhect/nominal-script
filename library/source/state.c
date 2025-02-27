@@ -48,7 +48,7 @@
 #define PUSH_FRAME(i, a)\
     state->callstack[state->cp].ip = i;\
     state->callstack[state->cp].argcount = a;\
-    state->callstack[state->cp++].scope = nom_nil();
+    state->callstack[state->cp++].scope = nom_nil(); // Default scope, may be overridden
 
 // Returns the top stack frame on the callstack
 #define TOP_FRAME()\
@@ -566,12 +566,23 @@ void state_setinterned(
     // For each stack frame
     for (int i = state->cp - 1; i >= 0; --i)
     {
+        StackFrame* frame = &state->callstack[i];
+        NomValue closure_value;
+
         // Try to set the variable
-        NomValue scope = state->callstack[i].scope;
+        NomValue scope = frame->scope;
         if (map_update(state, scope, string, value))
         {
             success = true;
             break;
+        }
+        else if (!nom_isnil(frame->closure_scope) && map_find(state, frame->closure_scope, string, &closure_value))
+        {
+            if (map_update(state, frame->closure_scope, string, value))
+            {
+                success = true;
+                break;
+            }
         }
     }
 
@@ -596,9 +607,15 @@ NomValue state_getinterned(
     // For each stack frame
     for (int i = state->cp - 1; i >= 0; --i)
     {
+        StackFrame* frame = &state->callstack[i];
         // Try to get the variable value
-        NomValue scope = state->callstack[i].scope;
+        NomValue scope = frame->scope;
         if (map_find(state, scope, string, &result))
+        {
+            success = true;
+            break;
+        }
+        else if (!nom_isnil(frame->closure_scope) && map_find(state, frame->closure_scope, string, &result))
         {
             success = true;
             break;
@@ -1034,6 +1051,13 @@ static void call(
         value = function_resolve(state, value);
 
         PUSH_FRAME(state->ip, argcount);
+
+        // Use the function's closure as the scope for the new frame
+        NomValue closure = function_getclosure(state, value);
+        if (nom_ismap(state, closure))
+        {
+            TOP_FRAME()->closure_scope = closure;
+        }
 
         if (function_isnative(state, value))
         {
