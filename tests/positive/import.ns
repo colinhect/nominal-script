@@ -1,4 +1,6 @@
 objects := import: "objects"
 cat := objects.Cat.new: "Testing"
 cat..meow: "Test"
+assert_equal: objects.Cat.last_meow.cat cat
+assert_equal: objects.Cat.last_meow.expression "Test"
 completed := true
