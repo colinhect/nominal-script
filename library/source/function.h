@@ -38,7 +38,7 @@ typedef struct FunctionData
     NomFunction nativefunction;
     StringId    params[MAX_FUNCTION_PARAMS];
     size_t      paramcount;
-    NomValue    closure;     // Captured namespace when function is created
+    NomValue    scope;
 } FunctionData;
 
 // Creates a new function
@@ -86,14 +86,14 @@ uint32_t function_getip(
     NomValue    function
 );
 
-// Gets the closure scope of a function
-NomValue function_getclosure(
+// Gets the scope a function was defined in.
+NomValue function_getscope(
     NomState*   state,
     NomValue    function
 );
 
-// Helper function to mark closures during garbage collection
-void function_visit_closure(
+// Helper function to mark scope of a function during garbage collection
+void function_visit_scope(
     NomState*   state,
     NomValue    function,
     void (*visitor)(NomState*, NomValue)

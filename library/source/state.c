@@ -48,8 +48,8 @@
 #define PUSH_FRAME(i, a)\
     state->callstack[state->cp].ip = i;\
     state->callstack[state->cp].argcount = a;\
-    state->callstack[state->cp].scope = nom_nil();\
-    state->callstack[state->cp++].closure_scope = nom_nil();
+    state->callstack[state->cp].localscope = nom_nil();\
+    state->callstack[state->cp++].functionscope = nom_nil();
 
 // Returns the top stack frame on the callstack
 #define TOP_FRAME()\
@@ -183,7 +183,7 @@ NomValue nom_import(
         // Remember where the instruction pointer was before import
         uint32_t ip = state->ip;
 
-        TOP_FRAME()->scope = module_scope;
+        TOP_FRAME()->localscope = module_scope;
 
         // Perform the import
         char modulepath[256];
@@ -507,11 +507,8 @@ void nom_dumpcallstack(NomState* state)
     {
         printf("0x%08x: %d (%d args)\n", i, state->callstack[i].ip, state->callstack[i].argcount);
         char scopestring[8192];
-        nom_tostring(state, scopestring, sizeof(scopestring), state->callstack[i].scope);
+        nom_tostring(state, scopestring, sizeof(scopestring), state->callstack[i].localscope);
         printf("  Scope: %s\n", scopestring);
-        char closurescopestring[8192];
-        nom_tostring(state, closurescopestring, sizeof(closurescopestring), state->callstack[i].closure_scope);
-        printf("  Closure:%s\n", closurescopestring);
     }
 }
 
@@ -562,8 +559,7 @@ int nom_collectgarbage(
     // Mark all scopes on the callstack
     for (uint32_t i = 0; i < state->cp; ++i)
     {
-        value_visit(state, state->callstack[i].scope, mark);
-        value_visit(state, state->callstack[i].closure_scope, mark);
+        value_visit(state, state->callstack[i].localscope, mark);
     }
 
     // Sweep
@@ -585,13 +581,13 @@ void state_letinterned(
 
     // Create a new map for the scope if this is the first variable declared
     // in this scope
-    if (!nom_ismap(state, frame->scope))
+    if (!nom_ismap(state, frame->localscope))
     {
-        frame->scope = nom_newmap(state);
+        frame->localscope = nom_newmap(state);
     }
 
     // Attempt to define the variable at the top-most scope
-    NomValue scope = frame->scope;
+    NomValue scope = frame->localscope;
     if (!map_insert(state, scope, string, value))
     {
         nom_seterror(state, "Variable '%s' already exists", stringpool_find(state->stringpool, id));
@@ -614,18 +610,18 @@ void state_setinterned(
     for (int i = state->cp - 1; i >= 0; --i)
     {
         StackFrame* frame = &state->callstack[i];
-        NomValue closure_value;
+        NomValue functionvalue;
 
         // Try to set the variable
-        NomValue scope = frame->scope;
+        NomValue scope = frame->localscope;
         if (map_update(state, scope, string, value))
         {
             success = true;
             break;
         }
-        else if (!nom_isnil(frame->closure_scope) && map_find(state, frame->closure_scope, string, &closure_value))
+        else if (!nom_isnil(frame->functionscope) && map_find(state, frame->functionscope, string, &functionvalue))
         {
-            if (map_update(state, frame->closure_scope, string, value))
+            if (map_update(state, frame->functionscope, string, value))
             {
                 success = true;
                 break;
@@ -656,13 +652,13 @@ NomValue state_getinterned(
     {
         StackFrame* frame = &state->callstack[i];
         // Try to get the variable value
-        NomValue scope = frame->scope;
+        NomValue scope = frame->localscope;
         if (map_find(state, scope, string, &result))
         {
             success = true;
             break;
         }
-        else if (!nom_isnil(frame->closure_scope) && map_find(state, frame->closure_scope, string, &result))
+        else if (!nom_isnil(frame->functionscope) && map_find(state, frame->functionscope, string, &result))
         {
             success = true;
             break;
@@ -1094,11 +1090,13 @@ static void call(
 
         PUSH_FRAME(state->ip, argcount);
 
-        // Use the function's closure as the scope for the new frame
-        NomValue closure = function_getclosure(state, value);
-        if (nom_ismap(state, closure))
+        // Use the scope that the function was defined in as scope fallback for
+        // the duration of the function call (this would not be needed if we
+        // had actual closure support).
+        NomValue function_scope = function_getscope(state, value);
+        if (nom_ismap(state, function_scope))
         {
-            TOP_FRAME()->closure_scope = closure;
+            TOP_FRAME()->functionscope = function_scope;
         }
 
         if (function_isnative(state, value))

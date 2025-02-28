@@ -31,8 +31,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-// Forward declarations from state.c
-#define TOP_FRAME() (&state->callstack[state->cp - 1])
+// Returns the top stack frame on the callstack
+#define TOP_FRAME()\
+    (&state->callstack[state->cp - 1])
 
 bool nom_isfunction(
     NomState*   state,
@@ -52,8 +53,7 @@ bool nom_isfunction(
     return result;
 }
 
-// Helper function to mark closures during garbage collection
-void function_visit_closure(
+void function_visit_scope(
     NomState*   state,
     NomValue    function,
     void (*visitor)(NomState*, NomValue)
@@ -66,9 +66,9 @@ void function_visit_closure(
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
     {
         FunctionData* data = (FunctionData*)object->data;
-        if (data && nom_ismap(state, data->closure))
+        if (data && nom_ismap(state, data->scope))
         {
-            visitor(state, data->closure);
+            visitor(state, data->scope);
         }
     }
 }
@@ -86,9 +86,7 @@ NomValue nom_newfunction(
     data->ip = 0;
     data->nativefunction = function;
     data->paramcount = 0;
-    
-    // Initialize closure to nil, gets properly set during function call
-    data->closure = nom_nil();
+    data->scope = nom_nil();
 
     return value;
 }
@@ -105,7 +103,7 @@ NomValue function_new(
     data->ip = ip;
     data->nativefunction = NULL;
     data->paramcount = 0;
-    data->closure = TOP_FRAME()->scope;
+    data->scope = TOP_FRAME()->localscope;
 
     return value;
 }
@@ -226,14 +224,14 @@ uint32_t function_getip(
     return ip;
 }
 
-NomValue function_getclosure(
+NomValue function_getscope(
     NomState*   state,
     NomValue    function
 )
 {
     assert(state);
 
-    NomValue closure = nom_nil();
+    NomValue scope = nom_nil();
 
     HeapObject* object = heap_getobject(state->heap, function);
     if (object && object->type == OBJECTTYPE_FUNCTION && object->data)
@@ -241,11 +239,11 @@ NomValue function_getclosure(
         FunctionData* data = (FunctionData*)object->data;
         if (data)
         {
-            closure = data->closure;
+            scope = data->scope;
         }
     }
 
-    return closure;
+    return scope;
 }
 
 NomValue function_resolve(
