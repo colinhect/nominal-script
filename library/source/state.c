@@ -190,7 +190,7 @@ NomValue nom_import(
         sprintf(modulepath, "%s.ns", module);
         nom_dofile(state, modulepath);
 
-        POP_VALUE();
+        (void)POP_VALUE();
 
         // Restore the instruction pointer
         state->ip = ip;
