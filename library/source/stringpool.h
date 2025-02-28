@@ -58,8 +58,8 @@ StringId stringpool_getid(
     const char* string
 );
 
-// Inserts a new string or gets the ID of an existing string, returning the ID
-// associated with the specified string
+// Inserts a new string substring or gets the ID of an existing string, returning the ID
+// associated with the specified substring
 StringId stringpool_getidsubstring(
     StringPool* stringpool,
     const char* string,

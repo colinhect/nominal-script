@@ -35,8 +35,8 @@ char readnext(
     Lexer*  lexer
 );
 
-// Reads the next character and resturns it without affecting the lexer state
-char peaknext(
+// Reads the next character and returns it without affecting the lexer state
+char peeknext(
     Lexer*  lexer
 );
 
@@ -90,7 +90,7 @@ bool lexer_next(
         }
 
         // Skip single-line comments
-        if (c == '-' && peaknext(lexer) == '-')
+        if (c == '-' && peeknext(lexer) == '-')
         {
             lexer->state.skippedwhitespace = true;
             readnext(lexer);
@@ -113,8 +113,8 @@ bool lexer_next(
             }
         }
 
-        // Skip mutli-line comments
-        if (c == '{' && peaknext(lexer) == '-')
+        // Skip multi-line comments
+        if (c == '{' && peeknext(lexer) == '-')
         {
             readnext(lexer);
 
@@ -130,7 +130,7 @@ bool lexer_next(
                     lexer->state.skippednewline = true;
                 }
             }
-            while ((c != '-' || peaknext(lexer) != '}') && c != '\0');
+            while ((c != '-' || peeknext(lexer) != '}') && c != '\0');
 
             readnext(lexer);
             c = readnext(lexer);
@@ -158,7 +158,7 @@ bool lexer_next(
     switch (c)
     {
     case ':':
-        if (peaknext(lexer) == '=')
+        if (peeknext(lexer) == '=')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -167,7 +167,7 @@ bool lexer_next(
         }
         break;
     case '=':
-        if (peaknext(lexer) == '=')
+        if (peeknext(lexer) == '=')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -182,7 +182,7 @@ bool lexer_next(
         lexer->state.id = OP_ADD;
         return true;
     case '-':
-        if (peaknext(lexer) == '>')
+        if (peeknext(lexer) == '>')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -200,7 +200,7 @@ bool lexer_next(
         lexer->state.id = OP_DIV;
         return true;
     case '!':
-        if (peaknext(lexer) == '=')
+        if (peeknext(lexer) == '=')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -212,7 +212,7 @@ bool lexer_next(
         }
         return true;
     case '>':
-        if (peaknext(lexer) == '=')
+        if (peeknext(lexer) == '=')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -224,13 +224,13 @@ bool lexer_next(
         }
         return true;
     case '<':
-        if (peaknext(lexer) == '=')
+        if (peeknext(lexer) == '=')
         {
             readnext(lexer);
             lexer->state.length = 2;
             lexer->state.id = OP_LTE;
         }
-        else if (peaknext(lexer) == '-')
+        else if (peeknext(lexer) == '-')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -242,7 +242,7 @@ bool lexer_next(
         }
         return true;
     case '|':
-        if (peaknext(lexer) == '|')
+        if (peeknext(lexer) == '|')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -251,7 +251,7 @@ bool lexer_next(
         }
         break;
     case '&':
-        if (peaknext(lexer) == '&')
+        if (peeknext(lexer) == '&')
         {
             readnext(lexer);
             lexer->state.length = 2;
@@ -267,7 +267,7 @@ bool lexer_next(
     // Identifier
     if (isalpha(c) || c == '_')
     {
-        while (isalnum(peaknext(lexer)) || peaknext(lexer) == '_')
+        while (isalnum(peeknext(lexer)) || peeknext(lexer) == '_')
         {
             readnext(lexer);
             ++lexer->state.length;
@@ -281,18 +281,18 @@ bool lexer_next(
     // Number
     if (isdigit(c))
     {
-        while (isdigit(peaknext(lexer)))
+        while (isdigit(peeknext(lexer)))
         {
             readnext(lexer);
             ++lexer->state.length;
         }
 
-        if (peaknext(lexer) == '.')
+        if (peeknext(lexer) == '.')
         {
             readnext(lexer);
             ++lexer->state.length;
 
-            while (isdigit(peaknext(lexer)))
+            while (isdigit(peeknext(lexer)))
             {
                 readnext(lexer);
                 ++lexer->state.length;
@@ -306,7 +306,7 @@ bool lexer_next(
     // String
     if (c == '\"')
     {
-        while (peaknext(lexer) != '\"')
+        while (peeknext(lexer) != '\"')
         {
             readnext(lexer);
             ++lexer->state.length;
@@ -438,7 +438,7 @@ char readnext(
     return c;
 }
 
-char peaknext(
+char peeknext(
     Lexer*  lexer
 )
 {

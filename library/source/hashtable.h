@@ -131,9 +131,9 @@ bool hashtable_set(
     UserData    value
 );
 
-// Either inserts a new value or get an existing value, returning true if a
+// Either inserts a new value or gets an existing value, returning true if a
 // value was found for the given key or false if no value was found for the
-// specified and a new value was inserted
+// specified key and a new value was inserted
 bool hashtable_insertorget(
     HashTable*  hashtable,
     UserData    key,
