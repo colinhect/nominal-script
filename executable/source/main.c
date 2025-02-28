@@ -78,7 +78,7 @@ void repl(NomState* state)
             }
             else
             {
-                NomValue result = nom_execute(state, line);
+                NomValue result = nom_evaluate(state, line);
                 if (!nom_error(state))
                 {
                     nom_tostring(state, resultstring, 8192, result);

@@ -1,7 +1,10 @@
+print: "start test"
 objects := import: "objects"
 
-print: "What!"
-whater := objects.Cat.new: "whater"
-print: "Completed!"
+janks := objects.janks
+print: janks 
 
+janks..meow: "Meeeow"
+
+print: "finish test"
 completed := true

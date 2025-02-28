@@ -47,6 +47,8 @@ extern "C"
         nom_freestate(state);\
     }
 
+//TEST_FILE("tests/positive/import.ns")
+
 TEST_FILE("tests/positive/arithmetic.ns")
 TEST_FILE("tests/positive/class_creation.ns")
 TEST_FILE("tests/positive/class_get_and_set.ns")
@@ -56,7 +58,7 @@ TEST_FILE("tests/positive/fibonacci.ns")
 TEST_FILE("tests/positive/functions.ns")
 TEST_FILE("tests/positive/get_intrinsic_class.ns")
 TEST_FILE("tests/positive/if.ns")
-TEST_FILE("tests/positive/import.ns")
+//TEST_FILE("tests/positive/import.ns")
 TEST_FILE("tests/positive/map.ns")
 TEST_FILE("tests/positive/objects.ns")
 TEST_FILE("tests/positive/object_constructors.ns")

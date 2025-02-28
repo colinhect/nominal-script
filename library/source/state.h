@@ -119,7 +119,7 @@ NomValue state_getinterned(
     StringId    id
 );
 
-// Calls a function
+// Calls a function.
 //
 // The call may have encountered an error; check nom_error() directly
 // after calling this function
@@ -130,11 +130,11 @@ NomValue state_call(
     NomValue*   args
 );
 
-// Begins execution at the current instruction pointer
+// Begins execution at the current instruction pointer.
 //
 // The call may have encountered an error; check nom_error() directly
 // after calling this function
-NomValue state_execute(
+void state_execute(
     NomState*   state
 );
 

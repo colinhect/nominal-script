@@ -148,8 +148,23 @@ NOM_EXPORT NomValue nom_getarg(
 );
 
 ///
-/// \brief Executes a snippet of Nominal source code and returns the
-///        resulting value.
+/// \brief Executes a snippet of Nominal source code.
+///
+/// \warning The execution could have encountered an error.  Check
+///          nom_error() directly after calling this function.
+///
+/// \param state
+///     The state.
+/// \param source
+///     The Nominal source code.
+NOM_EXPORT void nom_execute(
+    NomState*   state,
+    const char* source
+);
+
+///
+/// \brief Executes a snippet of Nominal source code and returns the resulting
+///        value.
 ///
 /// \warning The execution could have encountered an error.  Check
 ///          nom_error() directly after calling this function.
@@ -159,8 +174,8 @@ NOM_EXPORT NomValue nom_getarg(
 /// \param source
 ///     The Nominal source code.
 ///
-/// \returns The result of the executed code.
-NOM_EXPORT NomValue nom_execute(
+/// \returns The resulting value of the expression.
+NOM_EXPORT NomValue nom_evaluate(
     NomState*   state,
     const char* source
 );

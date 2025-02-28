@@ -288,7 +288,7 @@ TEST_CASE("Creating a map with implicit keys", "[Map]")
 {
     NomState* state = nom_newstate();
 
-    NomValue map = nom_execute(state, "{ 0, 1, 2, 3 }");
+    NomValue map = nom_evaluate(state, "{ 0, 1, 2, 3 }");
     CHECK(nom_error(state) == false);
     CHECK(nom_ismap(state, map) == true);
 
@@ -307,7 +307,7 @@ TEST_CASE("Creating a map with explicit keys", "[Map]")
 {
     NomState* state = nom_newstate();
 
-    NomValue map = nom_execute(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
+    NomValue map = nom_evaluate(state, "{ \"zero\" -> 0, \"one\" -> 1, two := 2 }");
     CHECK(nom_error(state) == false);
     CHECK(nom_ismap(state, map));
 

@@ -31,7 +31,7 @@ extern "C"
 #define TEST_EXPR(expr, expected) \
 { \
     CHECK(state); \
-    NomValue value = nom_execute(state, expr); \
+    NomValue value = nom_evaluate(state, expr); \
     CHECK(!nom_error(state)); \
     CHECK(nom_equals(state, value, expected)); \
 }
@@ -39,7 +39,7 @@ extern "C"
 #define TEST_EXPR_ERROR(expr) \
 { \
     CHECK(state); \
-    nom_execute(state, expr); \
+    nom_evaluate(state, expr); \
     CHECK(nom_error(state)); \
 }
 

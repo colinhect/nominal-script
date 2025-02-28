@@ -198,7 +198,14 @@ NomValue nom_import(
         state->ip = ip;
     }
 
-    return module_scope;
+    if (!nom_error(state))
+    {
+        return module_scope;
+    }
+    else
+    {
+        return nom_nil();
+    }
 }
 
 void nom_letvar(
@@ -274,7 +281,7 @@ NomValue nom_getarg(
     return value;
 }
 
-NomValue nom_execute(
+void nom_execute(
     NomState*   state,
     const char* source
 )
@@ -282,18 +289,34 @@ NomValue nom_execute(
     assert(state);
     assert(source);
 
+    uint32_t ip = state->ip;
+
     // Ensure that no trailing bytecode is executed before the newly compiled
     // bytecode
     state->ip = state->end;
 
     // Compile and execute the code
     compile(state, source);
-    NomValue result = state_execute(state);
+    state_execute(state);
 
     // Set the instruction pointer to the end of the bytecode
-    state->ip = state->end;
+    state->ip = ip;
+}
 
-    return result;
+NomValue nom_evaluate(
+    NomState*   state,
+    const char* source
+)
+{
+    nom_execute(state, source);
+    if (!nom_error(state) && state->sp > 0)
+    {
+        return POP_VALUE();
+    }
+    else
+    {
+        return nom_nil();
+    }
 }
 
 #ifdef _WIN32
@@ -652,7 +675,7 @@ NomValue state_call(
     return result;
 }
 
-NomValue state_execute(
+void state_execute(
     NomState*   state
 )
 {
@@ -904,18 +927,6 @@ NomValue state_execute(
             break;
         }
     }
-
-    result = nom_nil();
-    if (!state->errorflag && state->sp > 0)
-    {
-        result = POP_VALUE();
-    }
-    else
-    {
-        state->sp = 0;
-    }
-
-    return result;
 }
 
 NomValue state_newclass(
@@ -1033,6 +1044,7 @@ static void ret(
 
     state->ip = frame->ip;
 
+    // Pop the frame before pushing the result to ensure we're returning to the correct scope
     POP_FRAME();
     PUSH_VALUE(result);
 }
@@ -1083,8 +1095,7 @@ static void call(
 
                 if (execute)
                 {
-                    NomValue value = state_execute(state);
-                    PUSH_VALUE(value);
+                    state_execute(state);
                 }
             }
             else
