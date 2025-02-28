@@ -48,7 +48,8 @@
 #define PUSH_FRAME(i, a)\
     state->callstack[state->cp].ip = i;\
     state->callstack[state->cp].argcount = a;\
-    state->callstack[state->cp++].scope = nom_nil(); // Default scope, may be overridden
+    state->callstack[state->cp].scope = nom_nil();\
+    state->callstack[state->cp++].closure_scope = nom_nil();
 
 // Returns the top stack frame on the callstack
 #define TOP_FRAME()\
@@ -182,8 +183,6 @@ NomValue nom_import(
         // Remember where the instruction pointer was before import
         uint32_t ip = state->ip;
 
-        // Begin a new frame with the module scope
-        PUSH_FRAME(state->ip, 0);
         TOP_FRAME()->scope = module_scope;
 
         // Perform the import
@@ -191,8 +190,7 @@ NomValue nom_import(
         sprintf(modulepath, "%s.ns", module);
         nom_dofile(state, modulepath);
 
-        // End the frame
-        POP_FRAME();
+        POP_VALUE();
 
         // Restore the instruction pointer
         state->ip = ip;
@@ -394,25 +392,24 @@ void nom_dofile(
 }
 
 void nom_dumpbytecode(
-    NomState*   state,
-    const char* source
+    NomState*   state
 )
 {
     assert(state);
 
-    if (source)
-    {
-        compile(state, source);
-    }
-    else
-    {
-        state->ip = 0;
-    }
-
+    uint32_t current_ip = state->ip;
+    state->ip = 0;
     while (state->ip < state->end)
     {
         OpCode op = (OpCode)state->bytecode[state->ip++];
-        printf("0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
+        if ((state->ip - 1) == current_ip)
+        {
+            printf("*0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
+        }
+        else
+        {
+            printf(" 0x%08x: %s\t", state->ip - 1, OPCODE_NAMES[op]);
+        }
 
         switch (op)
         {
@@ -489,7 +486,33 @@ void nom_dumpbytecode(
         printf("\n");
     }
 
-    state->ip = state->end;
+    state->ip = current_ip;
+}
+
+void nom_dumpstack(NomState* state)
+{
+    printf("Stack:\n");
+    for (uint32_t i = 0; i < state->sp; ++i)
+    {
+        char resultstring[8192];
+        nom_tostring(state, resultstring, sizeof(resultstring), state->stack[i]);
+        printf("0x%08x: %s\n", i, resultstring);
+    }
+}
+
+void nom_dumpcallstack(NomState* state)
+{
+    printf("Calstack:\n");
+    for (uint32_t i = 0; i < state->cp; ++i)
+    {
+        printf("0x%08x: %d (%d args)\n", i, state->callstack[i].ip, state->callstack[i].argcount);
+        char scopestring[8192];
+        nom_tostring(state, scopestring, sizeof(scopestring), state->callstack[i].scope);
+        printf("  Scope: %s\n", scopestring);
+        char closurescopestring[8192];
+        nom_tostring(state, closurescopestring, sizeof(closurescopestring), state->callstack[i].closure_scope);
+        printf("  Closure:%s\n", closurescopestring);
+    }
 }
 
 bool nom_error(
@@ -540,6 +563,7 @@ int nom_collectgarbage(
     for (uint32_t i = 0; i < state->cp; ++i)
     {
         value_visit(state, state->callstack[i].scope, mark);
+        value_visit(state, state->callstack[i].closure_scope, mark);
     }
 
     // Sweep
@@ -682,6 +706,7 @@ void state_execute(
     assert(state);
 
     uint32_t startcp = state->cp;
+    uint32_t endip = state->end;
 
     StringId id;
     NomValue l, r, result;
@@ -689,9 +714,14 @@ void state_execute(
     uint32_t count, ip;
     bool stop = false;
 
-    uint32_t end = state->end;
-    while (state->ip < end && !state->errorflag && !stop)
+    while (state->ip != endip && !state->errorflag && !stop)
     {
+        //printf("-------------------------------------------------------------------\n");
+        //nom_dumpbytecode(state);
+        //nom_dumpstack(state);
+        //nom_dumpcallstack(state);
+        //printf("\n");
+
         op = (OpCode)state->bytecode[state->ip++];
         switch (op)
         {

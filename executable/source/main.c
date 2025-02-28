@@ -70,7 +70,7 @@ void repl(NomState* state)
         {
             if (line[0] == '^')
             {
-                nom_dumpbytecode(state, line[1] != '\n' ? line + 1 : NULL);
+                nom_dumpbytecode(state);
                 if (nom_error(state))
                 {
                     printf("Error: %s\n", nom_geterror(state));

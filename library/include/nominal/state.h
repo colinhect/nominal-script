@@ -196,22 +196,21 @@ NOM_EXPORT void nom_dofile(
 );
 
 ///
-/// \brief Prints the byte code resulting from a snippet of Nominal source
+/// \brief Prints the byte code of all compiled Nominal source
 ///        code to stdout.
-///
-/// \warning The source code could have failed to parse.  Check nom_error()
-///          directly after calling this function.
 ///
 /// \param state
 ///     The state.
-/// \param source
-///     The Nominal source code.  If NULL, then all of the state's byte code
-///     is printed.
-///
-/// \returns The result of the executed code.
 NOM_EXPORT void nom_dumpbytecode(
-    NomState*   state,
-    const char* source
+    NomState*   state
+);
+
+NOM_EXPORT void nom_dumpstack(
+    NomState*   state
+);
+
+NOM_EXPORT void nom_dumpcallstack(
+    NomState*   state
 );
 
 ///
