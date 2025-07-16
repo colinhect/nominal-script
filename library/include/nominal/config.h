@@ -33,7 +33,7 @@
 
 // Use VLD on debug builds if it is available
 #ifdef NOM_DEBUG_BUILD
- #define NOM_USE_VLD
+/* #undef NOM_USE_VLD */
 
  #ifdef NOM_USE_VLD
   #include <vld.h>

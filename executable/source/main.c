@@ -28,6 +28,9 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 // Prints the usage information to the user
 void show_usage(char* argv[])
 {
@@ -59,14 +62,17 @@ void repl(NomState* state)
 {
     assert(state);
 
+    rl_bind_key('\t', rl_complete);
+
+    using_history();
+    read_history(".nominal_history");
     char resultstring[8192];
-    char line[4096];
 
     bool quit = false;
     while (!quit)
     {
-        printf(":> ");
-        if (fgets(line, 4096, stdin) != NULL && line[0] != '\n')
+        char* line = readline(":> ");
+        if (line != NULL && line[0] != '\n' && strlen(line) > 0)
         {
             if (line[0] == '^')
             {
@@ -89,12 +95,17 @@ void repl(NomState* state)
                     printf("Error: %s\n", nom_geterror(state));
                 }
             }
+
+            add_history(line);
+            free(line);
         }
         else
         {
             quit = true;
         }
     }
+
+    write_history(".nominal_history");
 }
 
 // Parses the command-line arguments and executes; returns true if an error

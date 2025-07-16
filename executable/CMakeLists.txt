@@ -13,7 +13,7 @@ elseif(UNIX)
 endif()
 
 add_executable(NominalExecutable ${SOURCE_FILES})
-target_link_libraries(NominalExecutable NominalLibrary)
+target_link_libraries(NominalExecutable NominalLibrary readline)
 
 set(REG_EXT "[^/]*([.]c|[.]h)$")
 
